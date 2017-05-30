@@ -58,9 +58,10 @@ in the model file.
 
 # TODO
 
-- [ ] make it work with HARMPI/HARM3D
+- [ ] make it work with HARMPI
 - [ ] make it work with RAISHIN
 - [x] add LICENSE
+- [ ] 
 
 # References
 
