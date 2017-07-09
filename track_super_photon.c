@@ -102,9 +102,13 @@ void track_super_photon(struct of_photon *ph)
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
+	// Initialize file that will hold photon trajectory
+	FILE *f = fopen("file.txt", "w");
+
+	// Geodesic integration happens inside this loop
 	while (!stop_criterion(ph)) {
 
-		/* Save initial position/wave vector */
+		/* Save initial position/wave vector. */
 		Xi[0] = ph->X[0];
 		Xi[1] = ph->X[1];
 		Xi[2] = ph->X[2];
@@ -291,6 +295,8 @@ void track_super_photon(struct of_photon *ph)
 		}
 
 		nstep++;
+
+		// SAVE PHOTON COORDINATES HERE
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
