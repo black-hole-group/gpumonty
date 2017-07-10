@@ -70,6 +70,9 @@ void track_super_photon(struct of_photon *ph)
 	    Bcov[NDIM];
 	int nstep = 0;
 
+	// output filename
+	char *file_out;
+
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -85,6 +88,11 @@ void track_super_photon(struct of_photon *ph)
 			ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
 		return;
 	}
+
+	// Initialize filename that will hold photon's trajectory
+	//xxxxxxxxx photon_RANDOMSTRING
+    //string=malloc(size_str*sizeof(char));
+	//rand_string(file_out,10);
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
@@ -297,6 +305,7 @@ void track_super_photon(struct of_photon *ph)
 		nstep++;
 
 		// SAVE PHOTON COORDINATES HERE
+		//XXXXXXXXXXXX
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
