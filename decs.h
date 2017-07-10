@@ -85,6 +85,9 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
+/* define size of random string in photon filenames */
+#define SIZE_STR 10
+
 /** data structures **/
 struct of_photon {
 	double X[NDIM];
