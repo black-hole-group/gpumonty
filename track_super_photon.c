@@ -94,10 +94,9 @@ void track_super_photon(struct of_photon *ph)
     ran_string=malloc(SIZE_STR*sizeof(char)); 
     file_out=malloc((8+SIZE_STR)*sizeof(char)); // +1 for zero terminator
     rand_string(ran_string,10); // random string
-    // Concatenates to get full filename
+    // Concatenates strings to get full filename
     strcpy(file_out, "photon_");
     strcat(file_out, ran_string);
-    printf("%s\n", file_out);
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
@@ -116,7 +115,7 @@ void track_super_photon(struct of_photon *ph)
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
 	// Initialize file that will hold photon trajectory
-	//FILE *f = fopen("file.txt", "w");
+	FILE *f = fopen(file_out, "w");
 
 	// Geodesic integration happens inside this loop
 	while (!stop_criterion(ph)) {
@@ -309,8 +308,8 @@ void track_super_photon(struct of_photon *ph)
 
 		nstep++;
 
-		// SAVE PHOTON COORDINATES HERE
-		//XXXXXXXXXXXX
+		// saves photon worldline here
+		fprintf(f, "%E %E %E %E %E %E %E %E\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0], ph->K[1], ph->K[2], ph->K[3]);
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
@@ -322,6 +321,8 @@ void track_super_photon(struct of_photon *ph)
 		}
 
 	}
+
+	fclose(f); // closes file with geodesic worldline
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
