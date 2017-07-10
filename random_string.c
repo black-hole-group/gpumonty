@@ -7,7 +7,7 @@ Taken from https://codereview.stackexchange.com/a/29200
 #include <stdio.h>
 #include <stdlib.h>
 
-static char *rand_string(char *str, size_t size)
+char *rand_string(char *str, size_t size)
 {
     const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     if (size) {

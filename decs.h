@@ -289,4 +289,4 @@ void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
 
 /* misc. routines */
-static char *rand_string(char *str, size_t size)
+char *rand_string(char *str, size_t size);
