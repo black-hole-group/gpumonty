@@ -84,10 +84,13 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &t);
 	fscanf(fp, "%d ", &N1);
 	fscanf(fp, "%d ", &N2);
+	fscanf(fp, "%d ", &N3);
 	fscanf(fp, "%lf ", &startx[1]);
 	fscanf(fp, "%lf ", &startx[2]);
+	fscanf(fp, "%lf ", &startx[3]);
 	fscanf(fp, "%lf ", &dx[1]);
 	fscanf(fp, "%lf ", &dx[2]);
+	fscanf(fp, "%lf ", &dx[3]);
 	fscanf(fp, "%lf ", &tf);
 	fscanf(fp, "%d ", &nstep);
 	fscanf(fp, "%lf ", &a);
