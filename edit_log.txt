@@ -2,7 +2,7 @@ I decided to type my notes because it may be easier to follow.
 
 ================================================================================
 
->>> day1
+>>> 12/07
 
 The following functions were not defined in any of the .c files, although they appear in decs.h
 
@@ -172,15 +172,17 @@ track_super_photon.c
 
 ================================================================================
 
->>> day2
+>>> 13/07
 
-Created a branch called 3dtests as a damage control if I fuck things up :)
+Created a branch called 3dtests as a damage control if I fuck things up :) -- note added 14/07: moved things to nemmen/grmonty; no longer working on this branch in my repository. Current working branch also called 3dtests
 
+/***************************
 On this new branch, I added the edits listed above for the following files:
 
     scatter_super_photon.c
     track_super_photon.c
     decs.h
+***************************/
 
 I'm adding to the list of edits done yesterday a c comment command for the edits I have already made.
 
@@ -195,12 +197,12 @@ Only "non-trivial" modifications left. Tomorrow likely to be tiring, but good ch
 
 ================================================================================
 
->>> day3
+>>> 14/07
 
 
 Variable del[NDIM] to remain defined as is, but must add del[3] so we can define the other coeff[] elements.
 
-Variable coeff[4] to be changed to account 4 extra elements: coeff[8], because now we have del[3]
+Variable coeff[4] to be changed to account for 4 extra elements: coeff[8], because now we have del[3]
 
 --------------------------------------------------------------------------------
 
@@ -225,7 +227,7 @@ ADDED: done, I think I got it right, but must add print to 3d version to make su
 
 --------------------------------------------------------------------------------
 
-I really think we don't have to change harm_model.c line 387
+I think we don't have to change harm_model.c line 387 - must test, though.
 
 --------------------------------------------------------------------------------
 
@@ -237,9 +239,13 @@ Points that may be troublesome:
 
 --------------------------------------------------------------------------------
 
-Next thing to do - hopefully the last as well:
+Next things to do - hopefully the last as well:
 
-    run harmpi with 3d
-    check dump files
-        weird thing is that nemmen's dumpfiles had different number of lines
+    1) write c function to convert from binary to ascii
+    2) run harmpi with 3d
+    3) check harm_model.h variables (extra * needed?)
+
+================================================================================
+
+>>> 15/07
 
