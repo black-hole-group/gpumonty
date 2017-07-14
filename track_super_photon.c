@@ -294,9 +294,13 @@ void track_super_photon(struct of_photon *ph)
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
+//			fprintf(stderr,
+//				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+//				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+//				bias);
 			fprintf(stderr,
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+				"X1,X2,X3,K1,K2,K3,bias: %g %g %g %g %g %g %g\n",
+				ph->X[1], ph->X[2], ph->X[3], ph->K[1], ph->K[2], ph->K[3],
 				bias);
 			break;
 		}

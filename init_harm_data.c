@@ -60,13 +60,15 @@ void init_harm_data(char *fname)
 {
 	FILE *fp;
 	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+//	double rp, hp, V, dV, two_temp_gam;
+	double rp, hp, phip, V, dV, two_temp_gam;
+	int i, j, k, kk;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
 	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet;
+//	double r, h, divb, vmin, vmax, gdet;
+	double r, h, phi, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
 	fp = fopen(fname, "r");
@@ -108,18 +110,21 @@ void init_harm_data(char *fname)
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
-	startx[3] = 0.;
+//	startx[3] = 0.;
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = 2. * M_PI;
+//	stopx[3] = 2. * M_PI;
+	stopx[3] = startx[3] + N3 * dx[3];
 
-	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
+//	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2]);
+	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
+		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
 	dx[0] = 1.;
-	dx[3] = 2. * M_PI;
+//	dx[3] = 2. * M_PI;
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -134,29 +139,40 @@ void init_harm_data(char *fname)
 	bias_norm = 0.;
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
-	for (k = 0; k < N1 * N2; k++) {
-		j = k % N2;
-		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
+	for (kk = 0; kk < N1 * N2; kk++) {
+	    for (k = 0; k < N3; k++) {
+		j = kk % N2;
+		i = (kk - j) / N2;
+//		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
+		fscanf(fp, "%lf %lf %lf %lf %lf %lf", &x[1], &x[2], &x[3], &r, &h, &phi);
 
 		/* check that we've got the coordinate parameters right */
-		bl_coord(x, &rp, &hp);
-		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
+//		bl_coord(x, &rp, &hp);
+		bl_coord(x, &rp, &hp, &phip);
+//		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
+//			fprintf(stderr, "grid setup error\n");
+//			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
+//				rp, r, hp, h);
+//			fprintf(stderr,
+//				"edit R0, hslope, compile, and continue\n");
+//			exit(1);
+//		}
+		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5 || fabs(phip - phi) > 1.e-5) {
 			fprintf(stderr, "grid setup error\n");
-			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
-				rp, r, hp, h);
+			fprintf(stderr, "rp,r,hp,h: %g %g %g %g %g %g\n",
+				rp, r, hp, h, phip, phi);
 			fprintf(stderr,
 				"edit R0, hslope, compile, and continue\n");
 			exit(1);
 		}
 
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
-		       &p[KRHO][i][j],
-		       &p[UU][i][j],
-		       &p[U1][i][j],
-		       &p[U2][i][j],
-		       &p[U3][i][j],
-		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
+		       &p[KRHO][i][j][k],
+		       &p[UU][i][j][k],
+		       &p[U1][i][j][k],
+		       &p[U2][i][j][k],
+		       &p[U3][i][j][k],
+		       &p[B1][i][j][k], &p[B2][i][j][k], &p[B3][i][j][k]);
 
 
 		fscanf(fp, "%lf", &divb);
@@ -174,18 +190,19 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf ", &vmin);
 		fscanf(fp, "%lf ", &vmax);
 		fscanf(fp, "%lf\n", &gdet);
-
+	
 		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
+		    dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */
 		if (i <= 20)
-			dMact += gdet * p[KRHO][i][j] * Ucon[1];
+			dMact += gdet * p[KRHO][i][j][k] * Ucon[1];
 		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
+			Ladv += gdet * p[UU][i][j][k] * Ucon[1] * Ucov[0];
 
+	    }
 	}
 
 	bias_norm /= V;
@@ -194,7 +211,6 @@ void init_harm_data(char *fname)
 	Ladv *= dx[3] * dx[2];
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
-
 
 	/* done! */
 

@@ -3,7 +3,7 @@ GRMONTY: A relativistic Monte Carlo code
 
 Based on [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..387D). Originally downloaded from [Astrophysical Code Library](http://rainman.astro.illinois.edu/codelib/) @ [UI](http://illinois.edu).
 
-GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
+GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). This version is configured to use input from [`harmpi`] - add link to Sasha's github?
 
 # quick start
 
@@ -25,7 +25,7 @@ if using `bash`:
 
 run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump019 4.e19 
+    ./grmonty 5000000 dump019 4.e19 >&! grmonty.err
 
 Arguments are:
 
@@ -47,6 +47,12 @@ plot(s.lognu, s.ll)
 ```
 
 Old-fashioned way: Use the [SM](http://www.astro.princeton.edu/~rhl/sm/) script `plspec.m` to plot up broad-band spectral energy distribution.
+
+Alternative way: use `sed_maker.py` - this file may not be in its final version yet
+
+# Plotting spectra
+
+Use python and `plot_dump.py` - this file may not be in its final version yet
 
 # Calculate spectra from other sources
 
@@ -77,6 +83,7 @@ in the model file.
 - [ ] nonthermal electron distribution
 - [ ] dynamic metrics as input
 - [x] add LICENSE
+- [ ] finish editing visualization files `sed_maker.py` and `plot_dump.py`
 
 # References
 
