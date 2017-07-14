@@ -245,6 +245,10 @@ Next things to do - hopefully the last as well:
     2) run harmpi with 3d
     3) check harm_model.h variables (extra * needed?)
 
+--------------------------------------------------------------------------------
+
+Just realized I have to change the malloc functions in the end of harm_utils.c
+
 ================================================================================
 
 >>> 15/07
