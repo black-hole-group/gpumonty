@@ -1,44 +1,4 @@
 
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
 
 #include "decs.h"
 
@@ -72,7 +32,7 @@ double dlw, dlT, lminw, lmint;
 
 void init_hotcross(void)
 {
-	int i, j, nread;
+	int i, j, idum, jdum, nread;
 	double lw, lT;
 	double total_compton_cross_num(double w, double thetae);
 	FILE *fp;
@@ -96,8 +56,7 @@ void init_hotcross(void)
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
 				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
-						j, lw, lT);
+					fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					exit(0);
 				}
 			}
@@ -112,8 +71,7 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * dlT;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
-					lw, lT, table[i][j]);
+				fprintf(fp, "%d %d %g %g %15.10g\n", i, j, lw, lT, table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
 	} else {
@@ -122,10 +80,9 @@ void init_hotcross(void)
 			HOTCROSS);
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
-				nread =
-				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
-					   &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
+				nread = fscanf(fp, "%d %d %lf %lf %lf\n", 
+					&idum, &jdum, &lw, &lT, &table[i][j]);
+				if (isnan(table[i][j]) || nread != 5) {
 					fprintf(stderr,
 						"error on table read: %d %d\n",
 						i, j);

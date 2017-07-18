@@ -19,13 +19,13 @@ void init_harm_data(char *fname)
 {
 	FILE *fp;
 	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
+	double V, dV, two_temp_gam;
 	int i, j, k;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
-	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet;
+	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt;
+	double divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	double J ;
 
@@ -48,7 +48,6 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &dx[2]);
 	fscanf(fp, "%lf ", &tf);
 	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &a);
 	fscanf(fp, "%lf ", &gam);
 	fscanf(fp, "%lf ", &cour);
 	fscanf(fp, "%lf ", &DTd);
@@ -59,12 +58,19 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%d ", &image_cnt);
 	fscanf(fp, "%d ", &rdump_cnt);
 	fscanf(fp, "%lf ", &dt);
-	fscanf(fp, "%d ", &lim);
-	fscanf(fp, "%d ", &failed);
-	fscanf(fp, "%lf ", &Rin);
-	fscanf(fp, "%lf ", &Rout);
-	fscanf(fp, "%lf ", &hslope);
-	fscanf(fp, "%lf ", &R0);
+
+  /* finish reading out the line */
+  fseek(fp, 0, SEEK_SET);
+  while ( (i=fgetc(fp)) != '\n' ) ;
+
+  /* not set automatically */
+  a = 0.9375;
+  Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
+  Rout = 40.;
+  hslope = 0.3;
+  R0 = 0.0;
+  fprintf(stderr,"coordinate parameters: Rin,Rout,hslope,R0,dx[1],dx[2]: %g %g %g %g %g %g\n",
+          Rin,Rout,hslope,R0,dx[1],dx[2]) ;
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
@@ -97,25 +103,12 @@ void init_harm_data(char *fname)
 	for (k = 0; k < N1 * N2; k++) {
 		j = k % N2;
 		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
-
-		/* check that we've got the coordinate parameters right */
-		bl_coord(x, &rp, &hp);
-		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
-			fprintf(stderr, "grid setup error\n");
-			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
-				rp, r, hp, h);
-			fprintf(stderr,
-				"edit R0, hslope, compile, and continue\n");
-			exit(1);
-		}
+		fscanf(fp, "%lf %lf", &x[1], &x[2]);
 
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
 		       &p[KRHO][i][j],
 		       &p[UU][i][j],
-		       &p[U1][i][j],
-		       &p[U2][i][j],
-		       &p[U3][i][j],
+		       &p[U1][i][j], &p[U2][i][j], &p[U3][i][j],
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
 
 
