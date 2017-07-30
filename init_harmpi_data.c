@@ -21,14 +21,14 @@ int main(int argc, char *argv[])
 	char *fname;
 	double x[4];
 	//double rp, hp, V, dV, two_temp_gam;
-	int i, j, k, N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, DTr01, NPR, DOKTOT;  
-	static const int NDIM=3;
+	int i, j, k, N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
+	static const int NDIM=4;
 	double startx[NDIM], dx[NDIM];
-	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, BL;
+	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr;
 
 	/* header variables not used except locally */
-	double t, tf, cour, DTd, DTl, DTi, dt;
-	int nstep, DTr, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
+	double t, tf, cour, DTd, DTl, DTi, DTr01, dt;
+	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
 	double r, h, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
@@ -38,10 +38,9 @@ int main(int argc, char *argv[])
         exit(0);
     } 
     
-    sscanf(argv[1], "%s", &fname); // reads command-line argument
-    printf("%s\n", fname);
+    //sscanf(argv[1], "%s", &fname); // reads command-line argument
 
-	fp = fopen(fname, "r");
+	fp = fopen(argv[1], "r");
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");
@@ -79,8 +78,8 @@ int main(int argc, char *argv[])
 	fscanf(fp, "%lf ", &DTd);
 	fscanf(fp, "%lf ", &DTl);
 	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%d ", &DTr);
-	fscanf(fp, "%d ", &DTr01);	
+	fscanf(fp, "%lf ", &DTr);
+	fscanf(fp, "%lf ", &DTr01);	
 	fscanf(fp, "%d ", &dump_cnt);
 	fscanf(fp, "%d ", &image_cnt);
 	fscanf(fp, "%d ", &rdump_cnt);
@@ -99,10 +98,8 @@ int main(int argc, char *argv[])
 	fscanf(fp, "%lf ", &rbr);
 	fscanf(fp, "%lf ", &npow2);
 	fscanf(fp, "%lf ", &cpow2);
-	fscanf(fp, "%lf ", &BL);
+	fscanf(fp, "%d ", &BL);
 
-	printf("%lf\n", a);
-	printf("%lf\n", BL);
 
 
 
