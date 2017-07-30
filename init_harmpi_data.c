@@ -2,6 +2,7 @@
 //#include "harm_model.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /*
 
@@ -14,23 +15,41 @@ Uses standard HARM data file format
 
 */
 
+/*
+Allocates multidimensional array.
+
+Code taken from https://stackoverflow.com/a/42094467/793218.
+*/
+void arr_alloc(size_t x, size_t y, size_t z, double(**aptr)[x][y][z])
+{
+	*aptr = malloc( sizeof(double[x][y][z]) ); // allocate a true 3D array
+	assert(*aptr != NULL);
+}
+
+
+
+
 
 int main(int argc, char *argv[])
 {
 	FILE *fp;
 	char *fname;
-	double x[4];
-	//double rp, hp, V, dV, two_temp_gam;
-	int i, j, k, N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
 	static const int NDIM=4;
-	double startx[NDIM], dx[NDIM];
-	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr;
+	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
+	//double rp, hp, V, dV, two_temp_gam;
+	int i, j, k;
 
-	/* header variables not used except locally */
-	double t, tf, cour, DTd, DTl, DTi, DTr01, dt;
+	/* header variables */
+	int N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
+	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt;
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet;
+	double r, h, divb, vmin, vmax, gdet, tmp;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+
+	// HARM arrays
+	double (*ti)[N1][N2][N3];
+	arr_alloc(N1, N2, N3, &ti);
+	//double ti,tj,tk,x1,x2,x3,r,h,ph,rho,ug;
 
     // handle command-line argument
     if ( argc != 2 ) {
@@ -100,9 +119,25 @@ int main(int argc, char *argv[])
 	fscanf(fp, "%lf ", &cpow2);
 	fscanf(fp, "%d ", &BL);
 
+	stopx[0] = 1.;
+	stopx[1] = startx[1] + N1 * dx[1];
+	stopx[2] = startx[2] + N2 * dx[2];
+	stopx[3] = startx[3] + N3 * dx[3];
 
+	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
+		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
+	// Reads binary data
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) {
+			for (k = 0; k < N3; k++) {
+				ti[i][j][k]=i*j*k;
+				//fread(tmp, sizeof(double), 1, fp); // ignore
 
+			}
+
+		}
+	}
 
 	/* done! */
 	fclose(fp);
