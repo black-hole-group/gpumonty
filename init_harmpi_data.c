@@ -1,45 +1,3 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 //#include "decs.h"
 //#include "harm_model.h"
 #include <stdio.h>
@@ -57,19 +15,31 @@ Uses standard HARM data file format
 */
 
 
-void init_harm_data(char *fname)
+int main(int argc, char *argv[])
 {
 	FILE *fp;
+	char *fname;
 	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+	//double rp, hp, V, dV, two_temp_gam;
+	int i, j, k, N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, DTr01, NPR, DOKTOT;  
 	static const int NDIM=3;
+	double startx[NDIM], dx[NDIM];
+	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, BL;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
-	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
+	int nstep, DTr, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
 	double r, h, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+
+    // handle command-line argument
+    if ( argc != 2 ) {
+        printf( "usage: %s filename \n", argv[0] );
+        exit(0);
+    } 
+    
+    sscanf(argv[1], "%s", &fname); // reads command-line argument
+    printf("%s\n", fname);
 
 	fp = fopen(fname, "r");
 
