@@ -63,6 +63,7 @@ void init_harm_data(char *fname)
 	double x[4];
 	double rp, hp, V, dV, two_temp_gam;
 	int i, j, k;
+	static const int NDIM=3;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
@@ -121,10 +122,22 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &Rout);
 	fscanf(fp, "%lf ", &hslope);
 	fscanf(fp, "%lf ", &R0);
+	fscanf(fp, "%d ", &NPR);
+	fscanf(fp, "%d ", &DOKTOT);
+	fscanf(fp, "%lf ", &fractheta);
+	fscanf(fp, "%lf ", &fracphi);
+	fscanf(fp, "%lf ", &rbr);
+	fscanf(fp, "%lf ", &npow2);
+	fscanf(fp, "%lf ", &cpow2);
+	fscanf(fp, "%lf ", &BL);
+
+	printf("%lf\n", a);
+	printf("%lf\n", BL);
 
 
 
 
 	/* done! */
+	fclose(fp);
 
 }
