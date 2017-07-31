@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 /*
 
@@ -11,8 +12,11 @@ get HARM simulation data from fname
 checks for consistency of coordinates in data file with
 values of coordinate parameters 
 
-Uses standard HARM data file format
+Uses standard HARMPI data file format, which is the following:
 
+Line 1: ASCII, 45 fields
+Line 2 and onwards: binary, N * 42 fields, where N=N1*N2*N3 is the
+	total number of grid points
 */
 
 
@@ -40,7 +44,7 @@ double*** make_3d_array(int nx, int ny, int nz) {
 int main(int argc, char *argv[])
 {
 	FILE *fp;
-	char *fname, str[1024];
+	char fname[1024], header[1024];
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
@@ -52,8 +56,7 @@ int main(int argc, char *argv[])
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
 	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
-	// HARM arrays
-	double z[42];
+	// Declare 3D HARMPI arrays
 	double ***ti = make_3d_array(N1, N2, N3);
 	double ***tj = make_3d_array(N1, N2, N3);
 	double ***tk = make_3d_array(N1, N2, N3);
@@ -100,18 +103,16 @@ int main(int argc, char *argv[])
 	double ***v3p = make_3d_array(N1, N2, N3);
 	double ***gdet = make_3d_array(N1, N2, N3);
 
-
-
-
     // handle command-line argument
     if ( argc != 2 ) {
         printf( "usage: %s filename \n", argv[0] );
         exit(0);
     } 
     
-    //sscanf(argv[1], "%s", &fname); // reads command-line argument
+    // reads filename  
+    strncpy(fname, argv[1], 1024); 
 
-	fp = fopen(argv[1], "r");
+	fp = fopen(fname, "r");
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");
@@ -120,10 +121,11 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
-	fgets (str, 1024, fp);
+	/* gets HARMPI header */
+    fgets(header, 1024, fp);
 
-	/* get HARMPI header */
-	/*
+  	// HOW TO BREAK DOWN THE HEADER STRING INTO VARIABLES?  
+  	/*
 	fscanf(fp, "%lf ", &t);
 	// per tile resolution
 	fscanf(fp, "%d ", &N1);
@@ -173,7 +175,6 @@ int main(int argc, char *argv[])
 	fscanf(fp, "%lf ", &npow2);
 	fscanf(fp, "%lf ", &cpow2);
 	fscanf(fp, "%d ", &BL);
-	// HOW TO SWITCH BETWEEN ASCII READING AND BINARY READING?
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
@@ -182,9 +183,7 @@ int main(int argc, char *argv[])
 
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
-
-*/
-
+	*/
 
 	// Reads binary data
 	for (i=0; i<N1; i++) {
@@ -194,12 +193,6 @@ int main(int argc, char *argv[])
 				   - [x] allocate these arrays
 				   - [ ] number of arrays must match file!
  				*/
-				//fread((void *)(&var), sizeof(double), 1, fp);
-				fread(z, sizeof(z), 42, fp);
-				// AS SOON AS I READ THE BINARY PART I GET A SEGMENTATION FAULT
-
-				//ti[i][j][k]=var;
-				/*
 				fread(ti[i][j][k], sizeof(double), 1, fp); 
 				fread(tj[i][j][k], sizeof(double), 1, fp); 
 				fread(tk[i][j][k], sizeof(double), 1, fp); 
@@ -258,14 +251,8 @@ int main(int argc, char *argv[])
 				
 				//rhor = 1+(1-d.a**2)**0.5
 			    //alpha = (-d.guu[0,0])**(-0.5)
-			    */
-				
 			}
 		}
-	}
-
-	for (i=0; i<42; i++) {
-		printf("%f\n", z[i]);
 	}
 
 
