@@ -40,7 +40,7 @@ double*** make_3d_array(int nx, int ny, int nz) {
 int main(int argc, char *argv[])
 {
 	FILE *fp;
-	char *fname;
+	char *fname, *c;
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
@@ -169,6 +169,7 @@ int main(int argc, char *argv[])
 	fscanf(fp, "%lf ", &npow2);
 	fscanf(fp, "%lf ", &cpow2);
 	fscanf(fp, "%d ", &BL);
+	// HOW TO SWITCH BETWEEN ASCII READING AND BINARY READING?
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
@@ -178,6 +179,8 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
+	float z[42];
+
 	// Reads binary data
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
@@ -186,8 +189,10 @@ int main(int argc, char *argv[])
 				   - [x] allocate these arrays
 				   - [ ] number of arrays must match file!
  				*/
-				fread((void *)(&var), sizeof(double), 1, fp);
-				printf("%f\n", var); 
+				//fread((void *)(&var), sizeof(double), 1, fp);
+				fread(z, sizeof(z), 42, fp);
+				// AS SOON AS I READ THE BINARY PART I GET A SEGMENTATION FAULT
+
 				//ti[i][j][k]=var;
 				/*
 				fread(ti[i][j][k], sizeof(double), 1, fp); 
@@ -251,17 +256,10 @@ int main(int argc, char *argv[])
 			    */
 				
 			}
-
 		}
 	}
 
-	for (i=0; i<N1; i++) {
-		for (j=0; j<N2; j++) {
-			for (k = 0; k < N3; k++) {
-				printf("%f ", ti[i][j][k]);
-			}
-		}
-	}
+
 
 
 	/* done! */
