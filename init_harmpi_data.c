@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 /*
 
@@ -21,7 +22,7 @@ Line 2 and onwards: binary, N * 42 fields, where N=N1*N2*N3 is the
 */
 
 
-// Method to allocate a 2D array of floats
+// Method to allocate a 3D array of floats
 double*** make_3d_array(int nx, int ny, int nz) {
 	double*** arr;
 	int i,j;
@@ -41,16 +42,47 @@ double*** make_3d_array(int nx, int ny, int nz) {
 
 
 
+/* 
+Converts a string into an array of floats. Needs to know beforehand
+the number of elements. Assumes the separators are empty spaces. 
+*/
+double *string2float(int n, char *str) {
+	double *x;
+	int i;
+	char *delim = " "; // input separated by spaces
+	char *token = NULL;
+	char *unconverted;	
+
+    // Allocates array with n elements
+    x = (double *)malloc(sizeof(double)*n); 	
+
+	i=0;
+	for (token = strtok(str, delim); token != NULL; token = strtok(NULL, delim)) {
+		x[i] = strtod(token, &unconverted);
+		if (!isspace(*unconverted) && *unconverted != 0) {
+			printf("Input string contains a character that's not valid in a floating point constant\n");
+			exit(1);
+		}
+		i++;
+	}
+
+	return x;
+}
+
+
+
+
 
 int main(int argc, char *argv[])
 {
 	FILE *fp;
-	char fname[1024], header[1024];
+	char fname[1024], header_s[1024];
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
 	int i, j, k, l;
 	float var[42];
+	double *header_f; // will hold header info
 
 	/* header variables */
 	int N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
@@ -77,14 +109,15 @@ int main(int argc, char *argv[])
 	}
 
 	/* gets HARMPI header */
-    fgets(header, 1024, fp);
+    fgets(header_s, 1024, fp);
 
-    N1=256;
-    N2=256;
-    N3=1;
-    gam=1.;
+    // reads array from header string
+    header_f=string2float(45,header_s);
 
-  	// HOW TO BREAK DOWN THE HEADER STRING INTO VARIABLES?  
+    for (i=0; i<45; i++) {
+    	printf("%f\n", header_f[i]);
+    }
+  
   	/*
 	fscanf(fp, "%lf ", &t);
 	// per tile resolution
@@ -266,6 +299,15 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// for inspecting a given array
+	/*
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) {
+			for (k = 0; k < N3; k++) {
+				printf("%e ", v1m[i][j][k]);
+			}
+		}
+	}*/
 
 	/* done! */
 	free(ti);
