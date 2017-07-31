@@ -90,6 +90,12 @@ int main(int argc, char *argv[])
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
 	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
+	/*
+	=======================
+	opens file
+	=======================
+	*/
+
     // handle command-line argument
     if ( argc != 2 ) {
         printf( "usage: %s filename \n", argv[0] );
@@ -108,66 +114,65 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
-	/* gets HARMPI header */
+	/*
+	=======================
+	gets HARMPI header 
+	=======================
+	*/
     fgets(header_s, 1024, fp);
 
     // reads array from header string
     header_f=string2float(45,header_s);
-
-    for (i=0; i<45; i++) {
-    	printf("%f\n", header_f[i]);
-    }
   
-  	/*
-	fscanf(fp, "%lf ", &t);
+	t=header_f[0];
 	// per tile resolution
-	fscanf(fp, "%d ", &N1);
-	fscanf(fp, "%d ", &N2);
-	fscanf(fp, "%d ", &N3);	
+	N1=header_f[1];
+	N2=header_f[2];
+	N3=header_f[3];
 	// total resolution
-	fscanf(fp, "%d ", &nx);
-	fscanf(fp, "%d ", &ny);
-	fscanf(fp, "%d ", &nz);	
+	nx=header_f[4];
+	ny=header_f[5];
+	nz=header_f[6];
 	// number of ghost cells
-	fscanf(fp, "%d ", &N1G);
-	fscanf(fp, "%d ", &N2G);
-	fscanf(fp, "%d ", &N3G);	
+	N1G=header_f[7];
+	N2G=header_f[8];
+	N3G=header_f[9];
 	// 
-	fscanf(fp, "%lf ", &startx[1]);
-	fscanf(fp, "%lf ", &startx[2]);
-	fscanf(fp, "%lf ", &startx[3]);
-	fscanf(fp, "%lf ", &dx[1]);
-	fscanf(fp, "%lf ", &dx[2]);
-	fscanf(fp, "%lf ", &dx[3]);
-	fscanf(fp, "%lf ", &tf);
-	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &a);
-	fscanf(fp, "%lf ", &gam);
-	fscanf(fp, "%lf ", &cour);
-	fscanf(fp, "%lf ", &DTd);
-	fscanf(fp, "%lf ", &DTl);
-	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%lf ", &DTr);
-	fscanf(fp, "%lf ", &DTr01);	
-	fscanf(fp, "%d ", &dump_cnt);
-	fscanf(fp, "%d ", &image_cnt);
-	fscanf(fp, "%d ", &rdump_cnt);
-	fscanf(fp, "%d ", &rdump01_cnt);
-	fscanf(fp, "%lf ", &dt);
-	fscanf(fp, "%d ", &lim);
-	fscanf(fp, "%d ", &failed);
-	fscanf(fp, "%lf ", &Rin);
-	fscanf(fp, "%lf ", &Rout);
-	fscanf(fp, "%lf ", &hslope);
-	fscanf(fp, "%lf ", &R0);
-	fscanf(fp, "%d ", &NPR);
-	fscanf(fp, "%d ", &DOKTOT);
-	fscanf(fp, "%lf ", &fractheta);
-	fscanf(fp, "%lf ", &fracphi);
-	fscanf(fp, "%lf ", &rbr);
-	fscanf(fp, "%lf ", &npow2);
-	fscanf(fp, "%lf ", &cpow2);
-	fscanf(fp, "%d ", &BL);
+	startx[1]=header_f[10];
+	startx[2]=header_f[11];
+	startx[3]=header_f[12];
+	dx[1]=header_f[13];
+	dx[2]=header_f[14];
+	dx[3]=header_f[15];
+	tf=header_f[16];
+	nstep=header_f[17];
+	a=header_f[18];
+	gam=header_f[19];
+	cour=header_f[20];
+	DTd=header_f[21];
+	DTl=header_f[22];
+	DTi=header_f[23];
+	DTr=header_f[24];
+	DTr01=header_f[25];
+	dump_cnt=header_f[26];
+	image_cnt=header_f[27];
+	rdump_cnt=header_f[28];
+	rdump01_cnt=header_f[29];
+	dt=header_f[30];
+	lim=header_f[31];
+	failed=header_f[32];
+	Rin=header_f[33];
+	Rout=header_f[34];
+	hslope=header_f[35];
+	R0=header_f[36];
+	NPR=header_f[37];
+	DOKTOT=header_f[38];
+	fractheta=header_f[39];
+	fracphi=header_f[40];
+	rbr=header_f[41];
+	npow2=header_f[42];
+	cpow2=header_f[43];
+	BL=header_f[44];
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
@@ -176,6 +181,11 @@ int main(int argc, char *argv[])
 
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
+
+	/*
+	=====================
+	Binary data
+	=====================
 	*/
 
 	// Declare 3D HARMPI arrays
@@ -227,7 +237,6 @@ int main(int argc, char *argv[])
 
 
 	// Reads binary data
-
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
