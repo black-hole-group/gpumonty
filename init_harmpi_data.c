@@ -137,18 +137,67 @@ int main(int argc, char *argv[])
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
-				fread(tmp, sizeof(double), 1, fp); // ignore
+				/* - [ ] to set the types right!
+				   - [ ] allocate these arrays
+				*/
+				fread(ti[i][j][k], sizeof(double), 1, fp); 
+				fread(tj[i][j][k], sizeof(double), 1, fp); 
+				fread(tk[i][j][k], sizeof(double), 1, fp); 
 
-				ti,tj,tk,x1,x2,x3,r,h,ph,rho,ug = gd[0:11,:,:].view()
+				fread(x1[i][j][k], sizeof(double), 1, fp); 
+				fread(x2[i][j][k], sizeof(double), 1, fp); 
+				fread(x3[i][j][k], sizeof(double), 1, fp); 
 
-				pg = (d.gam-1)*ug
+				fread(r[i][j][k], sizeof(double), 1, fp); 
+				fread(h[i][j][k], sizeof(double), 1, fp); 
+				fread(ph[i][j][k], sizeof(double), 1, fp); 
 
-				vu=np.zeros_like(gd[0:4])
-				B=np.zeros_like(gd[0:4])
-				vu[1:4] = gd[n:n+3]; n+=3
-				B[1:4] = gd[n:n+3]; n+=3
+				fread(rho[i][j][k], sizeof(double), 1, fp); 
+				fread(ug[i][j][k], sizeof(double), 1, fp); 
 
+				pg[i][j][k] = (gam-1.)*ug[i][j][k]
+
+				fread(U0[i][j][k], sizeof(double), 1, fp);
+				fread(U1[i][j][k], sizeof(double), 1, fp); 
+				fread(U2[i][j][k], sizeof(double), 1, fp);
+				fread(U3[i][j][k], sizeof(double), 1, fp);
+
+				fread(B0[i][j][k], sizeof(double), 1, fp);
+				fread(B1[i][j][k], sizeof(double), 1, fp);
+				fread(B2[i][j][k], sizeof(double), 1, fp);
+				fread(B3[i][j][k], sizeof(double), 1, fp);
+
+				fread(ktot[i][j][k], sizeof(double), 1, fp);
+				fread(divb[i][j][k], sizeof(double), 1, fp);
+
+				fread(uu0[i][j][k], sizeof(double), 1, fp);
+				fread(uu1[i][j][k], sizeof(double), 1, fp);
+				fread(uu2[i][j][k], sizeof(double), 1, fp);
+				fread(uu3[i][j][k], sizeof(double), 1, fp);
+				fread(ud0[i][j][k], sizeof(double), 1, fp);
+				fread(ud1[i][j][k], sizeof(double), 1, fp);
+				fread(ud2[i][j][k], sizeof(double), 1, fp);
+				fread(ud3[i][j][k], sizeof(double), 1, fp);
+				fread(bu0[i][j][k], sizeof(double), 1, fp);
+				fread(bu1[i][j][k], sizeof(double), 1, fp);
+				fread(bu2[i][j][k], sizeof(double), 1, fp);
+				fread(bu3[i][j][k], sizeof(double), 1, fp);
+				fread(bd0[i][j][k], sizeof(double), 1, fp);
+				fread(bd1[i][j][k], sizeof(double), 1, fp);
+				fread(bd2[i][j][k], sizeof(double), 1, fp);
+				fread(bd3[i][j][k], sizeof(double), 1, fp);
+
+				fread(v1m[i][j][k], sizeof(double), 1, fp);
+				fread(v1p[i][j][k], sizeof(double), 1, fp);
+				fread(v2m[i][j][k], sizeof(double), 1, fp);
+				fread(v2p[i][j][k], sizeof(double), 1, fp);
+				fread(v3m[i][j][k], sizeof(double), 1, fp);
+				fread(v3p[i][j][k], sizeof(double), 1, fp);
+
+				fread(gdet[i][j][k], sizeof(double), 1, fp);
 				
+				//rhor = 1+(1-d.a**2)**0.5
+			    //alpha = (-d.guu[0,0])**(-0.5)
 				
 			}
 
