@@ -68,6 +68,15 @@ get_connection
 
 in the model file.
 
+# Explanation of branches
+
+- `master`: stable branch
+- `illinois`: latest bug corrections by Gammie's group
+- `opencl`: OpenCL version (in progress)
+- `progressbar`: progress bar implementation
+- `read_harmpi`: support for HARMPI dumps (in progress)
+- `track_ph`: output photon world lines for visualization
+
 # TODO
 
 - [ ] make it work with [HARMPI](https://github.com/atchekho/harmpi)
