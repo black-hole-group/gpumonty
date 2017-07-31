@@ -15,10 +15,26 @@ Uses standard HARM data file format
 
 */
 
-// the macros below do not work because N1 and N2 are undefined
-#define arr(u, i, j, k) ( u[ (i)+(j)*N2+(k)*N1*N2 ] )
 
-#define ind(i, j, k) ( (i)+(j)*N2+(k)*N1*N2 )
+// Method to allocate a 2D array of floats
+double*** make_3d_array(int nx, int ny, int nz) {
+	double*** arr;
+	int i,j;
+
+	arr = (double ***) malloc(nx*sizeof(double**));
+
+	for (i = 0; i < nx; i++) {
+		arr[i] = (double **) malloc(ny*sizeof(double*));
+
+        for(j = 0; j < ny; j++) {
+        	arr[i][j] = (double *) malloc(nz * sizeof(double));
+        }
+    }
+
+	return arr;
+} 
+
+
 
 
 int main(int argc, char *argv[])
@@ -38,8 +54,7 @@ int main(int argc, char *argv[])
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
 	// HARM arrays
-	double *ti;
-	ti = (double *)malloc(sizeof(double)*N1*N2*N3);
+	double ***ti = make_3d_array(N1, N2, N3);
 	//double ti,tj,tk,x1,x2,x3,r,h,ph,rho,ug;
 
     // handle command-line argument
@@ -118,32 +133,32 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
-/*
 	// Reads binary data
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
-				ti[ind(i,j,k)]=i*j*k;
-				//fread(tmp, sizeof(double), 1, fp); // ignore
+				fread(tmp, sizeof(double), 1, fp); // ignore
+
+				ti,tj,tk,x1,x2,x3,r,h,ph,rho,ug = gd[0:11,:,:].view()
+
+				pg = (d.gam-1)*ug
+
+				vu=np.zeros_like(gd[0:4])
+				B=np.zeros_like(gd[0:4])
+				vu[1:4] = gd[n:n+3]; n+=3
+				B[1:4] = gd[n:n+3]; n+=3
+
+				
+				
 			}
 
 		}
 	}
 
-	for (i=0; i<N1; i++) {
-		for (j=0; j<N2; j++) {
-			for (k = 0; k < N3; k++) {
-				printf("%f ", arr(ti,i,j,k));
-				//fread(tmp, sizeof(double), 1, fp); // ignore
-			}
 
-		}
-	}
-*/
-
-	printf("%d\n", ind(0,10,30));
 
 	/* done! */
+	free(ti);
 	fclose(fp);
 
 }
