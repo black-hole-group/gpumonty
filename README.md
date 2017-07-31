@@ -74,7 +74,8 @@ in the model file.
 - `illinois`: latest bug corrections by Gammie's group
 - `opencl`: OpenCL version (in progress)
 - `progressbar`: progress bar implementation
-- `read_harmpi`: support for HARMPI dumps (in progress)
+- `3dtests`: full support for HARMPI 3D dumps (in progress)
+- `read_harmpi`: reads HARMPI dumps, for testing (in progress)
 - `track_ph`: output photon world lines for visualization
 
 # TODO
