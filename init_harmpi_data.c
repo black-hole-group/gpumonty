@@ -48,14 +48,59 @@ int main(int argc, char *argv[])
 
 	/* header variables */
 	int N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
-	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt;
+	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt, var;
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet, tmp;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
 	// HARM arrays
 	double ***ti = make_3d_array(N1, N2, N3);
-	//double ti,tj,tk,x1,x2,x3,r,h,ph,rho,ug;
+	double ***tj = make_3d_array(N1, N2, N3);
+	double ***tk = make_3d_array(N1, N2, N3);
+	double ***x1 = make_3d_array(N1, N2, N3);
+	double ***x2 = make_3d_array(N1, N2, N3);
+	double ***x3 = make_3d_array(N1, N2, N3);
+	double ***r = make_3d_array(N1, N2, N3);
+	double ***h = make_3d_array(N1, N2, N3);
+	double ***ph = make_3d_array(N1, N2, N3);
+	double ***rho = make_3d_array(N1, N2, N3);
+	double ***ug = make_3d_array(N1, N2, N3);
+	double ***pg = make_3d_array(N1, N2, N3);
+	double ***U0 = make_3d_array(N1, N2, N3);
+	double ***U1 = make_3d_array(N1, N2, N3);
+	double ***U2 = make_3d_array(N1, N2, N3);
+	double ***U3 = make_3d_array(N1, N2, N3);
+	double ***B0 = make_3d_array(N1, N2, N3);
+	double ***B1 = make_3d_array(N1, N2, N3);
+	double ***B2 = make_3d_array(N1, N2, N3);
+	double ***B3 = make_3d_array(N1, N2, N3);
+	double ***ktot = make_3d_array(N1, N2, N3);
+	double ***divb = make_3d_array(N1, N2, N3);
+	double ***uu0 = make_3d_array(N1, N2, N3);
+	double ***uu1 = make_3d_array(N1, N2, N3);
+	double ***uu2 = make_3d_array(N1, N2, N3);
+	double ***uu3 = make_3d_array(N1, N2, N3);
+	double ***ud0 = make_3d_array(N1, N2, N3);
+	double ***ud1 = make_3d_array(N1, N2, N3);
+	double ***ud2 = make_3d_array(N1, N2, N3);
+	double ***ud3 = make_3d_array(N1, N2, N3);
+	double ***bu0 = make_3d_array(N1, N2, N3);
+	double ***bu1 = make_3d_array(N1, N2, N3);
+	double ***bu2 = make_3d_array(N1, N2, N3);
+	double ***bu3 = make_3d_array(N1, N2, N3);
+	double ***bd0 = make_3d_array(N1, N2, N3);
+	double ***bd1 = make_3d_array(N1, N2, N3);
+	double ***bd2 = make_3d_array(N1, N2, N3);
+	double ***bd3 = make_3d_array(N1, N2, N3);
+	double ***v1m = make_3d_array(N1, N2, N3);
+	double ***v1p = make_3d_array(N1, N2, N3);
+	double ***v2m = make_3d_array(N1, N2, N3);
+	double ***v2p = make_3d_array(N1, N2, N3);
+	double ***v3m = make_3d_array(N1, N2, N3);
+	double ***v3p = make_3d_array(N1, N2, N3);
+	double ***gdet = make_3d_array(N1, N2, N3);
+
+
+
 
     // handle command-line argument
     if ( argc != 2 ) {
@@ -138,12 +183,17 @@ int main(int argc, char *argv[])
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
 				/* - [ ] to set the types right!
-				   - [ ] allocate these arrays
-				*/
+				   - [x] allocate these arrays
+				   - [ ] number of arrays must match file!
+ 				*/
+				fread((void *)(&var), sizeof(double), 1, fp);
+				printf("%f\n", var); 
+				//ti[i][j][k]=var;
+				/*
 				fread(ti[i][j][k], sizeof(double), 1, fp); 
 				fread(tj[i][j][k], sizeof(double), 1, fp); 
 				fread(tk[i][j][k], sizeof(double), 1, fp); 
-
+				
 				fread(x1[i][j][k], sizeof(double), 1, fp); 
 				fread(x2[i][j][k], sizeof(double), 1, fp); 
 				fread(x3[i][j][k], sizeof(double), 1, fp); 
@@ -198,12 +248,20 @@ int main(int argc, char *argv[])
 				
 				//rhor = 1+(1-d.a**2)**0.5
 			    //alpha = (-d.guu[0,0])**(-0.5)
+			    */
 				
 			}
 
 		}
 	}
 
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) {
+			for (k = 0; k < N3; k++) {
+				printf("%f ", ti[i][j][k]);
+			}
+		}
+	}
 
 
 	/* done! */
