@@ -40,7 +40,7 @@ double*** make_3d_array(int nx, int ny, int nz) {
 int main(int argc, char *argv[])
 {
 	FILE *fp;
-	char *fname, *c;
+	char *fname, str[1024];
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
 	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
 	// HARM arrays
+	double z[42];
 	double ***ti = make_3d_array(N1, N2, N3);
 	double ***tj = make_3d_array(N1, N2, N3);
 	double ***tk = make_3d_array(N1, N2, N3);
@@ -119,7 +120,10 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
+	fgets (str, 1024, fp);
+
 	/* get HARMPI header */
+	/*
 	fscanf(fp, "%lf ", &t);
 	// per tile resolution
 	fscanf(fp, "%d ", &N1);
@@ -179,7 +183,8 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
-	float z[42];
+*/
+
 
 	// Reads binary data
 	for (i=0; i<N1; i++) {
@@ -259,7 +264,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
+	for (i=0; i<42; i++) {
+		printf("%f\n", z[i]);
+	}
 
 
 	/* done! */
