@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 /*
 
@@ -48,11 +49,12 @@ int main(int argc, char *argv[])
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+	int i, j, k, l;
+	float var[42];
 
 	/* header variables */
 	int N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
-	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt, var;
+	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt;
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
 	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
 	double ***U1 = make_3d_array(N1, N2, N3);
 	double ***U2 = make_3d_array(N1, N2, N3);
 	double ***U3 = make_3d_array(N1, N2, N3);
-	double ***B0 = make_3d_array(N1, N2, N3);
+	//double ***B0 = make_3d_array(N1, N2, N3);
 	double ***B1 = make_3d_array(N1, N2, N3);
 	double ***B2 = make_3d_array(N1, N2, N3);
 	double ***B3 = make_3d_array(N1, N2, N3);
@@ -123,6 +125,10 @@ int main(int argc, char *argv[])
 
 	/* gets HARMPI header */
     fgets(header, 1024, fp);
+
+    N1=256;
+    N2=256;
+    N3=1;
 
   	// HOW TO BREAK DOWN THE HEADER STRING INTO VARIABLES?  
   	/*
@@ -189,68 +195,70 @@ int main(int argc, char *argv[])
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
-				/* - [ ] to set the types right!
-				   - [x] allocate these arrays
-				   - [ ] number of arrays must match file!
- 				*/
-				fread(ti[i][j][k], sizeof(double), 1, fp); 
-				fread(tj[i][j][k], sizeof(double), 1, fp); 
-				fread(tk[i][j][k], sizeof(double), 1, fp); 
+				// reads 42 floats from binary data
+				fread(var, sizeof(float), 42, fp);
+
+				// assigns the 3D arrays
+				ti[i][j][k]=var[0];
+				tj[i][j][k]= var[1]; 
+				tk[i][j][k]= var[2]; 
 				
-				fread(x1[i][j][k], sizeof(double), 1, fp); 
-				fread(x2[i][j][k], sizeof(double), 1, fp); 
-				fread(x3[i][j][k], sizeof(double), 1, fp); 
+				x1[i][j][k]= var[3]; 
+				x2[i][j][k]= var[4]; 
+				x3[i][j][k]= var[5]; 
 
-				fread(r[i][j][k], sizeof(double), 1, fp); 
-				fread(h[i][j][k], sizeof(double), 1, fp); 
-				fread(ph[i][j][k], sizeof(double), 1, fp); 
+				r[i][j][k]= var[6]; 
+				h[i][j][k]= var[7]; 
+				ph[i][j][k]= var[8]; 
 
-				fread(rho[i][j][k], sizeof(double), 1, fp); 
-				fread(ug[i][j][k], sizeof(double), 1, fp); 
+				rho[i][j][k]= var[9]; 
+				ug[i][j][k]= var[10]; 
 
-				pg[i][j][k] = (gam-1.)*ug[i][j][k]
+				pg[i][j][k] = (gam-1.)*ug[i][j][k];
 
-				fread(U0[i][j][k], sizeof(double), 1, fp);
-				fread(U1[i][j][k], sizeof(double), 1, fp); 
-				fread(U2[i][j][k], sizeof(double), 1, fp);
-				fread(U3[i][j][k], sizeof(double), 1, fp);
+				U0[i][j][k]= var[11];
+				U1[i][j][k]= var[12]; 
+				U2[i][j][k]= var[13];
+				U3[i][j][k]= var[14];
 
-				fread(B0[i][j][k], sizeof(double), 1, fp);
-				fread(B1[i][j][k], sizeof(double), 1, fp);
-				fread(B2[i][j][k], sizeof(double), 1, fp);
-				fread(B3[i][j][k], sizeof(double), 1, fp);
+				//B0[i][j][k]= var[15];
+				B1[i][j][k]= var[15];
+				B2[i][j][k]= var[16];
+				B3[i][j][k]= var[17];
 
-				fread(ktot[i][j][k], sizeof(double), 1, fp);
-				fread(divb[i][j][k], sizeof(double), 1, fp);
+				ktot[i][j][k]= pg[i][j][k]/pow(rho[i][j][k],gam);
 
-				fread(uu0[i][j][k], sizeof(double), 1, fp);
-				fread(uu1[i][j][k], sizeof(double), 1, fp);
-				fread(uu2[i][j][k], sizeof(double), 1, fp);
-				fread(uu3[i][j][k], sizeof(double), 1, fp);
-				fread(ud0[i][j][k], sizeof(double), 1, fp);
-				fread(ud1[i][j][k], sizeof(double), 1, fp);
-				fread(ud2[i][j][k], sizeof(double), 1, fp);
-				fread(ud3[i][j][k], sizeof(double), 1, fp);
-				fread(bu0[i][j][k], sizeof(double), 1, fp);
-				fread(bu1[i][j][k], sizeof(double), 1, fp);
-				fread(bu2[i][j][k], sizeof(double), 1, fp);
-				fread(bu3[i][j][k], sizeof(double), 1, fp);
-				fread(bd0[i][j][k], sizeof(double), 1, fp);
-				fread(bd1[i][j][k], sizeof(double), 1, fp);
-				fread(bd2[i][j][k], sizeof(double), 1, fp);
-				fread(bd3[i][j][k], sizeof(double), 1, fp);
+				divb[i][j][k]= var[18];
 
-				fread(v1m[i][j][k], sizeof(double), 1, fp);
-				fread(v1p[i][j][k], sizeof(double), 1, fp);
-				fread(v2m[i][j][k], sizeof(double), 1, fp);
-				fread(v2p[i][j][k], sizeof(double), 1, fp);
-				fread(v3m[i][j][k], sizeof(double), 1, fp);
-				fread(v3p[i][j][k], sizeof(double), 1, fp);
+				uu0[i][j][k]= var[19];
+				uu1[i][j][k]= var[20];
+				uu2[i][j][k]= var[21];
+				uu3[i][j][k]= var[22];
+				ud0[i][j][k]= var[23];
+				ud1[i][j][k]= var[24];
+				ud2[i][j][k]= var[25];
+				ud3[i][j][k]= var[26];
+				bu0[i][j][k]= var[27];
+				bu1[i][j][k]= var[28];
+				bu2[i][j][k]= var[29];
+				bu3[i][j][k]= var[30];
+				bd0[i][j][k]= var[31];
+				bd1[i][j][k]= var[32];
+				bd2[i][j][k]= var[33];
+				bd3[i][j][k]= var[34];
 
-				fread(gdet[i][j][k], sizeof(double), 1, fp);
+				v1m[i][j][k]= var[35];
+				v1p[i][j][k]= var[36];
+				v2m[i][j][k]= var[37];
+				v2p[i][j][k]= var[38];
+				v3m[i][j][k]= var[39];
+				v3p[i][j][k]= var[40];
+
+				gdet[i][j][k]= var[41];
 				
 				//rhor = 1+(1-d.a**2)**0.5
 			    //alpha = (-d.guu[0,0])**(-0.5)
+			
 			}
 		}
 	}
@@ -260,4 +268,5 @@ int main(int argc, char *argv[])
 	free(ti);
 	fclose(fp);
 
+	return 0;
 }
