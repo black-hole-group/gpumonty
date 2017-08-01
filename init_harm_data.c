@@ -1,6 +1,10 @@
 
 #include "decs.h"
 #include "harm_model.h"
+#include <assert.h>
+#include <string.h>
+#include <ctype.h>
+
 /*
 
 get HARM simulation data from fname
@@ -10,9 +14,75 @@ values of coordinate parameters
 
 Uses standard HARM data file format
 
-CFG 1 Sept 07
+Uses standard HARMPI data file format, which is the following:
 
+Line 1: ASCII, 45 fields
+Line 2 and onwards: binary, N * 42 fields, where N=N1*N2*N3 is the
+	total number of grid points
 */
+
+
+
+
+/*
+Method to allocate a 3D array of floats that can be accessed
+as A[i][j][k].
+*/
+double*** make_3d_array(int nx, int ny, int nz) {
+	double*** arr;
+	int i,j;
+
+	arr = (double ***) malloc(nx*sizeof(double**));
+
+	for (i = 0; i < nx; i++) {
+		arr[i] = (double **) malloc(ny*sizeof(double*));
+
+        for(j = 0; j < ny; j++) {
+        	arr[i][j] = (double *) malloc(nz * sizeof(double));
+        }
+    }
+
+	return arr;
+} 
+
+
+
+
+
+
+/* 
+Converts a string into an array of floats. Needs to know beforehand
+the number of elements. Assumes the separators are empty spaces. 
+*/
+double *string2float(int n, char *str) {
+	double *x;
+	int i;
+	char *delim = " "; // input separated by spaces
+	char *token = NULL;
+	char *unconverted;	
+
+    // Allocates array with n elements
+    x = (double *)malloc(sizeof(double)*n); 	
+
+	i=0;
+	for (token = strtok(str, delim); token != NULL; token = strtok(NULL, delim)) {
+		x[i] = strtod(token, &unconverted);
+		if (!isspace(*unconverted) && *unconverted != 0) {
+			printf("Input string contains a character that's not valid in a floating point constant\n");
+			exit(1);
+		}
+		i++;
+	}
+
+	return x;
+}
+
+
+
+
+
+
+
 
 
 void init_harm_data(char *fname)
