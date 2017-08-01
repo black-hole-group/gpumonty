@@ -542,6 +542,8 @@ static double **malloc_rank2_cont(int n1, int n2)
 	return A;
 }
 
+/* NEED TO ADAPT THIS ROUTINE TO 3D
+*/
 void init_storage(void)
 {
 	int i;

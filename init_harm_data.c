@@ -93,11 +93,13 @@ void init_harm_data(char *fname)
 	int i, j, k;
 
 	/* header variables not used except locally */
+	char header_s[1024]; // header string
+	double *header_f; // header values
 	double t, tf, cour, DTd, DTl, DTi, dt;
 	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
-	double J ;
+	double r, h, divb, vmin, vmax, gdet, Ucon1, Ucov0;
+	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	//double J ;
 
 	fp = fopen(fname, "r");
 
@@ -108,52 +110,81 @@ void init_harm_data(char *fname)
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
-	/* get standard HARM header */
-	fscanf(fp, "%lf ", &t);
-	fscanf(fp, "%d ", &N1);
-	fscanf(fp, "%d ", &N2);
-	fscanf(fp, "%lf ", &startx[1]);
-	fscanf(fp, "%lf ", &startx[2]);
-	fscanf(fp, "%lf ", &dx[1]);
-	fscanf(fp, "%lf ", &dx[2]);
-	fscanf(fp, "%lf ", &tf);
-	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &a);
-	fscanf(fp, "%lf ", &gam);
-	fscanf(fp, "%lf ", &cour);
-	fscanf(fp, "%lf ", &DTd);
-	fscanf(fp, "%lf ", &DTl);
-	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%d ", &DTr);
-	fscanf(fp, "%d ", &dump_cnt);
-	fscanf(fp, "%d ", &image_cnt);
-	fscanf(fp, "%d ", &rdump_cnt);
-	fscanf(fp, "%lf ", &dt);
-	fscanf(fp, "%d ", &lim);
-	fscanf(fp, "%d ", &failed);
-	fscanf(fp, "%lf ", &Rin);
-	fscanf(fp, "%lf ", &Rout);
-	fscanf(fp, "%lf ", &hslope);
-	fscanf(fp, "%lf ", &R0);
+	/*
+	=======================
+	gets HARMPI header 
+	=======================
+	*/
+    fgets(header, 1024, fp);
 
-	/* nominal non-zero values for axisymmetric simulations */
-	startx[0] = 0.;
-	startx[3] = 0.;
+    // reads array from header string
+    header_f=string2float(45,header_s);
+
+	t=header_f[0];
+	// per tile resolution
+	N1=header_f[1];
+	N2=header_f[2];
+	N3=header_f[3];
+	// total resolution
+	//nx=header_f[4];
+	//ny=header_f[5];
+	//nz=header_f[6];
+	// number of ghost cells
+	//N1G=header_f[7];
+	//N2G=header_f[8];
+	//N3G=header_f[9];
+	// 
+	startx[1]=header_f[10];
+	startx[2]=header_f[11];
+	startx[3]=header_f[12];
+	dx[1]=header_f[13];
+	dx[2]=header_f[14];
+	dx[3]=header_f[15];
+	tf=header_f[16];
+	nstep=header_f[17];
+	a=header_f[18];
+	gam=header_f[19];
+	cour=header_f[20];
+	DTd=header_f[21];
+	DTl=header_f[22];
+	DTi=header_f[23];
+	DTr=header_f[24];
+	//DTr01=header_f[25];
+	dump_cnt=header_f[26];
+	image_cnt=header_f[27];
+	rdump_cnt=header_f[28];
+	//rdump01_cnt=header_f[29];
+	dt=header_f[30];
+	lim=header_f[31];
+	failed=header_f[32];
+	Rin=header_f[33];
+	Rout=header_f[34];
+	hslope=header_f[35];
+	R0=header_f[36];
+	//NPR=header_f[37];
+	//DOKTOT=header_f[38];
+	//fractheta=header_f[39];
+	//fracphi=header_f[40];
+	//rbr=header_f[41];
+	//npow2=header_f[42];
+	//cpow2=header_f[43];
+	//BL=header_f[44];
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = 2. * M_PI;
+	stopx[3] = startx[3] + N3 * dx[3];
 
-	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
-		stopx[1], startx[2], stopx[2]);
+	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
+		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
 	dx[0] = 1.;
-	dx[3] = 2. * M_PI;
+	//dx[3] = 2. * M_PI;
 
 	/* Allocate storage for all model size dependent variables */
-	init_storage();
+	init_storage(); // NEED TO WORK ON THIS!!
 
+	// fixed temperatures?
 	two_temp_gam =
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
@@ -164,70 +195,141 @@ void init_harm_data(char *fname)
 	bias_norm = 0.;
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
-	for (k = 0; k < N1 * N2; k++) {
-		j = k % N2;
-		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
 
-		/* check that we've got the coordinate parameters right */
-		bl_coord(x, &rp, &hp);
-		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
-			fprintf(stderr, "grid setup error\n");
-			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
-				rp, r, hp, h);
-			fprintf(stderr,
-				"edit R0, hslope, compile, and continue\n");
-			exit(1);
+	/*
+	=====================
+	Binary data
+	=====================
+	*/
+
+	/* Declare 3D HARMPI arrays.
+	The meaning of these variables is explained in 
+	https://github.com/atchekho/harmpi/blob/master/tutorial.md#understanding-the-output
+	*/
+	/*double ***ti = make_3d_array(N1, N2, N3);
+	double ***tj = make_3d_array(N1, N2, N3);
+	double ***tk = make_3d_array(N1, N2, N3);
+	double ***x1 = make_3d_array(N1, N2, N3);
+	double ***x2 = make_3d_array(N1, N2, N3);
+	double ***x3 = make_3d_array(N1, N2, N3);
+	double ***r = make_3d_array(N1, N2, N3);
+	double ***h = make_3d_array(N1, N2, N3);
+	double ***ph = make_3d_array(N1, N2, N3);*/
+	double ***rho = make_3d_array(N1, N2, N3);
+	double ***ug = make_3d_array(N1, N2, N3);
+	double ***pg = make_3d_array(N1, N2, N3);
+	double ***U0 = make_3d_array(N1, N2, N3);
+	double ***U1 = make_3d_array(N1, N2, N3);
+	double ***U2 = make_3d_array(N1, N2, N3);
+	double ***U3 = make_3d_array(N1, N2, N3);
+	//double ***B0 = make_3d_array(N1, N2, N3);
+	double ***B1 = make_3d_array(N1, N2, N3);
+	double ***B2 = make_3d_array(N1, N2, N3);
+	double ***B3 = make_3d_array(N1, N2, N3);
+	/*double ***ktot = make_3d_array(N1, N2, N3);
+	double ***divb = make_3d_array(N1, N2, N3);
+	double ***uu0 = make_3d_array(N1, N2, N3);
+	double ***uu1 = make_3d_array(N1, N2, N3);
+	double ***uu2 = make_3d_array(N1, N2, N3);
+	double ***uu3 = make_3d_array(N1, N2, N3);
+	double ***ud0 = make_3d_array(N1, N2, N3);
+	double ***ud1 = make_3d_array(N1, N2, N3);
+	double ***ud2 = make_3d_array(N1, N2, N3);
+	double ***ud3 = make_3d_array(N1, N2, N3);
+	double ***bu0 = make_3d_array(N1, N2, N3);
+	double ***bu1 = make_3d_array(N1, N2, N3);
+	double ***bu2 = make_3d_array(N1, N2, N3);
+	double ***bu3 = make_3d_array(N1, N2, N3);
+	double ***bd0 = make_3d_array(N1, N2, N3);
+	double ***bd1 = make_3d_array(N1, N2, N3);
+	double ***bd2 = make_3d_array(N1, N2, N3);
+	double ***bd3 = make_3d_array(N1, N2, N3);
+	double ***v1m = make_3d_array(N1, N2, N3);
+	double ***v1p = make_3d_array(N1, N2, N3);
+	double ***v2m = make_3d_array(N1, N2, N3);
+	double ***v2p = make_3d_array(N1, N2, N3);
+	double ***v3m = make_3d_array(N1, N2, N3);
+	double ***v3p = make_3d_array(N1, N2, N3);
+	double ***gdet = make_3d_array(N1, N2, N3);*/
+
+	// Reads binary data
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) {
+			for (k = 0; k < N3; k++) {
+				// reads 42 floats from binary data in each pass
+				fread(var, sizeof(float), 42, fp); 
+
+				// assigns the 3D arrays
+
+				/* 
+				Note that in the previous HARM2D grmonty there was some
+				code checking whether the coordinates were right. There
+				was a bl_coord routine being called here. I removed that. 
+				*/
+
+				p[KRHO][i][j][k]= var[9]; 
+				p[UU][i][j][k]= var[10]; 
+
+				//pg[i][j][k] = (gam-1.)*ug[i][j][k];
+
+				//U0[i][j][k]= var[11];
+				p[U1][i][j][k]= var[12]; 
+				p[U2][i][j][k]= var[13];
+				p[U3][i][j][k]= var[14];
+
+				//B0[i][j][k]= var[15];
+				p[B1][i][j][k]= var[15];
+				p[B2][i][j][k]= var[16];
+				p[B3][i][j][k]= var[17];
+
+				/*ktot[i][j][k]= pg[i][j][k]/pow(rho[i][j][k],gam);
+
+				divb[i][j][k]= var[18];
+
+				uu0[i][j][k]= var[19];
+				uu1[i][j][k]= var[20];
+				uu2[i][j][k]= var[21];
+				uu3[i][j][k]= var[22];
+				ud0[i][j][k]= var[23];
+				ud1[i][j][k]= var[24];
+				ud2[i][j][k]= var[25];
+				ud3[i][j][k]= var[26];
+				bu0[i][j][k]= var[27];
+				bu1[i][j][k]= var[28];
+				bu2[i][j][k]= var[29];
+				bu3[i][j][k]= var[30];
+				bd0[i][j][k]= var[31];
+				bd1[i][j][k]= var[32];
+				bd2[i][j][k]= var[33];
+				bd3[i][j][k]= var[34];
+
+				v1m[i][j][k]= var[35];
+				v1p[i][j][k]= var[36];
+				v2m[i][j][k]= var[37];
+				v2p[i][j][k]= var[38];
+				v3m[i][j][k]= var[39];
+				v3p[i][j][k]= var[40];
+
+				gdet[i][j][k]= var[41];*/
+				Ucon1= var[20];
+				Ucov0= var[23];				
+				gdet= var[41];
+
+				//rhor = 1+(1-d.a**2)**0.5
+			    //alpha = (-d.guu[0,0])**(-0.5)
+
+			    bias_norm +=
+			        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] *
+			    		    Thetae_unit, 2.);
+			    V += dV * gdet;
+
+			    /* check accretion rate */
+			    if (i <= 20)
+			    	dMact += gdet * p[KRHO][i][j][k] * Ucon1;
+			    if (i >= 20 && i < 40)
+			    	Ladv += gdet * p[UU][i][j][k] * Ucon1 * Ucov0;
+			}
 		}
-
-		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
-		       &p[KRHO][i][j],
-		       &p[UU][i][j],
-		       &p[U1][i][j],
-		       &p[U2][i][j],
-		       &p[U3][i][j],
-		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
-
-
-		fscanf(fp, "%lf", &divb);
-
-		fscanf(fp, "%lf %lf %lf %lf",
-		       &Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Ucov[0],
-		       &Ucov[1], &Ucov[2], &Ucov[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcon[0],
-		       &Bcon[1], &Bcon[2], &Bcon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
-		       &Bcov[1], &Bcov[2], &Bcov[3]);
-
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &gdet);
-
-	        /* additional stuff: current */
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf\n", &J) ;
-
-		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
-				    Thetae_unit, 2.);
-		V += dV * gdet;
-
-		/* check accretion rate */
-		if (i <= 20)
-			dMact += gdet * p[KRHO][i][j] * Ucon[1];
-		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
-
 	}
 
 	bias_norm /= V;
