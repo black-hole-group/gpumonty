@@ -22,7 +22,10 @@ Line 2 and onwards: binary, N * 42 fields, where N=N1*N2*N3 is the
 */
 
 
-// Method to allocate a 3D array of floats
+/*
+Method to allocate a 3D array of floats that can be accessed
+as A[i][j][k].
+*/
 double*** make_3d_array(int nx, int ny, int nz) {
 	double*** arr;
 	int i,j;
@@ -76,15 +79,16 @@ double *string2float(int n, char *str) {
 int main(int argc, char *argv[])
 {
 	FILE *fp;
-	char fname[1024], header_s[1024];
+	char fname[1024];
 	static const int NDIM=4;
 	double x[4], startx[NDIM], dx[NDIM], stopx[NDIM];
 	//double rp, hp, V, dV, two_temp_gam;
 	int i, j, k, l;
 	float var[42];
-	double *header_f; // will hold header info
 
 	/* header variables */
+	char header_s[1024]; // header string
+	double *header_f; // header values
 	int N1, N2, N3, nx, ny, nz, N1G, N2G, N3G, NPR, DOKTOT, BL;  
 	double a, gam, Rin, Rout, hslope, R0, fractheta, fracphi, rbr, npow2, cpow2, DTr, t, tf, cour, DTd, DTl, DTi, DTr01, dt;
 	int nstep, dump_cnt, rdump01_cnt, image_cnt, rdump_cnt, lim, failed;
@@ -188,7 +192,10 @@ int main(int argc, char *argv[])
 	=====================
 	*/
 
-	// Declare 3D HARMPI arrays
+	/* Declare 3D HARMPI arrays.
+	The meaning of these variables is explained in 
+	https://github.com/atchekho/harmpi/blob/master/tutorial.md#understanding-the-output
+	*/
 	double ***ti = make_3d_array(N1, N2, N3);
 	double ***tj = make_3d_array(N1, N2, N3);
 	double ***tk = make_3d_array(N1, N2, N3);
@@ -240,7 +247,7 @@ int main(int argc, char *argv[])
 	for (i=0; i<N1; i++) {
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
-				// reads 42 floats from binary data
+				// reads 42 floats from binary data in each pass
 				fread(var, sizeof(float), 42, fp); 
 
 				// assigns the 3D arrays
