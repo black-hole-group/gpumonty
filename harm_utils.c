@@ -493,6 +493,7 @@ double dOmega_func(double x2i, double x2f)
 	return (dO);
 }
 
+/* Allocates a 1D array */
 static void *malloc_rank1(int n1, int size)
 {
 	void *A;
@@ -505,7 +506,7 @@ static void *malloc_rank1(int n1, int size)
 	return A;
 }
 
-
+/* Allocates a 2D array */
 static void **malloc_rank2(int n1, int n2, int size)
 {
 
@@ -524,7 +525,9 @@ static void **malloc_rank2(int n1, int n2, int size)
 	return A;
 }
 
-
+/* 
+Trick to allocate a multidimensional array for every element
+in an array (a list of arrays) */
 static double **malloc_rank2_cont(int n1, int n2)
 {
 
@@ -544,15 +547,19 @@ static double **malloc_rank2_cont(int n1, int n2)
 
 /* 
 NEED TO ADAPT THIS ROUTINE TO 3D
-does it define the metric tensor at each point in the grid?
 */
 void init_storage(void)
 {
 	int i;
 
+	/* start by allocating multidimensional arrays for each element
+	of p[i]: "a list of arrays" */
 	p = malloc_rank1(NPRIM, sizeof(double *));
 	for (i = 0; i < NPRIM; i++)
 		p[i] = (double **) malloc_rank2_cont(N1, N2);
+	/* then we create an array made of structures: for every array
+	element there is a structure defining the metric values at
+	every point */
 	geom =
 	    (struct of_geom **) malloc_rank2(N1, N2,
 					     sizeof(struct of_geom));
