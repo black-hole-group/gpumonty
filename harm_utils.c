@@ -542,7 +542,9 @@ static double **malloc_rank2_cont(int n1, int n2)
 	return A;
 }
 
-/* NEED TO ADAPT THIS ROUTINE TO 3D
+/* 
+NEED TO ADAPT THIS ROUTINE TO 3D
+does it define the metric tensor at each point in the grid?
 */
 void init_storage(void)
 {
