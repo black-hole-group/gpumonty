@@ -206,51 +206,6 @@ void init_harm_data(char *fname)
 	The meaning of these variables is explained in 
 	https://github.com/atchekho/harmpi/blob/master/tutorial.md#understanding-the-output
 	*/
-	/*double ***ti = make_3d_array(N1, N2, N3);
-	double ***tj = make_3d_array(N1, N2, N3);
-	double ***tk = make_3d_array(N1, N2, N3);
-	double ***x1 = make_3d_array(N1, N2, N3);
-	double ***x2 = make_3d_array(N1, N2, N3);
-	double ***x3 = make_3d_array(N1, N2, N3);
-	double ***r = make_3d_array(N1, N2, N3);
-	double ***h = make_3d_array(N1, N2, N3);
-	double ***ph = make_3d_array(N1, N2, N3);*/
-	double ***rho = make_3d_array(N1, N2, N3);
-	double ***ug = make_3d_array(N1, N2, N3);
-	double ***pg = make_3d_array(N1, N2, N3);
-	double ***U0 = make_3d_array(N1, N2, N3);
-	double ***U1 = make_3d_array(N1, N2, N3);
-	double ***U2 = make_3d_array(N1, N2, N3);
-	double ***U3 = make_3d_array(N1, N2, N3);
-	//double ***B0 = make_3d_array(N1, N2, N3);
-	double ***B1 = make_3d_array(N1, N2, N3);
-	double ***B2 = make_3d_array(N1, N2, N3);
-	double ***B3 = make_3d_array(N1, N2, N3);
-	/*double ***ktot = make_3d_array(N1, N2, N3);
-	double ***divb = make_3d_array(N1, N2, N3);
-	double ***uu0 = make_3d_array(N1, N2, N3);
-	double ***uu1 = make_3d_array(N1, N2, N3);
-	double ***uu2 = make_3d_array(N1, N2, N3);
-	double ***uu3 = make_3d_array(N1, N2, N3);
-	double ***ud0 = make_3d_array(N1, N2, N3);
-	double ***ud1 = make_3d_array(N1, N2, N3);
-	double ***ud2 = make_3d_array(N1, N2, N3);
-	double ***ud3 = make_3d_array(N1, N2, N3);
-	double ***bu0 = make_3d_array(N1, N2, N3);
-	double ***bu1 = make_3d_array(N1, N2, N3);
-	double ***bu2 = make_3d_array(N1, N2, N3);
-	double ***bu3 = make_3d_array(N1, N2, N3);
-	double ***bd0 = make_3d_array(N1, N2, N3);
-	double ***bd1 = make_3d_array(N1, N2, N3);
-	double ***bd2 = make_3d_array(N1, N2, N3);
-	double ***bd3 = make_3d_array(N1, N2, N3);
-	double ***v1m = make_3d_array(N1, N2, N3);
-	double ***v1p = make_3d_array(N1, N2, N3);
-	double ***v2m = make_3d_array(N1, N2, N3);
-	double ***v2p = make_3d_array(N1, N2, N3);
-	double ***v3m = make_3d_array(N1, N2, N3);
-	double ***v3p = make_3d_array(N1, N2, N3);
-	double ***gdet = make_3d_array(N1, N2, N3);*/
 
 	// Reads binary data
 	for (i=0; i<N1; i++) {
