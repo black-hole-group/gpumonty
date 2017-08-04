@@ -506,7 +506,7 @@ static void *malloc_rank1(int n1, int size)
 	return A;
 }
 
-/* Allocates a 2D array */
+/* Allocates a 2D array of structures. */
 static void **malloc_rank2(int n1, int n2, int size)
 {
 
@@ -526,8 +526,34 @@ static void **malloc_rank2(int n1, int n2, int size)
 }
 
 /* 
-Trick to allocate a multidimensional array for every element
-in an array (a list of arrays) */
+Allocates a 3D array of structures.
+
+3D generalization of malloc_rank2 
+*/
+static void ***malloc_rank3(int n1, int n2, int n3, int size)
+{
+	void*** arr;
+	int i,j;
+
+	if ((arr = (void ***) malloc(n1 * sizeof(void **))) == NULL) {
+		fprintf(stderr, "malloc failure in malloc_rank3\n");
+		exit(124);
+	}	
+
+	for (i = 0; i < n1; i++) {
+		// not sure whether the size below should be instead sizeof(void*)
+		// the same goes for the next allocation
+		arr[i] = (void **) malloc(n2*size);
+
+        for(j = 0; j < n2; j++) {
+        	arr[i][j] = (void *) malloc(n3 * size);
+        }
+    }
+
+	return arr;
+}
+
+/* Allocates a multidimensional array */
 static double **malloc_rank2_cont(int n1, int n2)
 {
 
@@ -546,23 +572,47 @@ static double **malloc_rank2_cont(int n1, int n2)
 }
 
 /* 
-NEED TO ADAPT THIS ROUTINE TO 3D
+Allocates a multidimensional array. 
+3D generalization of malloc_rank2_cont.
+*/
+static double ***malloc_rank3_cont(int n1, int n2, int n3)
+{
+	double*** arr;
+	int i,j;
+
+	arr = (double ***) malloc(n1*sizeof(double**));
+
+	for (i = 0; i < n1; i++) {
+		arr[i] = (double **) malloc(n2*sizeof(double*));
+
+        for(j = 0; j < n2; j++) {
+        	arr[i][j] = (double *) malloc(n3 * sizeof(double));
+        }
+    }
+
+	return arr;
+}
+
+/* 
+Initializes variables holding HARM primitives and metric.
 */
 void init_storage(void)
 {
 	int i;
 
 	/* start by allocating multidimensional arrays for each element
-	of p[i]: "a list of arrays" */
+	of p[i]: a list of 3D arrays, each array corresponds to a
+	primitive variable  */
 	p = malloc_rank1(NPRIM, sizeof(double *));
 	for (i = 0; i < NPRIM; i++)
-		p[i] = (double **) malloc_rank2_cont(N1, N2);
+		//p[i] = (double **) malloc_rank2_cont(N1, N2);
+		p[i] = (double ***) malloc_rank3_cont(N1, N2, N3);
 	/* then we create an array made of structures: for every array
 	element there is a structure defining the metric values at
 	every point */
 	geom =
-	    (struct of_geom **) malloc_rank2(N1, N2,
-					     sizeof(struct of_geom));
+	    //(struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom));
+	    (struct of_geom ***) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
 
 	return;
 }

@@ -4,6 +4,7 @@
 #define global extern
 #endif
 
+IS THIS CORRECT?
 global double ****econ;
 global double ****ecov;
 global double ***bcon;

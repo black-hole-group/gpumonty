@@ -23,33 +23,6 @@ Line 2 and onwards: binary, N * 42 fields, where N=N1*N2*N3 is the
 
 
 
-
-/*
-Method to allocate a 3D array of floats that can be accessed
-as A[i][j][k].
-*/
-double*** make_3d_array(int nx, int ny, int nz) {
-	double*** arr;
-	int i,j;
-
-	arr = (double ***) malloc(nx*sizeof(double**));
-
-	for (i = 0; i < nx; i++) {
-		arr[i] = (double **) malloc(ny*sizeof(double*));
-
-        for(j = 0; j < ny; j++) {
-        	arr[i][j] = (double *) malloc(nz * sizeof(double));
-        }
-    }
-
-	return arr;
-} 
-
-
-
-
-
-
 /* 
 Converts a string into an array of floats. Needs to know beforehand
 the number of elements. Assumes the separators are empty spaces. 
