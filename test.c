@@ -78,7 +78,7 @@ Initializes variables holding HARM primitives and metric.
 */
 int main()
 {
-	int i;
+	int i,j,k,l,m;
 	double ****p;
 	struct of_geom ***geom;
 
@@ -100,8 +100,53 @@ int main()
 	every point */
 	geom = (struct of_geom ***) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
 
+	// initialize all variables
+	// p[NPRIM][N1][N2][N3]
+	for (i=0; i<NPRIM; i++) {
+		for (j=0; j<N1; j++) { 
+			for (k=0; k<N2; k++) { 
+				for (l=0; l<N3; l++) { 
+					p[i][j][k][l]=i*j*k*l;
+				}
+			}
+		}
+	}
 
-	
+	// geom[N1][N2][N3].gcov[4][4]
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) { 
+			for (k=0; k<N3; k++) { 
+				for (l=0; l<3; l++) { 
+					for (m=0; m<3; m++) { 
+						geom[i][j][k].gcov[l][m]=i*j*k*l*m;
+					}
+				}
+			}
+		}
+	}	
+
+	// prints some variables
+	for (i=0; i<NPRIM; i++) {
+		for (j=0; j<N1; j++) { 
+			for (k=0; k<N2; k++) { 
+				for (l=0; l<N3; l++) { 
+					printf("%d %d %d %d %f\n", i, j, k, l, p[i][j][k][l]);
+				}
+			}
+		}
+	}
+
+	for (i=0; i<N1; i++) {
+		for (j=0; j<N2; j++) { 
+			for (k=0; k<N3; k++) { 
+				for (l=0; l<3; l++) { 
+					for (m=0; m<3; m++) { 
+						printf("%f ", geom[i][j][k].gcov[l][m]);
+					}
+				}
+			}
+		}
+	}	
 
     return(0);
 }

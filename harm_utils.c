@@ -8,8 +8,8 @@ extern double ***bcon;
 extern double ***bcov;
 extern double ***ucon;
 extern double ***ucov;
-extern double ***p;
-extern struct of_geom **geom;
+extern double ***p; ANOTHER *
+extern struct of_geom **geom; ANOTHER *
 extern double **ne;
 extern double **thetae;
 extern double **b;
