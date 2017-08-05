@@ -7,7 +7,7 @@ extern double ****ecov;
 extern double ***bcon;
 extern double ***bcov;
 extern double ***ucon;
-extern double ***ucov; // change dimensions of guys above ^
+extern double ***ucov; // change dimensions of guys above ^ RN
 extern double ****p; 
 extern struct of_geom ***geom;
 extern double ***ne;
@@ -27,6 +27,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
  ********************************************************************/
 
+??? RN
 double interp_scalar(double **var, int i, int j, double coeff[4])
 {
 
@@ -78,7 +79,7 @@ static double linear_interp_weight(double nu)
 void init_weight_table(void)
 {
 
-	int i, j, l, lstart, lend, myid, nthreads;
+	int i, j, k, l, lstart, lend, myid, nthreads;
 	double Ne, Thetae, B, K2;
 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
 	double fac, sfac;
@@ -98,7 +99,7 @@ void init_weight_table(void)
 
 	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
-#pragma omp parallel private(i,j,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
+#pragma omp parallel private(i,j,k,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
 	{
 		nthreads = omp_get_num_threads();
 		myid = omp_get_thread_num();
@@ -107,20 +108,23 @@ void init_weight_table(void)
 		if (myid == nthreads - 1)
 			lend = N_ESAMP + 1;
 
-		for (i = 0; i < N1; i++)
+		for (i = 0; i < N1; i++) {
 			for (j = 0; j < N2; j++) {
-				get_fluid_zone(i, j, &Ne, &Thetae, &B,
-					       Ucon, Bcon);
-				if (Ne == 0. || Thetae < THETAE_MIN)
-					continue;
-				K2 = K2_eval(Thetae);
-				fac =
-				    (JCST * Ne * B * Thetae * Thetae /
-				     K2) * sfac * geom[i][j].g;
-				for (l = lstart; l < lend; l++)
-					sum[l] +=
-					    fac * F_eval(Thetae, B, nu[l]);
+				for (k = 0; k < N3; k++) {
+					get_fluid_zone(i, j, k, &Ne, &Thetae, &B,
+						       Ucon, Bcon);
+					if (Ne == 0. || Thetae < THETAE_MIN)
+						continue;
+					K2 = K2_eval(Thetae);
+					fac =
+					    (JCST * Ne * B * Thetae * Thetae /
+					     K2) * sfac * geom[i][j].g;
+					for (l = lstart; l < lend; l++)
+						sum[l] +=
+						    fac * F_eval(Thetae, B, nu[l]);
+				}
 			}
+		}
 #pragma omp barrier
 	}
 #pragma omp parallel for schedule(static) private(i)
@@ -177,7 +181,8 @@ void init_nint_table(void)
 	return;
 }
 
-static void init_zone(int i, int j, double *nz, double *dnmax)
+// DO WE NEED TO WORRY ABOUT NZ? RN
+static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 {
 
 	int l;
@@ -185,7 +190,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 	double dl, dn, ninterp, K2;
 	double Ucon[NDIM], Bcon[NDIM];
 
-	get_fluid_zone(i, j, &Ne, &Thetae, &Bmag, Ucon, Bcon);
+	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon);
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*nz = 0.;
@@ -241,11 +246,11 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		return;
 	}
 
-	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	*nz = geom[i][j][k].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	if (*nz > Ns * log(NUMAX / NUMIN)) {
 		fprintf(stderr,
-			"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
-			i, j, Bmag, Thetae, K2, ninterp);
+			"Something very wrong in zone %d %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
+			i, j, k, Bmag, Thetae, K2, ninterp);
 		*nz = 0.;
 		*dnmax = 0.;
 	}
@@ -254,7 +259,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 }
 
 int zone_flag;
-int get_zone(int *i, int *j, double *dnmax)
+int get_zone(int *i, int *j, int *k, double *dnmax)
 {
 /* Return the next zone and the number of superphotons that need to be		*
  * generated in it.								*/
@@ -263,7 +268,9 @@ int get_zone(int *i, int *j, double *dnmax)
 	double n2gen;
 	static int zi = 0;
 	static int zj = -1;
+	static int zk = ??? RN
 
+	// NOT SURE HOW TO MODIFY THIS RN
 	zone_flag = 1;
 	zj++;
 	if (zj >= N2) {
@@ -275,7 +282,7 @@ int get_zone(int *i, int *j, double *dnmax)
 			return 1;
 		}
 	}
-	init_zone(zi, zj, &n2gen, dnmax);
+	init_zone(zi, zj, zk, &n2gen, dnmax);
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
 	} else {
@@ -284,11 +291,12 @@ int get_zone(int *i, int *j, double *dnmax)
 
 	*i = zi;
 	*j = zj;
+	*k = zk;
 
 	return in2gen;
 }
 
-void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
+void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 {
 /* Set all initial superphoton attributes */
 
@@ -298,11 +306,11 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
 	static double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
 
-	coord(i, j, ph->X);
+	coord(i, j, k, ph->X);
 
 	Nln = lnu_max - lnu_min;
 
-	get_fluid_zone(i, j, &Ne, &Thetae, &Bmag, Ucon, Bcon);
+	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon);
 
 	/* Sample from superphoton distribution in current simulation zone */
 	do {
@@ -346,7 +354,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 				bhat[l] = 0.;
 			bhat[1] = 1.;
 		}
-		make_tetrad(Ucon, bhat, geom[i][j].gcov, Econ, Ecov);
+		make_tetrad(Ucon, bhat, geom[i][j][k].gcov, Econ, Ecov);
 		zone_flag = 0;
 	}
 
@@ -361,6 +369,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	ph->tau_abs = 0.;
 	ph->X1i = ph->X[1];
 	ph->X2i = ph->X[2];
+	// X3? RN
 	ph->nscatt = 0;
 	ph->ne0 = Ne;
 	ph->b0 = Bmag;
@@ -369,11 +378,12 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	return;
 }
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+void Xtoij(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 
 	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
 	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
+	*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;	
 
 	if (*i < 0) {
 		*i = 0;
@@ -395,27 +405,38 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
 	}
 
+	if (*k < 0) {
+		*k = 0;
+		del[3] = 0.;
+	} else if (*k > N3 - 2) {
+		*k = N3 - 2;
+		del[3] = 1.;
+	} else {
+		del[3] = (X[3] - ((*k + 0.5) * dx[3] + startx[3])) / dx[3];
+	}
+
 	return;
 }
 
 /* return boyer-lindquist coordinate of point */
-void bl_coord(double *X, double *r, double *th)
+void bl_coord(double *X, double *r, double *th, double *ph)
 {
 
 	*r = exp(X[1]) + R0;
 	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+	*ph = ??? RN
 
 	return;
 }
 
-void coord(int i, int j, double *X)
+void coord(int i, int j, int k, double *X)
 {
 
 	/* returns zone-centered values for coordinates */
 	X[0] = startx[0];
 	X[1] = startx[1] + (i + 0.5) * dx[1];
 	X[2] = startx[2] + (j + 0.5) * dx[2];
-	X[3] = startx[3];
+	X[3] = startx[3] + (k + 0.5) * dx[3];
 
 	return;
 }
@@ -453,25 +474,24 @@ void set_units(char *munitstr)
 /* set up all grid functions */
 void init_geometry()
 {
-	int i, j;
+	int i, j, k;
 	double X[NDIM];
 
 	for (i = 0; i < N1; i++) {
 		for (j = 0; j < N2; j++) {
+			for (k = 0; k < N3; k++) {
 
-			/* zone-centered */
-			coord(i, j, X);
+				/* zone-centered */
+				coord(i, j, k, X);
 
-			gcov_func(X, geom[i][j].gcov);
+				gcov_func(X, geom[i][j][k].gcov);
 
-			geom[i][j].g = gdet_func(geom[i][j].gcov);
+				geom[i][j][k].g = gdet_func(geom[i][j][k].gcov);
 
-			gcon_func(X, geom[i][j].gcon);
-
+				gcon_func(X, geom[i][j][k].gcon);
+			}
 		}
 	}
-
-	/* done! */
 }
 
 /*
@@ -480,7 +500,7 @@ void init_geometry()
 	and over all x3.
 
 */
-
+TODO RN
 double dOmega_func(double x2i, double x2f)
 {
 	double dO;

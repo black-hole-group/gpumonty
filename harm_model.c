@@ -56,15 +56,15 @@ void init_model(char *args[])
 	make super photon 
 */
 
-int n2gen = -1;
+int n2gen = -1; ??? RN
 double dnmax;
-int zone_i, zone_j;
+int zone_i, zone_j, zone_k;
 
 void make_super_photon(struct of_photon *ph, int *quit_flag)
 {
 
 	while (n2gen <= 0) {
-		n2gen = get_zone(&zone_i, &zone_j, &dnmax);
+		n2gen = get_zone(&zone_i, &zone_j, &zone_k, &dnmax);
 	}
 
 	n2gen--;
@@ -76,7 +76,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
-		sample_zone_photon(zone_i, zone_j, dnmax, ph);
+		sample_zone_photon(zone_i, zone_j, zone_k, dnmax, ph);
 	}
 
 	return;
@@ -112,7 +112,7 @@ double bias_func(double Te, double w)
 
 */
 
-void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
+void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM])
 {
 
@@ -121,27 +121,27 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double sig ;
 
-	*Ne = p[KRHO][i][j] * Ne_unit;
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	*Ne = p[KRHO][i][j][k] * Ne_unit;
+	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
 
-	Bp[1] = p[B1][i][j];
-	Bp[2] = p[B2][i][j];
-	Bp[3] = p[B3][i][j];
+	Bp[1] = p[B1][i][j][k];
+	Bp[2] = p[B2][i][j][k];
+	Bp[3] = p[B3][i][j][k];
 
-	Vcon[1] = p[U1][i][j];
-	Vcon[2] = p[U2][i][j];
-	Vcon[3] = p[U3][i][j];
+	Vcon[1] = p[U1][i][j][k];
+	Vcon[2] = p[U2][i][j][k];
+	Vcon[3] = p[U3][i][j][k];
 
 	/* Get Ucov */
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
-			VdotV += geom[i][j].gcov[l][m] * Vcon[l] * Vcon[m];
-	Vfac = sqrt(-1. / geom[i][j].gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * geom[i][j].gcon[0][0];
+			VdotV += geom[i][j][k].gcov[l][m] * Vcon[l] * Vcon[m];
+	Vfac = sqrt(-1. / geom[i][j][k].gcon[0][0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * geom[i][j][k].gcon[0][0];
 	for (l = 1; l < NDIM; l++)
-		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0][l];
-	lower(Ucon, geom[i][j].gcov, Ucov);
+		Ucon[l] = Vcon[l] - Vfac * geom[i][j][k].gcon[0][l];
+	lower(Ucon, geom[i][j][k].gcov, Ucov);
 
 	/* Get B and Bcov */
 	UdotBp = 0.;
@@ -150,7 +150,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	Bcon[0] = UdotBp;
 	for (l = 1; l < NDIM; l++)
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
-	lower(Bcon, geom[i][j].gcov, Bcov);
+	lower(Bcon, geom[i][j][k].gcov, Bcov);
 
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
@@ -169,42 +169,42 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM])
 {
-	int i, j;
+	int i, j, k;
 	double del[NDIM];
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, double del[4]);
+	double interp_scalar(double **var, int i, int j, double del[4]); need a k? RN
 	double sig ;
 
 	if (X[1] < startx[1] ||
-	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2] || X[3] < startx[3] || X[3] > stopx[3]) {
 
 		*Ne = 0.;
 
 		return;
 	}
 
-	Xtoij(X, &i, &j, del);
+	Xtoij(X, &i, &j, &k, del);
 
 	coeff[0] = (1. - del[1]) * (1. - del[2]);
 	coeff[1] = (1. - del[1]) * del[2];
 	coeff[2] = del[1] * (1. - del[2]);
 	coeff[3] = del[1] * del[2];
 
-	rho = interp_scalar(p[KRHO], i, j, coeff);
-	uu = interp_scalar(p[UU], i, j, coeff);
+	rho = interp_scalar(p[KRHO], i, j, k, coeff);
+	uu = interp_scalar(p[UU], i, j, k, coeff);
 
 	*Ne = rho * Ne_unit;
 	*Thetae = uu / rho * Thetae_unit;
 
-	Bp[1] = interp_scalar(p[B1], i, j, coeff);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff);
+	Bp[1] = interp_scalar(p[B1], i, j, k, coeff);
+	Bp[2] = interp_scalar(p[B2], i, j, k, coeff);
+	Bp[3] = interp_scalar(p[B3], i, j, k, coeff);
 
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
+	Vcon[1] = interp_scalar(p[U1], i, j, k, coeff);
+	Vcon[2] = interp_scalar(p[U2], i, j, k, coeff);
+	Vcon[3] = interp_scalar(p[U3], i, j, k, coeff);
 
 	gcon_func(X, gcon);
 
@@ -259,7 +259,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	DLOOP gcon[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	bl_coord(X, &r, &th); RN
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
@@ -294,7 +294,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 
 	DLOOP gcov[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	bl_coord(X, &r, &th); RN
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
@@ -603,6 +603,7 @@ void record_super_photon(struct of_photon *ph)
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
+	RN
 	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
 	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
 		ix2 = (int) (ph->X[2] / dx2);
