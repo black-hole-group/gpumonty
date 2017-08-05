@@ -7,12 +7,12 @@ extern double ****ecov;
 extern double ***bcon;
 extern double ***bcov;
 extern double ***ucon;
-extern double ***ucov;
-extern double ***p; ANOTHER *
-extern struct of_geom **geom; ANOTHER *
-extern double **ne;
-extern double **thetae;
-extern double **b;
+extern double ***ucov; // change dimensions of guys above ^
+extern double ****p; 
+extern struct of_geom ***geom;
+extern double ***ne;
+extern double ***thetae;
+extern double ***b;
 
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);
