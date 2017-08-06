@@ -65,13 +65,14 @@ void init_harm_data(char *fname)
 //	double rp, hp, V, dV, two_temp_gam;
 	double rp, hp, phip, V, dV, two_temp_gam;
 	int i, j, k, kk;
+	double var[42];
 
 	/* header variables not used except locally */
 	char header_s[1024]; // header string
 	double *header_f; // header values
 	double t, tf, cour, DTd, DTl, DTi, dt;
 	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet, Ucon1, Ucov0;
+	double gdet, Ucon1, Ucov0;
 	//double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	//double J ;
 
@@ -186,7 +187,7 @@ void init_harm_data(char *fname)
 		for (j=0; j<N2; j++) {
 			for (k = 0; k < N3; k++) {
 				// reads 42 floats from binary data in each pass
-				fread(var, sizeof(float), 42, fp); 
+				fread(var, sizeof(double), 42, fp); 
 
 				// assigns the 3D arrays
 
