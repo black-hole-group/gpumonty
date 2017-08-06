@@ -1,0 +1,255 @@
+I decided to type my notes because it may be easier to follow.
+
+================================================================================
+
+>>> 12/07
+
+The following functions were not defined in any of the .c files, although they appear in decs.h
+
+    void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
+    void push_photon_cart(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], double dl);
+    void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);
+    int geodesic_deriv(double t, const double y[], double dy[], void *params);
+    void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[], double frac, double del_l);
+
+I think these functions provide integration methods (push_photon_*).
+geodesic_deriv probably derives/solves(?) the geodesic equation
+interpolate_geodesic seems obvious from the definition
+
+--------------------------------------------------------------------------------
+
+It seems that the following files don't need any edits for 3D adaptation:
+
+    compton.c          -- almost certain (unsure about v1* and v2* quantities)
+    constants.h        -- certain
+    geodesics.c        -- almost certain
+    grmonty.c          -- certain
+    hotcross.c         -- almost certain
+    init_geometry.c    -- certain
+    jnu_mixed.c        -- certain
+    radiation.c        -- certain
+    tetrads.c          -- certain
+
+The following files need edits for 3D adaptation:
+
+    decs.h
+    harm_model.c
+    harm_model.h
+    harm_utils.c
+    init_harm_data.c
+    scatter_super_photon.c
+    track_super_photon.c
+
+--------------------------------------------------------------------------------
+
+ABSOLUTELY VITAL: Must understand what is geom[][], because this appears in a lot of places and may require modification
+
+Must do this BEFORE modifying the files!
+
+update: geom very likely to need extra []
+
+May have to add extra * to variables in harm_model.h
+
+    global double ****econ;
+    global double ****ecov;
+    global double ***bcon;
+    global double ***bcov;
+    global double ***ucon;
+    global double ***ucov;
+    global double ***p;
+    global double **ne;
+    global double **thetae;
+    global double **b;
+
+I think bcon to thetae will need extra *
+b likely to remain the same
+Unsure about econ and ecov
+
+--------------------------------------------------------------------------------
+
+decs.h
+
+//    line 97-98: modify struct of_photon to include X3i ?
+
+
+harm_model.h
+
+//    line 63: add *phi
+//    lines 72-77: add int k
+//    line 75: change Xtoij to Xtoijk
+
+
+init_harm_data.c
+
+//    line 63: add phip
+//    line 69: add phi (or whatever we may call it)
+    lines 81-107: change HARM header to account for phi-dimension (add N3, startx[3] and dx[3]) and make sure variables match with dump file generated. If not, add variables as required
+//    line 111: likely remove startx[3] = 0.
+//    line 116: likely change stopx[3] so that it resembles stopx[1] and stopx[2]
+//    line 118: also print startx[3] and stopx[3]
+//    line 122: likely remove dx[3] = 2. * M_PI
+//    lines 137-139: likely unchanged but must make sure  -- note added: changed and didn't comment
+//    line 140: add %f, X[3], &phi (or whatever we may call it)
+//    lines 143-147: add phip (or whatever we may call it) -- added stuff, but we must understand what condition to add too
+//    lines 153-159, 179, 185, 187: add [k] to p  -- note added: didn't comment
+    lines 140-176: add whatever new variables may be necessary to fscanf
+
+(when modifying init_harm_data.c, check Sasha's tutorial for harmpi and check dump019 to make sure about variables)
+
+
+harm_utils.c
+
+//    line 58: change Xtoij to Xtoijk, add int *k
+//    line 59: add int k
+//    line 60: add int k
+//    lines 71-82: add k?, var...[k]? plus lots of coefficients and var[][][] (basically account for new dimension)
+//    line 122: add int k
+//    line 142: add k
+//    line 152-153: add k loop -- note added: didn't comment
+//    line 153: add k in get_fluid_zone, add k in geom  -- note added: didn't comment
+//    line 221: add int k
+//    line 229: add k in get_fluid_zone
+//    line 284: geom...[k]?
+//    line 287: add %d
+//    line 288: add k
+//    line 297: add int *k
+//    lines 305-306: add static int zk = ?
+//    lines 307-317: add k loop?  -- note added: didn't comment
+//    line 318: add zk
+//    line 327: add *k = zk
+//    line 331: add int k
+//    line 341: add k
+//    line 345: add k
+//    line 383: geom...[k]?
+//    lines 397-398: add X3i, X[3]
+//    line 406: change Xtoij to Xtoijk, add int *k
+//    lines 410-411: add *k
+//    lines 430-431: add loop for *k
+//    lines 436-443: add *phi (or whatever it is called) to bl_coord?
+//    line 445: add int k
+//    line 452: make X[3] like X[1], X[2]
+//    line 497: add int k to init_geometry
+//    lines 500-502: add k loop -- note added: didn't comment
+//    line 504: add k to coord -- note added: didn't comment
+//    lines 506-510: add [k] to geom? -- note added: didn't comment
+
+
+harm_model.c
+
+//    line 102: add zone_k
+//    line 108: add &zone_k
+//    line 120: add zone_k
+//    line 152: add int k
+//    lines 160-169: add [k] to p -- note added: didn't comment
+//    lines 175-189: add [k] to geom? -- note added: didn't comment
+//    line 201: add int k
+//    line 206: add int k
+//    lines 208, 209: add startx[3], stopx[3], X[3] -- note added: didn't comment
+//    line 216: change Xtoij to Xtoijk, add &k
+//    lines 218-221: add lots of coeff to account for extra dimension, add del[3]
+//    lines 223-224: add k
+//    lines 229-235: add k  -- note added: didn't comment
+//    line 239: add loop for k? -- note added: not necessary
+//    line 281: add double phi (or whatever it is called)
+//    line 288: add &phi (or whatever it is called) to bl_coord?
+//    line 316: add double phi (or whatever it is called)
+//    line 323: add &phi (or whatever it is called) to bl_coord?
+//    line 387: account for 3d - may need to change christoffel symbols
+//    lines 595-597: change anything in line 597? if so, probably like dlx2 -- note added: still unsure, but modified anyway
+//    lines 660-662: change anything in line 662? -- note added: still unsure, but modified anyway
+
+
+scatter_super_photon.c
+
+//    lines 70-79: add X[3] in line 77
+//    lines 168-169: add new line with X3i
+
+
+track_super_photon.c
+
+//    lines 295-301: add X[3], K[3]
+
+
+================================================================================
+
+>>> 13/07
+
+Created a branch called 3dtests as a damage control if I fuck things up :) -- note added 14/07: moved things to nemmen/grmonty; no longer working on this branch in my repository. Current working branch also called 3dtests
+
+/***************************
+On this new branch, I added the edits listed above for the following files:
+
+    scatter_super_photon.c
+    track_super_photon.c
+    decs.h
+***************************/
+
+I'm adding to the list of edits done yesterday a c comment command for the edits I have already made.
+
+--------------------------------------------------------------------------------
+
+Variable coeff[4] must be rewritten to coeff[8]
+
+--------------------------------------------------------------------------------
+
+Only "non-trivial" modifications left. Tomorrow likely to be tiring, but good chance to finish this. Must not forget to bring laptop
+
+
+================================================================================
+
+>>> 14/07
+
+
+Variable del[NDIM] to remain defined as is, but must add del[3] so we can define the other coeff[] elements.
+
+Variable coeff[4] to be changed to account for 4 extra elements: coeff[8], because now we have del[3]
+
+--------------------------------------------------------------------------------
+
+Understand the following variables:
+
+    n2gen
+    in2gen
+
+Understand the following functions:
+
+    get_zone (utils)
+    init_zone (utils)
+    get_fluid_zone (model)
+
+--------------------------------------------------------------------------------
+
+Add printf to understand the change in zi, zj (2d version) so we can understand the algorithm in get_zone
+
+printf("%f %f\n", zi, zj)
+
+ADDED: done, I think I got it right, but must add print to 3d version to make sure.
+
+--------------------------------------------------------------------------------
+
+I think we don't have to change harm_model.c line 387 - must test, though.
+
+--------------------------------------------------------------------------------
+
+Points that may be troublesome:
+
+    line 387- (see above)
+    zk (definition of get_zone in harm_utils.c)
+    loop for k to get the data (init_harm_data.c)
+
+--------------------------------------------------------------------------------
+
+Next things to do - hopefully the last as well:
+
+    1) write c function to convert from binary to ascii
+    2) run harmpi with 3d
+    3) check harm_model.h variables (extra * needed?)
+
+--------------------------------------------------------------------------------
+
+Just realized I have to change the malloc functions in the end of harm_utils.c
+
+================================================================================
+
+>>> 15/07
+

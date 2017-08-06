@@ -14,9 +14,10 @@ extern double ***ne;
 extern double ***thetae;
 extern double ***b;
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
-void coord(int i, int j, double *X);
-void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
+//void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
+void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+void coord(int i, int j, int k, double *X);
+void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
 
 /** HARM utilities **/
@@ -27,16 +28,21 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
  ********************************************************************/
 
-??? RN
-double interp_scalar(double **var, int i, int j, double coeff[4])
+// RN: is this correct?
+double interp_scalar(double ***var, int i, int j, int k, double coeff[8])
 {
 
 	double interp;
 
 	interp =
-	    var[i][j] * coeff[0] +
-	    var[i][j + 1] * coeff[1] +
-	    var[i + 1][j] * coeff[2] + var[i + 1][j + 1] * coeff[3];
+	    var[i][j][k] * coeff[0] +
+	    var[i][j][k + 1] * coeff[1] +
+	    var[i][j + 1][k] * coeff[2] +
+	    var[i][j + 1][k + 1] * coeff[3] +
+	    var[i + 1][j][k] * coeff[4] +
+	    var[i + 1][j][k + 1] * coeff[5] +
+	    var[i + 1][j + 1][k] * coeff[6] +
+	    var[i + 1][j + 1][k + 1] * coeff[7];
 
 	return interp;
 }
@@ -78,7 +84,7 @@ static double linear_interp_weight(double nu)
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(void)
 {
-
+//	int i, j, l, lstart, lend, myid, nthreads;
 	int i, j, k, l, lstart, lend, myid, nthreads;
 	double Ne, Thetae, B, K2;
 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
@@ -108,23 +114,20 @@ void init_weight_table(void)
 		if (myid == nthreads - 1)
 			lend = N_ESAMP + 1;
 
-		for (i = 0; i < N1; i++) {
-			for (j = 0; j < N2; j++) {
-				for (k = 0; k < N3; k++) {
-					get_fluid_zone(i, j, k, &Ne, &Thetae, &B,
-						       Ucon, Bcon);
-					if (Ne == 0. || Thetae < THETAE_MIN)
-						continue;
-					K2 = K2_eval(Thetae);
-					fac =
-					    (JCST * Ne * B * Thetae * Thetae /
-					     K2) * sfac * geom[i][j].g;
-					for (l = lstart; l < lend; l++)
-						sum[l] +=
-						    fac * F_eval(Thetae, B, nu[l]);
-				}
-			}
-		}
+
+		for (i = 0; i < N1; i++)
+			for (j = 0; j < N2; j++) 
+            	for (k = 0; k < N3; k++){
+			        get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon);
+			        if (Ne == 0. || Thetae < THETAE_MIN)
+				        continue;
+			        K2 = K2_eval(Thetae);
+			        fac =
+			            (JCST * Ne * B * Thetae * Thetae /
+			             K2) * sfac * geom[i][j][k].g;
+			        for (l = lstart; l < lend; l++)
+				        sum[l] += fac * F_eval(Thetae, B, nu[l]);
+			        }
 #pragma omp barrier
 	}
 #pragma omp parallel for schedule(static) private(i)
@@ -259,6 +262,7 @@ static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 }
 
 int zone_flag;
+
 int get_zone(int *i, int *j, int *k, double *dnmax)
 {
 /* Return the next zone and the number of superphotons that need to be		*
@@ -268,20 +272,25 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	double n2gen;
 	static int zi = 0;
 	static int zj = -1;
-	static int zk = ??? RN
+	static int zk = -1; // RN: is this correct?
 
-	// NOT SURE HOW TO MODIFY THIS RN
 	zone_flag = 1;
 	zj++;
-	if (zj >= N2) {
-		zj = 0;
-		zi++;
-		if (zi >= N1) {
-			in2gen = 1;
-			*i = N1;
-			return 1;
-		}
+    zk++;
+    if (zk >= N3) {
+    	zk = 0;
+        zj++;
+    	if (zj >= N2) {
+			zj = 0;
+			zi++;
+			if (zi >= N1) {
+			    in2gen = 1;
+			    *i = N1;
+			    return 1;
+			}
+	    }
 	}
+
 	init_zone(zi, zj, zk, &n2gen, dnmax);
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
@@ -354,6 +363,7 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 				bhat[l] = 0.;
 			bhat[1] = 1.;
 		}
+
 		make_tetrad(Ucon, bhat, geom[i][j][k].gcov, Econ, Ecov);
 		zone_flag = 0;
 	}
@@ -369,7 +379,7 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 	ph->tau_abs = 0.;
 	ph->X1i = ph->X[1];
 	ph->X2i = ph->X[2];
-	// X3? RN
+	ph->X3i = ph->X[3];
 	ph->nscatt = 0;
 	ph->ne0 = Ne;
 	ph->b0 = Bmag;
@@ -378,12 +388,13 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 	return;
 }
 
-void Xtoij(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+//void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 
 	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
 	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
-	*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;	
+	*k = (int) ((X[3] - startx[3]) / dx[3] - 0.5 + 1000) - 1000;
 
 	if (*i < 0) {
 		*i = 0;
@@ -419,12 +430,12 @@ void Xtoij(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 }
 
 /* return boyer-lindquist coordinate of point */
-void bl_coord(double *X, double *r, double *th, double *ph)
+void bl_coord(double *X, double *r, double *th, double *phi)
 {
 
 	*r = exp(X[1]) + R0;
 	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
-	*ph = ??? RN
+	*phi = X[3];
 
 	return;
 }
@@ -500,7 +511,6 @@ void init_geometry()
 	and over all x3.
 
 */
-TODO RN
 double dOmega_func(double x2i, double x2f)
 {
 	double dO;

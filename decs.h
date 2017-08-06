@@ -43,7 +43,7 @@
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
 /** data structures **/
-struct of_photon {
+struct of_photon {        // defined in grmonty.c, used elsewhere
 	double X[NDIM];
 	double K[NDIM];
 	double dKdlam[NDIM];
@@ -52,6 +52,7 @@ struct of_photon {
 	double L;
 	double X1i;
 	double X2i;
+	double X3i;
 	double tau_abs;
 	double tau_scatt;
 	double ne0;
@@ -62,13 +63,13 @@ struct of_photon {
 	int nscatt;
 };
 
-struct of_geom {
+struct of_geom {        // defined in grmonty.c
 	double gcon[NDIM][NDIM];
 	double gcov[NDIM][NDIM];
 	double g;
 };
 
-struct of_spectrum {
+struct of_spectrum {        // defined in harm_model.c
 	double dNdlE;
 	double dEdlE;
 	double nph;
@@ -89,7 +90,7 @@ struct of_spectrum {
 #define N_THBINS	6
 
 struct of_grid {
-	struct of_spectrum spec[N_EBINS];
+	struct of_spectrum spec[N_EBINS];    // see harm_model.c
 	double th, phi;
 	int nlist;
 	int *in;
@@ -135,102 +136,102 @@ extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(struct of_photon *ph);
-void record_super_photon(struct of_photon *ph);
-void report_spectrum(int N_superph_made);
+void track_super_photon(struct of_photon *ph);            // defined in track_super_photon.c
+void record_super_photon(struct of_photon *ph);           // defined in harm_model.c
+void report_spectrum(int N_superph_made);                 // defined in harm_model.c
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
-			  double Gcov[NDIM][NDIM]);
+			  double Gcov[NDIM][NDIM]);       // defined in scatter_super_photon.c
 
 /* OpenMP specific functions */
-void omp_reduce_spect(void);
+void omp_reduce_spect(void);       // defined in harm_model.c
 
 /* MC/RT utilities */
-void init_monty_rand(int seed);
-double monty_rand(void);
+void init_monty_rand(int seed);    // defined in compton.c
+double monty_rand(void);           // defined in compton.c
 
 /* geodesic integration */
-void init_dKdlam(double X[], double Kcon[], double dK[]);
-void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
+void init_dKdlam(double X[], double Kcon[], double dK[]);                   // defined in geodesics.c
+void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);     // NOT DEFINED
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-		 double dl, double *E0, int n);
+		 double dl, double *E0, int n);                             // defined in geodesics.c
 void push_photon4(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-		  double dl);
+		  double dl);                                               // defined in geodesics.c
 void push_photon_cart(double X[NDIM], double Kcon[NDIM],
-		      double dKcon[NDIM], double dl);
-double stepsize(double X[NDIM], double K[NDIM]);
-void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);
-int geodesic_deriv(double t, const double y[], double dy[], void *params);
+		      double dKcon[NDIM], double dl);                       // NOT DEFINED
+double stepsize(double X[NDIM], double K[NDIM]);                            // defined in harm_model.c
+void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);         // NOT DEFINED
+int geodesic_deriv(double t, const double y[], double dy[], void *params);  // NOT DEFINED
 void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
-			  double frac, double del_l);
+			  double frac, double del_l);                       // NOT DEFINED
 
 /* basic coordinate functions supplied by grmonty */
-void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
-void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
-double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
+void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);        // defined in compton.c
+void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);    // defined in tetrads.c
+double gdet_func(double gcov[][NDIM]);  /* calculated numerically */// defined in geometry.c
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
-			  double K_tetrad[NDIM]);
+			  double K_tetrad[NDIM]);                   // defined in tetrads.c
 void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
-			  double K[NDIM]);
-double delta(int i, int j);
-void normalize(double Ucon[NDIM], double Gcov[NDIM][NDIM]);
-void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM]);
+			  double K[NDIM]);                          // defined in tetrads.c
+double delta(int i, int j);                                         // defined in tetrads.c
+void normalize(double Ucon[NDIM], double Gcov[NDIM][NDIM]);         // defined in tetrads.c
+void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM]);       // defined in tetrads.c
 void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
-		 double Ecov[NDIM][NDIM]);
+		 double Ecov[NDIM][NDIM]);                          // defined in tetrads.c
 
 /* functions related to basic radiation functions & physics */
 	/* physics-independent */
-double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
+double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);    // defined in radiation.c
 double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
-		    double Bcov[NDIM], double B);
-double alpha_inv_scatt(double nu, double thetae, double Ne);
+		    double Bcov[NDIM], double B);                    // defined in radiation.c
+double alpha_inv_scatt(double nu, double thetae, double Ne);         // defined in radiation.c
 double alpha_inv_abs(double nu, double thetae, double Ne, double B,
-		     double theta);
-double Bnu_inv(double nu, double thetae);
+		     double theta);                                  // defined in radiation.c
+double Bnu_inv(double nu, double thetae);                            // defined in radiation.c
 double jnu_inv(double nu, double thetae, double ne, double B,
-	       double theta);
+	       double theta);                                        // defined in radiation.c
 
 	/* thermal synchrotron */
 double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta);
-double int_jnu(double Ne, double Thetae, double Bmag, double nu);
-void init_emiss_tables(void);
-double F_eval(double Thetae, double Bmag, double nu);
-double K2_eval(double Thetae);
+		 double theta);                                      // defined in jnu_mixed.c
+double int_jnu(double Ne, double Thetae, double Bmag, double nu);    // defined in jnu_mixed.c
+void init_emiss_tables(void);                                        // defined in jnu_mixed.c
+double F_eval(double Thetae, double Bmag, double nu);                // defined in jnu_mixed.c
+double K2_eval(double Thetae);                                       // defined in jnu_mixed.c
 
 	/* compton scattering */
-void init_hotcross(void);
-double total_compton_cross_lkup(double nu, double theta);
-double klein_nishina(double a, double ap);
-double kappa_es(double nu, double theta);
-void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);
-void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
-double sample_klein_nishina(double k0);
-double sample_thomson(void);
-double sample_mu_distr(double beta_e);
-double sample_y_distr(double theta);
+void init_hotcross(void);                                    // defined in hotcross.c
+double total_compton_cross_lkup(double nu, double theta);    // defined in hotcross.c
+double klein_nishina(double a, double ap);                   // defined in compton.c
+double kappa_es(double nu, double theta);                    // defined in radiation.c
+void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);    // defined in compton.c
+void sample_beta_distr(double theta, double *gamma_e, double *beta_e);         // defined in compton.c
+double sample_klein_nishina(double k0);                      // defined in compton.c
+double sample_thomson(void);                                 // defined in compton.c
+double sample_mu_distr(double beta_e);                       // defined in compton.c
+double sample_y_distr(double theta);                         // defined in compton.c
 void sample_scattered_photon(double k[NDIM], double p[NDIM],
-			     double kp[NDIM]);
+			     double kp[NDIM]);               // defined in compton.c
 
 /** model dependent functions required by code: these 
    basic interfaces define the model **/
 
 /* physics related */
-void init_model(char *args[]);
-void make_super_photon(struct of_photon *ph, int *quit_flag);
-double bias_func(double Te, double w);
+void init_model(char *args[]);                                   // defined in harm_model.c
+void make_super_photon(struct of_photon *ph, int *quit_flag);    // defined in harm_model.c
+double bias_func(double Te, double w);                           // defined in harm_model.c
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
-		      double Bcov[NDIM]);
-int stop_criterion(struct of_photon *ph);
-int record_criterion(struct of_photon *ph);
+		      double Bcov[NDIM]);                        // defined in harm_model.c
+int stop_criterion(struct of_photon *ph);                        // defined in harm_model.c
+int record_criterion(struct of_photon *ph);                      // defined in harm_model.c
 
 /* coordinate related */
-void get_connection(double *X, double lconn[][NDIM][NDIM]);
-void gcov_func(double *X, double gcov[][NDIM]);
-void gcon_func(double *X, double gcon[][NDIM]);
+void get_connection(double *X, double lconn[][NDIM][NDIM]);    // defined in harm_model.c
+void gcov_func(double *X, double gcov[][NDIM]);                // defined in harm_model.c
+void gcon_func(double *X, double gcon[][NDIM]);                // defined in harm_model.c
 
 

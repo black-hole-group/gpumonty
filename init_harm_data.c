@@ -62,8 +62,9 @@ void init_harm_data(char *fname)
 {
 	FILE *fp;
 	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+//	double rp, hp, V, dV, two_temp_gam;
+	double rp, hp, phip, V, dV, two_temp_gam;
+	int i, j, k, kk;
 
 	/* header variables not used except locally */
 	char header_s[1024]; // header string
@@ -83,6 +84,7 @@ void init_harm_data(char *fname)
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
+<<<<<<< HEAD
 	/*
 	=======================
 	gets HARMPI header 
@@ -266,7 +268,6 @@ void init_harm_data(char *fname)
 	Ladv *= dx[3] * dx[2];
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
-
 
 	/* done! */
 
