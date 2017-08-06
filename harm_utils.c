@@ -7,7 +7,7 @@ extern double ****ecov;
 extern double ***bcon;
 extern double ***bcov;
 extern double ***ucon;
-extern double ***ucov; // change dimensions of guys above ^ RN
+extern double ***ucov; 
 extern double ****p; 
 extern struct of_geom ***geom;
 extern double ***ne;

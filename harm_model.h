@@ -30,15 +30,13 @@ double dOmega_func(double x2i, double x2f);         // defined in harm_utils.c
 //void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph);    // defined in harm_utils.c
 void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph);    // defined in harm_utils.c
 //double interp_scalar(double **var, int i, int j, double coeff[4]);            // defined in harm_utils.c
-double interp_scalar(double **var, int i, int j, int k, double coeff[8]);            // defined in harm_utils.c
+double interp_scalar(double ***var, int i, int j, int k, double coeff[8]);            // defined in harm_utils.c
 //int get_zone(int *i, int *j, double *dnamx);                                  // defined in harm_utils.c
 int get_zone(int *i, int *j, int *k, double *dnamx);                                  // defined in harm_utils.c
 //void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);                 // defined in harm_utils.c
 void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);                 // defined in harm_utils.c
 //void coord(int i, int j, double *X);                                          // defined in harm_utils.c
 void coord(int i, int j, int k, double *X);                                          // defined in harm_utils.c
-//void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
-		    double Ucon[NDIM], double Bcon[NDIM]);                    // defined in harm_model.c
 void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);                    // defined in harm_model.c
 

@@ -171,10 +171,10 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 {
 	int i, j, k;
 	double del[NDIM];
-	double rho, uu;
+	double rho, uu, sig;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, int k, double del[4]);
+	double gcon[NDIM][NDIM], coeff[8];
+	double interp_scalar(double ***var, int i, int j, int k, double del[8]);
 
 	if (X[1] < startx[1] || X[1] > stopx[1] || 
 	    X[2] < startx[2] || X[2] > stopx[2] ||
@@ -619,7 +619,7 @@ void record_super_photon(struct of_photon *ph)
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
-	RN
+	// need to check this out for dx3 RN
 	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
 	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
 		ix2 = (int) (ph->X[2] / dx2);

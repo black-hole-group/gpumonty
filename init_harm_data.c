@@ -84,13 +84,12 @@ void init_harm_data(char *fname)
 		fprintf(stderr, "successfully opened %s\n", fname);
 	}
 
-<<<<<<< HEAD
 	/*
 	=======================
 	gets HARMPI header 
 	=======================
 	*/
-    fgets(header, 1024, fp);
+    fgets(header_s, 1024, fp);
 
     // reads array from header string
     header_f=string2float(45,header_s);
