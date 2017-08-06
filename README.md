@@ -70,13 +70,19 @@ in the model file.
 
 # Explanation of branches
 
-- `master`: stable branch
-- `illinois`: latest bug corrections by Gammie's group
+- `master`: stable branch, supports `HARM2D`
+- `harmpi`: `HARMPI` support, in progress
+- `illinois`: latest bug corrections by Gammie's group, `HARM2D`
 - `opencl`: OpenCL version (in progress)
 - `progressbar`: progress bar implementation
-- `3dtests`: full support for HARMPI 3D dumps (in progress)
-- `read_harmpi`: reads HARMPI dumps, for testing (in progress)
 - `track_ph`: output photon world lines for visualization
+
+## Test branches
+
+- `read_harmpi`: reads HARMPI dumps, for testing (in progress)
+- `3dtests`: full support for HARMPI 3D dumps (in progress)
+
+
 
 # TODO
 
