@@ -1,7 +1,7 @@
 #
 # requires an openmp-enabled version of gcc
 #
-CC = gcc
+CC = gcc-6
 CCFLAGS  = -Wall -Ofast -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas 
 
@@ -11,16 +11,16 @@ CC_LOAD = $(CC) $(CCFLAGS)
 .c.o:
 	$(CC_COMPILE) $*.c
 
-EXE = igrmonty2d
+EXE = grmonty
 all: $(EXE)
 
 SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
 radiation.c jnu_mixed.c hotcross.c track_super_photon.c \
-scatter_super_photon.c harm_model.c harm_utils.c init_iharm2dv3_data.c
+scatter_super_photon.c harm_model.c harm_utils.c init_harm_data.c
  
 OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
 radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
-scatter_super_photon.o harm_model.o harm_utils.o init_iharm2dv3_data.o
+scatter_super_photon.o harm_model.o harm_utils.o init_harm_data.o
 
 INCS = decs.h constants.h harm_model.h
 
