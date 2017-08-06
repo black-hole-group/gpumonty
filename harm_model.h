@@ -4,17 +4,16 @@
 #define global extern
 #endif
 
-IS THIS CORRECT?
 global double ****econ;
 global double ****ecov;
 global double ***bcon;
 global double ***bcov;
 global double ***ucon;
 global double ***ucov;
-global double ***p;
-global double **ne;
-global double **thetae;
-global double **b;
+global double ****p;
+global double ***ne;
+global double ***thetae;
+global double ***b;
 
 /* HARM model internal utilities */
 void init_weight_table(void);                       // defined in harm_utils.c
