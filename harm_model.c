@@ -77,7 +77,7 @@ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	Rh = 1 + sqrt(1. - a * a);
+	Rh = 1. + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();
@@ -134,9 +134,7 @@ double bias_func(double Te, double w)
 	max = 0.5 * w / WEIGHT_MIN;
 
 	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
-	bias =
-	    100. * Te * Te / (bias_norm * max_tau_scatt *
-			      (avg_num_scatt + 2));
+	bias = 100. * Te * Te / (bias_norm * max_tau_scatt * (avg_num_scatt + 2));
 
 	if (bias < TP_OVER_TE)
 		bias = TP_OVER_TE;
@@ -802,15 +800,14 @@ void report_spectrum(int N_superph_made)
 			dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
 
 			nuLnu =
-			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
-								     dlE);
+			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. / dlE);
 
 			nuLnu *= spect[j][i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
-						     SMALL);
+			    spect[j][i].tau_scatt / (spect[j][i].dNdlE + SMALL);
+
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,

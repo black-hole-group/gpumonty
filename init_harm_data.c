@@ -71,7 +71,9 @@ void init_harm_data(char *fname)
 	double r, h, phi, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
-	fp = fopen(fname, "r");
+	fp = fopen(fname, "rb");
+
+//      CALL FUNCTION TO TRANSFORM BINARY TO ASCII
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");

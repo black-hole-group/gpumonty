@@ -96,8 +96,7 @@ void init_hotcross(void)
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
 				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
-						j, lw, lT);
+					fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					exit(0);
 				}
 			}
@@ -112,8 +111,7 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * dlT;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
-					lw, lT, table[i][j]);
+				fprintf(fp, "%d %d %g %g %15.10g\n", i, j, lw, lT, table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
 	} else {
@@ -122,9 +120,7 @@ void init_hotcross(void)
 			HOTCROSS);
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
-				nread =
-				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
-					   &table[i][j]);
+				nread = fscanf(fp, "%*d %*d %*lf %*lf %lf\n", &table[i][j]);
 				if (isnan(table[i][j]) || nread != 1) {
 					fprintf(stderr,
 						"error on table read: %d %d\n",

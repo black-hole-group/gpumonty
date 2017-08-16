@@ -242,14 +242,29 @@ Points that may be troublesome:
 Next things to do - hopefully the last as well:
 
     1) write c function to convert from binary to ascii
-    2) run harmpi with 3d
-    3) check harm_model.h variables (extra * needed?)
+    2) check harm_model.h variables (extra * needed?)
+    3) run harmpi with 3d
 
 --------------------------------------------------------------------------------
 
-Just realized I have to change the malloc functions in the end of harm_utils.c
+Just realized I have to change the malloc functions in the end of harm_utils.c -- anote added: done. I think it is correct
 
 ================================================================================
 
->>> 15/07
+>>> 17/07
 
+
+malloc functions changed - likely working
+
+--------------------------------------------------------------------------------
+
+Some progress with binary to float function, but the output seems to be in hexadecimals
+
+================================================================================
+
+
+Binary-to-ASCII function almost done. Must see what's wrong with bin-to-hex because it's no longer compiling. Once this is done, we must change the given string to the actual string that will be converted (the hex string already converted from binary)
+
+Doubt: how are we going to put back the data? Create new folders?
+
+--------------------------------------------------------------------------------

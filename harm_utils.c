@@ -205,9 +205,11 @@ void init_weight_table(void)
 #define BTHSQMIN	(1.e-4)
 #define BTHSQMAX	(1.e8)
 #define	NINT		(20000)
+
 double lb_min, dlb;
 double nint[NINT + 1];
 double dndlnu_max[NINT + 1];
+
 void init_nint_table(void)
 {
 
@@ -228,8 +230,7 @@ void init_nint_table(void)
 		for (j = 0; j < N_ESAMP; j++) {
 			dn = F_eval(1., Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[j]) +
-						     1.e-100);
+					lnu_min)) / (exp(wgt[j]) + 1.e-100);
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
@@ -280,8 +281,7 @@ static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 		for (l = 0; l <= N_ESAMP; l++) {
 			dn = F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[l]) +
-						     1.e-100);
+					lnu_min)) / (exp(wgt[l]) + 1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
@@ -510,7 +510,7 @@ void coord(int i, int j, int k, double *X)
 	X[0] = startx[0];
 	X[1] = startx[1] + (i + 0.5) * dx[1];
 	X[2] = startx[2] + (j + 0.5) * dx[2];
-	X[3] = startx[3] + (k + 0.5) * dx[3];;
+	X[3] = startx[3] + (k + 0.5) * dx[3];
 
 	return;
 }
@@ -647,6 +647,52 @@ static double **malloc_rank2_cont(int n1, int n2)
 	return A;
 }
 
+/*******************************************************************************
+
+static void ***malloc_rank3(int n1, int n2, int n3, int size)
+{
+
+	void ***A;
+	int i, j;
+
+	if ((A = (void ***) malloc(n1 * sizeof(void *))) == NULL) {
+		fprintf(stderr, "malloc failure in malloc_rank2\n");
+		exit(124);
+	}
+
+	for (i = 0; i < n1; i++) {
+		A[i] = (void **) malloc_rank1(n2, size);
+        for (j = 0; j < n2, j++) {
+            A[i][j] = (void *) malloc_rank1(n3, size);
+        }
+	}
+
+	return A;
+}
+
+static double ***malloc_rank3_cont(int n1, int n2, int n3)
+{
+
+	double ***A;
+	double *space;
+	int i;
+
+	space = malloc_rank1(n1 * n2, sizeof(double));
+
+	A = malloc_rank1(n1, sizeof(double *));
+
+	for (i = 0; i < n1; i++) {
+		A[i] = (double **) &(space[i * n2]);
+        for (j = 0; j < n2; j++) {
+            A[i][j] = (double *) &(space[j * n3]);
+        }
+    }
+
+	return A;
+}
+
+*******************************************************************************/
+
 void init_storage(void)
 {
 	int i;
@@ -660,3 +706,23 @@ void init_storage(void)
 
 	return;
 }
+
+
+/*******************************************************************************
+
+
+void init_storage(void)
+{
+	int i;
+
+	p = malloc_rank1(NPRIM, sizeof(double *));
+	for (i = 0; i < NPRIM; i++)
+		p[i] = (double ***) malloc_rank3_cont(N1, N2, N3);
+	geom =
+	    (struct of_geom ***) malloc_rank3(N1, N2, N3,
+					     sizeof(struct of_geom));
+
+	return;
+}
+
+*******************************************************************************/
