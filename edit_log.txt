@@ -202,7 +202,7 @@ Only "non-trivial" modifications left. Tomorrow likely to be tiring, but good ch
 
 Variable del[NDIM] to remain defined as is, but must add del[3] so we can define the other coeff[] elements.
 
-Variable coeff[4] to be changed to account for 4 extra elements: coeff[8], because now we have del[3]
+Variable coeff[4] to be changed to account for 4 extra elements: coeff[8], because now we have del[3] - NOTE ADDED: WRONG! GET THIS RIGHT!
 
 --------------------------------------------------------------------------------
 

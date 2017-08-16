@@ -149,11 +149,15 @@ int main(int argc, char *argv[])
 
 		while (1) {
 
+                        printf("Before starting, quit_flag = %d\n", quit_flag);
 			/* get pseudo-quanta */
 #pragma omp critical (MAKE_SPHOT)
 			{
-				if (!quit_flag)
+				if (!quit_flag){
+                                        printf("If loop BEFORE making SPh, quit_flag = %d\n", quit_flag);
 					make_super_photon(&ph, &quit_flag);
+                                        printf("If loop AFTER making SPh, quit_flag = %d\n", quit_flag);
+                                }
 			}
 			if (quit_flag)
 				break;
