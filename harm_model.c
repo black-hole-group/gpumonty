@@ -56,21 +56,21 @@ void init_model(char *args[])
 	make super photon 
 */
 
-int n2gen = -1; // ??? RN
+int n2gen = -1;
 double dnmax;
 int zone_i, zone_j, zone_k;
 
 void make_super_photon(struct of_photon *ph, int *quit_flag)
 {
-    printf("in 'make_super_photon', first quit_flag = %d\n", quit_flag);
+    printf("in 'make_super_photon', first quit_flag = %d\n", *quit_flag);
 	while (n2gen <= 0) {
 		n2gen = get_zone(&zone_i, &zone_j, &zone_k, &dnmax);
-        printf("in 'make_super_photon', after get_zone, quit_flag = %d\n", quit_flag);
+        printf("in 'make_super_photon', after get_zone, quit_flag = %d\n", *quit_flag);
         printf("in 'make super photon', after get_zone, n2gen = %d\n", n2gen);
 	}
 
 	n2gen--;
-    printf("in 'make_super_photon', after n2gen--, quit_flag = %d\n", quit_flag);
+    printf("in 'make_super_photon', after n2gen--, quit_flag = %d\n", *quit_flag);
     printf("in 'make_super_photon', after n2gen--, zone_i = %d\n", zone_i);
 	if (zone_i == N1)
 		*quit_flag = 1;

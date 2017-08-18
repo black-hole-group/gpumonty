@@ -271,12 +271,14 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	int in2gen;
 	double n2gen;
 	static int zi = 0;
-	static int zj = -1;
+	static int zj = 0; //-1
 	static int zk = -1; // RN: is this correct?
 
 	zone_flag = 1;
-	zj++;
+	//zj++;
     zk++;
+    printf("in 'get_zone', zi = %d, zj = %d, zk = %d\n", zi, zj, zk);
+    printf("in 'get_zone', N1 = %d, N2 = %d, N3 = %d\n", N1, N2, N3);
     if (zk >= N3) {
     	zk = 0;
         zj++;
@@ -290,7 +292,7 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 			}
 	    }
 	}
-
+    printf("have we reached this point?");
 	init_zone(zi, zj, zk, &n2gen, dnmax);
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
@@ -301,7 +303,7 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	*i = zi;
 	*j = zj;
 	*k = zk;
-
+    printf("in 'get_zone', in2gen = %d\n", in2gen);
 	return in2gen;
 }
 
