@@ -23,7 +23,7 @@ listBph = []
 listx = []
 listy = []
 
-f = open('dump019', 'r')
+f = open('ascii005', 'r')
 header = f.readline()
 
 for line in f:
@@ -65,13 +65,13 @@ y = np.array(listy)
 #print('th_max = %s') %np.amax(th)
 
 def prepare_regrid(x, y):
-    xsize = 256
-    ysize = 256 
+    xsize = 192
+    ysize = 128 
     fact = 5 # "aumento de resolução" para o espaçamento grid novo
     newdx = fact*xsize
     newdy = fact*ysize
     xnew = np.linspace(round(np.amin(x)), round(np.amax(x)), newdx)
-    ynew = np.linspace(round(np.amin(y)), round(np.amax(y)), newdy)   
+    ynew = np.linspace(round(np.amin(y)), round(np.amax(y)), newdy)
     return xnew, ynew
 
 def newgrid(x, y, z, xnew, ynew):
@@ -86,5 +86,5 @@ plt.imshow(np.log10(newrho), extent=(np.amin(x), np.amax(x), np.amin(y), np.amax
 plt.xlabel('x $[r_g]$', fontsize=16)
 plt.ylabel('y $[r_g]$', fontsize=16)
 plt.colorbar()
-plt.title('Density at $t=950\;GM/c^3$', fontsize=20)
+plt.title('Density at $t=?\;GM/c^3$', fontsize=20)
 plt.show()

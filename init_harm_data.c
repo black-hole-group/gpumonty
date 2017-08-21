@@ -65,7 +65,7 @@ void init_harm_data(char *fname)
 //	double rp, hp, V, dV, two_temp_gam;
 	double rp, hp, phip, V, dV, two_temp_gam;
 	int i, j, k, kk;
-	double var[42];
+	double var[42], X[NDIM];
 
 	/* header variables not used except locally */
 	char header_s[1024]; // header string
@@ -183,8 +183,8 @@ void init_harm_data(char *fname)
 	*/
 
 	// Reads binary data
-	for (i=0; i<N1; i++) {
-		for (j=0; j<N2; j++) {
+	for (i = 0; i < N1; i++) {
+		for (j = 0; j < N2; j++) {
 			for (k = 0; k < N3; k++) {
 				// reads 42 floats from binary data in each pass
 				fread(var, sizeof(double), 42, fp); 
@@ -197,53 +197,57 @@ void init_harm_data(char *fname)
 				was a bl_coord routine being called here. I removed that. 
 				*/
 
-				p[KRHO][i][j][k]= var[9]; 
-				p[UU][i][j][k]= var[10]; 
+                X[1] = var[3];
+                X[2] = var[4];
+                X[3] = var[5];
 
-				//pg[i][j][k] = (gam-1.)*ug[i][j][k];
+				p[KRHO][i][j][k] = var[9]; 
+				p[UU][i][j][k] = var[10]; 
 
-				//U0[i][j][k]= var[11];
-				p[U1][i][j][k]= var[12]; 
-				p[U2][i][j][k]= var[13];
-				p[U3][i][j][k]= var[14];
+				//pg[i][j][k] = (gam - 1.) * ug[i][j][k];
 
-				//B0[i][j][k]= var[15];
-				p[B1][i][j][k]= var[15];
-				p[B2][i][j][k]= var[16];
-				p[B3][i][j][k]= var[17];
+				//U0[i][j][k] = var[11];
+				p[U1][i][j][k] = var[12]; 
+				p[U2][i][j][k] = var[13];
+				p[U3][i][j][k] = var[14];
 
-				/*ktot[i][j][k]= pg[i][j][k]/pow(rho[i][j][k],gam);
+				//B0[i][j][k] = var[15];
+				p[B1][i][j][k] = var[15];
+				p[B2][i][j][k] = var[16];
+				p[B3][i][j][k] = var[17];
 
-				divb[i][j][k]= var[18];
+				/*ktot[i][j][k] = pg[i][j][k]/pow(rho[i][j][k],gam);
 
-				uu0[i][j][k]= var[19];
-				uu1[i][j][k]= var[20];
-				uu2[i][j][k]= var[21];
-				uu3[i][j][k]= var[22];
-				ud0[i][j][k]= var[23];
-				ud1[i][j][k]= var[24];
-				ud2[i][j][k]= var[25];
-				ud3[i][j][k]= var[26];
-				bu0[i][j][k]= var[27];
-				bu1[i][j][k]= var[28];
-				bu2[i][j][k]= var[29];
-				bu3[i][j][k]= var[30];
-				bd0[i][j][k]= var[31];
-				bd1[i][j][k]= var[32];
-				bd2[i][j][k]= var[33];
-				bd3[i][j][k]= var[34];
+				divb[i][j][k] = var[18];
 
-				v1m[i][j][k]= var[35];
-				v1p[i][j][k]= var[36];
-				v2m[i][j][k]= var[37];
-				v2p[i][j][k]= var[38];
-				v3m[i][j][k]= var[39];
-				v3p[i][j][k]= var[40];
+				uu0[i][j][k] = var[19];
+				uu1[i][j][k] = var[20];
+				uu2[i][j][k] = var[21];
+				uu3[i][j][k] = var[22];
+				ud0[i][j][k] = var[23];
+				ud1[i][j][k] = var[24];
+				ud2[i][j][k] = var[25];
+				ud3[i][j][k] = var[26];
+				bu0[i][j][k] = var[27];
+				bu1[i][j][k] = var[28];
+				bu2[i][j][k] = var[29];
+				bu3[i][j][k] = var[30];
+				bd0[i][j][k] = var[31];
+				bd1[i][j][k] = var[32];
+				bd2[i][j][k] = var[33];
+				bd3[i][j][k] = var[34];
 
-				gdet[i][j][k]= var[41];*/
+				v1m[i][j][k] = var[35];
+				v1p[i][j][k] = var[36];
+				v2m[i][j][k] = var[37];
+				v2p[i][j][k] = var[38];
+				v3m[i][j][k] = var[39];
+				v3p[i][j][k] = var[40];
+
+				gdet[i][j][k] = var[41];*/
 				Ucon1= var[20];
 				Ucov0= var[23];				
-				gdet= var[41];
+				gdet = var[41];
 
 				//rhor = 1+(1-d.a**2)**0.5
 			    //alpha = (-d.guu[0,0])**(-0.5)
