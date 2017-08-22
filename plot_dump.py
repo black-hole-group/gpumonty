@@ -10,6 +10,7 @@ import math
 
 listr   = []
 listth  = []
+listphi = []
 listx1  = [] # ln(r)
 listx2  = []
 listrho = []
@@ -22,12 +23,22 @@ listBth = []
 listBph = []
 listx = []
 listy = []
-
+listz = []
 f = open('ascii005', 'r')
-header = f.readline()
+#header = f.readline()
 
 for line in f:
     col = line.split()
+
+    listr.append(float(col[3]))
+    listth.append(float(col[4]))
+    listphi.append(float(col[5]))
+    listrho.append(float(col[6]))
+    listx.append(float(col[3]) * np.cos(float(col[4])) * np.sin(float(col[5])))
+    listy.append(float(col[3]) * np.sin(float(col[4])) * np.sin(float(col[5])))
+    listz.append(float(col[3]) * np.cos(float(col[4])))
+
+"""
     listx1.append(float(col[0]))
     listx2.append(float(col[1]))
     listr.append(float(col[2]))
@@ -44,11 +55,15 @@ for line in f:
 #    listy.append(float(col[2]) * np.sin(float(col[3])))
     listx.append(float(col[2]) * np.cos(float(col[3]) - np.pi/2.))
     listy.append(float(col[2]) * np.sin(float(col[3]) - np.pi/2.))
+"""
+
+
 
 f.close()
 
 r   = np.array(listr)
 th  = np.array(listth)
+phi = np.array(listphi)
 rho = np.array(listrho)
 vr  = np.array(listvr)
 vth = np.array(listvth)
@@ -58,6 +73,7 @@ Bth = np.array(listBth)
 Bph = np.array(listBph)
 x = np.array(listx)
 y = np.array(listy)
+z = np.array(listz)
 
 #print('r_min  = %s') %np.amin(r)
 #print('r_max  = %s') %np.amax(r)
