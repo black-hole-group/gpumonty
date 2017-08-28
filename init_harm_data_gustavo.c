@@ -56,6 +56,17 @@ CFG 1 Sept 07
 */
 
 
+
+/*
+
+I modified the header so that it can read data from harmpi-3d.
+New variables to store header data were added as needed.
+
+GS
+
+*/
+
+
 void init_harm_data(char *fname)
 {
 	FILE *fp;
@@ -77,6 +88,7 @@ void init_harm_data(char *fname)
     
 
 	fp = fopen(fname, "r");
+	outfile = fopen('outside.txt', "w");
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");
@@ -165,11 +177,11 @@ void init_harm_data(char *fname)
 
             fscanf(fp, "%d %d %d ", &coord_plus_mpi_startn[1], &coord_plus_mpi_startn[2], &coord_plus_mpi_startn[3]);
 
-            fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &th, &phi);
+            fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
 
             /* check that we've got the coordinate parameters right */
 		    bl_coord(x, &rp, &hp, &phip);
-		    if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
+		    if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {  // add phi test - GS
 			    fprintf(stderr, "grid setup error\n");
 			    fprintf(stderr, "rp, r, hp, h, phip, phi: %g %g %g %g %g %g\n", rp, r, hp, h, phip, phi);
 			    fprintf(stderr,"edit R0, hslope, compile, and continue\n");
@@ -192,20 +204,16 @@ void init_harm_data(char *fname)
 
             fscanf(fp, "%lf\n", &gdet);
 
+		    bias_norm +=
+		        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] * Thetae_unit, 2.);
+		    V += dV * gdet;
+
+		    /* check accretion rate */
+	    	if (i <= 20)
+		    	dMact += gdet * p[KRHO][i][j][k] * Ucon[1];
+		    if (i >= 20 && i < 40)
+			    Ladv += gdet * p[UU][i][j][k] * Ucon[1] * Ucov[0];
         }
-    }
-
-		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
-				    Thetae_unit, 2.);
-		V += dV * gdet;
-
-		/* check accretion rate */
-		if (i <= 20)
-			dMact += gdet * p[KRHO][i][j] * Ucon[1];
-		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
-
 	}
 
 	bias_norm /= V;

@@ -64,7 +64,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 {
 	while (n2gen <= 0) {
 		n2gen = get_zone(&zone_i, &zone_j, &zone_k, &dnmax);
-        printf("In 'make_super_photon', n2gen = %d\n", n2gen);
+        //printf("In 'make_super_photon', n2gen = %d\n", n2gen);
 	}
 
 	n2gen--;
@@ -73,7 +73,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 		*quit_flag = 1;
 	else
 		*quit_flag = 0;
-    printf("quit_flag = %d\n", *quit_flag);
+    //printf("quit_flag = %d\n", *quit_flag);
     printf("In 'make_super_photon', are we here?\n");
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
@@ -211,7 +211,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	*Ne = rho * Ne_unit;
 	*Thetae = uu / rho * Thetae_unit;
-
+    printf("whatever\n");
 	Bp[1] = interp_scalar(p[B1], i, j, k, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, k, coeff);
 	Bp[3] = interp_scalar(p[B3], i, j, k, coeff);
