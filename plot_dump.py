@@ -57,8 +57,6 @@ for line in f:
     listy.append(float(col[2]) * np.sin(float(col[3]) - np.pi/2.))
 """
 
-
-
 f.close()
 
 r   = np.array(listr)
@@ -98,7 +96,6 @@ xnew, ynew = prepare_regrid(x, y)
 newrho = newgrid(x, y, rho, xnew, ynew)
 
 plt.imshow(np.log10(newrho), extent=(np.amin(x), np.amax(x), np.amin(y), np.amax(y)), cmap=cm.hot)
-# in this line, we'll add the B streamlines
 plt.xlabel('x $[r_g]$', fontsize=16)
 plt.ylabel('y $[r_g]$', fontsize=16)
 plt.colorbar()

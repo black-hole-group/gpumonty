@@ -73,8 +73,8 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 		*quit_flag = 1;
 	else
 		*quit_flag = 0;
-    //printf("quit_flag = %d\n", *quit_flag);
     printf("In 'make_super_photon', are we here?\n");
+    //printf("%d\n", *quit_flag); always = 1
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
 		sample_zone_photon(zone_i, zone_j, zone_k, dnmax, ph);
@@ -115,7 +115,7 @@ double bias_func(double Te, double w)
 */
 
 
-void get_fluid_zone(int i, int j, int k,  double *Ne, double *Thetae, double *B,
+void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM])
 {
 
@@ -126,6 +126,7 @@ void get_fluid_zone(int i, int j, int k,  double *Ne, double *Thetae, double *B,
 
 	*Ne = p[KRHO][i][j][k] * Ne_unit;
 	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
+    //printf("%lf\n", p[UU][i][j][k]); /////////// HERE!!!!!!!!!!!!!!!!!!!
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];
@@ -135,7 +136,7 @@ void get_fluid_zone(int i, int j, int k,  double *Ne, double *Thetae, double *B,
 	Vcon[2] = p[U2][i][j][k];
 	Vcon[3] = p[U3][i][j][k];
 
-	/* Get Ucov */
+	/* Get Ucov */ 
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)

@@ -197,6 +197,7 @@ static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*nz = 0.;
+        //printf("Ne = %lf, Thetae = %lf, THETAE_MIN = %lf\n", Ne, Thetae, THETAE_MIN); ///////////// IT'S HERE!!!!!!
 		*dnmax = 0.;
 		return;
 	}
@@ -292,11 +293,13 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	    }
 	}
 
-	init_zone(zi, zj, zk, &n2gen, dnmax);
+	init_zone(zi, zj, zk, &n2gen, dnmax); ///////////////// HERE!!!!!
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
+        //printf("if\n");
 	} else {
 		in2gen = (int) n2gen;
+        //printf("else\n");
 	}
 
 	*i = zi;

@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
 			if (quit_flag)
 				break;
-            printf("in 'grmonty' have we reached this point?\n");
+            printf("in 'grmonty' have we reached this point?\n"); // we are not tracking superphotons because program breaks before we reach here - therefore, the issue is somewhere within make_super_photon
 			/* push them around */
 			track_super_photon(&ph);
 
