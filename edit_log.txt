@@ -284,3 +284,23 @@ Since the Python script seems to be promising, I think I have settled on a strat
 6) See what happens - SEGMENTATION FAULT :(
 
 If it is still bugged, at least we will know the problem is no longer (if it ever was before) the data. Then, we are going to need to recheck the modifications made.
+
+===============================================================================
+
+29/08
+
+PROBLEM FOUND!
+
+In make_super_photon (harm_model.c), we never get out of the while(n2gen <= 0) loop until we reach the last i-zone (zone_i == N1), because once we get there n2gen is forced to be 1. This is not the case in the 2d version, where we occasionally leave this loop and return later. Since we only get out of the loop when we reach the last i-zone, this will trigger a change in *quit_flag from 0 to 1. This, in turn, makes the program skip the loop to sample photons, which explains why the program does not generate any photons. 
+
+The reason why we never leave the while(n2gen <= 0) loop until we reach the last i-zone is actually simple, but requires a long explanation. In the function get_zone (harm_utils.c), there is an if-else loop that returns the value of in2gen. After adding some control printf to try to pinpoint possible issues, I found that only the "else" part is called, meaning that the if-condition is never met. Also, I noticed that in2gen was ALWAYS equal to zero, while in the 2d version this wasn't always the case. In the 2d version, the "if" part was occasionally called.
+
+The if-condition states that the remainder of the division n2gen/1. has to be greater than some random number. I checked this random number generator and there was nothing wrong with it. I had previously checked the control loop (zi, zj, zk) that appears before that, and found no issues with that. Therefore, the error had to be related to n2gen in the init_zone (harm_utils.c) function called immediately before the if-else loop, since n2gen is one of the arguments taken by this function.
+
+Upon inspecting the function init_zone (harm_utils.c), I noticed that there are many if-conditions that, if satisfied, will force n2gen (here called *nz) to take the value of zero. Since the remainder of the division of 0 by 1. is 0, I figured that this could be the problem: we were satisfying some condition that automatically sets the value of *nz to zero every time init_zone (harm_utils.c) was called. Since it was called by get_zone (harm_utils.c), which is the only function inside the while(n2gen <= 0) loop in make_super_photon, this was the reason why we would never leave this loop until we reached the last i-zone.
+
+Now, the very first if-condition in init_zone (harm_utils.c) was inspected and after telling the program to print the values of Ne, Thetae and THETAE_MIN, I found that Thetae was always either -0.000000 or 0.000000, smaller than THETAE_MIN and therefore satisfying this if-condition. This is why n2gen is always zero until we reach the last i-zone.
+
+Inspecting the function get_fluid_zone (harm_model.c), which is called by init_zone (harm_utils.c), we see that *Thetae is assigned a value related to p[UU][i][j][k], which is a value we read from the data in init_harm_data.c. When printing the value of this variable, we always get either -0.000000 or 0.000000, explaining the value of Thetae.
+
+Therefore, the data being read is possibly wrong (maybe due to some error in the routines to transform from binary to ascii), and this is the source of the problems we have been facing in the last couple of days.
