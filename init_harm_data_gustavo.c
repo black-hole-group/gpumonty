@@ -76,19 +76,22 @@ void init_harm_data(char *fname)
     double pktot;
 
 	/* header variables not used except locally */
-	double t, tf, cour, DTd, DTl, DTi, dt;
-	int nstep, DTr, rdump_cnt, lim, failed;
+	double t, tf, cour, DTd, DTl, DTi, DTr, dt;
+	int nstep, rdump_cnt, lim, failed;
 	double r, h, phi, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
     int mpi_ntot[NDIM];
 
     int mpi_startn[NDIM], coord_plus_mpi_startn[NDIM];
     double fractheta, fracphi, rbr, npow2, cpow2;
-    int hN1, hN2, hN3, npr, DOKTOT, BL, DTr01, rdump01_cnt;
+    int npr, DOKTOT, BL, DTr01, rdump01_cnt, dump_cnt, image_cnt;
+
+    int GN1, GN2, GN3, nx, ny, nz;
+    double ti, tj, tk;
     
 
 	fp = fopen(fname, "r");
-	outfile = fopen('outside.txt', "w");
+//	outfile = fopen('outside.txt', "w");
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");
@@ -99,12 +102,15 @@ void init_harm_data(char *fname)
 
 	/* get HARMPI header */
     fscanf(fp, "%lf ", &t);
-    fscanf(fp, "%d ", &mpi_ntot[1]);
-    fscanf(fp, "%d ", &mpi_ntot[2]); 
-    fscanf(fp, "%d ", &mpi_ntot[3]);
-    fscanf(fp, "%d ", &hN1);
-    fscanf(fp, "%d ", &hN2);
-    fscanf(fp, "%d ", &hN3);
+    fscanf(fp, "%d ", &N1);
+    fscanf(fp, "%d ", &N2);
+    fscanf(fp, "%d ", &N3);
+    fscanf(fp, "%d ", &nx);
+    fscanf(fp, "%d ", &ny);
+    fscanf(fp, "%d ", &nz);
+    fscanf(fp, "%d ", &GN1);
+    fscanf(fp, "%d ", &GN2);
+    fscanf(fp, "%d ", &GN3);
 	fscanf(fp, "%lf ", &startx[1]);
 	fscanf(fp, "%lf ", &startx[2]);
 	fscanf(fp, "%lf ", &startx[3]);
@@ -119,8 +125,10 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &DTd);
 	fscanf(fp, "%lf ", &DTl);
 	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%d ", &DTr);
+	fscanf(fp, "%lf ", &DTr);
 	fscanf(fp, "%d ", &DTr01);
+	fscanf(fp, "%d ", &dump_cnt);
+	fscanf(fp, "%d ", &image_cnt);
 	fscanf(fp, "%d ", &rdump_cnt);
 	fscanf(fp, "%d ", &rdump01_cnt);
 	fscanf(fp, "%lf ", &dt);
@@ -138,6 +146,8 @@ void init_harm_data(char *fname)
     fscanf(fp, "%lf ", &npow2);
     fscanf(fp, "%lf ", &cpow2);
     fscanf(fp, "%d ", &BL);
+
+    fprintf(stderr, "%lf %lf\n", hslope, R0); 
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
@@ -171,13 +181,10 @@ void init_harm_data(char *fname)
 		    j = kk % N2;
 		    i = (kk - j) / N2;
     
-            coord_plus_mpi_startn[1] = i + mpi_startn[1];
-            coord_plus_mpi_startn[2] = j + mpi_startn[2];
-            coord_plus_mpi_startn[3] = k + mpi_startn[3];
-
-            fscanf(fp, "%d %d %d ", &coord_plus_mpi_startn[1], &coord_plus_mpi_startn[2], &coord_plus_mpi_startn[3]);
+            fscanf(fp, "%lf %lf %lf ", &ti, &tj, &tk);
 
             fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
+            fprintf(stderr, "%lf %lf %lf %lf %lf %lf\n", x[1], x[2], x[3], r, h, phi);
 
             /* check that we've got the coordinate parameters right */
 		    bl_coord(x, &rp, &hp, &phip);

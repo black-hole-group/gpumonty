@@ -16,31 +16,42 @@ asciidata = "ascii"+filenumber
 
 def read_body(dump, ascii, nx = None, ny = None, nz = None, noround = False):
 
-    binfile   = open(dump, "rb")
-    asciifile = open(ascii, "w")
+  binfile   = open(dump, "rb")
+   asciifile = open(ascii, "w")
 
-    header = binfile.readline()
-    asciifile.write(header)
+  header = binfile.readline()
+   asciifile.write(header)
 
+  body = np.fromfile(binfile, dtype = np.float32, count = -1) # sasha
+   gd   = body.view().reshape((-1, nz, ny, nx), order = 'F')   # sasha
+   gd   = np.float32(gd.transpose(0, 3, 2, 1))                 # sasha
 
-    body = np.fromfile(binfile, dtype = np.float32, count = -1)
+  print gd.shape
 
+"""
     dV = nx*ny*nz
     cols = len(body)/dV
     mat = body.view().reshape((cols, dV), order = 'F')
     mat = np.float32(mat.transpose())
     print len(mat)
     np.savetxt(asciifile, mat, fmt = '%.18e')
+"""
 
-
-    gd   = body.view().reshape((-1, nz, ny, nx), order = 'F')
-    gd   = np.float32(gd.transpose(0, 3, 2, 1))
-
-    #for dataslice in gd:
-    #    np.savetxt(asciifile, dataslice, fmt = '%.18e')
-
-    #asciifile.write(gd)
-
-    return gd
+  return gd
 
 asciidata = read_body(bindata, asciidata, int(N1), int(N2), int(N3), noround = 1)
+    
+
+"""
+    for i in N1:
+        for j in N2:
+            for j in N3:
+                while (line % 42 !=0):
+                    ascii.write(gd(i,j,k))
+
+   for dataslice in gd:
+        np.savetxt(asciifile, dataslice, fmt = '%.18e')
+
+   asciifile.write(gd)
+
+"""

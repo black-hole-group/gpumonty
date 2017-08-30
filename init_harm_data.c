@@ -196,11 +196,11 @@ void init_harm_data(char *fname)
 				code checking whether the coordinates were right. There
 				was a bl_coord routine being called here. I removed that. 
 				*/
-
+// ti, tj, tk
                 X[1] = var[3];
                 X[2] = var[4];
                 X[3] = var[5];
-
+// r, h, phi
 				p[KRHO][i][j][k] = var[9]; 
 				p[UU][i][j][k] = var[10]; 
 
