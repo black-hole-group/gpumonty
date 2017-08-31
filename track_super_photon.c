@@ -52,7 +52,6 @@ void track_super_photon(struct of_photon *ph)
 	gcov_func(ph->X, Gcov);
 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
 				 Bcov);
-
 	theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	nu = get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);

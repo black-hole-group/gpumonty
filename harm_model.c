@@ -64,7 +64,6 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 {
 	while (n2gen <= 0) {
 		n2gen = get_zone(&zone_i, &zone_j, &zone_k, &dnmax);
-        //printf("In 'make_super_photon', n2gen = %d\n", n2gen);
 	}
 
 	n2gen--;
@@ -73,16 +72,36 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 		*quit_flag = 1;
 	else
 		*quit_flag = 0;
-    printf("In 'make_super_photon', are we here?\n");
-    //printf("%d\n", *quit_flag); always = 1
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
 		sample_zone_photon(zone_i, zone_j, zone_k, dnmax, ph);
-        printf("are we sampling photons?\n");
 	}
 
 	return;
 }
+
+/***********old function**************
+
+double bias_func(double Te, double w)
+{
+	double bias, max, avg_num_scatt;
+
+	max = 0.5 * w / WEIGHT_MIN;
+
+	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
+	bias =
+	    100. * Te * Te / (bias_norm * max_tau_scatt *
+			      (avg_num_scatt + 2));
+
+	if (bias < TP_OVER_TE)
+		bias = TP_OVER_TE;
+	if (bias > max)
+		bias = max;
+
+	return bias / TP_OVER_TE;
+}
+
+*************************************/
 
 /*
 
@@ -108,6 +127,7 @@ double bias_func(double Te, double w)
 	return bias / TP_OVER_TE;
 }
 
+
 /* 
 
 	these supply basic model data to grmonty
@@ -126,7 +146,6 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 
 	*Ne = p[KRHO][i][j][k] * Ne_unit;
 	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
-    //printf("%lf\n", p[UU][i][j][k]); /////////// HERE!!!!!!!!!!!!!!!!!!!
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];
@@ -212,7 +231,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	*Ne = rho * Ne_unit;
 	*Thetae = uu / rho * Thetae_unit;
-    printf("whatever\n");
+
 	Bp[1] = interp_scalar(p[B1], i, j, k, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, k, coeff);
 	Bp[3] = interp_scalar(p[B3], i, j, k, coeff);

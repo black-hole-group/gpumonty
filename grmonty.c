@@ -92,6 +92,7 @@ double a;
 double R0, Rin, Rh, Rout, Rms;
 double hslope;
 double startx[NDIM], stopx[NDIM], dx[NDIM];
+double x1br, cpow2, npow2, rbr;
 
 double dlE, lE0;
 double gam;
@@ -158,7 +159,6 @@ int main(int argc, char *argv[])
 
 			if (quit_flag)
 				break;
-            printf("in 'grmonty' have we reached this point?\n"); // we are not tracking superphotons because program breaks before we reach here - therefore, the issue is somewhere within make_super_photon
 			/* push them around */
 			track_super_photon(&ph);
 
