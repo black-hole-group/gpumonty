@@ -436,9 +436,17 @@ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 /* return boyer-lindquist coordinate of point */
 void bl_coord(double *X, double *r, double *th, double *phi)
 {
+    double theexp = X[1];
+    double x1br = log(rbr - R0);
 
-	*r = exp(X[1]) + R0;
-	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+    if (X[1] > x1br) {
+        theexp += cpow2 * pow(X[1] - x1br, npow2);
+    }
+
+	//*r = exp(X[1]) + R0;
+    *r = exp(theexp) + R0;
+	//*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2])) ;
 	*phi = X[3];
 
 	return;

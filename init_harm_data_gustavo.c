@@ -83,15 +83,13 @@ void init_harm_data(char *fname)
     int mpi_ntot[NDIM];
 
     int mpi_startn[NDIM], coord_plus_mpi_startn[NDIM];
-    double fractheta, fracphi, rbr, npow2, cpow2;
+    double fractheta, fracphi;
     int npr, DOKTOT, BL, DTr01, rdump01_cnt, dump_cnt, image_cnt;
 
     int GN1, GN2, GN3, nx, ny, nz;
     double ti, tj, tk;
     
-
 	fp = fopen(fname, "r");
-//	outfile = fopen('outside.txt', "w");
 
 	if (fp == NULL) {
 		fprintf(stderr, "can't open sim data file\n");
@@ -147,8 +145,6 @@ void init_harm_data(char *fname)
     fscanf(fp, "%lf ", &cpow2);
     fscanf(fp, "%d ", &BL);
 
-    fprintf(stderr, "%lf %lf\n", hslope, R0); 
-
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
 
@@ -184,7 +180,6 @@ void init_harm_data(char *fname)
             fscanf(fp, "%lf %lf %lf ", &ti, &tj, &tk);
 
             fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
-            fprintf(stderr, "%lf %lf %lf %lf %lf %lf\n", x[1], x[2], x[3], r, h, phi);
 
             /* check that we've got the coordinate parameters right */
 		    bl_coord(x, &rp, &hp, &phip);
