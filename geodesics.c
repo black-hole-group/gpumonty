@@ -35,6 +35,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		Kcon[i] += dK;
 		K[i] = Kcon[i] + dK;
 		X[i] += Kcon[i] * dl;
+//        fprintf(stderr, "X3 = %g\n", X[3]);
 	}
 
 	get_connection(X, lconn);

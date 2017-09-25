@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 #
 # open spectrum file
+#data = np.loadtxt("grmonty.spec")
 data = np.loadtxt("spectrum.dat")
 tdata = np.transpose( data )
 #
