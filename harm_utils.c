@@ -84,7 +84,6 @@ static double linear_interp_weight(double nu)
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(void)
 {
-//	int i, j, l, lstart, lend, myid, nthreads;
 	int i, j, k, l, lstart, lend, myid, nthreads;
 	double Ne, Thetae, B, K2;
 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
@@ -184,7 +183,6 @@ void init_nint_table(void)
 	return;
 }
 
-// DO WE NEED TO WORRY ABOUT NZ? RN
 static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 {
 
@@ -197,7 +195,6 @@ static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*nz = 0.;
-        //printf("Ne = %lf, Thetae = %lf, THETAE_MIN = %lf\n", Ne, Thetae, THETAE_MIN); ///////////// IT'S HERE!!!!!!
 		*dnmax = 0.;
 		return;
 	}
@@ -272,11 +269,10 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	int in2gen;
 	double n2gen;
 	static int zi = 0;
-	static int zj = 0; //-1
-	static int zk = -1; // RN: is this correct?
+	static int zj = 0;
+	static int zk = -1;
 
 	zone_flag = 1;
-	//zj++;
     zk++;
     
     if (zk >= N3) {
@@ -293,13 +289,11 @@ int get_zone(int *i, int *j, int *k, double *dnmax)
 	    }
 	}
 
-	init_zone(zi, zj, zk, &n2gen, dnmax); ///////////////// HERE!!!!!
+	init_zone(zi, zj, zk, &n2gen, dnmax);
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
-        //printf("if\n");
 	} else {
 		in2gen = (int) n2gen;
-        //printf("else\n");
 	}
 
 	*i = zi;
@@ -392,7 +386,6 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 	return;
 }
 
-//void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 

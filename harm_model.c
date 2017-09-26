@@ -209,12 +209,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	Xtoijk(X, &i, &j, &k, del);
 
-//	coeff[0] = (1. - del[1]) * (1. - del[2]);
-//	coeff[1] = (1. - del[1]) * del[2];
-//	coeff[2] = del[1] * (1. - del[2]);
-//	coeff[3] = del[1] * del[2];
-
-	// did you check this? RN
 	coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
 	coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
 	coeff[2] = (1. - del[1]) * del[2] * (1. - del[3]);
@@ -224,8 +218,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	coeff[6] = del[1] * del[2] * (1. - del[3]);
 	coeff[7] = del[1] * del[2] * del[3];
 
-//	rho = interp_scalar(p[KRHO], i, j, coeff);
-//	uu = interp_scalar(p[UU], i, j, coeff);
 	rho = interp_scalar(p[KRHO], i, j, k, coeff);
 	uu = interp_scalar(p[UU], i, j, k, coeff);
 
