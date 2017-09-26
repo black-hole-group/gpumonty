@@ -84,7 +84,12 @@ in the model file.
 
 - `track_ph`: output photon world lines for visualisation
 
+# Pseudocodes
 
+A set of python codes written only for educational purposes, for understanding what the code does. Includes a proposal for a GPU version.
+
+- `pseudocode/cpu.py`: basic steps that the current version of the codes perfoms
+- `pseudocode/gpu.py`: a proposal for a GPU version
 
 # TODO
 
