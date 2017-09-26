@@ -46,8 +46,6 @@ s.grmonty('grmonty.spec')
 plot(s.lognu, s.ll)
 ```
 
-Old-fashioned way: Use the [SM](http://www.astro.princeton.edu/~rhl/sm/) script `plspec.m` to plot up broad-band spectral energy distribution.
-
 # Calculate spectra from other sources
 
 Replace `harm_model.c` with your own source model.  Begin by modifying `harm_model.c`. You must supply
@@ -70,23 +68,31 @@ in the model file.
 
 # Explanation of branches
 
-- `master`: stable branch, supports `HARM2D`
-- `harmpi`: `HARMPI` support, in progress
+- `master`, stable: matches the original release functionality, supports only input from `HARM2D`
 - `illinois`: latest bug corrections by Gammie's group, `HARM2D`
-- `opencl`: OpenCL version (in progress)
-- `progressbar`: progress bar implementation
-- `track_ph`: output photon world lines for visualization
+- `progressbar`, stable: progress bar
 
-## Test branches
 
-- `read_harmpi`: reads HARMPI dumps, for testing (in progress)
-- `3dtests`: full support for HARMPI 3D dumps (in progress)
+## 3D HARMPI support
+
+- `3dtests`, in progress: unstable, new features being implemented, dump → ASCII
+- `3d-stable`, stable: starting point for GPU version, dump → ASCII
+- `read_harmpi`, buggy: reads HARMPI dumps
+
+## GPU support
+
+- `opencl`, in progress, unstable: OpenCL version
+- `cuda`: TBD
+
+## Misc. 
+
+- `track_ph`: output photon world lines for visualisation
 
 
 
 # TODO
 
-- [ ] make it work with [HARMPI](https://github.com/atchekho/harmpi)
+- [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
 - [ ] GPU support: OpenCL
 - [ ] parallelize with MPI
 - [ ] add bremsstrahlung
