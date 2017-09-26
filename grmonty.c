@@ -80,7 +80,6 @@
  */
 
 #include "decs.h"
-#include <time.h>
 
 /* defining declarations for global variables */
 struct of_geom ***geom;
@@ -114,7 +113,6 @@ int main(int argc, char *argv[])
 	int quit_flag, myid;
 	struct of_photon ph;
 	time_t currtime, starttime;
-    clock_t start_make, end_make, start_track, end_track;
     double total_make, total_track;
 
 	if (argc < 4) {
@@ -159,24 +157,13 @@ int main(int argc, char *argv[])
 			/* get pseudo-quanta */
 #pragma omp critical (MAKE_SPHOT)
 			{
-				if (!quit_flag){
-	                start_make = clock();
+				if (!quit_flag)
     				make_super_photon(&ph, &quit_flag);
-                    end_make = clock();
-                    //fprintf(stderr, "make_super_photon: %f seconds\n", (double)(end_make - start_make)/CLOCKS_PER_SEC);
-                    total_make += (double)(end_make - start_make)/CLOCKS_PER_SEC/8.;
-                    fprintf(stderr, "total_make = %lf seconds\n", total_make);
-                }
 			}    
 
 			if (quit_flag)
 				break;
 			/* push them around */
-            start_track = clock();
-			track_super_photon(&ph);
-            end_track = clock();
-            //fprintf(stderr, "track_super_photon: %f seconds\n", (double)(end_track - start_track)/CLOCKS_PER_SEC);
-            total_track += (double)(end_track - start_track)/CLOCKS_PER_SEC/8.;
             fprintf(stderr, "total_track = %lf seconds\n", total_track);
 
 			/* step */
