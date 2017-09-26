@@ -7,10 +7,6 @@ GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). Th
 
 # quick start
 
-unpack the tarball:
-
-    tar -xzvf grmonty.tgz
-
 make (requires openmp enabled gcc):
 
     make
@@ -75,14 +71,14 @@ in the model file.
 
 ## 3D HARMPI support
 
-- `3dtests`, in progress: unstable, new features being implemented, dump → ASCII
+- `3dtests`, in progress, possibly unstable: new features being implemented, dump → ASCII
 - `3d-stable`, stable: starting point for GPU version, dump → ASCII
-- `read_harmpi`, buggy: reads HARMPI dumps
+- `read_harmpi`, buggy: trying to read `HARMPI` dumps directly in `grmonty`
 
 ## GPU support
 
-- `opencl`, in progress, unstable: OpenCL version
-- `cuda`: TBD
+- `opencl`, in progress: OpenCL version
+- `cuda`, in progress: CUDA version
 
 ## Misc. 
 
