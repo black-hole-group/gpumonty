@@ -5,33 +5,48 @@ def gpumonty():
 	Pseudocode for the host part of grmonty for the GPU.
 	"""
 
-	# initialize random number generator in parallel
+	# initialize random number generator 
 	init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
 
 	# reads data from GRMHD simulation
 	init_model(argv);
 
-	# sends simulation data to device
-	send_data_to_device(GRMHD)	
+	# sends fluid simulation data to device
+	send_fluid_data_to_device(WHICH VARIABLES???)	
 
 	"""
-	run kernel that generates (make_super_photon) and solves 
-	geodesics (track_super_photon) in parallel
-	• dSED corresponds to the SED differential contributed
-	   by each unabsorbed photon, returned to the host
-	• it should be straightforward to generate several photons
-	   in each workitem
+	Generates photons on the host (make_super_photon) and performs
+	radiative transfer (track_super_photon) on the device in parallel.
 
 	n=1e9 photons would require ~32 GB of host RAM memory,
-	therefore this approach would be limited to about a few 1E8 photons.
-	It is straightforward to write a loop that repeats the operations
-	below, consistent with the amount of RAM available.
+	Therefore the loop below keeps generating photons until the monte carlo
+	criteria are satisfied.
 	"""
-	#kernel make_track_photon(X0[α][n], K0[α][n], dSED[n])
-	kernel make_track_photon(dSED[n])
+	while (nph_created < nph_desired):
+
+		# generates as many photons as the RAM can hold in the host.
+		# Below, SPH is an array of structures with the initial conditions for
+		# the photons. 
+		# 
+		# For example, SPH holds the relevant 4-vectors:
+		# • component 1, initial position for the i-th photon SPH[i].X0[1] 
+		# • component 3, initial  momentum for the i-th photon SPH[i].K0[3] 
+		make_super_photon(SPH)
+
+		# send photon ICs to device
+		send_photons_to_device(SPH)
+
+		# run kernel on device to carry out radiative transfer for all photons.
+		# Returns histogram of photon energies (SED) `Ener`
+		kernel_track_photon(SPH, Ener)
+
+		# clear memory in CPU and GPU
+		clear_memory()
+
+		nph_created += nph_gpu
 
 	# assemble SED
-	omp_reduce_spect(dSED)
+	omp_reduce_spect(Ener)
 	report_spectrum()
 
 
@@ -40,7 +55,7 @@ def gpumonty():
 
 
 
-def kernel track_super_photon(X0_α, K0_α, dSED):
+def kernel_track_super_photon(SPH, Ener):
 	'''
 Pseudocode for the kernel that performs geodesic integration of 
 one single photon. Includes tracking, absorbing and scattering 
