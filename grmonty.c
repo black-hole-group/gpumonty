@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 			if (quit_flag)
 				break;
 			/* push them around */
-            fprintf(stderr, "total_track = %lf seconds\n", total_track);
+            track_super_photon(&ph);
 
 			/* step */
 #pragma omp atomic
