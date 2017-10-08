@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
 	int quit_flag, myid;
 	struct of_photon ph;
 	time_t currtime, starttime;
-    clock_t start_make, end_make, start_track, end_track;
-    double total_make, total_track;
+    //clock_t start_make, end_make, start_track, end_track;
+    //double total_make, total_track;
 
 	if (argc < 4) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
@@ -145,8 +145,8 @@ int main(int argc, char *argv[])
 	starttime = time(NULL);
 	quit_flag = 0;
 
-    total_make = 0.;
-    total_track = 0.;
+    //total_make = 0.;
+    //total_track = 0.;
 
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
@@ -160,24 +160,24 @@ int main(int argc, char *argv[])
 #pragma omp critical (MAKE_SPHOT)
 			{
 				if (!quit_flag){
-	                start_make = clock();
+	                //start_make = clock();
     				make_super_photon(&ph, &quit_flag);
-                    end_make = clock();
+                    //end_make = clock();
                     //fprintf(stderr, "make_super_photon: %f seconds\n", (double)(end_make - start_make)/CLOCKS_PER_SEC);
-                    total_make += (double)(end_make - start_make)/CLOCKS_PER_SEC/8.;
-                    fprintf(stderr, "total_make = %lf seconds\n", total_make);
+                    //total_make += (double)(end_make - start_make)/CLOCKS_PER_SEC/8.;
+                    //fprintf(stderr, "total_make = %lf seconds\n", total_make);
                 }
 			}    
 
 			if (quit_flag)
 				break;
 			/* push them around */
-            start_track = clock();
+            //start_track = clock();
 			track_super_photon(&ph);
-            end_track = clock();
+            //end_track = clock();
             //fprintf(stderr, "track_super_photon: %f seconds\n", (double)(end_track - start_track)/CLOCKS_PER_SEC);
-            total_track += (double)(end_track - start_track)/CLOCKS_PER_SEC/8.;
-            fprintf(stderr, "total_track = %lf seconds\n", total_track);
+            //total_track += (double)(end_track - start_track)/CLOCKS_PER_SEC/8.;
+            //fprintf(stderr, "total_track = %lf seconds\n", total_track);
 
 			/* step */
 #pragma omp atomic
