@@ -40,6 +40,7 @@
 ***********************************************************************************/
 
 #include "decs.h"
+void sincos(double x, double *sin, double *cos);
 #pragma omp threadprivate(r)
 
 /*
@@ -70,9 +71,9 @@ double monty_rand()
 
 /*
    given photon w/ wavevector $k$ colliding w/ electron with
-   momentum $p$, ($p$ is actually the four-velocity) 
-   find new wavevector $kp$ 
-   
+   momentum $p$, ($p$ is actually the four-velocity)
+   find new wavevector $kp$
+
 */
 
 void sample_scattered_photon(double k[4], double p[4], double kp[4])
@@ -82,7 +83,6 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	double n0x, n0y, n0z, n0dotv0, v0x, v0y, v0z, v1x, v1y, v1z, v2x,
 	    v2y, v2z, v1, dir1, dir2, dir3;
 	double cth, sth, phi, cphi, sphi;
-	void sincos(double x, double *sin, double *cos);
 
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
@@ -253,12 +253,12 @@ double sample_klein_nishina(double k0)
 	return (k0p_tent);
 }
 
-/*  
+/*
 
-   differential cross section for scattering from 
+   differential cross section for scattering from
    frequency a -> frequency ap.  Frequencies are
    in units of m_e.  Unnormalized!
-   
+
 */
 
 double klein_nishina(double a, double ap)
@@ -271,7 +271,7 @@ double klein_nishina(double a, double ap)
 	return (kn);
 }
 
-/* 
+/*
 
 	sample electron distribution to find which electron was
 	scattered.
@@ -287,7 +287,6 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	double v1x, v1y, v1z;
 	double v2x, v2y, v2z;
 	int sample_cnt = 0;
-	void sincos(double x, double *sin, double *cos);
 
 	do {
 		sample_beta_distr(Thetae, &gamma_e, &beta_e);
@@ -366,7 +365,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	v2y = v0z * v1x - v0x * v1z;
 	v2z = v0x * v1y - v0y * v1x;
 
-	/* now resolve new momentum vector along unit vectors 
+	/* now resolve new momentum vector along unit vectors
 	   and create a four-vector $p$ */
 	phi = monty_rand() * 2. * M_PI;	/* orient uniformly */
 	sincos(phi, &sphi, &cphi);
@@ -392,12 +391,12 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	return;
 }
 
-/* 
+/*
    sample dimensionless speed of electron
-   from relativistic maxwellian 
+   from relativistic maxwellian
 
-   checked. 
-   
+   checked.
+
 */
 
 void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
@@ -415,13 +414,13 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 
 }
 
-/* 
+/*
 
    sample y, which is the temperature-normalized
    kinetic energy.
    Uses procedure outlined in Canfield et al. 1987,
-   p. 572 et seq. 
-   
+   p. 572 et seq.
+
 */
 
 double sample_y_distr(double Thetae)

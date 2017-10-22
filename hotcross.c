@@ -42,12 +42,12 @@
 
 #include "decs.h"
 
-/* 
+/*
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
    energy, and temperature of plasma, again in electron rest-mass units, return hot
    cross section in cgs.
-   
+
    This has been checked against Wienke's Table 1, with some disagreement at
    the one part in 10^{-3} level, see wienke_table_1 in the subdirectory hotcross.
    It is not clear what this is due to, but Table 1 does appear to have been evaluated
@@ -55,7 +55,7 @@
 
    A better way to do this would be to make a table in w*thetae and w/thetae; most
    	of the variation is accounted for by w*thetae.
-   
+
 */
 
 #define MINW	1.e-12
@@ -123,7 +123,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				nread =
-				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
+				    fscanf(fp, "%*d %*d %*f %*f %lf\n",
 					   &table[i][j]);
 				if (isnan(table[i][j]) || nread != 1) {
 					fprintf(stderr,

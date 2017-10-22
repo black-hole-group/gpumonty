@@ -72,7 +72,8 @@ scatter_super_photon.o harm_model.o harm_utils.o init_harm_data.o
 INCS = decs.h constants.h harm_model.h
 
 grmonty : $(OBJS) $(INCS) makefile
-	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -o grmonty $(OBJS) $(ALL_LDFLAGS)
+	$(CC) $(CFLAGS) -o grmonty $(OBJS) $(LDFLAGS)
+	# $(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -o grmonty $(OBJS) $(ALL_LDFLAGS)
 
 $(OBJS) : $(INCS) makefile
 

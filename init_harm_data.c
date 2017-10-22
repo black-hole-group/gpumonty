@@ -47,7 +47,7 @@
 get HARM simulation data from fname
 
 checks for consistency of coordinates in data file with
-values of coordinate parameters 
+values of coordinate parameters
 
 Uses standard HARM data file format
 
@@ -61,7 +61,7 @@ void init_harm_data(char *fname)
 	FILE *fp;
 	double x[4];
 	double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+	int i, j, k, success;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
@@ -79,32 +79,33 @@ void init_harm_data(char *fname)
 	}
 
 	/* get standard HARM header */
-	fscanf(fp, "%lf ", &t);
-	fscanf(fp, "%d ", &N1);
-	fscanf(fp, "%d ", &N2);
-	fscanf(fp, "%lf ", &startx[1]);
-	fscanf(fp, "%lf ", &startx[2]);
-	fscanf(fp, "%lf ", &dx[1]);
-	fscanf(fp, "%lf ", &dx[2]);
-	fscanf(fp, "%lf ", &tf);
-	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &a);
-	fscanf(fp, "%lf ", &gam);
-	fscanf(fp, "%lf ", &cour);
-	fscanf(fp, "%lf ", &DTd);
-	fscanf(fp, "%lf ", &DTl);
-	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%d ", &DTr);
-	fscanf(fp, "%d ", &dump_cnt);
-	fscanf(fp, "%d ", &image_cnt);
-	fscanf(fp, "%d ", &rdump_cnt);
-	fscanf(fp, "%lf ", &dt);
-	fscanf(fp, "%d ", &lim);
-	fscanf(fp, "%d ", &failed);
-	fscanf(fp, "%lf ", &Rin);
-	fscanf(fp, "%lf ", &Rout);
-	fscanf(fp, "%lf ", &hslope);
-	fscanf(fp, "%lf ", &R0);
+
+	success = fscanf(fp, "%lf ", &t);
+	success = fscanf(fp, "%d ", &N1);
+	success = fscanf(fp, "%d ", &N2);
+	success = fscanf(fp, "%lf ", &startx[1]);
+	success = fscanf(fp, "%lf ", &startx[2]);
+	success = fscanf(fp, "%lf ", &dx[1]);
+	success = fscanf(fp, "%lf ", &dx[2]);
+	success = fscanf(fp, "%lf ", &tf);
+	success = fscanf(fp, "%d ", &nstep);
+	success = fscanf(fp, "%lf ", &a);
+	success = fscanf(fp, "%lf ", &gam);
+	success = fscanf(fp, "%lf ", &cour);
+	success = fscanf(fp, "%lf ", &DTd);
+	success = fscanf(fp, "%lf ", &DTl);
+	success = fscanf(fp, "%lf ", &DTi);
+	success = fscanf(fp, "%d ", &DTr);
+	success = fscanf(fp, "%d ", &dump_cnt);
+	success = fscanf(fp, "%d ", &image_cnt);
+	success = fscanf(fp, "%d ", &rdump_cnt);
+	success = fscanf(fp, "%lf ", &dt);
+	success = fscanf(fp, "%d ", &lim);
+	success = fscanf(fp, "%d ", &failed);
+	success = fscanf(fp, "%lf ", &Rin);
+	success = fscanf(fp, "%lf ", &Rout);
+	success = fscanf(fp, "%lf ", &hslope);
+	success = fscanf(fp, "%lf ", &R0);
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
@@ -137,7 +138,7 @@ void init_harm_data(char *fname)
 	for (k = 0; k < N1 * N2; k++) {
 		j = k % N2;
 		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
+		success = fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
 
 		/* check that we've got the coordinate parameters right */
 		bl_coord(x, &rp, &hp);
@@ -150,7 +151,7 @@ void init_harm_data(char *fname)
 			exit(1);
 		}
 
-		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
+		success = fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
 		       &p[KRHO][i][j],
 		       &p[UU][i][j],
 		       &p[U1][i][j],
@@ -159,21 +160,21 @@ void init_harm_data(char *fname)
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
 
 
-		fscanf(fp, "%lf", &divb);
+		success = fscanf(fp, "%lf", &divb);
 
-		fscanf(fp, "%lf %lf %lf %lf",
+		success = fscanf(fp, "%lf %lf %lf %lf",
 		       &Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Ucov[0],
+		success = fscanf(fp, "%lf %lf %lf %lf", &Ucov[0],
 		       &Ucov[1], &Ucov[2], &Ucov[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcon[0],
+		success = fscanf(fp, "%lf %lf %lf %lf", &Bcon[0],
 		       &Bcon[1], &Bcon[2], &Bcon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
+		success = fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
 		       &Bcov[1], &Bcov[2], &Bcov[3]);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf\n", &gdet);
+		success = fscanf(fp, "%lf ", &vmin);
+		success = fscanf(fp, "%lf ", &vmax);
+		success = fscanf(fp, "%lf ", &vmin);
+		success = fscanf(fp, "%lf ", &vmax);
+		success = fscanf(fp, "%lf\n", &gdet);
 
 		bias_norm +=
 		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
@@ -194,6 +195,8 @@ void init_harm_data(char *fname)
 	Ladv *= dx[3] * dx[2];
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
+	if(!success)
+		printf("error on fscanf\n" );
 
 
 	/* done! */

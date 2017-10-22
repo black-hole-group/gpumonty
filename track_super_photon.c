@@ -24,8 +24,7 @@ void track_super_photon(struct of_photon *ph)
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
-	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
-	    Bcov[NDIM];
+	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep = 0;
 
 	/* quality control */
@@ -177,8 +176,7 @@ void track_super_photon(struct of_photon *ph)
 					ph->w *= exp(-dtau);
 
 				/* Interpolate position and wave vector to scattering event */
-				push_photon(Xi, Ki, dKi, dl * frac, &E0,
-					    0);
+				push_photon(Xi, Ki, dKi, dl * frac, &E0, 0);
 				ph->X[0] = Xi[0];
 				ph->X[1] = Xi[1];
 				ph->X[2] = Xi[2];
@@ -195,9 +193,7 @@ void track_super_photon(struct of_photon *ph)
 
 				/* Get plasma parameters at new position */
 				gcov_func(ph->X, Gcov);
-				get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
-						 &B, Ucon, Ucov, Bcon,
-						 Bcov);
+				get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
 					scatter_super_photon(ph, &php, Ne,
