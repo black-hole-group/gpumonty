@@ -1,49 +1,5 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 /*
-
-	HARM model specification routines 
-
+	HARM model specification routines
 */
 
 #include "decs.h"
@@ -57,8 +13,8 @@ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
 /*
 
-	encapsulates all initialization routines 
-	
+	encapsulates all initialization routines
+
 */
 
 void init_model(char *args[])
@@ -94,7 +50,7 @@ void init_model(char *args[])
 }
 
 /*
-	make super photon 
+	make super photon
 */
 
 int n2gen = -1;
@@ -143,7 +99,7 @@ double bias_func(double Te, double w)
 	return bias / TP_OVER_TE;
 }
 
-/* 
+/*
 
 	these supply basic model data to grmonty
 
@@ -262,9 +218,9 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 }
 
 
-/* 
+/*
    Current metric: modified Kerr-Schild, squashed in theta
-   to give higher resolution at the equator 
+   to give higher resolution at the equator
 */
 
 /* mnemonics for dimensional indices */
@@ -292,7 +248,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
-	// transformation for Kerr-Schild -> modified Kerr-Schild 
+	// transformation for Kerr-Schild -> modified Kerr-Schild
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
@@ -354,10 +310,10 @@ void gcov_func(double *X, double gcov[][NDIM])
 #undef TH
 #undef PH
 
-/* 
+/*
 
    connection calculated analytically for modified Kerr-Schild
-   	coordinates 
+   	coordinates
 
 
    this gives the connection coefficient
@@ -605,7 +561,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	return (dl);
 }
 
-/* 
+/*
 	record contribution of super photon to spectrum.
 
 	This routine should make minimal assumptions about the
@@ -736,9 +692,9 @@ void omp_reduce_spect()
 	}
 }
 
-/* 
+/*
 
-	output spectrum to file 
+	output spectrum to file
 
 */
 
@@ -766,7 +722,7 @@ void report_spectrum(int N_superph_made)
 
 		for (j = 0; j < N_THBINS; j++) {
 
-			/* convert accumulated photon number in each bin 
+			/* convert accumulated photon number in each bin
 			   to \nu L_\nu, in units of Lsun */
 			dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
 
