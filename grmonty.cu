@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -40,26 +40,26 @@
 ***********************************************************************************/
 
 
-/* 
+/*
 
    grmonty Nph
 
    Using monte carlo method, estimate spectrum of an appropriately
-   scaled axisymmetric GRMHD simulation as a function of 
+   scaled axisymmetric GRMHD simulation as a function of
    latitudinal viewing angle.
 
-   Input simulation data is assumed to be in dump format provided by 
+   Input simulation data is assumed to be in dump format provided by
    HARM code.  Location of input file is, at present, hard coded
-   (see init_sim_data.c).  
+   (see init_sim_data.c).
 
    Nph super-photons are generated in total and then allowed
    to propagate.  They are weighted according to the emissivity.
    The photons are pushed by the geodesic equation.
    Their weight decays according to the local absorption coefficient.
    The photons also scatter with probability related to the local
-   scattering opacity.  
+   scattering opacity.
 
-   The electrons are assumed to have a thermal distribution 
+   The electrons are assumed to have a thermal distribution
    function, and to be at the same temperature as the protons.
 
    CFG 8-17-06
@@ -73,7 +73,7 @@
    Separated out different synchrotron sampling routines
    into separate files, 8 Mar 07
 
-   fixed bug in energy recording; bug used Kcon[0] rather than 
+   fixed bug in energy recording; bug used Kcon[0] rather than
    Kcov[0] as energy, 18 Mar 07
 
    major reorganization to encapsulate problem-dependent parts 5-6 Nov 07

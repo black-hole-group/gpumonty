@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -460,7 +460,7 @@ void set_units(char *munitstr)
 	double MBH;
 
 	/* set black hole mass */
-	/** could be read in from file here, 
+	/** could be read in from file here,
 	    along with M_unit and other parameters **/
 	MBH = 4.e6;
 
@@ -573,9 +573,9 @@ static double **malloc_rank2_cont(int n1, int n2)
 	double *space;
 	int i;
 
-	space = malloc_rank1(n1 * n2, sizeof(double));
+	space = (double *)malloc_rank1(n1 * n2, sizeof(double));
 
-	A = malloc_rank1(n1, sizeof(double *));
+	A = (double **)malloc_rank1(n1, sizeof(double *));
 
 	for (i = 0; i < n1; i++)
 		A[i] = &(space[i * n2]);
@@ -587,7 +587,7 @@ void init_storage(void)
 {
 	int i;
 
-	p = malloc_rank1(NPRIM, sizeof(double *));
+	p = (double ***)malloc_rank1(NPRIM, sizeof(double *));
 	for (i = 0; i < NPRIM; i++)
 		p[i] = (double **) malloc_rank2_cont(N1, N2);
 	geom =

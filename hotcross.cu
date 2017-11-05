@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -68,7 +68,8 @@
 #define HOTCROSS	"hotcross.dat"
 
 double table[NW + 1][NT + 1];
-double dlw, dlT, lminw, lmint;
+/* multiple definition of dlT, first defined in jnu_mixed */
+double dlw, dlT2, lminw, lmint;
 
 void init_hotcross(void)
 {
@@ -78,7 +79,7 @@ void init_hotcross(void)
 	FILE *fp;
 
 	dlw = log10(MAXW / MINW) / NW;
-	dlT = log10(MAXT / MINT) / NT;
+	dlT2 = log10(MAXT / MINT) / NT;
 	lminw = log10(MINW);
 	lmint = log10(MINT);
 
@@ -91,7 +92,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
+				lT = lmint + j * dlT2;
 				table[i][j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
@@ -111,7 +112,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
+				lT = lmint + j * dlT2;
 				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
 					lw, lT, table[i][j]);
 			}
@@ -163,9 +164,9 @@ double total_compton_cross_lkup(double w, double thetae)
 		lw = log10(w);
 		lT = log10(thetae);
 		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / dlT);
+		j = (int) ((lT - lmint) / dlT2);
 		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / dlT - j;
+		dj = (lT - lmint) / dlT2 - j;
 
 		lcross =
 		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -

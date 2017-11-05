@@ -237,7 +237,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double r, th;
 	double hfac;
 	/* required by broken math.h */
-	void sincos(double in, double *sth, double *cth);
+	// void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
@@ -272,7 +272,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	double r, th;
 	double tfac, rfac, hfac, pfac;
 	/* required by broken math.h */
-	void sincos(double th, double *sth, double *cth);
+	// void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
 
@@ -331,7 +331,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
 	/* required by broken math.h */
-	void sincos(double th, double *sth, double *cth);
+	// void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
 	r2 = r1 * r1;
