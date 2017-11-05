@@ -1,8 +1,8 @@
 # requires an openmp-enabled version of gcc
-#
+
 CUDAC = nvcc
 CUDAC_FLAGS = -Wno-deprecated-gpu-targets -O2
-CC = gcc-5
+CC = g++-5
 CFLAGS = -Wall -O2 -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas
 
@@ -19,21 +19,26 @@ ALL_CUDACFLAGS += $(ALL_CUDACFLAGS)
 ALL_CUDACFLAGS += $(CUDAC_FLAGS)
 ALL_CUDACFLAGS += -ccbin $(CC)
 
-SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
-radiation.c jnu_mixed.c hotcross.c track_super_photon.c \
-scatter_super_photon.c harm_model.c harm_utils.c init_harm_data.c
+SRCS = grmonty.cu compton.cu init_geometry.cu tetrads.cu geodesics.cu \
+radiation.cu jnu_mixed.cu hotcross.cu track_super_photon.cu \
+scatter_super_photon.cu harm_model.cu harm_utils.cu init_harm_data.cu \
+gpu_helpers.cu
 
 OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
 radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
-scatter_super_photon.o harm_model.o harm_utils.o init_harm_data.o
+scatter_super_photon.o harm_model.o harm_utils.o init_harm_data.o \
+gpu_helpers.o
 
-INCS = decs.h constants.h harm_model.h
+INCS = decs.h constants.h harm_model.h gpu_helpers.h
 
 grmonty : $(OBJS) $(INCS) makefile
-	$(CC) $(CFLAGS) -o grmonty $(OBJS) $(LDFLAGS)
-	# $(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -o grmonty $(OBJS) $(ALL_LDFLAGS)
+	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -o grmonty $(OBJS) $(ALL_LDFLAGS)
 
 $(OBJS) : $(INCS) makefile
+	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -c $(SRCS)
 
 clean:
 	/bin/rm *.o
+
+run:
+	./grmonty 50000 dump019 4.e19
