@@ -36,10 +36,9 @@ This will output spectrum to `grmonty.spec`  which should be identical to `grmon
 Use python and the [`nmmn`](https://github.com/rsnemmen/nmmn) module:
 
 ```python
-import nmmn.sed
-s=nmmn.sed.SED()
-s.grmonty('grmonty.spec')
-plot(s.lognu, s.ll)
+from  nmmn import plots
+plots.plot('grmonty.spec')
+
 ```
 
 # Calculate spectra from other sources
