@@ -131,10 +131,10 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
 			VdotV += geom[i][j].gcov[l][m] * Vcon[l] * Vcon[m];
-	Vfac = sqrt(-1. / geom[i][j].gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * geom[i][j].gcon[0][0];
+	Vfac = sqrt(-1. / geom[i][j].gcon[0*NDIM + 0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * geom[i][j].gcon[0*NDIM + 0];
 	for (l = 1; l < NDIM; l++)
-		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0][l];
+		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0*NDIM + l];
 	lower(Ucon, geom[i][j].gcov, Ucov);
 
 	/* Get B and Bcov */
@@ -160,8 +160,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double del[NDIM];
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, double del[4]);
+	double gcon[NDIM*NDIM], coeff[4];
+	double interp_scalar(double **var, int i, int j, double del[4], int N1);
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -171,26 +171,26 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		return;
 	}
 
-	Xtoij(X, &i, &j, del);
+	Xtoij(X, &i, &j, del, startx, dx, N1, N2);
 
 	coeff[0] = (1. - del[1]) * (1. - del[2]);
 	coeff[1] = (1. - del[1]) * del[2];
 	coeff[2] = del[1] * (1. - del[2]);
 	coeff[3] = del[1] * del[2];
 
-	rho = interp_scalar(p[KRHO], i, j, coeff);
-	uu = interp_scalar(p[UU], i, j, coeff);
+	rho = interp_scalar(p[KRHO], i, j, coeff, N1);
+	uu = interp_scalar(p[UU], i, j, coeff, N1);
 
 	*Ne = rho * Ne_unit;
 	*Thetae = uu / rho * Thetae_unit;
 
-	Bp[1] = interp_scalar(p[B1], i, j, coeff);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff);
+	Bp[1] = interp_scalar(p[B1], i, j, coeff, N1);
+	Bp[2] = interp_scalar(p[B2], i, j, coeff, N1);
+	Bp[3] = interp_scalar(p[B3], i, j, coeff, N1);
 
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
+	Vcon[1] = interp_scalar(p[U1], i, j, coeff, N1);
+	Vcon[2] = interp_scalar(p[U2], i, j, coeff, N1);
+	Vcon[3] = interp_scalar(p[U3], i, j, coeff, N1);
 
 	gcon_func(X, gcon);
 
@@ -199,10 +199,10 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	for (i = 1; i < NDIM; i++)
 		for (j = 1; j < NDIM; j++)
 			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
-	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * gcon[0][0];
+	Vfac = sqrt(-1. / gcon[0*NDIM + 0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * gcon[0*NDIM + 0];
 	for (i = 1; i < NDIM; i++)
-		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
+		Ucon[i] = Vcon[i] - Vfac * gcon[0*NDIM + i];
 	lower(Ucon, gcov, Ucov);
 
 	/* Get B and Bcov */
@@ -231,7 +231,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define TH      2
 #define PH      3
 
-void gcon_func(double *X, double gcon[][NDIM])
+__device__
+void gcon_func(double *X, double gcon[NDIM*NDIM])
 {
 
 	int k, l;
@@ -241,7 +242,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	/* required by broken math.h */
 	// void sincos(double in, double *sth, double *cth);
 
-	DLOOP gcon[k][l] = 0.;
+	DLOOP gcon[k*NDIM + l] = 0.;
 
 	bl_coord(X, &r, &th);
 
@@ -253,21 +254,21 @@ void gcon_func(double *X, double gcon[][NDIM])
 	// transformation for Kerr-Schild -> modified Kerr-Schild
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 
-	gcon[TT][TT] = -1. - 2. * r * irho2;
-	gcon[TT][1] = 2. * irho2;
+	gcon[TT*NDIM + TT] = -1. - 2. * r * irho2;
+	gcon[TT*NDIM + 1] = 2. * irho2;
 
-	gcon[1][TT] = gcon[TT][1];
-	gcon[1][1] = irho2 * (r * (r - 2.) + a * a) / (r * r);
-	gcon[1][3] = a * irho2 / r;
+	gcon[1*NDIM + TT] = gcon[TT*NDIM + 1];
+	gcon[1*NDIM + 1] = irho2 * (r * (r - 2.) + a * a) / (r * r);
+	gcon[1*NDIM + 3] = a * irho2 / r;
 
-	gcon[2][2] = irho2 / (hfac * hfac);
+	gcon[2*NDIM + 2] = irho2 / (hfac * hfac);
 
-	gcon[3][1] = gcon[1][3];
-	gcon[3][3] = irho2 / (sth * sth);
+	gcon[3*NDIM + 1] = gcon[1*NDIM + 3];
+	gcon[3*NDIM + 3] = irho2 / (sth * sth);
 }
 
-
-void gcov_func(double *X, double gcov[][NDIM])
+__device__
+void gcov_func(double *X, double gcov[NDIM*NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
@@ -276,7 +277,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	/* required by broken math.h */
 	// void sincos(double th, double *sth, double *cth);
 
-	DLOOP gcov[k][l] = 0.;
+	DLOOP gcov[k*NDIM + l] = 0.;
 
 	bl_coord(X, &r, &th);
 
@@ -291,19 +292,19 @@ void gcov_func(double *X, double gcov[][NDIM])
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 	pfac = 1.;
 
-	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
-	gcov[TT][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[TT][3] = (-2. * a * r * s2 / rho2) * tfac * pfac;
+	gcov[TT*NDIM + TT] = (-1. + 2. * r / rho2) * tfac * tfac;
+	gcov[TT*NDIM + 1] = (2. * r / rho2) * tfac * rfac;
+	gcov[TT*NDIM + 3] = (-2. * a * r * s2 / rho2) * tfac * pfac;
 
-	gcov[1][TT] = gcov[TT][1];
-	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-a * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1*NDIM + TT] = gcov[TT*NDIM + 1];
+	gcov[1*NDIM + 1] = (1. + 2. * r / rho2) * rfac * rfac;
+	gcov[1*NDIM + 3] = (-a * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
 
-	gcov[2][2] = rho2 * hfac * hfac;
+	gcov[2*NDIM + 2] = rho2 * hfac * hfac;
 
-	gcov[3][TT] = gcov[TT][3];
-	gcov[3][1] = gcov[1][3];
-	gcov[3][3] =
+	gcov[3*NDIM + TT] = gcov[TT*NDIM + 3];
+	gcov[3*NDIM + 1] = gcov[1*NDIM + 3];
+	gcov[3*NDIM + 3] =
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 

@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -80,7 +80,7 @@ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 
 #define SMALL_VECTOR	1.e-30
 
-/* make orthonormal basis 
+/* make orthonormal basis
    first basis vector || U
    second basis vector || B
 */
@@ -97,12 +97,12 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	   Econ[k][l]
 	   k: index attached to tetrad basis
 	   index down
-	   l: index attached to coordinate basis 
+	   l: index attached to coordinate basis
 	   index up
 	   Ecov[k][l]
 	   k: index attached to tetrad basis
 	   index up
-	   l: index attached to coordinate basis 
+	   l: index attached to coordinate basis
 	   index down
 	 */
 
@@ -219,6 +219,29 @@ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 	    + Gcov[3][1] * ucon[1]
 	    + Gcov[3][2] * ucon[2]
 	    + Gcov[3][3] * ucon[3];
+
+	return;
+}
+
+void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
+{
+
+	ucov[0] = Gcov[0*NDIM + 0] * ucon[0]
+	    + Gcov[0*NDIM + 1] * ucon[1]
+	    + Gcov[0*NDIM + 2] * ucon[2]
+	    + Gcov[0*NDIM + 3] * ucon[3];
+	ucov[1] = Gcov[1*NDIM + 0] * ucon[0]
+	    + Gcov[1*NDIM + 1] * ucon[1]
+	    + Gcov[1*NDIM + 2] * ucon[2]
+	    + Gcov[1*NDIM + 3] * ucon[3];
+	ucov[2] = Gcov[2*NDIM + 0] * ucon[0]
+	    + Gcov[2*NDIM + 1] * ucon[1]
+	    + Gcov[2*NDIM + 2] * ucon[2]
+	    + Gcov[2*NDIM + 3] * ucon[3];
+	ucov[3] = Gcov[3*NDIM + 0] * ucon[0]
+	    + Gcov[3*NDIM + 1] * ucon[1]
+	    + Gcov[3*NDIM + 2] * ucon[2]
+	    + Gcov[3*NDIM + 3] * ucon[3];
 
 	return;
 }

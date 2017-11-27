@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -106,8 +106,8 @@ struct of_photon {
 };
 
 struct of_geom {
-	double gcon[NDIM][NDIM];
-	double gcov[NDIM][NDIM];
+	double gcon[NDIM * NDIM];
+	double gcov[NDIM * NDIM];
 	double g;
 };
 
@@ -223,6 +223,7 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
 void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
+__device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov);
 double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
@@ -269,7 +270,7 @@ double sample_y_distr(double theta);
 void sample_scattered_photon(double k[NDIM], double p[NDIM],
 			     double kp[NDIM]);
 
-/** model dependent functions required by code: these 
+/** model dependent functions required by code: these
    basic interfaces define the model **/
 
 /* physics related */
@@ -285,7 +286,5 @@ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
-void gcov_func(double *X, double gcov[][NDIM]);
-void gcon_func(double *X, double gcon[][NDIM]);
-
-
+__device__ void gcov_func(double *X, double gcov[NDIM * NDIM]);
+__device__ void gcon_func(double *X, double gcon[NDIM * NDIM]);

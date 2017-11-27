@@ -1,50 +1,6 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 #include "decs.h"
 /*
-
-this is the main photon orbit integrator 
-
+this is the main photon orbit integrator
 */
 
 #define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
@@ -54,10 +10,10 @@ this is the main photon orbit integrator
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n)
 {
-	double lconn[NDIM][NDIM][NDIM];
+	double lconn[NDIM * NDIM * NDIM];
 	double Kcont[NDIM], K[NDIM], dK;
 	double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
-	double Gcov[NDIM][NDIM], E1;
+	double Gcov[NDIM * NDIM], E1;
 	double dl_2, err, errE;
 	int i, k, iter;
 
@@ -77,7 +33,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		X[i] += Kcon[i] * dl;
 	}
 
-	get_connection(X, lconn);
+	get_connection(X, lconn, a, hslope);
 
 	/* We're in a coordinate basis so take advantage of symmetry in the connection */
 	iter = 0;
@@ -89,20 +45,20 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		for (k = 0; k < 4; k++) {
 			dKcon[k] =
 			    -2. * (Kcont[0] *
-				   (lconn[k][0][1] * Kcont[1] +
-				    lconn[k][0][2] * Kcont[2] +
-				    lconn[k][0][3] * Kcont[3])
+				   (lconn[k*16 + 0*4 + 1] * Kcont[1] +
+				    lconn[k*16 + 0*4 + 2] * Kcont[2] +
+				    lconn[k*16 + 0*4 + 3] * Kcont[3])
 				   +
-				   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
-					       lconn[k][1][3] * Kcont[3])
-				   + lconn[k][2][3] * Kcont[2] * Kcont[3]
+				   Kcont[1] * (lconn[k*16 + 1*4 + 2] * Kcont[2] +
+					       lconn[k*16 + 1*4 + 3] * Kcont[3])
+				   + lconn[k*16 + 2*4 + 3] * Kcont[2] * Kcont[3]
 			    );
 
 			dKcon[k] -=
-			    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
-			     lconn[k][1][1] * Kcont[1] * Kcont[1] +
-			     lconn[k][2][2] * Kcont[2] * Kcont[2] +
-			     lconn[k][3][3] * Kcont[3] * Kcont[3]
+			    (lconn[k*16 + 0*4 + 0] * Kcont[0] * Kcont[0] +
+			     lconn[k*16 + 1*4 + 1] * Kcont[1] * Kcont[1] +
+			     lconn[k*16 + 2*4 + 2] * Kcont[2] * Kcont[2] +
+			     lconn[k*16 + 3*4 + 3] * Kcont[3] * Kcont[3]
 			    );
 
 			K[k] = Kcon[k] + dl_2 * dKcon[k];
@@ -113,8 +69,8 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	FAST_CPY(K, Kcon);
 
 	gcov_func(X, Gcov);
-	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
+	E1 = -(Kcon[0] * Gcov[0 * NDIM + 0] + Kcon[1] * Gcov[0 * NDIM + 1] +
+	       Kcon[2] * Gcov[0 * NDIM + 2] + Kcon[3] * Gcov[0 * NDIM + 3]);
 	errE = fabs((E1 - (*E0)) / (*E0));
 
 	if (n < 7
@@ -137,7 +93,7 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 {
 
 	int k;
-	double lconn[NDIM][NDIM][NDIM];
+	double lconn[NDIM * NDIM * NDIM];
 	double Kt[NDIM], Xt[NDIM];
 	double f1x[NDIM], f2x[NDIM], f3x[NDIM], f4x[NDIM];
 	double f1k[NDIM], f2k[NDIM], f3k[NDIM], f4k[NDIM];
@@ -146,22 +102,23 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 	for (k = 0; k < NDIM; k++)
 		f1x[k] = K[k];
 
-	get_connection(X, lconn);
+	get_connection(X, lconn, a, hslope);
 	for (k = 0; k < NDIM; k++) {
 		f1k[k] =
 		    -2. * (K[0] *
-			   (lconn[k][0][1] * K[1] + lconn[k][0][2] * K[2] +
-			    lconn[k][0][3] * K[3]) +
-			   K[1] * (lconn[k][1][2] * K[2] +
-				   lconn[k][1][3] * K[3]) +
-			   lconn[k][2][3] * K[2] * K[3]
+			   (lconn[k*16 + 0*4 + 1] * K[1] +
+					lconn[k*16 + 0*4 + 2] * K[2] +
+			    lconn[k*16 + 0*4 + 3] * K[3]) +
+			   K[1] * (lconn[k*16 + 1*4 + 2] * K[2] +
+				   lconn[k*16 + 1*4 + 3] * K[3]) +
+			   lconn[k*16 + 2*4 + 3] * K[2] * K[3]
 		    );
 
 		f1k[k] -=
-		    (lconn[k][0][0] * K[0] * K[0] +
-		     lconn[k][1][1] * K[1] * K[1] +
-		     lconn[k][2][2] * K[2] * K[2] +
-		     lconn[k][3][3] * K[3] * K[3]
+		    (lconn[k*16 + 0*4 + 0] * K[0] * K[0] +
+		     lconn[k*16 + 1*4 + 1] * K[1] * K[1] +
+		     lconn[k*16 + 2*4 + 2] * K[2] * K[2] +
+		     lconn[k*16 + 3*4 + 3] * K[3] * K[3]
 		    );
 	}
 
@@ -171,23 +128,23 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 		Xt[k] = X[k] + dl_2 * f1x[k];
 	}
 
-	get_connection(Xt, lconn);
+	get_connection(Xt, lconn, a, hslope);
 	for (k = 0; k < NDIM; k++) {
 		f2k[k] =
 		    -2. * (Kt[0] *
-			   (lconn[k][0][1] * Kt[1] +
-			    lconn[k][0][2] * Kt[2] +
-			    lconn[k][0][3] * Kt[3]) +
-			   Kt[1] * (lconn[k][1][2] * Kt[2] +
-				    lconn[k][1][3] * Kt[3]) +
-			   lconn[k][2][3] * Kt[2] * Kt[3]
+			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
 		    );
 
 		f2k[k] -=
-		    (lconn[k][0][0] * Kt[0] * Kt[0] +
-		     lconn[k][1][1] * Kt[1] * Kt[1] +
-		     lconn[k][2][2] * Kt[2] * Kt[2] +
-		     lconn[k][3][3] * Kt[3] * Kt[3]
+		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
 		    );
 	}
 
@@ -197,23 +154,23 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 		Xt[k] = X[k] + dl_2 * f2x[k];
 	}
 
-	get_connection(Xt, lconn);
+	get_connection(Xt, lconn, a, hslope);
 	for (k = 0; k < NDIM; k++) {
 		f3k[k] =
 		    -2. * (Kt[0] *
-			   (lconn[k][0][1] * Kt[1] +
-			    lconn[k][0][2] * Kt[2] +
-			    lconn[k][0][3] * Kt[3]) +
-			   Kt[1] * (lconn[k][1][2] * Kt[2] +
-				    lconn[k][1][3] * Kt[3]) +
-			   lconn[k][2][3] * Kt[2] * Kt[3]
+			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
 		    );
 
 		f3k[k] -=
-		    (lconn[k][0][0] * Kt[0] * Kt[0] +
-		     lconn[k][1][1] * Kt[1] * Kt[1] +
-		     lconn[k][2][2] * Kt[2] * Kt[2] +
-		     lconn[k][3][3] * Kt[3] * Kt[3]
+		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
 		    );
 	}
 
@@ -223,23 +180,23 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 		Xt[k] = X[k] + dl * f3x[k];
 	}
 
-	get_connection(Xt, lconn);
+	get_connection(Xt, lconn, a, hslope);
 	for (k = 0; k < NDIM; k++) {
 		f4k[k] =
 		    -2. * (Kt[0] *
-			   (lconn[k][0][1] * Kt[1] +
-			    lconn[k][0][2] * Kt[2] +
-			    lconn[k][0][3] * Kt[3]) +
-			   Kt[1] * (lconn[k][1][2] * Kt[2] +
-				    lconn[k][1][3] * Kt[3]) +
-			   lconn[k][2][3] * Kt[2] * Kt[3]
+			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
 		    );
 
 		f4k[k] -=
-		    (lconn[k][0][0] * Kt[0] * Kt[0] +
-		     lconn[k][1][1] * Kt[1] * Kt[1] +
-		     lconn[k][2][2] * Kt[2] * Kt[2] +
-		     lconn[k][3][3] * Kt[3] * Kt[3]
+		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
 		    );
 	}
 
@@ -259,30 +216,31 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 	/* done */
 }
 
+__device__
 void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;
-	double lconn[NDIM][NDIM][NDIM];
+	double lconn[NDIM * NDIM * NDIM];
 
-	get_connection(X, lconn);
+	get_connection(X, lconn, a, hslope);
 
 	for (k = 0; k < 4; k++) {
 
 		dK[k] =
 		    -2. * (Kcon[0] *
-			   (lconn[k][0][1] * Kcon[1] +
-			    lconn[k][0][2] * Kcon[2] +
-			    lconn[k][0][3] * Kcon[3])
-			   + Kcon[1] * (lconn[k][1][2] * Kcon[2] +
-					lconn[k][1][3] * Kcon[3])
-			   + lconn[k][2][3] * Kcon[2] * Kcon[3]
+			   (lconn[k*16 + 0*4 + 1] * Kcon[1] +
+			    lconn[k*16 + 0*4 + 2] * Kcon[2] +
+			    lconn[k*16 + 0*4 + 3] * Kcon[3])
+			   + Kcon[1] * (lconn[k*16 + 1*4 + 2] * Kcon[2] +
+					lconn[k*16 + 1*4 + 3] * Kcon[3])
+			   + lconn[k*16 + 2*4 + 3] * Kcon[2] * Kcon[3]
 		    );
 
 		dK[k] -=
-		    (lconn[k][0][0] * Kcon[0] * Kcon[0] +
-		     lconn[k][1][1] * Kcon[1] * Kcon[1] +
-		     lconn[k][2][2] * Kcon[2] * Kcon[2] +
-		     lconn[k][3][3] * Kcon[3] * Kcon[3]
+		    (lconn[k*16 + 0*4 + 0] * Kcon[0] * Kcon[0] +
+		     lconn[k*16 + 1*4 + 1] * Kcon[1] * Kcon[1] +
+		     lconn[k*16 + 2*4 + 2] * Kcon[2] * Kcon[2] +
+		     lconn[k*16 + 3*4 + 3] * Kcon[3] * Kcon[3]
 		    );
 	}
 

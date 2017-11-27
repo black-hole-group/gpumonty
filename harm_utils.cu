@@ -55,7 +55,7 @@ extern double **ne;
 extern double **thetae;
 extern double **b;
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
+void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM], double *startx, double *dx, int N1, int N2);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
@@ -67,16 +67,16 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 				Interpolation routines
 
  ********************************************************************/
-
-double interp_scalar(double **var, int i, int j, double coeff[4])
+__device__
+double interp_scalar(double *var, int i, int j, double coeff[4], int N1)
 {
 
 	double interp;
 
 	interp =
-	    var[i][j] * coeff[0] +
-	    var[i][j + 1] * coeff[1] +
-	    var[i + 1][j] * coeff[2] + var[i + 1][j + 1] * coeff[3];
+	    var[i*N1 + j] * coeff[0] +
+	    var[i*N1 + j + 1] * coeff[1] +
+	    var[(i + 1)*N1 + j] * coeff[2] + var[(i + 1)*N1 + j + 1] * coeff[3];
 
 	return interp;
 }
@@ -403,7 +403,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	return;
 }
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM], double *startx, double *dx, int N1, int N2)
 {
 
 	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
@@ -433,6 +433,7 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 }
 
 /* return boyer-lindquist coordinate of point */
+__device__
 void bl_coord(double *X, double *r, double *th)
 {
 
