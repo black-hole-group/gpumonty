@@ -55,7 +55,15 @@ extern double **ne;
 extern double **thetae;
 extern double **b;
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM], double *startx, double *dx, int N1, int N2);
+__device__ void Xtoij(
+	double X[NDIM],
+	int *i,
+	int *j,
+	double del[NDIM],
+	double *startx,
+	double *dx,
+	int N1,
+	int N2);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
@@ -403,7 +411,15 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	return;
 }
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM], double *startx, double *dx, int N1, int N2)
+void Xtoij(
+	double X[NDIM],
+	int *i,
+	int *j,
+	double del[NDIM],
+	double *startx,
+	double *dx,
+	int N1,
+	int N2)
 {
 
 	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;

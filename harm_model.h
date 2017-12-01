@@ -29,7 +29,15 @@ double dOmega_func(double x2i, double x2f);
 void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph);
 __device__ double interp_scalar(double **var, int i, int j, double coeff[4], int N1);
 int get_zone(int *i, int *j, double *dnamx);
-__device__ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM], double *startx, double *dx, int N1, int N2);
+__device__ void Xtoij(
+	double X[NDIM],
+	int *i,
+	int *j,
+	double del[NDIM],
+	double *startx,
+	double *dx,
+	int N1,
+	int N2);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
