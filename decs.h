@@ -149,7 +149,7 @@ extern int Ns;
 extern int N_superph_recorded, N_scatt;
 
 /* HARM model globals */
-extern struct of_geom **geom;
+extern struct of_geom *geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
 

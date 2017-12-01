@@ -130,12 +130,12 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
-			VdotV += geom[i][j].gcov[l][m] * Vcon[l] * Vcon[m];
-	Vfac = sqrt(-1. / geom[i][j].gcon[0*NDIM + 0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * geom[i][j].gcon[0*NDIM + 0];
+			VdotV += geom[i * N1 + j].gcov[l * NDIM + m] * Vcon[l] * Vcon[m];
+	Vfac = sqrt(-1. / geom[i * N1 + j].gcon[0*NDIM + 0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * geom[i * N1 + j].gcon[0*NDIM + 0];
 	for (l = 1; l < NDIM; l++)
-		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0*NDIM + l];
-	lower(Ucon, geom[i][j].gcov, Ucov);
+		Ucon[l] = Vcon[l] - Vfac * geom[i * N1 + j].gcon[0*NDIM + l];
+	lower(Ucon, geom[i * N1 + j].gcov, Ucov);
 
 	/* Get B and Bcov */
 	UdotBp = 0.;
@@ -144,7 +144,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	Bcon[0] = UdotBp;
 	for (l = 1; l < NDIM; l++)
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
-	lower(Bcon, geom[i][j].gcov, Bcov);
+	lower(Bcon, geom[i * N1 + j].gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;

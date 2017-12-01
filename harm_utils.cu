@@ -50,7 +50,7 @@ extern double ***bcov;
 extern double ***ucon;
 extern double ***ucov;
 extern double ***p;
-extern struct of_geom **geom;
+extern struct of_geom *geom;
 extern double **ne;
 extern double **thetae;
 extern double **b;
@@ -157,7 +157,7 @@ void init_weight_table(void)
 				K2 = K2_eval(Thetae);
 				fac =
 				    (JCST * Ne * B * Thetae * Thetae /
-				     K2) * sfac * geom[i][j].g;
+				     K2) * sfac * geom[i * N1 + j].g;
 				for (l = lstart; l < lend; l++)
 					sum[l] +=
 					    fac * F_eval(Thetae, B, nu[l]);
@@ -281,7 +281,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		return;
 	}
 
-	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	*nz = geom[i * N1 + j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	if (*nz > Ns * log(NUMAX / NUMIN)) {
 		fprintf(stderr,
 			"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
@@ -380,7 +380,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 				bhat[l] = 0.;
 			bhat[1] = 1.;
 		}
-		make_tetrad(Ucon, bhat, geom[i][j].gcov, Econ, Ecov);
+		make_tetrad(Ucon, bhat, geom[i * N1 + j].gcov, Econ, Ecov);
 		zone_flag = 0;
 	}
 
@@ -504,11 +504,11 @@ void init_geometry()
 			/* zone-centered */
 			coord(i, j, X);
 
-			gcov_func(X, geom[i][j].gcov);
+			gcov_func(X, geom[i * N1 + j].gcov);
 
-			geom[i][j].g = gdet_func(geom[i][j].gcov);
+			geom[i * N1 + j].g = gdet_func(geom[i * N1 + j].gcov);
 
-			gcon_func(X, geom[i][j].gcon);
+			gcon_func(X, geom[i * N1 + j].gcon);
 
 		}
 	}
@@ -528,7 +528,7 @@ double dOmega_func(double x2i, double x2f)
 	double dO;
 
 	dO = 2. * M_PI *
-	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
+	    (- cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
 	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
 	    );
 
@@ -591,9 +591,11 @@ void init_storage(void)
 	p = (double ***)malloc_rank1(NPRIM, sizeof(double *));
 	for (i = 0; i < NPRIM; i++)
 		p[i] = (double **) malloc_rank2_cont(N1, N2);
-	geom =
-	    (struct of_geom **) malloc_rank2(N1, N2,
-					     sizeof(struct of_geom));
 
+	/* geom = (struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom)); */
+	if((geom = (void *) malloc(N1 * N2 * sizeof(struct of_geom))) == NULL){
+		fprintf(stderr, "malloc failure in malloc_rank2\n");
+		exit(124);
+	}
 	return;
 }
