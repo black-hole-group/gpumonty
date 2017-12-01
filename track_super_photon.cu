@@ -47,14 +47,13 @@ void track_super_photon(struct of_photon *ph)
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
-	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov);
+	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
-	theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
-	nu = get_fluid_nu(ph->X, ph->K, Ucov);
+	theta        = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
+	nu           = get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
-	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	bi = bias_func(Thetae, ph->w);
+	alpha_absi   = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+	bi           = bias_func(Thetae, ph->w);
 
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
@@ -86,59 +85,37 @@ void track_super_photon(struct of_photon *ph)
 
 		/* allow photon to interact with matter, */
 		gcov_func(ph->X, Gcov);
-		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-				 Bcon, Bcov);
+		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
-
 			bound_flag = 0;
 			if (Ne == 0.)
 				bound_flag = 1;
 			if (!bound_flag) {
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
-				nu = get_fluid_nu(ph->X, ph->K, Ucov);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
+				nu    = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (isnan(nu)) {
-					fprintf(stderr,
-						"isnan nu: track_super_photon dl,E0 %g %g\n",
-						dl, E0);
-					fprintf(stderr,
-						"Xi, %g %g %g %g\n", Xi[0],
-						Xi[1], Xi[2], Xi[3]);
-					fprintf(stderr,
-						"Ki, %g %g %g %g\n", Ki[0],
-						Ki[1], Ki[2], Ki[3]);
-					fprintf(stderr,
-						"dKi, %g %g %g %g\n",
-						dKi[0], dKi[1], dKi[2],
-						dKi[3]);
+					fprintf(stderr, "isnan nu: track_super_photon dl,E0 %g %g\n",dl, E0);
+					fprintf(stderr,	"Xi, %g %g %g %g\n", Xi[0],	Xi[1], Xi[2], Xi[3]);
+					fprintf(stderr, "Ki, %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
+					fprintf(stderr, "dKi, %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
 					exit(1);
 				}
 			}
-
 			/* scattering optical depth along step */
 			if (bound_flag || nu < 0.) {
-				dtau_scatt =
-				    0.5 * alpha_scatti * dtauK * dl;
-				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
+				dtau_scatt   = 0.5 * alpha_scatti * dtauK * dl;
+				dtau_abs     = 0.5 * alpha_absi * dtauK * dl;
 				alpha_scatti = alpha_absi = 0.;
 				bias = 0.;
-				bi = 0.;
+				bi   = 0.;
 			} else {
-				alpha_scattf =
-				    alpha_inv_scatt(nu, Thetae, Ne);
-				dtau_scatt =
-				    0.5 * (alpha_scatti +
-					   alpha_scattf) * dtauK * dl;
+				alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne);
+				dtau_scatt   = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 				alpha_scatti = alpha_scattf;
 
 				/* absorption optical depth along step */
-				alpha_absf =
-				    alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
-				dtau_abs =
-				    0.5 * (alpha_absi +
-					   alpha_absf) * dtauK * dl;
+				alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+				dtau_abs   = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 				alpha_absi = alpha_absf;
 
 				bf = bias_func(Thetae, ph->w);
@@ -150,11 +127,12 @@ void track_super_photon(struct of_photon *ph)
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
-					fprintf(stderr,
+					fprintf(
+						stderr,
 						"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
-						Ne, bias, ph->w, php.w);
+						Ne, bias, ph->w, php.w
+					);
 				}
-
 				frac = x1 / (bias * dtau_scatt);
 
 				/* Apply absorption until scattering event */
@@ -165,13 +143,7 @@ void track_super_photon(struct of_photon *ph)
 				dtau_scatt *= frac;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau_abs < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph->w *=(1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
 				else
 					ph->w *= exp(-dtau);
 
@@ -196,35 +168,25 @@ void track_super_photon(struct of_photon *ph)
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
-					scatter_super_photon(ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov);
+					scatter_super_photon(ph, &php, Ne, Thetae, B, Ucon, Bcon, Gcov);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
 					track_super_photon(&php);
 				}
 
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (nu < 0.) {
 					alpha_scatti = alpha_absi = 0.;
 				} else {
-					alpha_scatti =
-					    alpha_inv_scatt(nu, Thetae,
-							    Ne);
-					alpha_absi =
-					    alpha_inv_abs(nu, Thetae, Ne,
-							  B, theta);
+					alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
+					alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 				}
 				bi = bias_func(Thetae, ph->w);
 
 				ph->tau_abs += dtau_abs;
 				ph->tau_scatt += dtau_scatt;
-
 			} else {
 				if (dtau_abs > 100)
 					return;	/* This photon has been absorbed */
@@ -232,18 +194,13 @@ void track_super_photon(struct of_photon *ph)
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph->w *= (
+						1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau)))
+					);
 				else
 					ph->w *= exp(-dtau);
 			}
 		}
-
 		nstep++;
 
 		/* signs that something's wrong w/ the integration */
@@ -254,13 +211,11 @@ void track_super_photon(struct of_photon *ph)
 				bias);
 			break;
 		}
-
 	}
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
 		record_super_photon(ph);
-
 	/* done! */
 	return;
 }
