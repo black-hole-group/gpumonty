@@ -194,10 +194,13 @@ extern double max_tau_scatt, Ladv, dMact, bias_norm;
 void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
-void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
-			  double Ne, double Thetae, double B,
-			  double Ucon[NDIM], double Bcon[NDIM],
-			  double Gcov[NDIM][NDIM]);
+__device__ void scatter_super_photon(
+	struct of_photon *ph,
+	struct of_photon *php,
+	double Ne, double Thetae, double B,
+	double Ucon[NDIM], double Bcon[NDIM],
+	double Gcov[NDIM2
+);
 
 /* OpenMP specific functions */
 void omp_reduce_spect(void);
@@ -224,16 +227,16 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
 __device__ void lower(double *ucon, double Gcov[NDIM2], double *ucov);
-double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
+__device__ double gdet_func(double gcov[NDIM2]);  /* calculated numerically */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
 void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM]);
 double delta(int i, int j);
-void normalize(double Ucon[NDIM], double Gcov[NDIM][NDIM]);
-void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM]);
+__device__ void normalize(double Ucon[NDIM], double Gcov[NDIM2]);
+__device__ void normalize_null(double Gcov[NDIM2], double K[NDIM]);
 void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
-		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
+		 double Gcov[NDIM2], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM]);
 
 /* functions related to basic radiation functions & physics */

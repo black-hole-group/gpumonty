@@ -292,19 +292,19 @@ void gcov_func(double *X, double gcov[NDIM * NDIM])
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 	pfac = 1.;
 
-	gcov[TT*NDIM + TT] = (-1. + 2. * r / rho2) * tfac * tfac;
-	gcov[TT*NDIM + 1] = (2. * r / rho2) * tfac * rfac;
-	gcov[TT*NDIM + 3] = (-2. * a * r * s2 / rho2) * tfac * pfac;
+	gcov[TT * NDIM + TT] = (-1. + 2. * r / rho2) * tfac * tfac;
+	gcov[TT * NDIM + 1] = (2. * r / rho2) * tfac * rfac;
+	gcov[TT * NDIM + 3] = (-2. * a * r * s2 / rho2) * tfac * pfac;
 
-	gcov[1*NDIM + TT] = gcov[TT*NDIM + 1];
-	gcov[1*NDIM + 1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1*NDIM + 3] = (-a * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1 * NDIM + TT] = gcov[TT * NDIM + 1];
+	gcov[1 * NDIM + 1] = (1. + 2. * r / rho2) * rfac * rfac;
+	gcov[1 * NDIM + 3] = (-a * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
 
-	gcov[2*NDIM + 2] = rho2 * hfac * hfac;
+	gcov[2 * NDIM + 2] = rho2 * hfac * hfac;
 
-	gcov[3*NDIM + TT] = gcov[TT*NDIM + 3];
-	gcov[3*NDIM + 1] = gcov[1*NDIM + 3];
-	gcov[3*NDIM + 3] =
+	gcov[3 * NDIM + TT] = gcov[TT * NDIM + 3];
+	gcov[3 * NDIM + 1] = gcov[1 * NDIM + 3];
+	gcov[3 * NDIM + 3] =
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 

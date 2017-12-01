@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -42,22 +42,22 @@
 
 #include "decs.h"
 
-/* 
+/*
 
    set up the metric (indicies both up and down), and the
    connection coefficients on a grid, based
-   on a HARM simulation grid.  
-   
+   on a HARM simulation grid.
+
    In principle the geometry could be sampled on a finer or
-   coarser grid than the simulation grid. 
+   coarser grid than the simulation grid.
 
    These routines are taken directly out of HARM.
 
-   They require the code be compiled against the 
+   They require the code be compiled against the
    Gnu scientific library (GSL).
 
    CFG 21 July 06
-   
+
 */
 
 gsl_matrix *gsl_gcov, *gsl_gcon;
@@ -65,7 +65,7 @@ gsl_permutation *perm;
 #pragma omp threadprivate (gsl_gcov, gsl_gcon, perm)
 
 /* assumes gcov has been set first; returns determinant */
-double gdet_func(double gcov[][NDIM])
+__device__ double gdet_func(double gcov[NDIM * NDIM])
 {
 	double d;
 	int k, l, signum;
@@ -76,7 +76,7 @@ double gdet_func(double gcov[][NDIM])
 		perm = gsl_permutation_alloc(NDIM);
 	}
 
-	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
+	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k * NDIM + l]);
 
 	gsl_linalg_LU_decomp(gsl_gcov, perm, &signum);
 
@@ -91,13 +91,13 @@ double gdet_func(double gcov[][NDIM])
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 {
 	int k, l, signum;
-	
+
 	if (gsl_gcov  == NULL) {
 		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
 		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
 		perm = gsl_permutation_alloc(NDIM);
 	}
-	
+
 
 	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
 
