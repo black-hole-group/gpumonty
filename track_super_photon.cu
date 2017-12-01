@@ -24,7 +24,7 @@ void track_super_photon(struct of_photon *ph)
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
-	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	double Gcov[NDIM * NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep = 0;
 
 	/* quality control */

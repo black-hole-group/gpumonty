@@ -1,57 +1,14 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal
-    synchrotron and inverse compton scattering.
-
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 /*
-
 all functions related to creation and manipulation of tetrads
-
 */
 
 #include "decs.h"
 
-
 /* input and vectors are contravariant (index up) */
-void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
-			  double K_tetrad[NDIM])
+void coordinate_to_tetrad(
+	double Ecov[NDIM][NDIM],
+	double K[NDIM],
+	double K_tetrad[NDIM])
 {
 	int k;
 
@@ -85,13 +42,13 @@ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
    second basis vector || B
 */
 void make_tetrad(double Ucon[NDIM], double trial[NDIM],
-		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
+		 double Gcov[NDIM * NDIM], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM])
 {
 	int k, l;
 	double norm;
-	void normalize(double *vcon, double Gcov[4][4]);
-	void project_out(double *vcona, double *vconb, double Gcov[4][4]);
+	void normalize(double *vcon, double Gcov[4 * 4]);
+	void project_out(double *vcona, double *vconb, double Gcov[4 * 4]);
 
 	/* econ/ecov index explanation:
 	   Econ[k][l]
@@ -118,7 +75,7 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	norm = 0.;
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
-			norm += trial[k] * trial[l] * Gcov[k][l];
+			norm += trial[k] * trial[l] * Gcov[k * NDIM + l];
 	if (norm <= SMALL_VECTOR) {	/* bad trial vector; default to radial direction */
 		for (k = 0; k < 4; k++)	/* trial vector */
 			trial[k] = delta(k, 1);
@@ -200,30 +157,7 @@ double delta(int i, int j)
 		return (0.);
 }
 
-void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
-{
-
-	ucov[0] = Gcov[0][0] * ucon[0]
-	    + Gcov[0][1] * ucon[1]
-	    + Gcov[0][2] * ucon[2]
-	    + Gcov[0][3] * ucon[3];
-	ucov[1] = Gcov[1][0] * ucon[0]
-	    + Gcov[1][1] * ucon[1]
-	    + Gcov[1][2] * ucon[2]
-	    + Gcov[1][3] * ucon[3];
-	ucov[2] = Gcov[2][0] * ucon[0]
-	    + Gcov[2][1] * ucon[1]
-	    + Gcov[2][2] * ucon[2]
-	    + Gcov[2][3] * ucon[3];
-	ucov[3] = Gcov[3][0] * ucon[0]
-	    + Gcov[3][1] * ucon[1]
-	    + Gcov[3][2] * ucon[2]
-	    + Gcov[3][3] * ucon[3];
-
-	return;
-}
-
-void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
+__device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
 {
 
 	ucov[0] = Gcov[0*NDIM + 0] * ucon[0]
@@ -246,7 +180,7 @@ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
 	return;
 }
 
-void normalize(double *vcon, double Gcov[NDIM][NDIM])
+void normalize(double *vcon, double Gcov[NDIM * NDIM])
 {
 	int k, l;
 	double norm;
@@ -254,7 +188,7 @@ void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	norm = 0.;
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
-			norm += vcon[k] * vcon[l] * Gcov[k][l];
+			norm += vcon[k] * vcon[l] * Gcov[k * NDIM + l];
 
 	norm = sqrt(fabs(norm));
 	for (k = 0; k < 4; k++)
@@ -263,7 +197,7 @@ void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	return;
 }
 
-void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
+void project_out(double *vcona, double *vconb, double Gcov[NDIM * NDIM])
 {
 
 	double adotb, vconb_sq;
@@ -272,12 +206,12 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 	vconb_sq = 0.;
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
-			vconb_sq += vconb[k] * vconb[l] * Gcov[k][l];
+			vconb_sq += vconb[k] * vconb[l] * Gcov[k * NDIM + l];
 
 	adotb = 0.;
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
-			adotb += vcona[k] * vconb[l] * Gcov[k][l];
+			adotb += vcona[k] * vconb[l] * Gcov[k * NDIM + l];
 
 	for (k = 0; k < 4; k++)
 		vcona[k] -= vconb[k] * adotb / vconb_sq;
@@ -285,20 +219,20 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 	return;
 }
 
-void normalize_null(double Gcov[NDIM][NDIM], double K[])
+void normalize_null(double Gcov[NDIM * NDIM], double K[])
 {
 	int k, l;
 	double A, B, C;
 
 	/* pop K back onto the light cone */
-	A = Gcov[0][0];
+	A = Gcov[0 * Ndim + 0];
 	B = 0.;
 	for (k = 1; k < 4; k++)
-		B += 2. * Gcov[k][0] * K[k];
+		B += 2. * Gcov[k * Ndim + 0] * K[k];
 	C = 0.;
 	for (k = 1; k < 4; k++)
 		for (l = 1; l < 4; l++)
-			C += Gcov[k][l] * K[k] * K[l];
+			C += Gcov[k * Ndim + l] * K[k] * K[l];
 
 	K[0] = (-B - sqrt(fabs(B * B - 4. * A * C))) / (2. * A);
 

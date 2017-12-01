@@ -57,6 +57,7 @@
 #include "constants.h"
 
 #define NDIM	4
+#define NDIM2	16
 #define NPRIM	8
 
 /* Range of initial superphoton frequencies */
@@ -106,8 +107,8 @@ struct of_photon {
 };
 
 struct of_geom {
-	double gcon[NDIM * NDIM];
-	double gcov[NDIM * NDIM];
+	double gcon[NDIM2];
+	double gcov[NDIM2];
 	double g;
 };
 
@@ -222,8 +223,7 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
-void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
-__device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov);
+__device__ void lower(double *ucon, double Gcov[NDIM2], double *ucov);
 double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
@@ -286,5 +286,5 @@ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
-__device__ void gcov_func(double *X, double gcov[NDIM * NDIM]);
-__device__ void gcon_func(double *X, double gcon[NDIM * NDIM]);
+__device__ void gcov_func(double *X, double gcov[NDIM2]);
+__device__ void gcon_func(double *X, double gcon[NDIM2]);

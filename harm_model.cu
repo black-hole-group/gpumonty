@@ -151,7 +151,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM])
@@ -198,7 +198,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	VdotV = 0.;
 	for (i = 1; i < NDIM; i++)
 		for (j = 1; j < NDIM; j++)
-			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+			VdotV += gcov[i * NDIM + j] * Vcon[i] * Vcon[j];
 	Vfac = sqrt(-1. / gcon[0*NDIM + 0] * (1. + fabs(VdotV)));
 	Ucon[0] = -Vfac * gcon[0*NDIM + 0];
 	for (i = 1; i < NDIM; i++)
@@ -268,7 +268,7 @@ void gcon_func(double *X, double gcon[NDIM*NDIM])
 }
 
 __device__
-void gcov_func(double *X, double gcov[NDIM*NDIM])
+void gcov_func(double *X, double gcov[NDIM * NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
