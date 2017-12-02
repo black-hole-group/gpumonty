@@ -147,6 +147,7 @@ extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 
 extern int Ns;
 extern int N_superph_recorded, N_scatt;
+__device__ extern int N_superph_recorded_device, N_scatt_device;
 
 /* HARM model globals */
 extern struct of_geom *geom;
@@ -173,6 +174,7 @@ extern double Ne_unit;
 extern double Thetae_unit;
 
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
+__device__ extern double max_tau_scatt_device bias_norm;
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
@@ -242,7 +244,7 @@ void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 /* functions related to basic radiation functions & physics */
 	/* physics-independent */
 double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
-double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
+__device__ double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B);
 __device__ double alpha_inv_scatt(double nu, double thetae, double Ne);
 double alpha_inv_abs(double nu, double thetae, double Ne, double B,

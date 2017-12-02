@@ -88,9 +88,9 @@ __device__ double bias_func(double Te, double w)
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
+	avg_num_scatt = N_scatt_device / (1. * N_superph_recorded_device + 1.);
 	bias =
-	    100. * Te * Te / (bias_norm * max_tau_scatt *
+	    100. * Te * Te / (bias_norm * max_tau_scatt_device *
 			      (avg_num_scatt + 2));
 
 	if (bias < TP_OVER_TE)
@@ -455,8 +455,10 @@ void record_super_photon(struct of_photon *ph)
 
 #pragma omp atomic
 	N_superph_recorded++;
+	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 #pragma omp atomic
 	N_scatt += ph->nscatt;
+	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 
 	/* sum in photon */
 	spect[ix2][iE].dNdlE += ph->w;
@@ -617,9 +619,9 @@ void report_spectrum(int N_superph_made)
 		L * LSUN / (dMact * M_unit * CL * CL / T_unit),
 		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
 		max_tau_scatt);
-	fprintf(stderr, "\n");
-	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);
-	fprintf(stderr, "N_superph_recorded: %d\n", N_superph_recorded);
+	printf("\n");
+	printf("N_superph_made: %d\n", N_superph_made);
+	printf("N_superph_recorded: %d\n", N_superph_recorded);
 
 	fclose(fp);
 

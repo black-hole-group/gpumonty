@@ -124,14 +124,16 @@ double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 		fprintf(stderr, "isnan get_fluid_nu, U: %g %g %g %g\n",
 			Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
 	}
-
 	return nu;
-
 }
 
 /* return angle between magnetic field and wavevector */
-double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
-		    double Bcov[NDIM], double B)
+__device__ double get_bk_angle(
+	double X[NDIM],
+	double K[NDIM],
+	double Ucov[NDIM],
+	double Bcov[NDIM],
+	double B)
 {
 
 	double k, mu;
