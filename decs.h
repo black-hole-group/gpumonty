@@ -244,7 +244,7 @@ void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
 double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B);
-double alpha_inv_scatt(double nu, double thetae, double Ne);
+__device__ double alpha_inv_scatt(double nu, double thetae, double Ne);
 double alpha_inv_abs(double nu, double thetae, double Ne, double B,
 		     double theta);
 double Bnu_inv(double nu, double thetae);
@@ -261,9 +261,9 @@ double K2_eval(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);
-double total_compton_cross_lkup(double nu, double theta);
+__device__ double total_compton_cross_lkup(double nu, double theta);
 double klein_nishina(double a, double ap);
-double kappa_es(double nu, double theta);
+__device__ double kappa_es(double nu, double theta);
 void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);
 void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
 double sample_klein_nishina(double k0);

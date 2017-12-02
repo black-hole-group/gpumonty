@@ -1,47 +1,4 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal
-    synchrotron and inverse compton scattering.
-
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 #include "decs.h"
-
 /*
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -85,8 +42,8 @@ void init_hotcross(void)
 
 	fp = fopen(HOTCROSS, "r");
 	if (fp == NULL) {
-		fprintf(stderr, "file %s not found.\n", HOTCROSS);
-		fprintf(stderr,
+		printf( "file %s not found.\n", HOTCROSS);
+		printf(
 			"making lookup table for compton cross section...\n");
 #pragma omp parallel for private(i,j,lw,lT)
 		for (i = 0; i <= NW; i++)
@@ -97,16 +54,16 @@ void init_hotcross(void)
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
 				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
+					printf( "%d %d %g %g\n", i,
 						j, lw, lT);
 					exit(0);
 				}
 			}
-		fprintf(stderr, "done.\n\n");
-		fprintf(stderr, "writing to file...\n");
+		printf( "done.\n\n");
+		printf( "writing to file...\n");
 		fp = fopen(HOTCROSS, "w");
 		if (fp == NULL) {
-			fprintf(stderr, "couldn't write to file\n");
+			printf( "couldn't write to file\n");
 			exit(0);
 		}
 		for (i = 0; i <= NW; i++)
@@ -116,9 +73,9 @@ void init_hotcross(void)
 				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
 					lw, lT, table[i][j]);
 			}
-		fprintf(stderr, "done.\n\n");
+		printf( "done.\n\n");
 	} else {
-		fprintf(stderr,
+		printf(
 			"reading hot cross section data from %s...\n",
 			HOTCROSS);
 		for (i = 0; i <= NW; i++)
@@ -127,13 +84,13 @@ void init_hotcross(void)
 				    fscanf(fp, "%*d %*d %*f %*f %lf\n",
 					   &table[i][j]);
 				if (isnan(table[i][j]) || nread != 1) {
-					fprintf(stderr,
+					printf(
 						"error on table read: %d %d\n",
 						i, j);
 					exit(0);
 				}
 			}
-		fprintf(stderr, "done.\n\n");
+		printf( "done.\n\n");
 	}
 
 	fclose(fp);
@@ -141,14 +98,12 @@ void init_hotcross(void)
 	return;
 }
 
-
-
-double total_compton_cross_lkup(double w, double thetae)
+__device__ double total_compton_cross_lkup(double w, double thetae)
 {
 	int i, j;
 	double lw, lT, di, dj, lcross;
-	double total_compton_cross_num(double w, double thetae);
-	double hc_klein_nishina(double we);
+	__device__ double total_compton_cross_num_device(double w, double thetae);
+	__device__ double hc_klein_nishina_device(double we);
 
 	/* cold/low-energy: just use thomson cross section */
 	if (w * thetae < 1.e-6)
@@ -156,7 +111,7 @@ double total_compton_cross_lkup(double w, double thetae)
 
 	/* cold, but possible high energy photon: use klein-nishina */
 	if (thetae < MINT)
-		return (hc_klein_nishina(w) * SIGMA_THOMSON);
+		return (hc_klein_nishina_device(w) * SIGMA_THOMSON);
 
 	/* in-bounds for table */
 	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
@@ -175,15 +130,15 @@ double total_compton_cross_lkup(double w, double thetae)
 		    di * dj * table[i + 1][j + 1];
 
 		if (isnan(lcross)) {
-			fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
+			printf( "%g %g %d %d %g %g\n", lw, lT, i,
 				j, di, dj);
 		}
 
 		return (pow(10., lcross));
 	}
 
-	fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
-	return (total_compton_cross_num(w, thetae));
+	printf( "out of bounds: %g %g\n", w, thetae);
+	return (total_compton_cross_num_device(w, thetae));
 
 }
 
@@ -199,7 +154,7 @@ double total_compton_cross_num(double w, double thetae)
 	double hc_klein_nishina(double we);
 
 	if (isnan(w)) {
-		fprintf(stderr, "compton cross isnan: %g %g\n", w, thetae);
+		printf( "compton cross isnan: %g %g\n", w, thetae);
 		return (0.);
 	}
 
@@ -218,19 +173,63 @@ double total_compton_cross_num(double w, double thetae)
 	cross = 0.;
 	for (mue = -1. + 0.5 * dmue; mue < 1.; mue += dmue)
 		for (gammae = 1. + 0.5 * dgammae;
+			gammae < 1. + MAXGAMMA * thetae;
+			gammae += dgammae)
+		{
+			f = 0.5 * dNdgammae(thetae, gammae);
+			cross += dmue * dgammae * boostcross(w, mue, gammae) * f;
+
+			if (isnan(cross)) {
+				printf( "%g %g %g %g %g %g\n", w,
+					thetae, mue, gammae,
+					dNdgammae(thetae, gammae),
+					boostcross(w, mue, gammae)
+				);
+			}
+	  }
+	return (cross * SIGMA_THOMSON);
+}
+
+__device__ double total_compton_cross_num_device(double w, double thetae)
+{
+	double dmue, dgammae, mue, gammae, f, cross;
+	__device__ double dNdgammae_device(double thetae, double gammae);
+	__device__ double boostcross_device(double w, double mue, double gammae);
+	__device__ double hc_klein_nishina_device(double we);
+
+	if (isnan(w)) {
+		printf("compton cross isnan: %g %g\n", w, thetae);
+		return (0.);
+	}
+
+	/* check for easy-to-do limits */
+	if (thetae < MINT && w < MINW)
+		return (SIGMA_THOMSON);
+	if (thetae < MINT)
+		return (hc_klein_nishina_device(w) * SIGMA_THOMSON);
+
+	dmue = DMUE;
+	dgammae = thetae * DGAMMAE;
+
+	/* integrate over mu_e, gamma_e, where mu_e is the cosine of the
+	   angle between k and u_e, and the angle k is assumed to lie,
+	   wlog, along the z axis */
+	cross = 0.;
+	for (mue = -1. + 0.5 * dmue; mue < 1.; mue += dmue)
+		for (gammae = 1. + 0.5 * dgammae;
 		     gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
 
-			f = 0.5 * dNdgammae(thetae, gammae);
+			f = 0.5 * dNdgammae_device(thetae, gammae);
 
 			cross +=
-			    dmue * dgammae * boostcross(w, mue,
+			    dmue * dgammae * boostcross_device(w, mue,
 							gammae) * f;
 
 			if (isnan(cross)) {
-				fprintf(stderr, "%g %g %g %g %g %g\n", w,
+				printf("%g %g %g %g %g %g\n", w,
 					thetae, mue, gammae,
-					dNdgammae(thetae, gammae),
-					boostcross(w, mue, gammae));
+					dNdgammae_device(thetae, gammae),
+					boostcross_device(w, mue, gammae));
 			}
 		}
 
@@ -254,6 +253,20 @@ double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
+__device__ double dNdgammae_device(double thetae, double gammae)
+{
+	double K2f;
+
+	if (thetae > 1.e-2) {
+		K2f = cyl_bessel_i1( 1. / thetae) * exp(1. / thetae);
+	} else {
+		K2f = sqrt(M_PI * thetae / 2.);
+	}
+
+	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
+		exp(-(gammae - 1.) / thetae));
+}
+
 double boostcross(double w, double mue, double gammae)
 {
 	double we, boostcross, v;
@@ -266,18 +279,43 @@ double boostcross(double w, double mue, double gammae)
 	boostcross = hc_klein_nishina(we) * (1. - mue * v);
 
 	if (boostcross > 2) {
-		fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
+		printf("w,mue,gammae: %g %g %g\n", w, mue,
 			gammae);
-		fprintf(stderr, "v,we, boostcross: %g %g %g\n", v, we,
+		printf("v,we, boostcross: %g %g %g\n", v, we,
 			boostcross);
-		fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
+		printf("kn: %g %g %g\n", v, we, boostcross);
 	}
 
 	if (isnan(boostcross)) {
-		fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
+		printf("isnan: %g %g %g\n", w, mue, gammae);
 		exit(0);
 	}
+	return (boostcross);
+}
 
+__device__ double boostcross_device(double w, double mue, double gammae)
+{
+	double we, boostcross, v;
+	__device__ double hc_klein_nishina_device(double we);
+
+	/* energy in electron rest frame */
+	v = sqrt(gammae * gammae - 1.) / gammae;
+	we = w * gammae * (1. - mue * v);
+
+	boostcross = hc_klein_nishina_device(we) * (1. - mue * v);
+
+	if (boostcross > 2) {
+		printf("w,mue,gammae: %g %g %g\n", w, mue,
+			gammae);
+		printf("v,we, boostcross: %g %g %g\n", v, we,
+			boostcross);
+		printf("kn: %g %g %g\n", v, we, boostcross);
+	}
+
+	if (isnan(boostcross)) {
+		printf("isnan: %g %g %g\n", w, mue, gammae);
+		exit(0);
+	}
 	return (boostcross);
 }
 
@@ -294,7 +332,21 @@ double hc_klein_nishina(double we)
 								2. * we) +
 			     (1. + we) / ((1. + 2. * we) * (1. + 2. * we))
 	    );
-
 	return (sigma);
+}
 
+__device__ double hc_klein_nishina_device(double we)
+{
+	double sigma;
+
+	if (we < 1.e-3)
+		return (1. - 2. * we);
+
+	sigma = (3. / 4.) * (2. / (we * we) +
+			     (1. / (2. * we) -
+			      (1. + we) / (we * we * we)) * log(1. +
+								2. * we) +
+			     (1. + we) / ((1. + 2. * we) * (1. + 2. * we))
+	    );
+	return (sigma);
 }

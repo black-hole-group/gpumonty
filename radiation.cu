@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -40,7 +40,7 @@
 ***********************************************************************************/
 
 
-/* 
+/*
 
 model-independent radiation-related utilities.
 
@@ -72,7 +72,7 @@ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 }
 
 /* return Lorentz invariant scattering opacity */
-double alpha_inv_scatt(double nu, double Thetae, double Ne)
+__device__ double alpha_inv_scatt(double nu, double Thetae, double Ne)
 {
 	double kappa;
 
@@ -95,11 +95,11 @@ double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 
 
 /* return electron scattering opacity, in cgs */
-double kappa_es(double nu, double Thetae)
+__device__ double kappa_es(double nu, double Thetae)
 {
 	double Eg;
 
-	/* assume pure hydrogen gas to 
+	/* assume pure hydrogen gas to
 	   convert cross section to opacity */
 	Eg = HPL * nu / (ME * CL * CL);
 	return (total_compton_cross_lkup(Eg, Thetae) / MP);
