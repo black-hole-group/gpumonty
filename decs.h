@@ -279,7 +279,7 @@ void sample_scattered_photon(double k[NDIM], double p[NDIM],
 /* physics related */
 void init_model(char *args[]);
 void make_super_photon(struct of_photon *ph, int *quit_flag);
-double bias_func(double Te, double w);
+__device__ double bias_func(double Te, double w);
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],

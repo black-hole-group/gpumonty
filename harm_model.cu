@@ -82,7 +82,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 }
 
 
-double bias_func(double Te, double w)
+__device__ double bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
 
