@@ -500,7 +500,7 @@ void set_units(char *munitstr)
 
 	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
 
-	Ne_unit = RHO_unit / (MP + ME);
+	Ne_unit = RHO_unit / (MP + ME); /*export to device*/
 
 	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
 

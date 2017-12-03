@@ -10,16 +10,16 @@
 
     This version of GRMONTY is configured to use input files from the HARM code
     available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
+    black hole described by Kerr-Schild coordinates that radiates via thermal
     synchrotron and inverse compton scattering.
-    
+
     You are morally obligated to cite the following paper in any
     scientific literature that results from use of any part of GRMONTY:
 
     Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
         Astrophysical Journal Supplement, 184, 387
 
-    Further, we strongly encourage you to obtain the latest version of 
+    Further, we strongly encourage you to obtain the latest version of
     GRMONTY directly from our distribution website:
     http://rainman.astro.illinois.edu/codelib/
 
@@ -83,10 +83,10 @@ void init_harm_data(char *fname)
 	success = fscanf(fp, "%lf ", &t);
 	success = fscanf(fp, "%d ", &N1);
 	success = fscanf(fp, "%d ", &N2);
-	success = fscanf(fp, "%lf ", &startx[1]);
-	success = fscanf(fp, "%lf ", &startx[2]);
-	success = fscanf(fp, "%lf ", &dx[1]);
-	success = fscanf(fp, "%lf ", &dx[2]);
+	success = fscanf(fp, "%lf ", &startx[1]);/* export  to device */
+	success = fscanf(fp, "%lf ", &startx[2]);/* export  to device */
+	success = fscanf(fp, "%lf ", &dx[1]);/* export  to device */
+	success = fscanf(fp, "%lf ", &dx[2]);/* export  to device */
 	success = fscanf(fp, "%lf ", &tf);
 	success = fscanf(fp, "%d ", &nstep);
 	success = fscanf(fp, "%lf ", &a);
@@ -108,19 +108,19 @@ void init_harm_data(char *fname)
 	success = fscanf(fp, "%lf ", &R0);
 
 	/* nominal non-zero values for axisymmetric simulations */
-	startx[0] = 0.;
-	startx[3] = 0.;
+	startx[0] = 0.;/* export  to device */
+	startx[3] = 0.;/* export  to device */
 
-	stopx[0] = 1.;
-	stopx[1] = startx[1] + N1 * dx[1];
-	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = 2. * M_PI;
+	stopx[0] = 1.; /* export  to device */
+	stopx[1] = startx[1] + N1 * dx[1];/* export  to device */
+	stopx[2] = startx[2] + N2 * dx[2];/* export  to device */
+	stopx[3] = 2. * M_PI;/* export  to device */
 
 	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2]);
 
-	dx[0] = 1.;
-	dx[3] = 2. * M_PI;
+	dx[0] = 1.;/* export  to device */
+	dx[3] = 2. * M_PI;/* export  to device */
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -128,11 +128,11 @@ void init_harm_data(char *fname)
 	two_temp_gam =
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
-	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);/*export to device*/
 
 	dMact = 0.;
 	Ladv = 0.;
-	bias_norm = 0.;
+	bias_norm = 0.;/* export  to device */
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
 	for (k = 0; k < N1 * N2; k++) {

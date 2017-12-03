@@ -151,7 +151,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
-void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
+__device__void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM])
@@ -161,7 +161,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM*NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, double del[4], int N1);
+	__device__ double interp_scalar(double **var, int i, int j, double del[4], int N1);
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -393,13 +393,14 @@ int record_criterion(struct of_photon *ph)
 //#define EPS   0.01
 
 
-double stepsize(double X[NDIM], double K[NDIM])
+__device__ double stepsize(double X[NDIM], double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+
+	dlx2 = EPS * ((X[2]) < (stopx[2] - X[2]) ? (X[2]):(stopx[2] - X[2])) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);

@@ -221,7 +221,7 @@ void push_photon4(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		  double dl);
 void push_photon_cart(double X[NDIM], double Kcon[NDIM],
 		      double dKcon[NDIM], double dl);
-double stepsize(double X[NDIM], double K[NDIM]);
+__device__ double stepsize(double X[NDIM], double K[NDIM]);
 void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);
 int geodesic_deriv(double t, const double y[], double dy[], void *params);
 void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
@@ -283,7 +283,7 @@ void sample_scattered_photon(double k[NDIM], double p[NDIM],
 void init_model(char *args[]);
 void make_super_photon(struct of_photon *ph, int *quit_flag);
 __device__ double bias_func(double Te, double w);
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM2], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
