@@ -334,7 +334,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 
 #define RMAX	100.
 #define ROULETTE	1.e4
-int stop_criterion(struct of_photon *ph)
+__device__ int stop_criterion(struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
 
@@ -350,7 +350,7 @@ int stop_criterion(struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (monty_rand() <= 1. / ROULETTE) {
+			if (monty_rand_device() <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -359,7 +359,7 @@ int stop_criterion(struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (monty_rand() <= 1. / ROULETTE) {
+		if (monty_rand_device() <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;

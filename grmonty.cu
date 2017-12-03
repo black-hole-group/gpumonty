@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
 
 	/** main loop **/
 	N_superph_made = 0;
-	N_superph_recorded = 0;
-	N_scatt = 0;
+	N_superph_recorded = 0; /* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
+	N_scatt = 0; /* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 	starttime = time(NULL);
 	quit_flag = 0;
 

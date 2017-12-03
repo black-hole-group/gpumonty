@@ -123,7 +123,7 @@ void track_super_photon(struct of_photon *ph)
 				bi = bf;
 			}
 
-			x1 = -log(monty_rand());
+			x1 = -log(monty_rand_device());
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {

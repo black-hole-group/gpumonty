@@ -210,6 +210,7 @@ void omp_reduce_spect(void);
 /* MC/RT utilities */
 void init_monty_rand(int seed);
 double monty_rand(void);
+__device__ double monty_rand_device(void);
 
 /* geodesic integration */
 void init_dKdlam(double X[], double Kcon[], double dK[]);
@@ -286,7 +287,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
-int stop_criterion(struct of_photon *ph);
+__device__ int stop_criterion(struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */

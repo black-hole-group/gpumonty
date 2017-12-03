@@ -68,6 +68,16 @@ double monty_rand()
 	return (gsl_rng_uniform(r));
 }
 
+__device__ double monty_rand_device()
+{
+	curandState state;
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
+	int seed = 42;
+  curand_init(seed, index, 0, &state);
+
+	return (curand_uniform_double(&state));
+}
+
 
 /*
    given photon w/ wavevector $k$ colliding w/ electron with
