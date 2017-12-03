@@ -151,7 +151,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
-__device__void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM])
