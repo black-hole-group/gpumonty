@@ -248,19 +248,19 @@ __device__ double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
 __device__ double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B);
 __device__ double alpha_inv_scatt(double nu, double thetae, double Ne);
-double alpha_inv_abs(double nu, double thetae, double Ne, double B,
+__device__ double alpha_inv_abs(double nu, double thetae, double Ne, double B,
 		     double theta);
-double Bnu_inv(double nu, double thetae);
-double jnu_inv(double nu, double thetae, double ne, double B,
+__device__ double Bnu_inv(double nu, double thetae);
+__device__ double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
 	/* thermal synchrotron */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
+__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta);
 double int_jnu(double Ne, double Thetae, double Bmag, double nu);
 void init_emiss_tables(void);
 double F_eval(double Thetae, double Bmag, double nu);
-double K2_eval(double Thetae);
+__host__ __device__ double K2_eval(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);

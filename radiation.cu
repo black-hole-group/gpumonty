@@ -48,7 +48,7 @@ model-independent radiation-related utilities.
 
 #include "decs.h"
 
-double Bnu_inv(double nu, double Thetae)
+__device__ double Bnu_inv(double nu, double Thetae)
 {
 
 	double x;
@@ -62,7 +62,7 @@ double Bnu_inv(double nu, double Thetae)
 		return ((2. * HPL / (CL * CL)) / (exp(x) - 1.));
 }
 
-double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
+__device__ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 {
 	double j;
 
@@ -82,7 +82,7 @@ __device__ double alpha_inv_scatt(double nu, double Thetae, double Ne)
 }
 
 /* return Lorentz invariant absorption opacity */
-double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
+__device__ double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 		     double theta)
 {
 	double j, bnu;

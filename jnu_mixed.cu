@@ -54,7 +54,7 @@ good for Thetae > 1
 */
 
 #define CST 1.88774862536	/* 2^{11/12} */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
+__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
@@ -151,8 +151,8 @@ void init_emiss_tables(void)
 	lK_min = log(KMIN);
 	dlK = log(KMAX / KMIN) / (N_ESAMP);
 
-	lT_min = log(TMIN);
-	dlT = log(TMAX / TMIN) / (N_ESAMP);
+	lT_min = log(TMIN); /* export to device */
+	dlT = log(TMAX / TMIN) / (N_ESAMP);/* export to device */
 
 	/*  build table for F(K) where F(K) is given by
 	   \int_0^\pi ( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6})^2 \exp[-(K/\sin\theta)^{1/3}]
@@ -171,7 +171,7 @@ void init_emiss_tables(void)
 	/*  build table for quick evaluation of the bessel function K2 for emissivity */
 	for (k = 0; k <= N_ESAMP; k++) {
 		T = exp(k * dlT + lT_min);
-		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T));
+		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T)); /* export to device */
 
 	}
 
@@ -186,10 +186,10 @@ void init_emiss_tables(void)
 
 /* rapid evaluation of K_2(1/\Thetae) */
 
-double K2_eval(double Thetae)
+__host__ __device__ double K2_eval(double Thetae)
 {
 
-	double linear_interp_K2(double);
+	__host__ __device__ double linear_interp_K2(double);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -225,7 +225,7 @@ double F_eval(double Thetae, double Bmag, double nu)
 #undef EPSABS
 #undef EPSREL
 
-double linear_interp_K2(double Thetae)
+__host__ __device__ double linear_interp_K2(double Thetae)
 {
 
 	int i;
