@@ -23,7 +23,7 @@ gsl_permutation *perm;
 #pragma omp threadprivate (gsl_gcov, gsl_gcon, perm)
 
 /* assumes gcov has been set first; returns determinant */
-__device__ double gdet_func(double gcov[NDIM * NDIM])
+double gdet_func(double gcov[NDIM * NDIM])
 {
 	double d;
 	int k, l, signum;

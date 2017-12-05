@@ -1,4 +1,6 @@
 #include "decs.h"
+#include <curand_kernel.h>
+#include <curand.h>
 // void sincos(double x, double *sin, double *cos);
 #pragma omp threadprivate(r)
 

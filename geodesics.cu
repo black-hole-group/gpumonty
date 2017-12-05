@@ -7,7 +7,7 @@ this is the main photon orbit integrator
 
 #define ETOL 1.e-3
 #define MAX_ITER 2
-void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
+__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n)
 {
 	double lconn[NDIM * NDIM * NDIM];
@@ -17,7 +17,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	double dl_2, err, errE;
 	int i, k, iter;
 
-	if (X[1] < startx[1])
+	if (X[1] < startx_device[1])
 		return;
 
 	FAST_CPY(X, Xcpy);
@@ -33,7 +33,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		X[i] += Kcon[i] * dl;
 	}
 
-	get_connection(X, lconn, a, hslope);
+	get_connection(X, lconn);
 
 	/* We're in a coordinate basis so take advantage of symmetry in the connection */
 	iter = 0;
@@ -73,8 +73,14 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	       Kcon[2] * Gcov[0 * NDIM + 2] + Kcon[3] * Gcov[0 * NDIM + 3]);
 	errE = fabs((E1 - (*E0)) / (*E0));
 
-	if (n < 7
-	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
+	if(
+			n < 7 && (
+				errE > 1.e-4 ||
+				err > ETOL ||
+				isnan(err) ||
+				isinf(err)
+			)
+		){
 		FAST_CPY(Xcpy, X);
 		FAST_CPY(Kcpy, Kcon);
 		FAST_CPY(dKcpy, dKcon);
@@ -84,145 +90,144 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	}
 
 	*E0 = E1;
-
 	/* done! */
 }
 
 /* spare photon integrator: 4th order Runge-Kutta */
-void push_photon4(double X[], double K[], double dK[], double dl)
-{
+// void push_photon4(double X[], double K[], double dK[], double dl)
+// {
+//
+// 	int k;
+// 	double lconn[NDIM * NDIM * NDIM];
+// 	double Kt[NDIM], Xt[NDIM];
+// 	double f1x[NDIM], f2x[NDIM], f3x[NDIM], f4x[NDIM];
+// 	double f1k[NDIM], f2k[NDIM], f3k[NDIM], f4k[NDIM];
+// 	double dl_2 = 0.5 * dl;
+//
+// 	for (k = 0; k < NDIM; k++)
+// 		f1x[k] = K[k];
+//
+// 	get_connection(X, lconn);
+// 	for (k = 0; k < NDIM; k++) {
+// 		f1k[k] =
+// 		    -2. * (K[0] *
+// 			   (lconn[k*16 + 0*4 + 1] * K[1] +
+// 					lconn[k*16 + 0*4 + 2] * K[2] +
+// 			    lconn[k*16 + 0*4 + 3] * K[3]) +
+// 			   K[1] * (lconn[k*16 + 1*4 + 2] * K[2] +
+// 				   lconn[k*16 + 1*4 + 3] * K[3]) +
+// 			   lconn[k*16 + 2*4 + 3] * K[2] * K[3]
+// 		    );
+//
+// 		f1k[k] -=
+// 		    (lconn[k*16 + 0*4 + 0] * K[0] * K[0] +
+// 		     lconn[k*16 + 1*4 + 1] * K[1] * K[1] +
+// 		     lconn[k*16 + 2*4 + 2] * K[2] * K[2] +
+// 		     lconn[k*16 + 3*4 + 3] * K[3] * K[3]
+// 		    );
+// 	}
+//
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl_2 * f1k[k];
+// 		f2x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl_2 * f1x[k];
+// 	}
+//
+// 	get_connection(Xt, lconn);
+// 	for (k = 0; k < NDIM; k++) {
+// 		f2k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+// 			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+// 			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+// 				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+// 			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
+// 		    );
+//
+// 		f2k[k] -=
+// 		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+// 		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+// 		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+// 		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+//
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl_2 * f2k[k];
+// 		f3x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl_2 * f2x[k];
+// 	}
+//
+// 	get_connection(Xt, lconn);
+// 	for (k = 0; k < NDIM; k++) {
+// 		f3k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+// 			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+// 			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+// 				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+// 			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
+// 		    );
+//
+// 		f3k[k] -=
+// 		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+// 		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+// 		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+// 		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+//
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl * f3k[k];
+// 		f4x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl * f3x[k];
+// 	}
+//
+// 	get_connection(Xt, lconn);
+// 	for (k = 0; k < NDIM; k++) {
+// 		f4k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
+// 			    lconn[k*16 + 0*4 + 2] * Kt[2] +
+// 			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
+// 				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
+// 			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
+// 		    );
+//
+// 		f4k[k] -=
+// 		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
+// 		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
+// 		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
+// 		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+//
+// 	for (k = 0; k < NDIM; k++) {
+// 		X[k] +=
+// 		    0.166666666666667 * dl * (f1x[k] +
+// 					      2. * (f2x[k] + f3x[k]) +
+// 					      f4x[k]);
+// 		K[k] +=
+// 		    0.166666666666667 * dl * (f1k[k] +
+// 					      2. * (f2k[k] + f3k[k]) +
+// 					      f4k[k]);
+// 	}
+//
+// 	init_dKdlam(X, K, dK);
+//
+// 	/* done */
+// }
 
+
+__device__ void init_dKdlam(double X[], double Kcon[], double dK[])
+{
 	int k;
 	double lconn[NDIM * NDIM * NDIM];
-	double Kt[NDIM], Xt[NDIM];
-	double f1x[NDIM], f2x[NDIM], f3x[NDIM], f4x[NDIM];
-	double f1k[NDIM], f2k[NDIM], f3k[NDIM], f4k[NDIM];
-	double dl_2 = 0.5 * dl;
 
-	for (k = 0; k < NDIM; k++)
-		f1x[k] = K[k];
-
-	get_connection(X, lconn, a, hslope);
-	for (k = 0; k < NDIM; k++) {
-		f1k[k] =
-		    -2. * (K[0] *
-			   (lconn[k*16 + 0*4 + 1] * K[1] +
-					lconn[k*16 + 0*4 + 2] * K[2] +
-			    lconn[k*16 + 0*4 + 3] * K[3]) +
-			   K[1] * (lconn[k*16 + 1*4 + 2] * K[2] +
-				   lconn[k*16 + 1*4 + 3] * K[3]) +
-			   lconn[k*16 + 2*4 + 3] * K[2] * K[3]
-		    );
-
-		f1k[k] -=
-		    (lconn[k*16 + 0*4 + 0] * K[0] * K[0] +
-		     lconn[k*16 + 1*4 + 1] * K[1] * K[1] +
-		     lconn[k*16 + 2*4 + 2] * K[2] * K[2] +
-		     lconn[k*16 + 3*4 + 3] * K[3] * K[3]
-		    );
-	}
-
-	for (k = 0; k < NDIM; k++) {
-		Kt[k] = K[k] + dl_2 * f1k[k];
-		f2x[k] = Kt[k];
-		Xt[k] = X[k] + dl_2 * f1x[k];
-	}
-
-	get_connection(Xt, lconn, a, hslope);
-	for (k = 0; k < NDIM; k++) {
-		f2k[k] =
-		    -2. * (Kt[0] *
-			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
-			    lconn[k*16 + 0*4 + 2] * Kt[2] +
-			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
-			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
-				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
-			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
-		    );
-
-		f2k[k] -=
-		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
-		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
-		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
-		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
-		    );
-	}
-
-	for (k = 0; k < NDIM; k++) {
-		Kt[k] = K[k] + dl_2 * f2k[k];
-		f3x[k] = Kt[k];
-		Xt[k] = X[k] + dl_2 * f2x[k];
-	}
-
-	get_connection(Xt, lconn, a, hslope);
-	for (k = 0; k < NDIM; k++) {
-		f3k[k] =
-		    -2. * (Kt[0] *
-			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
-			    lconn[k*16 + 0*4 + 2] * Kt[2] +
-			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
-			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
-				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
-			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
-		    );
-
-		f3k[k] -=
-		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
-		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
-		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
-		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
-		    );
-	}
-
-	for (k = 0; k < NDIM; k++) {
-		Kt[k] = K[k] + dl * f3k[k];
-		f4x[k] = Kt[k];
-		Xt[k] = X[k] + dl * f3x[k];
-	}
-
-	get_connection(Xt, lconn, a, hslope);
-	for (k = 0; k < NDIM; k++) {
-		f4k[k] =
-		    -2. * (Kt[0] *
-			   (lconn[k*16 + 0*4 + 1] * Kt[1] +
-			    lconn[k*16 + 0*4 + 2] * Kt[2] +
-			    lconn[k*16 + 0*4 + 3] * Kt[3]) +
-			   Kt[1] * (lconn[k*16 + 1*4 + 2] * Kt[2] +
-				    lconn[k*16 + 1*4 + 3] * Kt[3]) +
-			   lconn[k*16 + 2*4 + 3] * Kt[2] * Kt[3]
-		    );
-
-		f4k[k] -=
-		    (lconn[k*16 + 0*4 + 0] * Kt[0] * Kt[0] +
-		     lconn[k*16 + 1*4 + 1] * Kt[1] * Kt[1] +
-		     lconn[k*16 + 2*4 + 2] * Kt[2] * Kt[2] +
-		     lconn[k*16 + 3*4 + 3] * Kt[3] * Kt[3]
-		    );
-	}
-
-	for (k = 0; k < NDIM; k++) {
-		X[k] +=
-		    0.166666666666667 * dl * (f1x[k] +
-					      2. * (f2x[k] + f3x[k]) +
-					      f4x[k]);
-		K[k] +=
-		    0.166666666666667 * dl * (f1k[k] +
-					      2. * (f2k[k] + f3k[k]) +
-					      f4k[k]);
-	}
-
-	init_dKdlam(X, K, dK);
-
-	/* done */
-}
-
-__device__
-void init_dKdlam(double X[], double Kcon[], double dK[])
-{
-	int k;
-	double lconn[NDIM * NDIM * NDIM];
-
-	get_connection(X, lconn, a, hslope);
+	get_connection(X, lconn);
 
 	for (k = 0; k < 4; k++) {
 

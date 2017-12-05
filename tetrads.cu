@@ -157,7 +157,7 @@ double delta(int i, int j)
 		return (0.);
 }
 
-__device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
+__host__ __device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *ucov)
 {
 
 	ucov[0] = Gcov[0*NDIM + 0] * ucon[0]
@@ -225,14 +225,14 @@ void normalize_null(double Gcov[NDIM * NDIM], double K[])
 	double A, B, C;
 
 	/* pop K back onto the light cone */
-	A = Gcov[0 * Ndim + 0];
+	A = Gcov[0 * NDIM + 0];
 	B = 0.;
 	for (k = 1; k < 4; k++)
-		B += 2. * Gcov[k * Ndim + 0] * K[k];
+		B += 2. * Gcov[k * NDIM + 0] * K[k];
 	C = 0.;
 	for (k = 1; k < 4; k++)
 		for (l = 1; l < 4; l++)
-			C += Gcov[k * Ndim + l] * K[k] * K[l];
+			C += Gcov[k * NDIM + l] * K[k] * K[l];
 
 	K[0] = (-B - sqrt(fabs(B * B - 4. * A * C))) / (2. * A);
 

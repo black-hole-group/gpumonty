@@ -90,7 +90,7 @@ __device__ double bias_func(double Te, double w)
 
 	avg_num_scatt = N_scatt_device / (1. * N_superph_recorded_device + 1.);
 	bias =
-	    100. * Te * Te / (bias_norm * max_tau_scatt_device *
+	    100. * Te * Te / (bias_norm_device * max_tau_scatt_device *
 			      (avg_num_scatt + 2));
 
 	if (bias < TP_OVER_TE)
@@ -324,9 +324,113 @@ void gcov_func(double *X, double gcov[NDIM * NDIM])
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
 
-void get_connection(double X[4], double lconn[4][4][4])
+__device__ void get_connection(double X[4], double lconn[64])
 {
-	cuda_get_connection(X, lconn);
+	// cuda_get_connection(X, lconn);
+	double r1, r2, r3, r4, sx, cx;
+	double th, dthdx2, dthdx22, d2thdx22, sth, cth, sth2, cth2, sth4,
+	cth4, s2th, c2th;
+	double a2, a3, a4, rho2, irho2, rho22, irho22, rho23, irho23,
+	irho23_dthdx2;
+	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
+	a4cth4;
+
+	r1 = exp(X[1]);
+	r2 = r1 * r1;
+	r3 = r2 * r1;
+	r4 = r3 * r1;
+
+	sincos(2. * M_PI * X[2], &sx, &cx);
+	th       = M_PI   * X[2]   + 0.5  * (1      - hslope) * sx;
+	d2thdx22 = -2.    * M_PI   * M_PI * (1      - hslope) * sx;
+	dthdx2   = M_PI   * (1.    + (1   - hslope) * cx);
+	dthdx22  = dthdx2 * dthdx2;
+
+	sincos(th, &sth, &cth);
+	sth2   = sth  * sth;
+	r1sth2 = r1   * sth2;
+	sth4   = sth2 * sth2;
+
+	cth2   = cth  * cth;
+	cth4   = cth2 * cth2;
+	c2th   = 2    * cth2 - 1.;
+	s2th   = 2.   * sth  * cth;
+
+	a2     = a  * a;
+	a2sth2 = a2 * sth2;
+	a2cth2 = a2 * cth2;
+	a3     = a2 * a;
+	a4     = a3 * a;
+	a4cth4 = a4 * cth4;
+
+	rho2          = r2     + a2cth2;
+	rho22         = rho2   * rho2;
+	rho23         = rho22  * rho2;
+	irho2         = 1.     / rho2;
+	irho22        = irho2  * irho2;
+	irho23        = irho22 * irho2;
+	irho23_dthdx2 = irho23 / dthdx2;
+
+	fac1       = r2   - a2cth2;
+	fac1_rho23 = fac1 * irho23;
+	fac2       = a2   + 2     * r2   + a2 * c2th;
+	fac3       = a2   + r1    * (-2. + r1);
+
+	lconn[0*16 + 0*4 + 0] = 2.  * r1  * fac1_rho23;
+	lconn[0*16 + 0*4 + 1] = r1  * (2. * r1        + rho2)     * fac1_rho23;
+	lconn[0*16 + 0*4 + 2] = -a2 * r1  * s2th      * dthdx2    * irho22;
+	lconn[0*16 + 0*4 + 3] = -2. * a   * r1sth2    * fac1_rho23;
+
+	lconn[0*16 + 1*4 + 1] = 2.  * r2 * (r4  + r1     * fac1  - a4cth4) * irho23;
+	lconn[0*16 + 1*4 + 2] = -a2 * r2 * s2th * dthdx2 * irho22;
+	lconn[0*16 + 1*4 + 3] = a   * r1 * (-r1 * (r3    + 2     * fac1)   + a4cth4) * sth2 * irho23;
+
+	lconn[0*16 + 2*4 + 2] = -2. * r2     * dthdx22 * irho2;
+	lconn[0*16 + 2*4 + 3] = a3  * r1sth2 * s2th    * dthdx2 * irho22;
+
+	lconn[0*16 + 3*4 + 3] = 2.  * r1sth2 * (-r1    * rho22  + a2sth2 * fac1) * irho23;
+
+	lconn[1*16 + 0*4 + 0] = fac3 * fac1 / (r1 * rho23);
+	lconn[1*16 + 0*4 + 1] = fac1 * (-2. * r1  + a2sth2) * irho23;
+	lconn[1*16 + 0*4 + 2] = 0.;
+	lconn[1*16 + 0*4 + 3] = -a   * sth2 * fac3 * fac1   / (r1   * rho23);
+
+	lconn[1*16 + 1*4 + 1] = (r4 * (-2.   + r1)  * (1. + r1)  + a2 * (a2 * r1 * (1. + 3. * r1) * cth4 + a4cth4 * cth2 + r3 * sth2 + r1 * cth2 * (2. * r1 + 3. * r3 - a2sth2))) * irho23;
+	lconn[1*16 + 1*4 + 2] = -a2 * dthdx2 * s2th / fac2;
+	lconn[1*16 + 1*4 + 3] = a   * sth2   * (a4  * r1  * cth4 + r2 * (2  * r1 + r3  - a2sth2) +	a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
+
+	lconn[1*16 + 2*4 + 2] = -fac3 * dthdx22 * irho2;
+	lconn[1*16 + 2*4 + 3] = 0.;
+
+	lconn[1*16 + 3*4 + 3] = -fac3 * sth2 * (r1 * rho22 - a2 * fac1 * sth2) / (r1 * rho23);
+
+	lconn[2*16 + 0*4 + 0] = -a2 * r1 * s2th * irho23_dthdx2;
+	lconn[2*16 + 0*4 + 1] = r1  * lconn[2*16 + 0*4 + 0];
+	lconn[2*16 + 0*4 + 2] = 0.;
+	lconn[2*16 + 0*4 + 3] = a   * r1 * (a2  + r2) * s2th * irho23_dthdx2;
+
+	lconn[2*16 + 1*4 + 1] = r2 * lconn[2*16 + 0*4 + 0];
+	lconn[2*16 + 1*4 + 2] = r2 * irho2;
+	lconn[2*16 + 1*4 + 3] = (a * r1 * cth * sth * (r3 * (2. + r1) + a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 + 2 * r1sth2))) * irho23_dthdx2;
+
+	lconn[2*16 + 2*4 + 2] = -a2 * cth * sth * dthdx2 * irho2 + d2thdx22 / dthdx2;
+	lconn[2*16 + 2*4 + 3] = 0.;
+
+	lconn[2*16 + 3*4 + 3] = -cth * sth * (rho23 + a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) + 2. * r1 * a4 * sth4) * irho23_dthdx2;
+
+	lconn[3*16 + 0*4 + 0] = a       * fac1_rho23;
+	lconn[3*16 + 0*4 + 1] = r1      * lconn[3*16 + 0*4 + 0];
+	lconn[3*16 + 0*4 + 2] = -2.     * a             * r1 * cth * dthdx2 / (sth * rho22);
+	lconn[3*16 + 0*4 + 3] = -a2sth2 * fac1_rho23;
+
+	lconn[3*16 + 1*4 + 1] = a  * r2  * fac1_rho23;
+	lconn[3*16 + 1*4 + 2] = -2 * a   * r1        * (a2    + 2     * r1    * (2. + r1) + a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
+	lconn[3*16 + 1*4 + 3] = r1 * (r1 * rho22     - a2sth2 * fac1) * irho23;
+
+	lconn[3*16 + 2*4 + 2] = -a * r1 * dthdx22 * irho2;
+	lconn[3*16 + 2*4 + 3] = dthdx2 * (0.25 * fac2 * fac2 * cth / sth + a2 * r1 * s2th) * irho22;
+
+	lconn[3*16 + 3*4 + 3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 }
 
 /* stopping criterion for geodesic integrator */

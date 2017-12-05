@@ -58,6 +58,7 @@
 
 #define NDIM	4
 #define NDIM2	16
+#define NDIM3	64
 #define NPRIM	8
 
 /* Range of initial superphoton frequencies */
@@ -160,6 +161,7 @@ extern double a;
 extern double R0, Rin, Rh, Rout, Rms;
 extern double hslope;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
+__device__ extern double startx_device[NDIM], stopx_device[NDIM], dx_device[NDIM];
 extern double dlE, lE0;
 extern double gam;
 extern double dMsim;
@@ -174,7 +176,7 @@ extern double Ne_unit;
 extern double Thetae_unit;
 
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
-__device__ extern double max_tau_scatt_device bias_norm;
+__device__ extern double max_tau_scatt_device, bias_norm_device;
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
@@ -193,7 +195,7 @@ __device__ extern double max_tau_scatt_device bias_norm;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(struct of_photon *ph);
+__global__ void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
 __device__ void scatter_super_photon(
@@ -201,7 +203,7 @@ __device__ void scatter_super_photon(
 	struct of_photon *php,
 	double Ne, double Thetae, double B,
 	double Ucon[NDIM], double Bcon[NDIM],
-	double Gcov[NDIM2
+	double Gcov[NDIM2]
 );
 
 /* OpenMP specific functions */
@@ -213,9 +215,9 @@ double monty_rand(void);
 __device__ double monty_rand_device(void);
 
 /* geodesic integration */
-void init_dKdlam(double X[], double Kcon[], double dK[]);
+__device__ void init_dKdlam(double X[], double Kcon[], double dK[]);
 void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
-void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
+__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n);
 void push_photon4(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		  double dl);
@@ -229,15 +231,15 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
-__device__ void lower(double *ucon, double Gcov[NDIM2], double *ucov);
-__device__ double gdet_func(double gcov[NDIM2]);  /* calculated numerically */
+__host__ __device__ void lower(double *ucon, double Gcov[NDIM2], double *ucov);
+double gdet_func(double gcov[NDIM2]);  /* calculated numerically */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
 void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM]);
 double delta(int i, int j);
-__device__ void normalize(double Ucon[NDIM], double Gcov[NDIM2]);
-__device__ void normalize_null(double Gcov[NDIM2], double K[NDIM]);
+void normalize(double Ucon[NDIM], double Gcov[NDIM2]);
+void normalize_null(double Gcov[NDIM2], double K[NDIM]);
 void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 		 double Gcov[NDIM2], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM]);
@@ -291,6 +293,6 @@ __device__ int stop_criterion(struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
-void get_connection(double *X, double lconn[][NDIM][NDIM]);
-__device__ void gcov_func(double *X, double gcov[NDIM2]);
-__device__ void gcon_func(double *X, double gcon[NDIM2]);
+__device__ void get_connection(double *X, double lconn[NDIM3]);
+__host__ __device__ void gcov_func(double *X, double gcov[NDIM2]);
+__host__ __device__ void gcon_func(double *X, double gcon[NDIM2]);

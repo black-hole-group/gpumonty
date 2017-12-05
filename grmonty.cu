@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 				break;
 
 			/* push them around */
-			track_super_photon(&ph);
+			track_super_photon<<<1,1>>>(&ph);
 
 			/* step */
 #pragma omp atomic

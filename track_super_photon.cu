@@ -11,7 +11,7 @@
 
 #define MAXNSTEP	1280000
 
-void track_super_photon(struct of_photon *ph)
+__global__ void track_super_photon(struct of_photon *ph)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -28,15 +28,18 @@ void track_super_photon(struct of_photon *ph)
 	int nstep = 0;
 
 	/* quality control */
-	if (isnan(ph->X[0]) ||
+	if(isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
 	    isnan(ph->X[2]) ||
 	    isnan(ph->X[3]) ||
 	    isnan(ph->K[0]) ||
 	    isnan(ph->K[1]) ||
-	    isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
-		fprintf(stderr, "track_super_photon: bad input photon.\n");
-		fprintf(stderr,
+	    isnan(ph->K[2]) ||
+			isnan(ph->K[3]) ||
+			ph->w == 0.
+		) {
+		printf("track_super_photon: bad input photon.\n");
+		printf(
 			"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
 			ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0],
 			ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
@@ -127,8 +130,7 @@ void track_super_photon(struct of_photon *ph)
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
-					fprintf(
-						stderr,
+					printf(
 						"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
 						Ne, bias, ph->w, php.w
 					);
@@ -205,7 +207,7 @@ void track_super_photon(struct of_photon *ph)
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			fprintf(stderr,
+			printf(
 				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
 				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
 				bias);
