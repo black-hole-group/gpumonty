@@ -81,7 +81,7 @@ void init_hotcross(void)
 				fprintf(fp, "%d %d %g %g %15.10g\n",
 					i,
 					j,
-					w,
+					lw,
 					lT,
 					table[i * (NW+1) + j]
 				);

@@ -56,9 +56,10 @@ double dlE, lE0;
 double gam;
 double dMsim;
 double M_unit, L_unit, T_unit;
+__device__ double L_unit_device;
 double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
 double max_tau_scatt, Ladv, dMact, bias_norm;
-
+__device__ double max_tau_scatt_device;
 gsl_rng *r;
 gsl_integration_workspace *w;
 

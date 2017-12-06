@@ -477,7 +477,7 @@ __device__ int stop_criterion(struct of_photon *ph)
 
 /* criterion for recording photon */
 
-int record_criterion(struct of_photon *ph)
+__device__ int record_criterion(struct of_photon *ph)
 {
 	const double X1max = log(RMAX);
 	/* this is coordinate and simulation
@@ -538,11 +538,10 @@ void record_super_photon(struct of_photon *ph)
 	for(my_index = 0; my_index<10; my_index++){
 		if(ph->tau_scatt > max_tau_scatt_device){
 			grater = ph->tau_scatt - max_tau_scatt_device
-		} else {
-			grater = 0; /*false*/
+			atomicAdd(&max_tau_scatt_device, grater);
+		} else{
+			break;
 		}
-
-		atomicAdd(&max_tau_scatt_device, grater);
 	}
 
 	// int isSet = 0;
@@ -563,11 +562,11 @@ void record_super_photon(struct of_photon *ph)
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
-	dx2 = (stopx[2] - startx_device[2]) / (2. * N_THBINS);
-	if (ph->X[2] < 0.5 * (startx_device[2] + stopx[2]))
+	dx2 = (stopx_device[2] - startx_device[2]) / (2. * N_THBINS);
+	if (ph->X[2] < 0.5 * (startx_device[2] + stopx_device[2]))
 		ix2 = (int) (ph->X[2] / dx2);
 	else
-		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
+		ix2 = (int) ((stopx_device[2] - ph->X[2]) / dx2);
 
 	/* check limits */
 	if (ix2 < 0 || ix2 >= N_THBINS)

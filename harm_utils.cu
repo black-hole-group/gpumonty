@@ -489,6 +489,7 @@ void set_units(char *munitstr)
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
 	L_unit = GNEWT * MBH / (CL * CL);
+	cudaMemcpyToSymbol(L_unit_device, L_unit, sizeof(double));
 	T_unit = L_unit / CL;
 
 	fprintf(stderr, "\nUNITS\n");
@@ -504,9 +505,9 @@ void set_units(char *munitstr)
 	Ne_unit = RHO_unit / (MP + ME); /*export to device*/
 
 	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
-	cudaMemcpyFromSymbol(
-		&max_tau_scatt,
+	cudaMemcpyToSymbol(
 		max_tau_scatt_device,
+		max_tau_scatt,
 		sizeof(double),
 		0,
 		cudaMemcpyDeviceToHost

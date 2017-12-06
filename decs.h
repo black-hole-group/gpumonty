@@ -169,6 +169,7 @@ extern double dMsim;
 
 extern double M_unit;
 extern double L_unit;
+__device__ extern double L_unit_device;
 extern double T_unit;
 extern double RHO_unit;
 extern double U_unit;
@@ -198,7 +199,7 @@ __device__ extern double max_tau_scatt_device, bias_norm_device;
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
 __global__ void track_super_photon(struct of_photon *ph);
-void record_super_photon(struct of_photon *ph);
+__device__ void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
 __device__ void scatter_super_photon(
 	struct of_photon *ph,
@@ -304,7 +305,7 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM2], double *Ne,
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
 __device__ int stop_criterion(struct of_photon *ph);
-int record_criterion(struct of_photon *ph);
+__device__ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 __device__ void get_connection(double *X, double lconn[NDIM3]);
