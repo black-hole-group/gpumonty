@@ -9,9 +9,10 @@
 
 #include "gpu_helpers.h"
 
-struct of_spectrum spect[N_THBINS][N_EBINS] = { };
+__device__ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
+__device__ int mutex = 0;
 
-#pragma omp threadprivate(spect)
+// #pragma omp threadprivate(spect)
 
 /*
 
@@ -163,15 +164,15 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], doubl
 	double gcon[NDIM*NDIM], coeff[4];
 	__device__ double interp_scalar(double **var, int i, int j, double del[4], int N1);
 
-	if (X[1] < startx[1] ||
-	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+	if (X[1] < startx_device[1] ||
+	    X[1] > stopx[1] || X[2] < startx_device[2] || X[2] > stopx[2]) {
 
 		*Ne = 0.;
 
 		return;
 	}
 
-	Xtoij(X, &i, &j, del, startx, dx, N1, N2);
+	Xtoij(X, &i, &j, del, startx_device, dx, N1, N2);
 
 	coeff[0] = (1. - del[1]) * (1. - del[2]);
 	coeff[1] = (1. - del[1]) * del[2];
@@ -215,7 +216,7 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], doubl
 	lower(Bcon, gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit_device;
 
 }
 
@@ -526,22 +527,44 @@ __device__ double stepsize(double X[NDIM], double K[NDIM])
 void record_super_photon(struct of_photon *ph)
 {
 	double lE, dx2;
-	int iE, ix2;
+	int iE, ix2, grater, my_index;
 
 	if (isnan(ph->w) || isnan(ph->E)) {
-		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
+		printf("record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
-#pragma omp critical (MAXTAU)
-	{
-		if (ph->tau_scatt > max_tau_scatt)
-			max_tau_scatt = ph->tau_scatt;
+
+	/*https://stackoverflow.com/questions/21341495/cuda-mutex-and-atomiccas*/
+	for(my_index = 0; my_index<10; my_index++){
+		if(ph->tau_scatt > max_tau_scatt_device){
+			grater = ph->tau_scatt - max_tau_scatt_device
+		} else {
+			grater = 0; /*false*/
+		}
+
+		atomicAdd(&max_tau_scatt_device, grater);
 	}
+
+	// int isSet = 0;
+  // do{
+  //   if (isSet = (atomicCAS(&mutex, 0, 1) == 0))
+	// 		if (ph->tau_scatt > max_tau_scatt_device)
+	// 			max_tau_scatt_device = ph->tau_scatt;
+  //
+  //   if (isSet)
+  //     mutex = 0;
+  //
+	// }while (!isSet);
+  // #pragma omp critical (MAXTAU)
+	// {
+	// if (ph->tau_scatt > max_tau_scatt_device)
+	// 	max_tau_scatt_device = ph->tau_scatt;
+	// }
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
-	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
-	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
+	dx2 = (stopx[2] - startx_device[2]) / (2. * N_THBINS);
+	if (ph->X[2] < 0.5 * (startx_device[2] + stopx[2]))
 		ix2 = (int) (ph->X[2] / dx2);
 	else
 		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
@@ -552,32 +575,33 @@ void record_super_photon(struct of_photon *ph)
 
 	/* get energy bin */
 	lE = log(ph->E);
-	iE = (int) ((lE - lE0) / dlE + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
+	iE = (int) ((lE - lE0) / dlE_device + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
 
 	/* check limits */
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-#pragma omp atomic
-	N_superph_recorded++;
+// #pragma omp atomic
+	atomicAdd(N_superph_recorded, 1);
 	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
-#pragma omp atomic
-	N_scatt += ph->nscatt;
+// #pragma omp atomic
+	atomicAdd(N_scatt, ph->nscatt);
 	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 
 	/* sum in photon */
-	spect[ix2][iE].dNdlE += ph->w;
-	spect[ix2][iE].dEdlE += ph->w * ph->E;
-	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
-	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
-	spect[ix2][iE].X1iav += ph->w * ph->X1i;
-	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
-	spect[ix2][iE].b0 += ph->w * (ph->b0);
-	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-	spect[ix2][iE].nscatt += ph->nscatt;
-	spect[ix2][iE].nph += 1.;
+
+	atomicAdd(spect[ix2][iE].dNdlE, ph->w);
+	atomicAdd(spect[ix2][iE].dEdlE, ph->w * ph->E);
+	atomicAdd(spect[ix2][iE].tau_abs, ph->w * ph->tau_abs);
+	atomicAdd(spect[ix2][iE].tau_scatt, ph->w * ph->tau_scatt);
+	atomicAdd(spect[ix2][iE].X1iav, ph->w * ph->X1i);
+	atomicAdd(spect[ix2][iE].X2isq, ph->w * (ph->X2i * ph->X2i));
+	atomicAdd(spect[ix2][iE].X3fsq, ph->w * (ph->X[3] * ph->X[3]));
+	atomicAdd(spect[ix2][iE].ne0, ph->w * (ph->ne0));
+	atomicAdd(spect[ix2][iE].b0, ph->w * (ph->b0));
+	atomicAdd(spect[ix2][iE].thetae0, ph->w * (ph->thetae0));
+	atomicAdd(spect[ix2][iE].nscatt, ph->nscatt);
+	atomicAdd(spect[ix2][iE].nph, 1.);
 
 }
 
@@ -671,6 +695,13 @@ void report_spectrum(int N_superph_made)
 
 	/* output */
 	max_tau_scatt = 0.;
+	// cudaMemcpyToSymbol(
+	// 	max_tau_scatt_device,
+	// 	max_tau_scatt,
+	// 	sizeof(double),
+	// 	0,
+	// 	cudaMemcpyHostToDevice
+	// );
 	L = 0.;
 	for (i = 0; i < N_EBINS; i++) {
 
@@ -690,7 +721,13 @@ void report_spectrum(int N_superph_made)
 			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
 								     dlE);
 
-			nuLnu *= spect[j][i].dEdlE;
+			nuLnu *= spect[j]	// cudaMemcpyToSymbol(
+				// 	max_tau_scatt_device,
+				// 	max_tau_scatt,
+				// 	sizeof(double),
+				// 	0,
+				// 	cudaMemcpyHostToDevice
+				// );[i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
@@ -700,7 +737,13 @@ void report_spectrum(int N_superph_made)
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,
 				spect[j][i].tau_abs / (spect[j][i].dNdlE +
-						       SMALL), tau_scatt,
+						       SMAL	// cudaMemcpyToSymbol(
+				// 	max_tau_scatt_device,
+				// 	max_tau_scatt,
+				// 	sizeof(double),
+				// 	0,
+				// 	cudaMemcpyHostToDevice
+				// );L), tau_scatt,
 				spect[j][i].X1iav / (spect[j][i].dNdlE +
 						     SMALL),
 				sqrt(fabs
@@ -711,8 +754,16 @@ void report_spectrum(int N_superph_made)
 				      (spect[j][i].dNdlE + SMALL)))
 			    );
 
-			if (tau_scatt > max_tau_scatt)
+			if (tau_scatt > max_tau_scatt){
 				max_tau_scatt = tau_scatt;
+				// cudaMemcpyToSymbol(
+				// 	max_tau_scatt_device,
+				// 	max_tau_scatt,
+				// 	sizeof(double),
+				// 	0,
+				// 	cudaMemcpyHostToDevice
+				// );
+			}
 
 			L += nuLnu * dOmega * dlE;
 		}

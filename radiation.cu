@@ -66,7 +66,7 @@ __device__ double jnu_inv(double nu, double Thetae, double Ne, double B, double 
 {
 	double j;
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta);
+	j = jnu_synch_device(nu, Ne, Thetae, B, theta);
 
 	return (j / (nu * nu));
 }
@@ -146,7 +146,7 @@ __device__ double get_bk_angle(
 
 	/* B is in cgs but Bcov is in code units */
 	mu = (K[0] * Bcov[0] + K[1] * Bcov[1] + K[2] * Bcov[2] +
-	      K[3] * Bcov[3]) / (k * B / B_unit);
+	      K[3] * Bcov[3]) / (k * B / B_unit_device);
 
 	if (fabs(mu) > 1.)
 		mu /= fabs(mu);

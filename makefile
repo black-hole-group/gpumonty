@@ -35,7 +35,7 @@ grmonty : $(OBJS) $(INCS) makefile
 	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -o grmonty $(OBJS) $(ALL_LDFLAGS)
 
 $(OBJS) : $(INCS) makefile
-	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -c $(SRCS)
+	$(CUDAC) $(ALL_CUDACFLAGS) $(ALL_CFLAGS) -dc $(SRCS)
 
 clean:
 	/bin/rm *.o

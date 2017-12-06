@@ -163,6 +163,7 @@ extern double hslope;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 __device__ extern double startx_device[NDIM], stopx_device[NDIM], dx_device[NDIM];
 extern double dlE, lE0;
+__device__ extern double dlE_device, lE0_device;
 extern double gam;
 extern double dMsim;
 
@@ -172,6 +173,7 @@ extern double T_unit;
 extern double RHO_unit;
 extern double U_unit;
 extern double B_unit;
+__device__ extern double B_unit_device;
 extern double Ne_unit;
 extern double Thetae_unit;
 
@@ -257,8 +259,19 @@ __device__ double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
 	/* thermal synchrotron */
-__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta);
+__host__ double jnu_synch(
+	double nu,
+	double Ne,
+	double Thetae,
+	double B,
+	double theta
+);
+__device__ double jnu_synch_device(double nu,
+	double Ne,
+	double Thetae,
+	double B,
+	double theta
+);
 double int_jnu(double Ne, double Thetae, double Bmag, double nu);
 void init_emiss_tables(void);
 double F_eval(double Thetae, double Bmag, double nu);

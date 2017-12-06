@@ -219,5 +219,5 @@ __global__ void track_super_photon(struct of_photon *ph)
 	if (record_criterion(ph) && nstep < MAXNSTEP)
 		record_super_photon(ph);
 	/* done! */
-	return;
+	return; 
 }

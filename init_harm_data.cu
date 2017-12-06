@@ -111,10 +111,14 @@ void init_harm_data(char *fname)
 	startx[0] = 0.;/* export  to device */
 	startx[3] = 0.;/* export  to device */
 
+	cudaMemcpyToSymbol(startx_device, startx, sizeof(double) * 4);
+
 	stopx[0] = 1.; /* export  to device */
 	stopx[1] = startx[1] + N1 * dx[1];/* export  to device */
 	stopx[2] = startx[2] + N2 * dx[2];/* export  to device */
 	stopx[3] = 2. * M_PI;/* export  to device */
+
+	cudaMemcpyToSymbol(stopx_device, stopx, sizeof(double) * 4);
 
 	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2]);

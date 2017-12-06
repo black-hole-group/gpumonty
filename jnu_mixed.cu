@@ -54,7 +54,7 @@ good for Thetae > 1
 */
 
 #define CST 1.88774862536	/* 2^{11/12} */
-__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
+__host__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
@@ -64,6 +64,32 @@ __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double
 		return 0.;
 
 	K2 = K2_eval(Thetae);
+
+	nuc = EE * B / (2. * M_PI * ME * CL);
+	sth = sin(theta);
+	nus = (2. / 9.) * nuc * Thetae * Thetae * sth;
+	if (nu > 1.e12 * nus)
+		return (0.);
+	x = nu / nus;
+	xp1 = pow(x, 1. / 3.);
+	xx = sqrt(x) + CST * sqrt(xp1);
+	f = xx * xx;
+	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f *
+	    exp(-xp1);
+
+	return (j);
+}
+
+__device__ double jnu_synch_device(double nu, double Ne, double Thetae, double B,
+		 double theta)
+{
+	double K2, nuc, nus, x, f, j, sth, xp1, xx;
+	__device__ double K2_eval_device(double Thetae);
+
+	if (Thetae < THETAE_MIN)
+		return 0.;
+
+	K2 = K2_eval_device(Thetae);
 
 	nuc = EE * B / (2. * M_PI * ME * CL);
 	sth = sin(theta);
@@ -128,8 +154,10 @@ double jnu_integrand(double th, void *params)
 /* multiple definition of F, first defined in grmonty */
 // double F[N_ESAMP + 1], K2[N_ESAMP + 1];
 double K2[N_ESAMP + 1];
+__device__ double K2_device[N_ESAMP + 1];
 double lK_min, dlK;
 double lT_min, dlT;
+__device__ double lT_min_device, dlT_device;
 
 #define EPSABS 0.
 #define EPSREL 1.e-6
@@ -152,6 +180,7 @@ void init_emiss_tables(void)
 	dlK = log(KMAX / KMIN) / (N_ESAMP);
 
 	lT_min = log(TMIN); /* export to device */
+	cudaMemcpyToSymbol(&lT_min, &lT_min_device, sizeof(double));
 	dlT = log(TMAX / TMIN) / (N_ESAMP);/* export to device */
 
 	/*  build table for F(K) where F(K) is given by
@@ -174,6 +203,7 @@ void init_emiss_tables(void)
 		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T)); /* export to device */
 
 	}
+	cudaMemcpyToSymbol(K2_device, K2, sizeof(double) * N_ESAMP);
 
 	/* Avoid doing divisions later */
 	dlK = 1. / dlK;
@@ -186,10 +216,10 @@ void init_emiss_tables(void)
 
 /* rapid evaluation of K_2(1/\Thetae) */
 
-__host__ __device__ double K2_eval(double Thetae)
+__host__ double K2_eval(double Thetae)
 {
 
-	__host__ __device__ double linear_interp_K2(double);
+	__host__ double linear_interp_K2(double);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -197,6 +227,19 @@ __host__ __device__ double K2_eval(double Thetae)
 		return 2. * Thetae * Thetae;
 
 	return linear_interp_K2(Thetae);
+}
+
+__device__ double K2_eval_device(double Thetae)
+{
+
+	__device__ double linear_interp_K2_device(double);
+
+	if (Thetae < THETAE_MIN)
+		return 0.;
+	if (Thetae > TMAX)
+		return 2. * Thetae * Thetae;
+
+	return linear_interp_K2_device(Thetae);
 }
 
 #define KFAC	(9*M_PI*ME*CL/EE)
@@ -225,7 +268,7 @@ double F_eval(double Thetae, double Bmag, double nu)
 #undef EPSABS
 #undef EPSREL
 
-__host__ __device__ double linear_interp_K2(double Thetae)
+__host__ double linear_interp_K2(double Thetae)
 {
 
 	int i;
@@ -238,6 +281,21 @@ __host__ __device__ double linear_interp_K2(double Thetae)
 	di = di - i;
 
 	return exp((1. - di) * K2[i] + di * K2[i + 1]);
+}
+
+__device__ double linear_interp_K2_device(double Thetae)
+{
+
+	int i;
+	double di, lT;
+
+	lT = log(Thetae);
+
+	di = (lT - lT_min_device) * dlT_device;
+	i = (int) di;
+	di = di - i;
+
+	return exp((1. - di) * K2_device[i] + di * K2_device[i + 1]);
 }
 
 double linear_interp_F(double K)

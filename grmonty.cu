@@ -88,7 +88,9 @@ int main(int argc, char *argv[])
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
+	cudaMemset(&dlE_device, dlE, sizeof(double));
 	lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
+	cudaMemset(&lE0_device, lE0, sizeof(double));
 
 	/* initialize model data, auxiliary variables */
 	init_model(argv);

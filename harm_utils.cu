@@ -497,12 +497,20 @@ void set_units(char *munitstr)
 	RHO_unit = M_unit / pow(L_unit, 3);
 	U_unit = RHO_unit * CL * CL;
 	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
+	cudaMemcpyToSymbol(B_unit_device, B_unit, sizeof(double));
 
 	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
 
 	Ne_unit = RHO_unit / (MP + ME); /*export to device*/
 
 	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+	cudaMemcpyFromSymbol(
+		&max_tau_scatt,
+		max_tau_scatt_device,
+		sizeof(double),
+		0,
+		cudaMemcpyDeviceToHost
+	);
 
 	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
 
