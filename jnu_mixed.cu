@@ -80,9 +80,13 @@ __host__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 	return (j);
 }
 
-__device__ double jnu_synch_device(double nu, double Ne, double Thetae, double B,
-		 double theta)
-{
+__device__ double jnu_synch_device(
+	double nu,
+	double Ne,
+	double Thetae,
+	double B,
+	double theta
+){
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
 	__device__ double K2_eval_device(double Thetae);
 

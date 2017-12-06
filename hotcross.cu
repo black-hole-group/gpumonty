@@ -24,9 +24,11 @@
 
 #define HOTCROSS	"hotcross.dat"
 
-double table[NW + 1][NT + 1];
+double table[(NW + 1) * (NT + 1)];
+__device__ double table_device[(NW + 1) * (NT + 1)];
 /* multiple definition of dlT, first defined in jnu_mixed */
 double dlw, dlT2, lminw, lmint;
+__device__ double dlw_device, dlT2_device, lminw_device, lmint_device;
 
 void init_hotcross(void)
 {
@@ -35,10 +37,15 @@ void init_hotcross(void)
 	double total_compton_cross_num(double w, double thetae);
 	FILE *fp;
 
-	dlw = log10(MAXW / MINW) / NW;
-	dlT2 = log10(MAXT / MINT) / NT;
+	dlw   = log10(MAXW / MINW) / NW;
+	dlT2  = log10(MAXT / MINT) / NT;
 	lminw = log10(MINW);
 	lmint = log10(MINT);
+
+	dlw   = cudaMemcpyToSymbol(&dlw_device,   &dlw,   sizeof(double));
+	dlT2  = cudaMemcpyToSymbol(&dlT2_device,  &dlT2,  sizeof(double));
+	lminw = cudaMemcpyToSymbol(&lminw_device, &lminw, sizeof(double));
+	lmint = cudaMemcpyToSymbol(&lmint_device, &lmint, sizeof(double));
 
 	fp = fopen(HOTCROSS, "r");
 	if (fp == NULL) {
@@ -50,10 +57,10 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * dlT2;
-				table[i][j] =
+				table[i * (NW+1) + j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i][j])) {
+				if (isnan(table[i * (NW+1) + j])) {
 					printf( "%d %d %g %g\n", i,
 						j, lw, lT);
 					exit(0);
@@ -66,12 +73,18 @@ void init_hotcross(void)
 			printf( "couldn't write to file\n");
 			exit(0);
 		}
+		cudaMemcpyToSymbol(table_device, table, sizeof(double) * (NW+1) * (NT+1) );
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * dlT2;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
-					lw, lT, table[i][j]);
+				fprintf(fp, "%d %d %g %g %15.10g\n",
+					i,
+					j,
+					w,
+					lT,
+					table[i * (NW+1) + j]
+				);
 			}
 		printf( "done.\n\n");
 	} else {
@@ -82,8 +95,8 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				nread =
 				    fscanf(fp, "%*d %*d %*f %*f %lf\n",
-					   &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
+					   &table[i * (NW+1) + j]);
+				if (isnan(table[i * (NW+1) + j]) || nread != 1) {
 					printf(
 						"error on table read: %d %d\n",
 						i, j);
@@ -118,16 +131,16 @@ __device__ double total_compton_cross_lkup(double w, double thetae)
 
 		lw = log10(w);
 		lT = log10(thetae);
-		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / dlT2);
-		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / dlT2 - j;
+		i = (int) ((lw - lminw_device) / dlw_device);
+		j = (int) ((lT - lmint_device) / dlT2_device);
+		di = (lw - lminw_device) / dlw_device - i;
+		dj = (lT - lmint_device) / dlT2_device - j;
 
 		lcross =
-		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
+		    (1. - di) * (1. - dj) * table_device[i * (NW+1) + j] + di * (1. -
 								dj) *
-		    table[i + 1][j] + (1. - di) * dj * table[i][j + 1] +
-		    di * dj * table[i + 1][j + 1];
+		    table_device[(i + 1) * (NW + 1) + j] + (1. - di) * dj * table_device[i * (NW+1) + j + 1] +
+		    di * dj * table_device[(i + 1) * (NW + 1) + j + 1];
 
 		if (isnan(lcross)) {
 			printf( "%g %g %d %d %g %g\n", lw, lT, i,
@@ -314,7 +327,7 @@ __device__ double boostcross_device(double w, double mue, double gammae)
 
 	if (isnan(boostcross)) {
 		printf("isnan: %g %g %g\n", w, mue, gammae);
-		exit(0);
+		return 0;
 	}
 	return (boostcross);
 }

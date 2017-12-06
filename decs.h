@@ -275,7 +275,8 @@ __device__ double jnu_synch_device(double nu,
 double int_jnu(double Ne, double Thetae, double Bmag, double nu);
 void init_emiss_tables(void);
 double F_eval(double Thetae, double Bmag, double nu);
-__host__ __device__ double K2_eval(double Thetae);
+__host__ double K2_eval(double Thetae);
+__device__ double K2_eval_device(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);
