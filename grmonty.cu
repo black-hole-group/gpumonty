@@ -40,6 +40,10 @@
 
 #include "decs.h"
 
+#define BLOCK_DIM 1
+#define GRID_DIM 1
+#define TOTAL_THREADS 1
+
 /* defining declarations for global variables */
 struct of_geom *geom;
 int N1, N2, N3, n_within_horizon;
@@ -81,9 +85,14 @@ gsl_integration_workspace *w;
 int main(int argc, char *argv[])
 {
 	double Ntot, N_superph_made;
-	int quit_flag, myid;
+	int quit_flag, myid, i;
 	struct of_photon ph;
 	time_t currtime, starttime;
+
+	size_t alloc_size = sizeof(struct of_photon) * TOTAL_THREADS;
+	struct of_photon photons[TOTAL_THREADS];
+	struct of_photon * photons_device;
+	cudaMalloc((void **)&photons_device, alloc_size);
 
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
@@ -126,14 +135,19 @@ int main(int argc, char *argv[])
 			/* get pseudo-quanta */
 #pragma omp critical (MAKE_SPHOT)
 			{
-				if (!quit_flag)
-					make_super_photon(&ph, &quit_flag);
+				for(i=0; i<TOTAL_THREADS; i++){
+					if (!quit_flag){
+						make_super_photon(&photons[i], &quit_flag);
+						// make_super_photon(&ph, &quit_flag);
+					}
+				}
+					cudaMemcpy(photons_device, photons, alloc_size, cudaMemcpyHostToDevice);
 			}
 			if (quit_flag)
 				break;
 
 			/* push them around */
-			track_super_photon<<<1,1>>>(&ph);
+			track_super_photon<<<GRID_DIM,BLOCK_DIM>>>(photons_device);
 
 			/* step */
 #pragma omp atomic

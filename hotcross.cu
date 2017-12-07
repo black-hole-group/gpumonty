@@ -98,9 +98,8 @@ void init_hotcross(void)
 					   &table[i * (NW+1) + j]);
 				if (isnan(table[i * (NW+1) + j]) || nread != 1) {
 					printf(
-						"error on table read: %d %d\n",
-						i, j);
-					exit(0);
+						"error on table read: %d %d nread = %d\n",
+						i, j, nread);
 				}
 			}
 		printf( "done.\n\n");
