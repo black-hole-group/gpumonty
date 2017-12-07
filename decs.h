@@ -1,46 +1,3 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal
-    synchrotron and inverse compton scattering.
-
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -153,13 +110,18 @@ __device__ extern int N_superph_recorded_device, N_scatt_device;
 /* HARM model globals */
 extern struct of_geom *geom;
 extern int N1, N2, N3;
+__device__ extern int N1_device, N2_device, N3_device;
 extern int n_within_horizon;
 
 
 /* some coordinate parameters */
 extern double a;
+__device__ extern double a_device;
 extern double R0, Rin, Rh, Rout, Rms;
+__device__ extern double Rh_device;
+__device__ extern double R0_device;
 extern double hslope;
+__device__ extern double hslope_device;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 __device__ extern double startx_device[NDIM], stopx_device[NDIM], dx_device[NDIM];
 extern double dlE, lE0;
@@ -176,7 +138,9 @@ extern double U_unit;
 extern double B_unit;
 __device__ extern double B_unit_device;
 extern double Ne_unit;
+__device__ extern double Ne_unit_device;
 extern double Thetae_unit;
+__device__ extern double Thetae_unit_device;
 
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
 __device__ extern double max_tau_scatt_device, bias_norm_device;
@@ -236,16 +200,30 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
 __host__ __device__ void lower(double *ucon, double Gcov[NDIM2], double *ucov);
 double gdet_func(double gcov[NDIM2]);  /* calculated numerically */
-void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
+__device__ void coordinate_to_tetrad(double Ecov[NDIM2], double K[NDIM],
 			  double K_tetrad[NDIM]);
 void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM]);
-double delta(int i, int j);
+__host__ __device__  double delta(int i, int j);
 void normalize(double Ucon[NDIM], double Gcov[NDIM2]);
+__device__ void normalize_device(double Ucon[NDIM], double Gcov[NDIM2], size_t);
 void normalize_null(double Gcov[NDIM2], double K[NDIM]);
-void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
-		 double Gcov[NDIM2], double Econ[NDIM][NDIM],
-		 double Ecov[NDIM][NDIM]);
+void make_tetrad(
+	double Ucon[NDIM],
+	double Bhatcon[NDIM],
+	double Gcov[NDIM2],
+	double Econ[NDIM][NDIM],
+	double Ecov[NDIM][NDIM]
+);
+
+__device__ void make_tetrad_device(
+	double Ucon[NDIM],
+	double Bhatcon[NDIM],
+	double Gcov[NDIM2],
+	double Econ[NDIM2],
+	double Ecov[NDIM2]
+);
+
 
 /* functions related to basic radiation functions & physics */
 	/* physics-independent */
@@ -309,5 +287,7 @@ __device__ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 __device__ void get_connection(double *X, double lconn[NDIM3]);
-__host__ __device__ void gcov_func(double *X, double gcov[NDIM2]);
-__host__ __device__ void gcon_func(double *X, double gcon[NDIM2]);
+__host__ void gcov_func(double *X, double gcov[NDIM2]);
+__device__ void gcov_func_device(double *X, double gcov[NDIM2]);
+__host__ void gcon_func(double *X, double gcon[NDIM2]);
+__device__ void gcon_func_device(double *X, double gcon[NDIM2]);

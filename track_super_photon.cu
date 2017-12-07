@@ -51,7 +51,7 @@ __global__ void track_super_photon(struct of_photon *ph)
 	dtauK = 2. * M_PI * L_unit_device / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
-	gcov_func(ph->X, Gcov);
+	gcov_func_device(ph->X, Gcov);
 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 	theta        = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
@@ -89,7 +89,7 @@ __global__ void track_super_photon(struct of_photon *ph)
 			break;
 
 		/* allow photon to interact with matter, */
-		gcov_func(ph->X, Gcov);
+		gcov_func_device(ph->X, Gcov);
 		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 			bound_flag = 0;
@@ -168,15 +168,15 @@ __global__ void track_super_photon(struct of_photon *ph)
 				ph->E0s = E0;
 
 				/* Get plasma parameters at new position */
-				gcov_func(ph->X, Gcov);
+				gcov_func_device(ph->X, Gcov);
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
-					scatter_super_photon(ph, &php, Ne, Thetae, B, Ucon, Bcon, Gcov);
-					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+					// scatter_super_photon(ph, &php, Ne, Thetae, B, Ucon, Bcon, Gcov);
+					// if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
-					}
-					track_super_photon_device(&php);
+					// }
+					// track_super_photon_device(&php);
 				}
 
 				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
@@ -262,7 +262,7 @@ __device__ void track_super_photon_device(struct of_photon *ph)
 	dtauK = 2. * M_PI * L_unit_device / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
-	gcov_func(ph->X, Gcov);
+	gcov_func_device(ph->X, Gcov);
 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 	theta        = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
@@ -300,7 +300,7 @@ __device__ void track_super_photon_device(struct of_photon *ph)
 			break;
 
 		/* allow photon to interact with matter, */
-		gcov_func(ph->X, Gcov);
+		gcov_func_device(ph->X, Gcov);
 		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 			bound_flag = 0;
@@ -379,7 +379,7 @@ __device__ void track_super_photon_device(struct of_photon *ph)
 				ph->E0s = E0;
 
 				/* Get plasma parameters at new position */
-				gcov_func(ph->X, Gcov);
+				gcov_func_device(ph->X, Gcov);
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {

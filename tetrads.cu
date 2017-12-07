@@ -5,8 +5,8 @@ all functions related to creation and manipulation of tetrads
 #include "decs.h"
 
 /* input and vectors are contravariant (index up) */
-void coordinate_to_tetrad(
-	double Ecov[NDIM][NDIM],
+__device__ void coordinate_to_tetrad(
+	double Ecov[NDIM2],
 	double K[NDIM],
 	double K_tetrad[NDIM])
 {
@@ -14,9 +14,9 @@ void coordinate_to_tetrad(
 
 	for (k = 0; k < 4; k++) {
 		K_tetrad[k] =
-		    Ecov[k][0] * K[0] +
-		    Ecov[k][1] * K[1] +
-		    Ecov[k][2] * K[2] + Ecov[k][3] * K[3];
+		    Ecov[k * NDIM + 0] * K[0] +
+		    Ecov[k * NDIM + 1] * K[1] +
+		    Ecov[k * NDIM + 2] * K[2] + Ecov[k * NDIM + 3] * K[3];
 	}
 }
 
@@ -48,7 +48,7 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	int k, l;
 	double norm;
 	void normalize(double *vcon, double Gcov[4 * 4]);
-	void project_out(double *vcona, double *vconb, double Gcov[4 * 4]);
+	void project_out(double *vcona, double *vconb, double Gcov[NDIM2]);
 
 	/* econ/ecov index explanation:
 	   Econ[k][l]
@@ -149,7 +149,72 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 
 }
 
-double delta(int i, int j)
+__device__ void make_tetrad_device(
+	double Ucon[NDIM],
+	double trial[NDIM],
+	double Gcov[NDIM2],
+	double Econ[NDIM2],
+	double Ecov[NDIM2]
+){
+	int k, l;
+	double norm;
+	__device__ void simple_lower(double *, double *, double *, size_t);
+	__device__ void normalize_device(double Ucon[NDIM], double Gcov[NDIM2], size_t);
+	__device__ void project_out_device(
+		double*,
+		double*,
+		double Gcov[NDIM2],
+		size_t,
+		size_t
+	);
+
+	for (k = 0; k < 4; k++)
+		Econ[0 * NDIM + k] = Ucon[k];
+
+	normalize_device(Econ, Gcov, 0);
+
+	norm = 0.;
+	for (k = 0; k < 4; k++)
+		for (l = 0; l < 4; l++)
+			norm += trial[k] * trial[l] * Gcov[k * NDIM + l];
+	if (norm <= SMALL_VECTOR) {	/* bad trial vector; default to radial direction */
+		for (k = 0; k < 4; k++)	/* trial vector */
+			trial[k] = delta(k, 1);
+	}
+
+	for (k = 0; k < 4; k++)	/* trial vector */
+		Econ[1 * NDIM + k] = trial[k];
+
+	/* project out econ0 */
+	project_out_device(Econ, Econ, Gcov, 1, 0);
+	normalize_device(Econ, Gcov, 1);
+
+
+	for (k = 0; k < 4; k++)	/* trial vector */
+		Econ[2 * NDIM + k] = delta(k, 2);
+	/* project out econ[0-1] */
+	project_out_device(Econ, Econ, Gcov, 2, 0);
+	project_out_device(Econ, Econ, Gcov, 2, 1);
+	normalize_device(Econ, Gcov, 2);
+
+	for (k = 0; k < 4; k++)	/* trial vector */
+		Econ[3 * NDIM + k] = delta(k, 3);
+	/* project out econ[0-2] */
+	project_out_device(Econ, Econ, Gcov, 3, 0 );
+	project_out_device(Econ, Econ, Gcov, 3, 1 );
+	project_out_device(Econ, Econ, Gcov, 3, 2 );
+	normalize_device(Econ, Gcov, 3);
+
+	for (k = 0; k < 4; k++) {
+		simple_lower(Econ, Gcov, Ecov, k);
+	}
+
+	for (l = 0; l < 4; l++) {
+		Ecov[0 * NDIM + l] *= -1.;
+	}
+}
+
+__host__ __device__ double delta(int i, int j)
 {
 	if (i == j)
 		return (1.);
@@ -180,6 +245,33 @@ __host__ __device__ void lower(double *ucon, double Gcov[NDIM * NDIM], double *u
 	return;
 }
 
+__device__ void simple_lower(
+	double *ucon,
+	double Gcov[NDIM * NDIM],
+	double *ucov,
+	size_t line
+){
+
+	ucov[line * NDIM + 0] = Gcov[0*NDIM + 0] * ucon[line * NDIM + 0]
+	    + Gcov[0*NDIM + 1] * ucon[line * NDIM + 1]
+	    + Gcov[0*NDIM + 2] * ucon[line * NDIM + 2]
+	    + Gcov[0*NDIM + 3] * ucon[line * NDIM + 3];
+	ucov[line * NDIM + 1] = Gcov[1*NDIM + 0] * ucon[line * NDIM + 0]
+	    + Gcov[1*NDIM + 1] * ucon[line * NDIM + 1]
+	    + Gcov[1*NDIM + 2] * ucon[line * NDIM + 2]
+	    + Gcov[1*NDIM + 3] * ucon[line * NDIM + 3];
+	ucov[line * NDIM + 2] = Gcov[2*NDIM + 0] * ucon[line * NDIM + 0]
+	    + Gcov[2*NDIM + 1] * ucon[line * NDIM + 1]
+	    + Gcov[2*NDIM + 2] * ucon[line * NDIM + 2]
+	    + Gcov[2*NDIM + 3] * ucon[line * NDIM + 3];
+	ucov[line * NDIM + 3] = Gcov[3*NDIM + 0] * ucon[line * NDIM + 0]
+	    + Gcov[3*NDIM + 1] * ucon[line * NDIM + 1]
+	    + Gcov[3*NDIM + 2] * ucon[line * NDIM + 2]
+	    + Gcov[3*NDIM + 3] * ucon[line * NDIM + 3];
+
+	return;
+}
+
 void normalize(double *vcon, double Gcov[NDIM * NDIM])
 {
 	int k, l;
@@ -197,8 +289,31 @@ void normalize(double *vcon, double Gcov[NDIM * NDIM])
 	return;
 }
 
-void project_out(double *vcona, double *vconb, double Gcov[NDIM * NDIM])
-{
+__device__ void normalize_device(
+	double vcon[NDIM],
+	double Gcov[NDIM2],
+	size_t line
+){
+	int k, l;
+	double norm;
+
+	norm = 0.;
+	for (k = 0; k < 4; k++)
+		for (l = 0; l < 4; l++)
+			norm += vcon[line * NDIM + k] * vcon[line * NDIM + l] * Gcov[k * NDIM + l];
+
+	norm = sqrt(fabs(norm));
+	for (k = 0; k < 4; k++)
+		vcon[line * NDIM + k] /= norm;
+
+	return;
+}
+
+void project_out(
+	double *vcona,
+	double *vconb,
+	double Gcov[NDIM2]
+){
 
 	double adotb, vconb_sq;
 	int k, l;
@@ -215,6 +330,33 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM * NDIM])
 
 	for (k = 0; k < 4; k++)
 		vcona[k] -= vconb[k] * adotb / vconb_sq;
+
+	return;
+}
+
+__device__ void project_out_device(
+	double *vcona,
+	double *vconb,
+	double Gcov[NDIM2],
+	size_t vcona_line,
+	size_t vconb_line
+){
+
+	double adotb, vconb_sq;
+	int k, l;
+
+	vconb_sq = 0.;
+	for (k = 0; k < 4; k++)
+		for (l = 0; l < 4; l++)
+			vconb_sq += vconb[vconb_line * NDIM + k] * vconb[vconb_line * NDIM + l] * Gcov[k * NDIM + l];
+
+	adotb = 0.;
+	for (k = 0; k < 4; k++)
+		for (l = 0; l < 4; l++)
+			adotb += vcona[vcona_line * NDIM + k] * vconb[vconb_line * NDIM + l] * Gcov[k * NDIM + l];
+
+	for (k = 0; k < 4; k++)
+		vcona[vcona_line * NDIM + k] -= vconb[vconb_line * NDIM + k] * adotb / vconb_sq;
 
 	return;
 }

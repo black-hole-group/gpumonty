@@ -43,30 +43,4 @@ double gdet_func(double gcov[NDIM * NDIM])
 	return (sqrt(fabs(d)));
 }
 
-/* invert gcov to get gcon */
-
-/*
-void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
-{
-	int k, l, signum;
-
-	if (gsl_gcov  == NULL) {
-		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
-		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
-		perm = gsl_permutation_alloc(NDIM);
-	}
-
-
-	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
-
-	gsl_linalg_LU_decomp(gsl_gcov, perm, &signum);
-
-	gsl_linalg_LU_invert(gsl_gcov, perm, gsl_gcon);
-
-	DLOOP gcon[k][l] = gsl_matrix_get(gsl_gcon, k, l);
-
-	// done!
-}
-*/
-
 #undef DELTA

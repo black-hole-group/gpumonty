@@ -296,7 +296,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 		sample_cnt++;
 
 		if (sample_cnt > 10000000) {
-			fprintf(stderr,
+			printf(
 				"in sample_electron mu, gamma_e, K, sigma_KN, x1: %g %g %g %g %g %g\n",
 				Thetae, mu, gamma_e, K, sigma_KN, x1);
 			/* This is a kluge to prevent stalling for large values of \Theta_e */
@@ -355,7 +355,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 				sth * (cphi * v1z + sphi * v2z));
 
 	if (beta_e < 0) {
-		fprintf(stderr, "betae error: %g %g %g %g\n",
+		printf("betae error: %g %g %g %g\n",
 			p[0], p[1], p[2], p[3]);
 	}
 

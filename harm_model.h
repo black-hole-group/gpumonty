@@ -11,13 +11,15 @@ global double ***bcov;
 global double ***ucon;
 global double ***ucov;
 global double ***p;
+__device__ global double ***p_device;
 global double **ne;
 global double **thetae;
 global double **b;
 
 /* HARM model internal utilities */
 void init_weight_table(void);
-__device__ void bl_coord(double *X, double *r, double *th);
+__host__ void bl_coord(double *X, double *r, double *th);
+__device__ void bl_coord_device(double *X, double *r, double *th);
 void make_zone_centered_tetrads(void);
 void set_units(char *munitstr);
 void init_geometry(void);

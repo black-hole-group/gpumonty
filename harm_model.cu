@@ -10,6 +10,7 @@
 #include "gpu_helpers.h"
 
 __device__ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
+struct of_spectrum spect_host[N_THBINS][N_EBINS] = { };
 __device__ int mutex = 0;
 
 // #pragma omp threadprivate(spect)
@@ -37,6 +38,7 @@ void init_model(char *args[])
 	fflush(stderr);
 
 	Rh = 1 + sqrt(1. - a * a);
+	cudaMemcpyToSymbol(&Rh_device, &Rh, sizeof(double));
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();
@@ -165,35 +167,35 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], doubl
 	__device__ double interp_scalar(double **var, int i, int j, double del[4], int N1);
 
 	if (X[1] < startx_device[1] ||
-	    X[1] > stopx[1] || X[2] < startx_device[2] || X[2] > stopx[2]) {
+	    X[1] > stopx_device[1] || X[2] < startx_device[2] || X[2] > stopx_device[2]) {
 
 		*Ne = 0.;
 
 		return;
 	}
 
-	Xtoij(X, &i, &j, del, startx_device, dx, N1, N2);
+	Xtoij(X, &i, &j, del, startx_device, dx_device, N1_device, N2_device);
 
 	coeff[0] = (1. - del[1]) * (1. - del[2]);
 	coeff[1] = (1. - del[1]) * del[2];
 	coeff[2] = del[1] * (1. - del[2]);
 	coeff[3] = del[1] * del[2];
 
-	rho = interp_scalar(p[KRHO], i, j, coeff, N1);
-	uu = interp_scalar(p[UU], i, j, coeff, N1);
+	rho = interp_scalar(p_device[KRHO], i, j, coeff, N1_device);
+	uu = interp_scalar(p_device[UU], i, j, coeff, N1_device);
 
-	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
+	*Ne = rho * Ne_unit_device;
+	*Thetae = uu / rho * Thetae_unit_device;
 
-	Bp[1] = interp_scalar(p[B1], i, j, coeff, N1);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff, N1);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff, N1);
+	Bp[1] = interp_scalar(p_device[B1], i, j, coeff, N1_device);
+	Bp[2] = interp_scalar(p_device[B2], i, j, coeff, N1_device);
+	Bp[3] = interp_scalar(p_device[B3], i, j, coeff, N1_device);
 
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff, N1);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff, N1);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff, N1);
+	Vcon[1] = interp_scalar(p_device[U1], i, j, coeff, N1_device);
+	Vcon[2] = interp_scalar(p_device[U2], i, j, coeff, N1_device);
+	Vcon[3] = interp_scalar(p_device[U3], i, j, coeff, N1_device);
 
-	gcon_func(X, gcon);
+	gcon_func_device(X, gcon);
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -232,8 +234,7 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM * NDIM], doubl
 #define TH      2
 #define PH      3
 
-__device__
-void gcon_func(double *X, double gcon[NDIM*NDIM])
+__host__ void gcon_func(double *X, double gcon[NDIM*NDIM])
 {
 
 	int k, l;
@@ -268,8 +269,82 @@ void gcon_func(double *X, double gcon[NDIM*NDIM])
 	gcon[3*NDIM + 3] = irho2 / (sth * sth);
 }
 
-__device__
-void gcov_func(double *X, double gcov[NDIM * NDIM])
+__device__ void gcon_func_device(double *X, double gcon[NDIM*NDIM])
+{
+
+	int k, l;
+	double sth, cth, irho2;
+	double r, th;
+	double hfac;
+	/* required by broken math.h */
+	// void sincos(double in, double *sth, double *cth);
+
+	DLOOP gcon[k*NDIM + l] = 0.;
+
+	bl_coord_device(X, &r, &th);
+
+	sincos(th, &sth, &cth);
+	sth = fabs(sth) + SMALL;
+
+	irho2 = 1. / (r * r + a_device * a_device * cth * cth);
+
+	// transformation for Kerr-Schild -> modified Kerr-Schild
+	hfac = M_PI + (1. - hslope_device) * M_PI * cos(2. * M_PI * X[2]);
+
+	gcon[TT*NDIM + TT] = -1. - 2. * r * irho2;
+	gcon[TT*NDIM + 1] = 2. * irho2;
+
+	gcon[1*NDIM + TT] = gcon[TT*NDIM + 1];
+	gcon[1*NDIM + 1] = irho2 * (r * (r - 2.) + a_device * a_device) / (r * r);
+	gcon[1*NDIM + 3] = a_device * irho2 / r;
+
+	gcon[2*NDIM + 2] = irho2 / (hfac * hfac);
+
+	gcon[3*NDIM + 1] = gcon[1*NDIM + 3];
+	gcon[3*NDIM + 3] = irho2 / (sth * sth);
+}
+
+__device__ void gcov_func_device(double *X, double gcov[NDIM * NDIM])
+{
+	int k, l;
+	double sth, cth, s2, rho2;
+	double r, th;
+	double tfac, rfac, hfac, pfac;
+	/* required by broken math.h */
+	// void sincos(double th, double *sth, double *cth);
+
+	DLOOP gcov[k*NDIM + l] = 0.;
+
+	bl_coord_device(X, &r, &th);
+
+	sincos(th, &sth, &cth);
+	sth = fabs(sth) + SMALL;
+	s2 = sth * sth;
+	rho2 = r * r + a_device * a_device * cth * cth;
+
+	/* transformation for Kerr-Schild -> modified Kerr-Schild */
+	tfac = 1.;
+	rfac = r - R0_device;
+	hfac = M_PI + (1. - hslope_device) * M_PI * cos(2. * M_PI * X[2]);
+	pfac = 1.;
+
+	gcov[TT * NDIM + TT] = (-1. + 2. * r / rho2) * tfac * tfac;
+	gcov[TT * NDIM + 1] = (2. * r / rho2) * tfac * rfac;
+	gcov[TT * NDIM + 3] = (-2. * a_device * r * s2 / rho2) * tfac * pfac;
+
+	gcov[1 * NDIM + TT] = gcov[TT * NDIM + 1];
+	gcov[1 * NDIM + 1] = (1. + 2. * r / rho2) * rfac * rfac;
+	gcov[1 * NDIM + 3] = (-a_device * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+
+	gcov[2 * NDIM + 2] = rho2 * hfac * hfac;
+
+	gcov[3 * NDIM + TT] = gcov[TT * NDIM + 3];
+	gcov[3 * NDIM + 1] = gcov[1 * NDIM + 3];
+	gcov[3 * NDIM + 3] =
+	    s2 * (rho2 + a_device * a_device * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+}
+
+__host__ void gcov_func(double *X, double gcov[NDIM * NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
@@ -342,9 +417,9 @@ __device__ void get_connection(double X[4], double lconn[64])
 	r4 = r3 * r1;
 
 	sincos(2. * M_PI * X[2], &sx, &cx);
-	th       = M_PI   * X[2]   + 0.5  * (1      - hslope) * sx;
-	d2thdx22 = -2.    * M_PI   * M_PI * (1      - hslope) * sx;
-	dthdx2   = M_PI   * (1.    + (1   - hslope) * cx);
+	th       = M_PI   * X[2]   + 0.5  * (1      - hslope_device) * sx;
+	d2thdx22 = -2.    * M_PI   * M_PI * (1      - hslope_device) * sx;
+	dthdx2   = M_PI   * (1.    + (1   - hslope_device) * cx);
 	dthdx22  = dthdx2 * dthdx2;
 
 	sincos(th, &sth, &cth);
@@ -357,11 +432,11 @@ __device__ void get_connection(double X[4], double lconn[64])
 	c2th   = 2    * cth2 - 1.;
 	s2th   = 2.   * sth  * cth;
 
-	a2     = a  * a;
+	a2     = a_device  * a_device;
 	a2sth2 = a2 * sth2;
 	a2cth2 = a2 * cth2;
-	a3     = a2 * a;
-	a4     = a3 * a;
+	a3     = a2 * a_device;
+	a4     = a3 * a_device;
 	a4cth4 = a4 * cth4;
 
 	rho2          = r2     + a2cth2;
@@ -380,11 +455,11 @@ __device__ void get_connection(double X[4], double lconn[64])
 	lconn[0*16 + 0*4 + 0] = 2.  * r1  * fac1_rho23;
 	lconn[0*16 + 0*4 + 1] = r1  * (2. * r1        + rho2)     * fac1_rho23;
 	lconn[0*16 + 0*4 + 2] = -a2 * r1  * s2th      * dthdx2    * irho22;
-	lconn[0*16 + 0*4 + 3] = -2. * a   * r1sth2    * fac1_rho23;
+	lconn[0*16 + 0*4 + 3] = -2. * a_device   * r1sth2    * fac1_rho23;
 
 	lconn[0*16 + 1*4 + 1] = 2.  * r2 * (r4  + r1     * fac1  - a4cth4) * irho23;
 	lconn[0*16 + 1*4 + 2] = -a2 * r2 * s2th * dthdx2 * irho22;
-	lconn[0*16 + 1*4 + 3] = a   * r1 * (-r1 * (r3    + 2     * fac1)   + a4cth4) * sth2 * irho23;
+	lconn[0*16 + 1*4 + 3] = a_device   * r1 * (-r1 * (r3    + 2     * fac1)   + a4cth4) * sth2 * irho23;
 
 	lconn[0*16 + 2*4 + 2] = -2. * r2     * dthdx22 * irho2;
 	lconn[0*16 + 2*4 + 3] = a3  * r1sth2 * s2th    * dthdx2 * irho22;
@@ -394,11 +469,11 @@ __device__ void get_connection(double X[4], double lconn[64])
 	lconn[1*16 + 0*4 + 0] = fac3 * fac1 / (r1 * rho23);
 	lconn[1*16 + 0*4 + 1] = fac1 * (-2. * r1  + a2sth2) * irho23;
 	lconn[1*16 + 0*4 + 2] = 0.;
-	lconn[1*16 + 0*4 + 3] = -a   * sth2 * fac3 * fac1   / (r1   * rho23);
+	lconn[1*16 + 0*4 + 3] = -a_device   * sth2 * fac3 * fac1   / (r1   * rho23);
 
 	lconn[1*16 + 1*4 + 1] = (r4 * (-2.   + r1)  * (1. + r1)  + a2 * (a2 * r1 * (1. + 3. * r1) * cth4 + a4cth4 * cth2 + r3 * sth2 + r1 * cth2 * (2. * r1 + 3. * r3 - a2sth2))) * irho23;
 	lconn[1*16 + 1*4 + 2] = -a2 * dthdx2 * s2th / fac2;
-	lconn[1*16 + 1*4 + 3] = a   * sth2   * (a4  * r1  * cth4 + r2 * (2  * r1 + r3  - a2sth2) +	a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
+	lconn[1*16 + 1*4 + 3] = a_device   * sth2   * (a4  * r1  * cth4 + r2 * (2  * r1 + r3  - a2sth2) +	a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
 
 	lconn[1*16 + 2*4 + 2] = -fac3 * dthdx22 * irho2;
 	lconn[1*16 + 2*4 + 3] = 0.;
@@ -408,30 +483,30 @@ __device__ void get_connection(double X[4], double lconn[64])
 	lconn[2*16 + 0*4 + 0] = -a2 * r1 * s2th * irho23_dthdx2;
 	lconn[2*16 + 0*4 + 1] = r1  * lconn[2*16 + 0*4 + 0];
 	lconn[2*16 + 0*4 + 2] = 0.;
-	lconn[2*16 + 0*4 + 3] = a   * r1 * (a2  + r2) * s2th * irho23_dthdx2;
+	lconn[2*16 + 0*4 + 3] = a_device   * r1 * (a2  + r2) * s2th * irho23_dthdx2;
 
 	lconn[2*16 + 1*4 + 1] = r2 * lconn[2*16 + 0*4 + 0];
 	lconn[2*16 + 1*4 + 2] = r2 * irho2;
-	lconn[2*16 + 1*4 + 3] = (a * r1 * cth * sth * (r3 * (2. + r1) + a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 + 2 * r1sth2))) * irho23_dthdx2;
+	lconn[2*16 + 1*4 + 3] = (a_device * r1 * cth * sth * (r3 * (2. + r1) + a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 + 2 * r1sth2))) * irho23_dthdx2;
 
 	lconn[2*16 + 2*4 + 2] = -a2 * cth * sth * dthdx2 * irho2 + d2thdx22 / dthdx2;
 	lconn[2*16 + 2*4 + 3] = 0.;
 
 	lconn[2*16 + 3*4 + 3] = -cth * sth * (rho23 + a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) + 2. * r1 * a4 * sth4) * irho23_dthdx2;
 
-	lconn[3*16 + 0*4 + 0] = a       * fac1_rho23;
+	lconn[3*16 + 0*4 + 0] = a_device       * fac1_rho23;
 	lconn[3*16 + 0*4 + 1] = r1      * lconn[3*16 + 0*4 + 0];
-	lconn[3*16 + 0*4 + 2] = -2.     * a             * r1 * cth * dthdx2 / (sth * rho22);
+	lconn[3*16 + 0*4 + 2] = -2.     * a_device             * r1 * cth * dthdx2 / (sth * rho22);
 	lconn[3*16 + 0*4 + 3] = -a2sth2 * fac1_rho23;
 
-	lconn[3*16 + 1*4 + 1] = a  * r2  * fac1_rho23;
-	lconn[3*16 + 1*4 + 2] = -2 * a   * r1        * (a2    + 2     * r1    * (2. + r1) + a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
+	lconn[3*16 + 1*4 + 1] = a_device  * r2  * fac1_rho23;
+	lconn[3*16 + 1*4 + 2] = -2 * a_device   * r1        * (a2    + 2     * r1    * (2. + r1) + a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
 	lconn[3*16 + 1*4 + 3] = r1 * (r1 * rho22     - a2sth2 * fac1) * irho23;
 
-	lconn[3*16 + 2*4 + 2] = -a * r1 * dthdx22 * irho2;
+	lconn[3*16 + 2*4 + 2] = -a_device * r1 * dthdx22 * irho2;
 	lconn[3*16 + 2*4 + 3] = dthdx2 * (0.25 * fac2 * fac2 * cth / sth + a2 * r1 * s2th) * irho22;
 
-	lconn[3*16 + 3*4 + 3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
+	lconn[3*16 + 3*4 + 3] = (-a_device * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 }
 
 /* stopping criterion for geodesic integrator */
@@ -445,7 +520,7 @@ __device__ int stop_criterion(struct of_photon *ph)
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
 
-	X1min = log(Rh);	/* this is coordinate-specific; stop
+	X1min = log(Rh_device);	/* this is coordinate-specific; stop
 				   at event horizon */
 	X1max = log(RMAX);	/* this is coordinate and simulation
 				   specific: stop at large distance */
@@ -505,7 +580,7 @@ __device__ double stepsize(double X[NDIM], double K[NDIM])
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
 
-	dlx2 = EPS * ((X[2]) < (stopx[2] - X[2]) ? (X[2]):(stopx[2] - X[2])) / (fabs(K[2]) + SMALL);
+	dlx2 = EPS * ((X[2]) < (stopx_device[2] - X[2]) ? (X[2]):(stopx_device[2] - X[2])) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -524,7 +599,7 @@ __device__ double stepsize(double X[NDIM], double K[NDIM])
 	coordinate system.
 
 */
-void record_super_photon(struct of_photon *ph)
+__device__ void record_super_photon(struct of_photon *ph)
 {
 	double lE, dx2;
 	int iE, ix2, grater, my_index;
@@ -537,8 +612,8 @@ void record_super_photon(struct of_photon *ph)
 	/*https://stackoverflow.com/questions/21341495/cuda-mutex-and-atomiccas*/
 	for(my_index = 0; my_index<10; my_index++){
 		if(ph->tau_scatt > max_tau_scatt_device){
-			grater = ph->tau_scatt - max_tau_scatt_device
-			atomicAdd(&max_tau_scatt_device, grater);
+			grater = ph->tau_scatt - max_tau_scatt_device;
+			max_tau_scatt_device += grater;
 		} else{
 			break;
 		}
@@ -574,33 +649,33 @@ void record_super_photon(struct of_photon *ph)
 
 	/* get energy bin */
 	lE = log(ph->E);
-	iE = (int) ((lE - lE0) / dlE_device + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
+	iE = (int) ((lE - lE0_device) / dlE_device + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
 
 	/* check limits */
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
 // #pragma omp atomic
-	atomicAdd(N_superph_recorded, 1);
+	atomicAdd(&N_superph_recorded_device, 1);
 	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 // #pragma omp atomic
-	atomicAdd(N_scatt, ph->nscatt);
+	atomicAdd(&N_scatt_device, ph->nscatt);
 	/* cudaMemcpyFromSymbol(x_h, x_d, size, 0, cudaMemcpyDeviceToHost); */
 
 	/* sum in photon */
 
-	atomicAdd(spect[ix2][iE].dNdlE, ph->w);
-	atomicAdd(spect[ix2][iE].dEdlE, ph->w * ph->E);
-	atomicAdd(spect[ix2][iE].tau_abs, ph->w * ph->tau_abs);
-	atomicAdd(spect[ix2][iE].tau_scatt, ph->w * ph->tau_scatt);
-	atomicAdd(spect[ix2][iE].X1iav, ph->w * ph->X1i);
-	atomicAdd(spect[ix2][iE].X2isq, ph->w * (ph->X2i * ph->X2i));
-	atomicAdd(spect[ix2][iE].X3fsq, ph->w * (ph->X[3] * ph->X[3]));
-	atomicAdd(spect[ix2][iE].ne0, ph->w * (ph->ne0));
-	atomicAdd(spect[ix2][iE].b0, ph->w * (ph->b0));
-	atomicAdd(spect[ix2][iE].thetae0, ph->w * (ph->thetae0));
-	atomicAdd(spect[ix2][iE].nscatt, ph->nscatt);
-	atomicAdd(spect[ix2][iE].nph, 1.);
+	spect[ix2][iE].dNdlE += ph->w;
+	spect[ix2][iE].dEdlE += ph->w * ph->E;
+	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
+	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
+	spect[ix2][iE].X1iav += ph->w * ph->X1i;
+	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
+	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
+	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
+	spect[ix2][iE].b0 += ph->w * (ph->b0);
+	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
+	spect[ix2][iE].nscatt += ph->nscatt;
+	spect[ix2][iE].nph += 1.;
 
 }
 
@@ -608,6 +683,9 @@ struct of_spectrum shared_spect[N_THBINS][N_EBINS] = { };
 
 void omp_reduce_spect()
 {
+	struct of_spectrum spect_host[N_THBINS][N_EBINS] = { };
+	cudaMemcpyFromSymbol(spect_host, spect, sizeof(struct of_spectrum) * N_THBINS * N_EBINS);
+
 /* Combine partial spectra from each OpenMP process		*
  * Inefficient, but only called once so doesn't matter	*/
 
@@ -618,26 +696,26 @@ void omp_reduce_spect()
 		for (i = 0; i < N_THBINS; i++) {
 			for (j = 0; j < N_EBINS; j++) {
 				shared_spect[i][j].dNdlE +=
-				    spect[i][j].dNdlE;
+				    spect_host[i][j].dNdlE;
 				shared_spect[i][j].dEdlE +=
-				    spect[i][j].dEdlE;
+				    spect_host[i][j].dEdlE;
 				shared_spect[i][j].tau_abs +=
-				    spect[i][j].tau_abs;
+				    spect_host[i][j].tau_abs;
 				shared_spect[i][j].tau_scatt +=
-				    spect[i][j].tau_scatt;
+				    spect_host[i][j].tau_scatt;
 				shared_spect[i][j].X1iav +=
-				    spect[i][j].X1iav;
+				    spect_host[i][j].X1iav;
 				shared_spect[i][j].X2isq +=
-				    spect[i][j].X2isq;
+				    spect_host[i][j].X2isq;
 				shared_spect[i][j].X3fsq +=
-				    spect[i][j].X3fsq;
-				shared_spect[i][j].ne0 += spect[i][j].ne0;
-				shared_spect[i][j].b0 += spect[i][j].b0;
+				    spect_host[i][j].X3fsq;
+				shared_spect[i][j].ne0 += spect_host[i][j].ne0;
+				shared_spect[i][j].b0 += spect_host[i][j].b0;
 				shared_spect[i][j].thetae0 +=
-				    spect[i][j].thetae0;
+				    spect_host[i][j].thetae0;
 				shared_spect[i][j].nscatt +=
-				    spect[i][j].nscatt;
-				shared_spect[i][j].nph += spect[i][j].nph;
+				    spect_host[i][j].nscatt;
+				shared_spect[i][j].nph += spect_host[i][j].nph;
 			}
 		}
 	}
@@ -646,27 +724,27 @@ void omp_reduce_spect()
 	{
 		for (i = 0; i < N_THBINS; i++) {
 			for (j = 0; j < N_EBINS; j++) {
-				spect[i][j].dNdlE =
+				spect_host[i][j].dNdlE =
 				    shared_spect[i][j].dNdlE;
-				spect[i][j].dEdlE =
+				spect_host[i][j].dEdlE =
 				    shared_spect[i][j].dEdlE;
-				spect[i][j].tau_abs =
+				spect_host[i][j].tau_abs =
 				    shared_spect[i][j].tau_abs;
-				spect[i][j].tau_scatt =
+				spect_host[i][j].tau_scatt =
 				    shared_spect[i][j].tau_scatt;
-				spect[i][j].X1iav =
+				spect_host[i][j].X1iav =
 				    shared_spect[i][j].X1iav;
-				spect[i][j].X2isq =
+				spect_host[i][j].X2isq =
 				    shared_spect[i][j].X2isq;
-				spect[i][j].X3fsq =
+				spect_host[i][j].X3fsq =
 				    shared_spect[i][j].X3fsq;
-				spect[i][j].ne0 = shared_spect[i][j].ne0;
-				spect[i][j].b0 = shared_spect[i][j].b0;
-				spect[i][j].thetae0 =
+				spect_host[i][j].ne0 = shared_spect[i][j].ne0;
+				spect_host[i][j].b0 = shared_spect[i][j].b0;
+				spect_host[i][j].thetae0 =
 				    shared_spect[i][j].thetae0;
-				spect[i][j].nscatt =
+				spect_host[i][j].nscatt =
 				    shared_spect[i][j].nscatt;
-				spect[i][j].nph = shared_spect[i][j].nph;
+				spect_host[i][j].nph = shared_spect[i][j].nph;
 			}
 		}
 	}
@@ -720,48 +798,30 @@ void report_spectrum(int N_superph_made)
 			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
 								     dlE);
 
-			nuLnu *= spect[j]	// cudaMemcpyToSymbol(
-				// 	max_tau_scatt_device,
-				// 	max_tau_scatt,
-				// 	sizeof(double),
-				// 	0,
-				// 	cudaMemcpyHostToDevice
-				// );[i].dEdlE;
+			nuLnu *= spect_host[j][i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
+			    spect_host[j][i].tau_scatt / (spect_host[j][i].dNdlE +
 						     SMALL);
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,
-				spect[j][i].tau_abs / (spect[j][i].dNdlE +
-						       SMAL	// cudaMemcpyToSymbol(
-				// 	max_tau_scatt_device,
-				// 	max_tau_scatt,
-				// 	sizeof(double),
-				// 	0,
-				// 	cudaMemcpyHostToDevice
-				// );L), tau_scatt,
-				spect[j][i].X1iav / (spect[j][i].dNdlE +
+				spect_host[j][i].tau_abs / (spect_host[j][i].dNdlE +
+						       SMALL), tau_scatt,
+				spect_host[j][i].X1iav / (spect_host[j][i].dNdlE +
 						     SMALL),
 				sqrt(fabs
-				     (spect[j][i].X2isq /
-				      (spect[j][i].dNdlE + SMALL))),
+				     (spect_host[j][i].X2isq /
+				      (spect_host[j][i].dNdlE + SMALL))),
 				sqrt(fabs
-				     (spect[j][i].X3fsq /
-				      (spect[j][i].dNdlE + SMALL)))
+				     (spect_host[j][i].X3fsq /
+				      (spect_host[j][i].dNdlE + SMALL)))
 			    );
 
 			if (tau_scatt > max_tau_scatt){
 				max_tau_scatt = tau_scatt;
-				// cudaMemcpyToSymbol(
-				// 	max_tau_scatt_device,
-				// 	max_tau_scatt,
-				// 	sizeof(double),
-				// 	0,
-				// 	cudaMemcpyHostToDevice
-				// );
+				cudaMemcpyToSymbol(&max_tau_scatt_device, &max_tau_scatt, sizeof(double));
 			}
 
 			L += nuLnu * dOmega * dlE;

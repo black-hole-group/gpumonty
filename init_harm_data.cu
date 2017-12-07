@@ -1,45 +1,3 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal
-    synchrotron and inverse compton scattering.
-
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 #include "decs.h"
 #include "harm_model.h"
 /*
@@ -82,7 +40,9 @@ void init_harm_data(char *fname)
 
 	success = fscanf(fp, "%lf ", &t);
 	success = fscanf(fp, "%d ", &N1);
+	cudaMemcpyToSymbol(&N1_device, &N1, sizeof(int));
 	success = fscanf(fp, "%d ", &N2);
+	cudaMemcpyToSymbol(&N2_device, &N2, sizeof(int));
 	success = fscanf(fp, "%lf ", &startx[1]);/* export  to device */
 	success = fscanf(fp, "%lf ", &startx[2]);/* export  to device */
 	success = fscanf(fp, "%lf ", &dx[1]);/* export  to device */
@@ -90,6 +50,7 @@ void init_harm_data(char *fname)
 	success = fscanf(fp, "%lf ", &tf);
 	success = fscanf(fp, "%d ", &nstep);
 	success = fscanf(fp, "%lf ", &a);
+	cudaMemcpyToSymbol(&a_device, &a, sizeof(double));
 	success = fscanf(fp, "%lf ", &gam);
 	success = fscanf(fp, "%lf ", &cour);
 	success = fscanf(fp, "%lf ", &DTd);
@@ -105,7 +66,9 @@ void init_harm_data(char *fname)
 	success = fscanf(fp, "%lf ", &Rin);
 	success = fscanf(fp, "%lf ", &Rout);
 	success = fscanf(fp, "%lf ", &hslope);
+	cudaMemcpyToSymbol(&hslope_device, &hslope, sizeof(double));
 	success = fscanf(fp, "%lf ", &R0);
+	cudaMemcpyToSymbol(&R0_device, &R0, sizeof(double));
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;/* export  to device */
@@ -125,6 +88,7 @@ void init_harm_data(char *fname)
 
 	dx[0] = 1.;/* export  to device */
 	dx[3] = 2. * M_PI;/* export  to device */
+	cudaMemcpyToSymbol(dx_device, dx, sizeof(double) * 4);
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -133,6 +97,7 @@ void init_harm_data(char *fname)
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);/*export to device*/
+	cudaMemcpyToSymbol(&Thetae_unit_device, &Thetae_unit, sizeof(double));
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -162,6 +127,8 @@ void init_harm_data(char *fname)
 		       &p[U2][i][j],
 		       &p[U3][i][j],
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
+		cudaMemcpyToSymbol(p_device, p, sizeof(p));
+
 
 
 		success = fscanf(fp, "%lf", &divb);

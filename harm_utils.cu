@@ -75,16 +75,15 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 				Interpolation routines
 
  ********************************************************************/
-__device__
-double interp_scalar(double *var, int i, int j, double coeff[4], int N1)
+__device__ double interp_scalar(double **var, int i, int j, double coeff[4], int N1)
 {
 
 	double interp;
 
 	interp =
-	    var[i*N1 + j] * coeff[0] +
-	    var[i*N1 + j + 1] * coeff[1] +
-	    var[(i + 1)*N1 + j] * coeff[2] + var[(i + 1)*N1 + j + 1] * coeff[3];
+	    var[i][ j] * coeff[0] +
+	    var[i][ j + 1] * coeff[1] +
+	    var[(i + 1)][ j] * coeff[2] + var[(i + 1)][ j + 1] * coeff[3];
 
 	return interp;
 }
@@ -411,7 +410,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	return;
 }
 
-void Xtoij(
+__device__ void Xtoij(
 	double X[NDIM],
 	int *i,
 	int *j,
@@ -449,12 +448,21 @@ void Xtoij(
 }
 
 /* return boyer-lindquist coordinate of point */
-__device__
+__host__
 void bl_coord(double *X, double *r, double *th)
 {
 
 	*r = exp(X[1]) + R0;
 	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
+	return;
+}
+
+__device__ void bl_coord_device(double *X, double *r, double *th)
+{
+
+	*r = exp(X[1]) + R0_device;
+	*th = M_PI * X[2] + ((1. - hslope_device) / 2.) * sin(2. * M_PI * X[2]);
 
 	return;
 }
@@ -489,7 +497,7 @@ void set_units(char *munitstr)
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
 	L_unit = GNEWT * MBH / (CL * CL);
-	cudaMemcpyToSymbol(L_unit_device, L_unit, sizeof(double));
+	cudaMemcpyToSymbol(&L_unit_device, &L_unit, sizeof(double));
 	T_unit = L_unit / CL;
 
 	fprintf(stderr, "\nUNITS\n");
@@ -498,16 +506,17 @@ void set_units(char *munitstr)
 	RHO_unit = M_unit / pow(L_unit, 3);
 	U_unit = RHO_unit * CL * CL;
 	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
-	cudaMemcpyToSymbol(B_unit_device, B_unit, sizeof(double));
+	cudaMemcpyToSymbol(&B_unit_device, &B_unit, sizeof(double));
 
 	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
 
 	Ne_unit = RHO_unit / (MP + ME); /*export to device*/
+	cudaMemcpyToSymbol(&Ne_unit_device, &Ne_unit, sizeof(double));
 
 	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
 	cudaMemcpyToSymbol(
-		max_tau_scatt_device,
-		max_tau_scatt,
+		&max_tau_scatt_device,
+		&max_tau_scatt,
 		sizeof(double),
 		0,
 		cudaMemcpyDeviceToHost
@@ -573,23 +582,23 @@ static void *malloc_rank1(int n1, int size)
 }
 
 
-static void **malloc_rank2(int n1, int n2, int size)
-{
-
-	void **A;
-	int i;
-
-	if ((A = (void **) malloc(n1 * sizeof(void *))) == NULL) {
-		fprintf(stderr, "malloc failure in malloc_rank2\n");
-		exit(124);
-	}
-
-	for (i = 0; i < n1; i++) {
-		A[i] = malloc_rank1(n2, size);
-	}
-
-	return A;
-}
+// static void **malloc_rank2(int n1, int n2, int size)
+// {
+//
+// 	void **A;
+// 	int i;
+//
+// 	if ((A = (void **) malloc(n1 * sizeof(void *))) == NULL) {
+// 		fprintf(stderr, "malloc failure in malloc_rank2\n");
+// 		exit(124);
+// 	}
+//
+// 	for (i = 0; i < n1; i++) {
+// 		A[i] = malloc_rank1(n2, size);
+// 	}
+//
+// 	return A;
+// }
 
 
 static double **malloc_rank2_cont(int n1, int n2)
@@ -618,7 +627,7 @@ void init_storage(void)
 		p[i] = (double **) malloc_rank2_cont(N1, N2);
 
 	/* geom = (struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom)); */
-	if((geom = (void *) malloc(N1 * N2 * sizeof(struct of_geom))) == NULL){
+	if((geom = (struct of_geom *)malloc(N1 * N2 * sizeof(struct of_geom))) == NULL){
 		fprintf(stderr, "malloc failure in malloc_rank2\n");
 		exit(124);
 	}

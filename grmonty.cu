@@ -46,20 +46,32 @@ int N1, N2, N3, n_within_horizon;
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 int Ns, N_superph_recorded, N_scatt;
 
+__device__ int N1_device, N2_device;
+__device__ int N_superph_recorded_device, N_scatt_device;
+
+
 /* some coordinate parameters */
 double a;
 double R0, Rin, Rh, Rout, Rms;
 double hslope;
 double startx[NDIM], stopx[NDIM], dx[NDIM];
 
+__device__ double a_device;
+__device__ double R0_device, Rh_device;
+__device__ double hslope_device;
+__device__ double startx_device[NDIM], stopx_device[NDIM], dx_device[NDIM];
+
 double dlE, lE0;
+__device__ double dlE_device, lE0_device;
 double gam;
 double dMsim;
 double M_unit, L_unit, T_unit;
 __device__ double L_unit_device;
 double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
+__device__ double B_unit_device;
 double max_tau_scatt, Ladv, dMact, bias_norm;
-__device__ double max_tau_scatt_device;
+__device__ double max_tau_scatt_device, bias_norm_device;
+__device__ double Ne_unit_device, Thetae_unit_device;
 gsl_rng *r;
 gsl_integration_workspace *w;
 

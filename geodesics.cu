@@ -68,7 +68,7 @@ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM
 
 	FAST_CPY(K, Kcon);
 
-	gcov_func(X, Gcov);
+	gcov_func_device(X, Gcov);
 	E1 = -(Kcon[0] * Gcov[0 * NDIM + 0] + Kcon[1] * Gcov[0 * NDIM + 1] +
 	       Kcon[2] * Gcov[0 * NDIM + 2] + Kcon[3] * Gcov[0 * NDIM + 3]);
 	errE = fabs((E1 - (*E0)) / (*E0));
