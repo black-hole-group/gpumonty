@@ -304,3 +304,44 @@ Now, the very first if-condition in init_zone (harm_utils.c) was inspected and a
 Inspecting the function get_fluid_zone (harm_model.c), which is called by init_zone (harm_utils.c), we see that *Thetae is assigned a value related to p[UU][i][j][k], which is a value we read from the data in init_harm_data.c. When printing the value of this variable, we always get either -0.000000 or 0.000000, explaining the value of Thetae.
 
 Therefore, the data being read is possibly wrong (maybe due to some error in the routines to transform from binary to ascii), and this is the source of the problems we have been facing in the last couple of days.
+
+===============================================================================
+
+13/12
+
+Created branch "3dmosc" to reproduce Mościbrodzka, Falcke 2013
+
+In branch 3dmosc, changed the following files:
+
+decs.h
+
+    added constants:
+        TP_OVER_TE_JET
+        TP_OVER_TE_DISK
+        BETA_LORENTZ_MIN
+
+    removed constant:
+        TP_OVER_TE
+
+
+init_harm_data_gustavo.c
+
+    added variables:
+        beta_lorentz
+        tp_over_te
+
+    changed Thetae_unit to Thetae_unit[i][j][k]
+    moved calculation of two_temp_gam and Thetae_unit[i][j][k] to loop
+    commented out previous calculation
+
+
+harm_utils.c
+    
+    added variable:
+        extern double ***Thetae_unit
+
+
+harm_model.c
+    
+    changed line:
+        *Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit[i][j][k];

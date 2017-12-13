@@ -145,7 +145,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	double sig ;
 
 	*Ne = p[KRHO][i][j][k] * Ne_unit;
-	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
+	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit[i][j][k];
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];

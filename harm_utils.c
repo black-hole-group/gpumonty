@@ -13,6 +13,7 @@ extern struct of_geom ***geom;
 extern double ***ne;
 extern double ***thetae;
 extern double ***b;
+extern double ***Thetae_unit
 
 //void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);

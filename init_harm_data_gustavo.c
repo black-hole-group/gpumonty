@@ -71,7 +71,7 @@ void init_harm_data(char *fname)
 {
 	FILE *fp;
 	double x[4];
-	double rp, hp, phip, V, dV, two_temp_gam;
+	double rp, hp, phip, V, dV, two_temp_gam, beta_lorentz, tp_over_te;
 	int i, j, k, kk;
     double pktot;
 
@@ -161,9 +161,9 @@ void init_harm_data(char *fname)
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
 
-	two_temp_gam =
+	/*two_temp_gam =
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
-	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);*/
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -206,8 +206,18 @@ void init_harm_data(char *fname)
 
             fscanf(fp, "%lf\n", &gdet);
 
+            beta_lorentz = sqrt(p[U1][i][j][k]*p[U1][i][j][k] + p[U2][i][j][k]*p[U2][i][j][k] + p[U3][i][j][k]*p[U3][i][j][k]);
+
+            if (beta_lorentz < BETA_LORENTZ_MIN)
+                tp_over_te = TP_OVER_TE_DISK;
+            else
+                tp_over_te = TP_OVER_TE_JET;
+
+            two_temp_gam =  0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
+            Thetae_unit[i][j][k] = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
+
 		    bias_norm +=
-		        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] * Thetae_unit, 2.);
+		        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] * Thetae_unit[i][j][k], 2.);
 		    V += dV * gdet;
 
 		    /* check accretion rate */
