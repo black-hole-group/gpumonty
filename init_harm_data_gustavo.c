@@ -214,10 +214,10 @@ void init_harm_data(char *fname)
                 tp_over_te = TP_OVER_TE_JET;
 
             two_temp_gam =  0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
-            Thetae_unit[i][j][k] = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
+            Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
 
 		    bias_norm +=
-		        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] * Thetae_unit[i][j][k], 2.);
+		        dV * gdet * pow(p[UU][i][j][k] / p[KRHO][i][j][k] * Thetae_unit, 2.);
 		    V += dV * gdet;
 
 		    /* check accretion rate */

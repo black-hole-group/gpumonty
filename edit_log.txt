@@ -338,10 +338,10 @@ init_harm_data_gustavo.c
 harm_utils.c
     
     added variable:
-        extern double ***Thetae_unit
+        extern double ***Thetae_unit XXX
 
 
 harm_model.c
     
     changed line:
-        *Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit[i][j][k];
+        *Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit[i][j][k]; XXX

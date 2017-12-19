@@ -144,8 +144,10 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double sig ;
 
+    double tp_over_te, two_temp_gam, beta_lorentz;
+
 	*Ne = p[KRHO][i][j][k] * Ne_unit;
-	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit[i][j][k];
+//	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];
@@ -154,6 +156,18 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	Vcon[1] = p[U1][i][j][k];
 	Vcon[2] = p[U2][i][j][k];
 	Vcon[3] = p[U3][i][j][k];
+
+    beta_lorentz = sqrt(Vcon[1]*Vcon[1] + Vcon[2]*Vcon[2] + Vcon[3]*Vcon[3]);
+
+    if (beta_lorentz < BETA_LORENTZ_MIN)
+        tp_over_te = TP_OVER_TE_DISK;
+    else
+        tp_over_te = TP_OVER_TE_JET;
+
+    two_temp_gam =  0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
+    Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
+
+    *Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
 
 	/* Get Ucov */ 
 	VdotV = 0.;
@@ -196,6 +210,9 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double rho, uu, sig;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[8];
+
+    double tp_over_te, two_temp_gam, beta_lorentz;
+
 	double interp_scalar(double ***var, int i, int j, int k, double del[8]);
 
 	if (X[1] < startx[1] || X[1] > stopx[1] || 
@@ -222,7 +239,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	uu = interp_scalar(p[UU], i, j, k, coeff);
 
 	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
+//	*Thetae = uu / rho * Thetae_unit;
 
 	Bp[1] = interp_scalar(p[B1], i, j, k, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, k, coeff);
@@ -231,6 +248,18 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Vcon[1] = interp_scalar(p[U1], i, j, k, coeff);
 	Vcon[2] = interp_scalar(p[U2], i, j, k, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, k, coeff);
+
+    beta_lorentz = sqrt(Vcon[1]*Vcon[1] + Vcon[2]*Vcon[2] + Vcon[3]*Vcon[3]);
+
+    if (beta_lorentz < BETA_LORENTZ_MIN)
+        tp_over_te = TP_OVER_TE_DISK;
+    else
+        tp_over_te = TP_OVER_TE_JET;
+
+    two_temp_gam =  0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
+    Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
+
+    *Thetae = uu / rho * Thetae_unit;
 
 	gcon_func(X, gcon);
 
