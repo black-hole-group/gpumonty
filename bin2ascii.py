@@ -4,14 +4,19 @@ import sys
 """
 You must write the three dimensions (r, theta, phi) - IN THIS ORDER - followed by ONLY THE NUMBERS of the desired dump file
 
-Example: 
+Examples: 
 $ python bin2ascii.py 256 128 64 023
 
 This means your grid is 256x128x64 and the file you are working on is dump023
+
+$ python bin2ascii.py 288 128 64 1174
+
+This means your grid is 288x128x64 and the file you are working on is fieldline1174
 """
 
 N1, N2, N3, filenumber = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
+#bindata   = "fieldline"+filenumber+".bin"
 bindata   = "dump"+filenumber
 asciidata = "ascii"+filenumber
 
