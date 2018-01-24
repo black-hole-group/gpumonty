@@ -64,6 +64,7 @@ void init_harm_data(char *fname)
 	int i, j, k;
 
     double tp_over_te, beta_lorentz;
+    double Vcov[NDIM], Vcon[NDIM];
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
@@ -177,7 +178,14 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf ", &vmax);
 		fscanf(fp, "%lf\n", &gdet);
 
-        beta_lorentz = sqrt(p[U1][i][j]*p[U1][i][j] + p[U2][i][j]*p[U2][i][j] + p[U3][i][j]*p[U3][i][j]);
+        /* calculate lorentz beta factor */
+        Vcon[1] = p[U1][i][j];
+        Vcon[2] = p[U2][i][j];
+        Vcon[3] = p[U3][i][j];
+
+        lower(Vcon, geom[i][j].gcov, Vcov);
+
+        beta_lorentz = sqrt(Vcon[1]*Vcov[1] + Vcon[2]*Vcov[2] + Vcon[3]*Vcov[3]);
 
         if (beta_lorentz < BETA_LORENTZ_MIN)
             tp_over_te = TP_OVER_TE_DISK;

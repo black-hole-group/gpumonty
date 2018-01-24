@@ -68,6 +68,10 @@ void track_super_photon(struct of_photon *ph)
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
+
+    double tp_over_te, beta_lorentz;
+    double Vcon[NDIM], Vcov[NDIM];
+
 	int nstep = 0;
 
 	/* quality control */
@@ -97,7 +101,7 @@ void track_super_photon(struct of_photon *ph)
 	nu = get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
 	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	bi = bias_func(Thetae, ph->w);
+    bi = bias_func(Thetae, ph->w);
 
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
