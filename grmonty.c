@@ -93,6 +93,7 @@ double a;
 double R0, Rin, Rh, Rout, Rms;
 double hslope;
 double startx[NDIM], stopx[NDIM], dx[NDIM];
+double x1br, cpow2, npow2, rbr;
 
 double dlE, lE0;
 double gam;

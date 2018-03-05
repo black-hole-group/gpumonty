@@ -161,6 +161,7 @@ extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 extern double dlE, lE0;
 extern double gam;
 extern double dMsim;
+extern double x1br, cpow2, npow2, rbr;
 
 extern double M_unit;
 extern double L_unit;

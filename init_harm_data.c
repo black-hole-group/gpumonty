@@ -72,7 +72,7 @@ void init_harm_data(char *fname)
     int nx, ny, nz, GN1, GN2, GN3;
     double fractheta, fracphi;
     double ti, tj, tk, phi, phip;
-    double DTr, npow2, cpow2, rbr, pktot;
+    double DTr, pktot;
     int DTr01, rdump01_cnt, npr, DOKTOT, BL;
 
 	fp = fopen(fname, "r");
