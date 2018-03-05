@@ -16,9 +16,11 @@ This means your grid is 288x128x64 and the file you are working on is fieldline1
 
 N1, N2, N3, filenumber = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
+pathtodumps = "/home/gustavo/mosc2d/mosc2d-harmpidata/dumps/"
+
 #bindata   = "fieldline"+filenumber+".bin"
-bindata   = "dump"+filenumber
-asciidata = "ascii"+filenumber
+bindata   = pathtodumps+"dump"+filenumber
+asciidata = pathtodumps+"ascii"+filenumber
 
 def read_body(dump, ascii, nx = None, ny = None, nz = None, noround = False):
 

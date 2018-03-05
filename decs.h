@@ -65,9 +65,7 @@
 
 #define THETAE_MAX	1000.	/* Only used for harm3d models */
 #define THETAE_MIN	0.3
-#define TP_OVER_TE_DISK	(15.)
-#define TP_OVER_TE_JET	(1.)
-#define BETA_LORENTZ_MIN 0.2
+#define TP_OVER_TE	3.
 
 #define WEIGHT_MIN	(1.e31)
 

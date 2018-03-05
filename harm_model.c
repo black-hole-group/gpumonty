@@ -127,12 +127,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 double bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
-/*
-    int i, j;
-    double del[NDIM], coeff[4];
-    double Vcon[NDIM], Vcov[NDIM];
-    double beta_lorentz, tp_over_te;
-*/
+
 	max = 0.5 * w / WEIGHT_MIN;
 
 	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
@@ -140,33 +135,12 @@ double bias_func(double Te, double w)
 	    100. * Te * Te / (bias_norm * max_tau_scatt *
 			      (avg_num_scatt + 2));
 
-    /* new addition 
-	Xtoij(X, &i, &j, del);
-
-	coeff[0] = (1. - del[1]) * (1. - del[2]);
-	coeff[1] = (1. - del[1]) * del[2];
-	coeff[2] = del[1] * (1. - del[2]);
-	coeff[3] = del[1] * del[2];
-
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
-
-    lower(Vcon, geom[i][j].gcov, Vcov);
-
-    beta_lorentz = sqrt(Vcon[1]*Vcov[1] + Vcon[2]*Vcov[2] + Vcon[3]*Vcov[3]);
-
-    if (beta_lorentz < BETA_LORENTZ_MIN)
-        tp_over_te = TP_OVER_TE_DISK;
-    else
-        tp_over_te = TP_OVER_TE_JET;
-*/
-    if (bias < 7.)
-		bias = 7.;
+    if (bias < TP_OVER_TE)
+		bias = TP_OVER_TE;
 	if (bias > max)
 		bias = max;
 
-	return bias / 7.;
+	return bias / TP_OVER_TE;
 }
 
 /* 
@@ -183,10 +157,8 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 
-    double tp_over_te, beta_lorentz, two_temp_gam;
-    double Vcov[NDIM];
-
 	*Ne = p[KRHO][i][j] * Ne_unit;
+	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
 
 	Bp[1] = p[B1][i][j];
 	Bp[2] = p[B2][i][j];
@@ -195,22 +167,6 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	Vcon[1] = p[U1][i][j];
 	Vcon[2] = p[U2][i][j];
 	Vcon[3] = p[U3][i][j];
-
-    lower(Vcon, geom[i][j].gcov, Vcov);
-
-    beta_lorentz = sqrt(Vcon[1]*Vcov[1] + Vcon[2]*Vcov[2] + Vcon[3]*Vcov[3]);
-
-    //printf("%f\n", beta_lorentz);
-
-    if (beta_lorentz < BETA_LORENTZ_MIN)
-        tp_over_te = TP_OVER_TE_DISK;
-    else
-        tp_over_te = TP_OVER_TE_JET;
-
-    two_temp_gam = 0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
- 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
-
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -249,9 +205,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
 
-    double tp_over_te, beta_lorentz, two_temp_gam;
-    double Vcov[NDIM];
-
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
 
@@ -271,6 +224,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	uu = interp_scalar(p[UU], i, j, coeff);
 
 	*Ne = rho * Ne_unit;
+	*Thetae = uu / rho * Thetae_unit;
 
 	Bp[1] = interp_scalar(p[B1], i, j, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, coeff);
@@ -279,22 +233,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
 	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
-
-    lower(Vcon, geom[i][j].gcov, Vcov);
-
-    beta_lorentz = sqrt(Vcon[1]*Vcov[1] + Vcon[2]*Vcov[2] + Vcon[3]*Vcov[3]);
-
-    //printf("%f\n", beta_lorentz);
-
-    if (beta_lorentz < BETA_LORENTZ_MIN)
-        tp_over_te = TP_OVER_TE_DISK;
-    else
-        tp_over_te = TP_OVER_TE_JET;
-
-    two_temp_gam = 0.5 * ((1. + 2. / 3. * (tp_over_te + 1.) / (tp_over_te + 2.)) + gam);
- 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tp_over_te);
-
-	*Thetae = uu / rho * Thetae_unit;
 
 	gcon_func(X, gcon);
 
