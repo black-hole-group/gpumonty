@@ -23,6 +23,8 @@
 
 #define THETAE_MAX	1000.	
 #define THETAE_MIN	0.3
+#define TP_OVER_TE_JET	(1.)
+#define TP_OVER_TE_DISK	(15.)
 #define TP_OVER_TE	(3.)
 #define WEIGHT_MIN	(1.e28)
 
@@ -128,6 +130,7 @@ extern double U_unit;
 extern double B_unit;
 extern double Ne_unit;
 extern double Thetae_unit;
+extern double tpte;
 
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
 

@@ -119,12 +119,12 @@ double bias_func(double Te, double w)
 	bias = Te*Te/(5. * max_tau_scatt) ;
 	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
-	if (bias < TP_OVER_TE)
-		bias = TP_OVER_TE;
+	if (bias < tpte)
+		bias = tpte;
 	if (bias > max)
 		bias = max;
 
-	return bias / TP_OVER_TE;
+	return bias / tpte;
 }
 
 
@@ -144,8 +144,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double sig ;
 
-	*Ne = p[KRHO][i][j][k] * Ne_unit;
-	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
+    double enth, bern, two_temp_gam;
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];
@@ -165,6 +164,24 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	for (l = 1; l < NDIM; l++)
 		Ucon[l] = Vcon[l] - Vfac * geom[i][j][k].gcon[0][l];
 	lower(Ucon, geom[i][j][k].gcov, Ucov);
+
+
+    /* bernoulli criterion */
+
+    enth = 1. + p[UU][i][j][k] * gam/p[KRHO][i][j][k];
+    bern = enth * Ucov[0];
+
+    if (- bern > 1.)
+        tpte = TP_OVER_TE_JET;
+    else
+        tpte = TP_OVER_TE_DISK;
+
+    two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+   	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+
+	*Ne = p[KRHO][i][j][k] * Ne_unit;
+	*Thetae = p[UU][i][j][k] / (*Ne) * Ne_unit * Thetae_unit;
+
 
 	/* Get B and Bcov */
 	UdotBp = 0.;
@@ -198,6 +215,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double gcon[NDIM][NDIM], coeff[8];
 	double interp_scalar(double ***var, int i, int j, int k, double del[8]);
 
+    double enth, bern, two_temp_gam;
+
 	if (X[1] < startx[1] || X[1] > stopx[1] || 
 	    X[2] < startx[2] || X[2] > stopx[2] ||
         X[3] < startx[3] || X[3] > stopx[3] ) {
@@ -221,8 +240,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	rho = interp_scalar(p[KRHO], i, j, k, coeff);
 	uu = interp_scalar(p[UU], i, j, k, coeff);
 
-	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
+//	*Ne = rho * Ne_unit;
+//	*Thetae = uu / rho * Thetae_unit;
 
 	Bp[1] = interp_scalar(p[B1], i, j, k, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, k, coeff);
@@ -244,6 +263,27 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	for (i = 1; i < NDIM; i++)
 		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
 	lower(Ucon, gcov, Ucov);
+
+
+    /* bernoulli criterion */
+
+    enth = 1. + p[UU][i][j][k] * gam/p[KRHO][i][j][k];
+    bern = enth * Ucov[0];
+
+    if (- bern > 1.)
+        tpte = TP_OVER_TE_JET;
+    else
+        tpte = TP_OVER_TE_DISK;
+
+    two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+   	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+
+	*Ne = rho * Ne_unit;
+	*Thetae = uu / rho * Thetae_unit;
+
+
+
+
 
 	/* Get B and Bcov */
 	UdotBp = 0.;

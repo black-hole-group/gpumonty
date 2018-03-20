@@ -60,7 +60,7 @@ void track_super_photon(struct of_photon *ph)
 
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
-
+//    fprintf(stderr, "X[3] = %g\n", ph->X[3]);
 	while (!stop_criterion(ph)) {
 
 		/* Save initial position/wave vector */
@@ -77,6 +77,7 @@ void track_super_photon(struct of_photon *ph)
 		dKi[2] = ph->dKdlam[2];
 		dKi[3] = ph->dKdlam[3];
 		E0 = ph->E0s;
+//        fprintf(stderr, "X[3] = %g\n", Xi[3]);
 
 		/* evaluate stepsize */
 		dl = stepsize(ph->X, ph->K);

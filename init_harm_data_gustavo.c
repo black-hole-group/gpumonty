@@ -161,8 +161,7 @@ void init_harm_data(char *fname)
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
 
-	two_temp_gam =
-	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
+	two_temp_gam = 0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
 
 	dMact = 0.;
