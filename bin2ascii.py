@@ -14,13 +14,16 @@ $ python bin2ascii.py 288 128 64 1174
 This means your grid is 288x128x64 and the file you are working on is fieldline1174
 """
 
-N1, N2, N3, filenumber = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+pathtodumps = "/home/gustavo/dumps/"
 
-pathtodumps = "/home/gustavo/mosc2d/mosc2d-harmpidata/dumps/"
+many_files = 0
 
-#bindata   = "fieldline"+filenumber+".bin"
-bindata   = pathtodumps+"dump"+filenumber
-asciidata = pathtodumps+"ascii"+filenumber
+if many_files == 1:
+    N1, N2, N3, filenumber_init, filenumber_end = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+else:
+    N1, N2, N3, filenumber = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    bindata   = pathtodumps+"dump"+filenumber
+    asciidata = pathtodumps+"ascii"+filenumber
 
 def read_body(dump, ascii, nx = None, ny = None, nz = None, noround = False):
 
@@ -39,7 +42,17 @@ def read_body(dump, ascii, nx = None, ny = None, nz = None, noround = False):
 
     return mat
 
-theasciidata = read_body(bindata, asciidata, int(N1), int(N2), int(N3), noround = 1)
+if many_files == 1:
+    for i in range(int(filenumber_init), int(filenumber_end + 1)):
+        bindata   = pathtodumps+"dump"+str(i)
+        asciidata = pathtodumps+"ascii"+str(i)
+        theasciidata = read_body(bindata, asciidata, int(N1), int(N2), int(N3), noround = 1)
+else:
+    theasciidata = read_body(bindata, asciidata, int(N1), int(N2), int(N3), noround = 1)
+
+#bindata   = "fieldline"+filenumber+".bin"
+
+
 
 
 # the following 2 commented lines are here for "preservation reasons" 
