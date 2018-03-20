@@ -145,6 +145,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	double sig ;
 
     double enth, bern, two_temp_gam;
+    double pg, bsq, beta_plasma;
 
 	Bp[1] = p[B1][i][j][k];
 	Bp[2] = p[B2][i][j][k];
@@ -196,6 +197,17 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
 
+    /* beta plasma */
+
+//    pg = (gam - 1.) * p[UU][i][j][k];
+//    bsq = (Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] + Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+//    beta_plasma = pg/(2.*bsq);
+
+//    if (beta_plasma < 0.2)
+//        tpte = TP_OVER_TE_JET;
+//    else
+//        tpte = TP_OVER_TE_DISK;
+
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
 
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
@@ -216,6 +228,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double interp_scalar(double ***var, int i, int j, int k, double del[8]);
 
     double enth, bern, two_temp_gam;
+    double pg, bsq, beta_plasma;
 
 	if (X[1] < startx[1] || X[1] > stopx[1] || 
 	    X[2] < startx[2] || X[2] > stopx[2] ||
@@ -282,9 +295,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	*Thetae = uu / rho * Thetae_unit;
 
 
-
-
-
 	/* Get B and Bcov */
 	UdotBp = 0.;
 	for (i = 1; i < NDIM; i++)
@@ -296,6 +306,17 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+
+    /* beta plasma */
+
+//    pg = (gam - 1.) * uu;
+//    bsq = (Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] + Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+//    beta_plasma = pg/(2.*bsq);
+
+//    if (beta_plasma < 0.2)
+//        tpte = TP_OVER_TE_JET;
+//    else
+//        tpte = TP_OVER_TE_DISK;
 
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
