@@ -7,19 +7,19 @@ GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). Th
 
 # quick start
 
-make (requires openmp enabled gcc):
+Compile (requires OpenMP enabled `gcc`):
 
     make
 
-set number of threads for `csh` and 8 threads:
+Set number of threads (`csh`):
 
     setenv OMP_NUM_THREADS 8
 
-if using `bash`:
+If using `bash`:
 
     export OMP_NUM_THREADS=8
 
-run the code on the supplied harm output file:
+Run the code on the supplied harm output file:
 
     ./grmonty 5000000 dump019 4.e19 
 
@@ -38,7 +38,6 @@ Use python and the [`nmmn`](https://github.com/rsnemmen/nmmn) module:
 ```python
 from  nmmn import plots
 plots.plot('grmonty.spec')
-
 ```
 
 # Calculate spectra from other sources
@@ -65,8 +64,7 @@ in the model file.
 
 - `master`, stable: matches the original release functionality, supports only input from `HARM2D`
 - `illinois`: latest bug corrections by Gammie's group, `HARM2D`
-- `progressbar`, stable: progress bar
-
+- `progressbar`, stable: displays progress bar
 
 ## 3D HARMPI support
 
@@ -76,12 +74,12 @@ in the model file.
 
 ## GPU support
 
-- `opencl`, in progress: OpenCL version
 - `cuda`, in progress: CUDA version
+- `building-cuda`: CUDA progress by Caio
 
 ## Misc. 
 
-- `track_ph`: output photon world lines for visualisation
+- `track_ph`: output photon world lines for visualization
 
 # Pseudocodes
 
@@ -93,8 +91,7 @@ A set of python codes written only for educational purposes, for understanding w
 # TODO
 
 - [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
-- [ ] GPU support: OpenCL
-- [ ] parallelize with MPI
+- [ ] GPU support: CUDA
 - [ ] add bremsstrahlung
 - [ ] nonthermal electron distribution
 - [ ] dynamic metrics as input
