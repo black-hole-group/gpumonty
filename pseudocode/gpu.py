@@ -1,12 +1,13 @@
 # max number of photons that can fit in the GPU memory
 nmaxgpu=GPU_memory/(8*4)
 
+nph_desired=desired number of photons ~ 1.5xnumber of photons the user wants
+
 # SPH is an array of structures with the initial conditions for
 # the photons.  For example, SPH holds the relevant 4-vectors:
 # • component 1, initial position for the i-th photon SPH[i].X0[1] 
 # • component 3, initial  momentum for the i-th photon SPH[i].K0[3] 
 
-nph_desired=desired number of photons ~ 1.5xnumber of photons the user wants
 
 """
 Generates photons on the host (make_super_photon) and performs
@@ -52,7 +53,7 @@ def gpumonty():
 		Ener_h+=Ener_d
 
 		# clear memory in CPU and GPU
-		clear_memory(SPH,Ener_d)
+		cudaFree(SPH,Ener_d)
 
 		nph_created += nmaxgpu
 
@@ -60,7 +61,8 @@ def gpumonty():
 	omp_reduce_spect(Ener_h)
 	report_spectrum()
 
-
+	# deallocated HARM arrays in device
+	cudaFree(HARM arrays)
 
 
 
