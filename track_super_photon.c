@@ -46,7 +46,7 @@ void track_super_photon(struct of_photon *ph)
 		return;
 	}
 
-	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
+	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR); // constant C in eq. 16 of Dolence et al. 2009
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -132,7 +132,7 @@ void track_super_photon(struct of_photon *ph)
 				    alpha_inv_scatt(nu, Thetae, Ne);
 				dtau_scatt =
 				    0.5 * (alpha_scatti +
-					   alpha_scattf) * dtauK * dl;
+					   alpha_scattf) * dtauK * dl; // eq. 23 of Dolence et al. 2009 - GS
 				alpha_scatti = alpha_scattf;
 
 				/* absorption optical depth along step */
@@ -141,7 +141,7 @@ void track_super_photon(struct of_photon *ph)
 						  theta);
 				dtau_abs =
 				    0.5 * (alpha_absi +
-					   alpha_absf) * dtauK * dl;
+					   alpha_absf) * dtauK * dl; // eq. 19 of Dolence et al. 2009 - GS
 				alpha_absi = alpha_absf;
 
 				bf = bias_func(Thetae, ph->w);
@@ -176,7 +176,7 @@ void track_super_photon(struct of_photon *ph)
 								   (4. -
 								    dtau))));
 				else
-					ph->w *= exp(-dtau);
+					ph->w *= exp(-dtau); // eq. 20 of Dolence et al. 2009 - GS
 
 				/* Interpolate position and wave vector to scattering event */
 				push_photon(Xi, Ki, dKi, dl * frac, &E0,

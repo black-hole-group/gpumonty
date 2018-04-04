@@ -2,7 +2,7 @@
 # requires an openmp-enabled version of gcc
 #
 CC = gcc
-CCFLAGS  = -Wall -Ofast -fopenmp -pg
+CCFLAGS  = -Wall -Ofast -fopenmp -g -pg
 LDFLAGS = -lm -lgsl -lgslcblas 
 
 CC_COMPILE = $(CC) $(CCFLAGS) -c

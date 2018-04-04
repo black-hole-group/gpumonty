@@ -151,7 +151,7 @@ void init_harm_data(char *fname)
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = startx[3] + N3 * dx[3];
+	stopx[3] = 2. * (startx[3] + N3 * dx[3]);
 
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
