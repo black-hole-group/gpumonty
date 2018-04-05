@@ -44,6 +44,9 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
+/* define size of random string in photon filenames */
+#define SIZE_STR 10
+
 /** data structures **/
 struct of_photon {        // defined in grmonty.c, used elsewhere
 	double X[NDIM];
@@ -238,4 +241,5 @@ void get_connection(double *X, double lconn[][NDIM][NDIM]);    // defined in har
 void gcov_func(double *X, double gcov[][NDIM]);                // defined in harm_model.c
 void gcon_func(double *X, double gcon[][NDIM]);                // defined in harm_model.c
 
-
+/* misc. routines */
+char *rand_string(char *str, size_t size);

@@ -9,6 +9,7 @@
 */
 
 #include "decs.h"
+#include <string.h>
 
 #define MAXNSTEP	1280000
 
@@ -29,7 +30,9 @@ void track_super_photon(struct of_photon *ph)
 	    Bcov[NDIM];
 	int nstep = 0;
 
-	   // isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
+	// output filename
+	char *file_out, *ran_string;
+
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -46,7 +49,19 @@ void track_super_photon(struct of_photon *ph)
 		return;
 	}
 
+
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR); // constant C in eq. 16 of Dolence et al. 2009
+
+	// Initialize filename that will hold photon's trajectory
+    ran_string=malloc(SIZE_STR*sizeof(char)); 
+    file_out=malloc((8+SIZE_STR)*sizeof(char)); // +1 for zero terminator
+    rand_string(ran_string,10); // random string
+    // Concatenates strings to get full filename
+    strcpy(file_out, "photon_");
+    strcat(file_out, ran_string);
+
+	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
+
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -60,10 +75,14 @@ void track_super_photon(struct of_photon *ph)
 
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
-//    fprintf(stderr, "X[3] = %g\n", ph->X[3]);
+
+	// Initialize file that will hold photon trajectory
+	FILE *f = fopen(file_out, "w");
+
+	// Geodesic integration happens inside this loop
 	while (!stop_criterion(ph)) {
 
-		/* Save initial position/wave vector */
+		/* Save initial position/wave vector. */
 		Xi[0] = ph->X[0];
 		Xi[1] = ph->X[1];
 		Xi[2] = ph->X[2];
@@ -252,6 +271,9 @@ void track_super_photon(struct of_photon *ph)
 
 		nstep++;
 
+		// saves photon worldline here
+		fprintf(f, "%E %E %E %E %E %E %E %E\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0], ph->K[1], ph->K[2], ph->K[3]);
+
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
 //			fprintf(stderr,
@@ -266,6 +288,8 @@ void track_super_photon(struct of_photon *ph)
 		}
 
 	}
+
+	fclose(f); // closes file with geodesic worldline
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)

@@ -35,6 +35,8 @@ Arguments are:
 
 This will output spectrum to `grmonty.spec`  which should be identical to `grmonty_spec_verify`.
 
+![GIF created with `ttygif`](./tty.gif)
+
 # Plotting
 
 Use python and the [`nmmn`](https://github.com/rsnemmen/nmmn) module:
@@ -74,6 +76,11 @@ get_connection
 
 in the model file.
 
+# Dependencies
+
+- GNU Scientific Library (`gsl`)
+- [`progressbar` library](https://github.com/rsnemmen/progressbar) for displaying progress bar
+
 # TODO
 
 - [ ] make it work with [HARMPI](https://github.com/atchekho/harmpi)
@@ -84,6 +91,7 @@ in the model file.
 - [ ] dynamic metrics as input
 - [x] add LICENSE
 - [ ] finish editing visualization files `sed_maker.py` and `plot_dump.py`
+- [x] progress bar
 
 # References
 
