@@ -1,7 +1,6 @@
 #
 # requires an openmp-enabled version of gcc
 #
-<<<<<<< HEAD
 CC = gcc
 CCFLAGS  = -Wall -Ofast -fopenmp -g -pg
 LDFLAGS = -lm -lgsl -lgslcblas 
