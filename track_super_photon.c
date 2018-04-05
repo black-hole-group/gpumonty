@@ -60,6 +60,7 @@ void track_super_photon(struct of_photon *ph)
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
+	/* This loop solves radiative transfer equation along a geodesic */
 	while (!stop_criterion(ph)) {
 
 		/* Save initial position/wave vector */
