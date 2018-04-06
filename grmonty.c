@@ -80,7 +80,7 @@
  */
 
 #include "decs.h"
-#include <progressbar/progressbar.h>
+//#include <progressbar/progressbar.h>
 
 /* defining declarations for global variables */
 struct of_geom ***geom;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     total_track = 0.;
 
 	fprintf(stderr, "Entering main loop...\n");
-	progressbar *status = progressbar_new("Progress",100); // progress bar
+	//progressbar *status = progressbar_new("Progress",100); // progress bar
 	fflush(stderr);
 
 #pragma omp parallel private(ph)
@@ -179,12 +179,12 @@ int main(int argc, char *argv[])
 				currtime = time(NULL);
 				//fprintf(stderr, "time %g, rate %g ph/s\n", (double) (currtime - starttime), N_superph_made / (currtime - starttime));			
 				// progress bar update
-				progressbar_update(status, 100*N_superph_recorded/(3.4*Ntot)); // updates progress bar
+				//progressbar_update(status, 100*N_superph_recorded/(3.4*Ntot)); // updates progress bar
 			}
 		}
 	}
 	currtime = time(NULL);
-	progressbar_finish(status); 
+//	progressbar_finish(status); 
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
 		(double) (currtime - starttime),
 		N_superph_made / (currtime - starttime));
