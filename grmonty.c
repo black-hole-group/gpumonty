@@ -59,6 +59,9 @@ int main(int argc, char *argv[])
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 
+	// gets max number of photons GPU can hold at once
+	int nmaxgpu=get_max_photons(n1,n2,n3);
+
 	/* initialize random number generator */
 #pragma omp parallel private(myid)
 	{
@@ -73,7 +76,12 @@ int main(int argc, char *argv[])
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
-	/** main loop **/
+	/* 
+	Photon generation loop
+	==========================
+	Loop that generates enough photons to fill the GPU
+	memory (or less, if so specified)
+	*/
 	N_superph_made = 0;
 	N_superph_recorded = 0;
 	N_scatt = 0;
@@ -83,6 +91,9 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
+GENERATE ONLY NMAXGPU photons
+MEASURE HOW LONG IT TAKES
+WHILE => FOR
 #pragma omp parallel private(ph)
 	{
 
@@ -97,22 +108,15 @@ int main(int argc, char *argv[])
 			if (quit_flag)
 				break;
 
+
 			/* push them around */
-			track_super_photon(&ph);
+			//track_super_photon(&ph);
 
 			/* step */
 #pragma omp atomic
 			N_superph_made += 1;
 
-			/* give interim reports on rates */
-			if (((int) (N_superph_made)) % 100000 == 0
-			    && N_superph_made > 0) {
-				currtime = time(NULL);
-				fprintf(stderr, "time %g, rate %g ph/s\n",
-					(double) (currtime - starttime),
-					N_superph_made / (currtime -
-							  starttime));
-			}
+			
 		}
 	}
 	currtime = time(NULL);
@@ -123,7 +127,7 @@ int main(int argc, char *argv[])
 #ifdef _OPENMP
 #pragma omp parallel
 	{
-		omp_reduce_spect();
+		//omp_reduce_spect();
 	}
 #endif
 	report_spectrum((int) N_superph_made);
