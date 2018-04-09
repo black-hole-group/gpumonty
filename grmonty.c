@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
 
 	// gets max number of photons GPU can hold at once
 	int nmaxgpu=get_max_photons(n1,n2,n3);
+	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
 
 	/* initialize random number generator */
 #pragma omp parallel private(myid)
@@ -91,38 +92,20 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-GENERATE ONLY NMAXGPU photons
-MEASURE HOW LONG IT TAKES
-WHILE => FOR
-#pragma omp parallel private(ph)
-	{
-
-		while (1) {
-
-			/* get pseudo-quanta */
-#pragma omp critical (MAKE_SPHOT)
-			{
-				if (!quit_flag)
-					make_super_photon(&ph, &quit_flag);
-			}
-			if (quit_flag)
-				break;
+	for (i=0; i<nmaxgpu; i++) {
+		/* get pseudo-quanta */
+		make_super_photon(&ph, &quit_flag);
 
 
-			/* push them around */
-			//track_super_photon(&ph);
+		/* push them around */
+		//track_super_photon(&ph);
 
-			/* step */
-#pragma omp atomic
-			N_superph_made += 1;
-
-			
-		}
+		/* step */
+		N_superph_made += 1;
 	}
-	currtime = time(NULL);
-	fprintf(stderr, "Final time %g, rate %g ph/s\n",
-		(double) (currtime - starttime),
-		N_superph_made / (currtime - starttime));
+
+
+	printf("Nph = %f\n", N_superph_made);
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -130,7 +113,7 @@ WHILE => FOR
 		//omp_reduce_spect();
 	}
 #endif
-	report_spectrum((int) N_superph_made);
+	//report_spectrum((int) N_superph_made);
 
 	/* done! */
 	return (0);

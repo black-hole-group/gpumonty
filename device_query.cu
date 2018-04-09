@@ -1,6 +1,8 @@
 /*
 Queries GPU for the amount of free memory.
 Returns max number of photons that GPU can hold at once.
+If number of photons desired is smaller than nmaxgpu, then
+returns total number of photons desired instead.
 
 in: size of HARM arrays along each dimension
 out: max number of superphotons GPU can hold at once

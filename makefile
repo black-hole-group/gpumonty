@@ -42,7 +42,7 @@
 #
 # requires an openmp-enabled version of gcc
 #
-CC = gcc
+CC = nvcc
 CFLAGS = -Wall -O2 -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas -fopenmp
 
