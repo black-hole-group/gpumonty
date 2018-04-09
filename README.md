@@ -3,9 +3,11 @@ GRMONTY: A relativistic Monte Carlo code
 
 Based on [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..387D). Originally downloaded from [Astrophysical Code Library](http://rainman.astro.illinois.edu/codelib/) @ [UI](http://illinois.edu).
 
+This version of GRMONTY is configured to use input files from the HARM code available on the same site. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
+
 GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
 
-# quick start
+# Quick start
 
 Compile (requires OpenMP enabled `gcc`):
 
@@ -102,6 +104,13 @@ A set of python codes written only for educational purposes, for understanding w
 - Code and methods: [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..387D)
 - An early application: Sgr A\* SED model ([Moscibrodzka et al. 2009 ApJ](http://iopscience.iop.org/article/10.1088/0004-637X/706/1/497/meta)). A more recent Sgr A\* model by the same authors: [Moscibrodzka et al. 2014 A&A](http://www.aanda.org/articles/aa/abs/2014/10/aa24358-14/aa24358-14.html)
 - More recent applications: M87 jet/RIAF SED ( [Moscibrodzka et al. 2016 A&A](http://www.aanda.org/articles/aa/abs/2016/02/aa26630-15/aa26630-15.html)), jet and RIAF SEDs for stellar mass black holes ([O'Riordan, Pe'er & McKinney 2016 ApJ](http://iopscience.iop.org/article/10.3847/0004-637X/819/2/95/meta))
+
+# Citation
+
+You are morally obligated to cite the following paper in any scientific literature that results from use of any part of GRMONTY:
+
+> [Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009, Astrophysical Journal Supplement, 184, 387]((http://adsabs.harvard.edu/abs/2009ApJS..184..387D))
+
 
 # LICENSE 
 
