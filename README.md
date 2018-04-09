@@ -89,6 +89,7 @@ A set of python codes written only for educational purposes, for understanding w
 
 - `pseudocode/cpu.py`: basic steps that the current version of the codes perfoms
 - `pseudocode/gpu.py`: a proposal for a GPU version
+- `pseudocode/mpi.py`: a proposal for a MPI version
 
 # TODO
 
