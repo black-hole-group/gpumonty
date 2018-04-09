@@ -31,7 +31,7 @@ void track_super_photon(struct of_photon *ph)
 	int nstep = 0;
 
 	// output filename
-	char *file_out, *ran_string;
+//	char *file_out, *ran_string;
 
 	/* quality control */
 	if (isnan(ph->X[0]) ||
@@ -53,12 +53,12 @@ void track_super_photon(struct of_photon *ph)
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR); // constant C in eq. 16 of Dolence et al. 2009
 
 	// Initialize filename that will hold photon's trajectory
-    ran_string=malloc(SIZE_STR*sizeof(char)); 
-    file_out=malloc((8+SIZE_STR)*sizeof(char)); // +1 for zero terminator
-    rand_string(ran_string,10); // random string
+//    ran_string=malloc(SIZE_STR*sizeof(char)); 
+//    file_out=malloc((8+SIZE_STR)*sizeof(char)); // +1 for zero terminator
+//    rand_string(ran_string,10); // random string
     // Concatenates strings to get full filename
-    strcpy(file_out, "photon_");
-    strcat(file_out, ran_string);
+//    strcpy(file_out, "photon_");
+//    strcat(file_out, ran_string);
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
@@ -77,7 +77,7 @@ void track_super_photon(struct of_photon *ph)
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
 	// Initialize file that will hold photon trajectory
-	FILE *f = fopen(file_out, "w");
+//	FILE *f = fopen(file_out, "w");
 
 	// Geodesic integration happens inside this loop
 	while (!stop_criterion(ph)) {
@@ -96,7 +96,6 @@ void track_super_photon(struct of_photon *ph)
 		dKi[2] = ph->dKdlam[2];
 		dKi[3] = ph->dKdlam[3];
 		E0 = ph->E0s;
-//        fprintf(stderr, "X[3] = %g\n", Xi[3]);
 
 		/* evaluate stepsize */
 		dl = stepsize(ph->X, ph->K);
@@ -272,14 +271,10 @@ void track_super_photon(struct of_photon *ph)
 		nstep++;
 
 		// saves photon worldline here
-		fprintf(f, "%E %E %E %E %E %E %E %E\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0], ph->K[1], ph->K[2], ph->K[3]);
+//		fprintf(f, "%E %E %E %E %E %E %E %E\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0], ph->K[1], ph->K[2], ph->K[3]);
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-//			fprintf(stderr,
-//				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-//				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-//				bias);
 			fprintf(stderr,
 				"X1,X2,X3,K1,K2,K3,bias: %g %g %g %g %g %g %g\n",
 				ph->X[1], ph->X[2], ph->X[3], ph->K[1], ph->K[2], ph->K[3],
@@ -289,7 +284,7 @@ void track_super_photon(struct of_photon *ph)
 
 	}
 
-	fclose(f); // closes file with geodesic worldline
+//	fclose(f); // closes file with geodesic worldline
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
