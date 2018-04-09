@@ -10,7 +10,7 @@ out: max number of superphotons GPU can hold at once
 The GPU must hold the following n1xn2xn3 arrays in its 
 global memory during processing: 3*B, rho, T, 4*v
 */
-#include "device_query.h" 
+#include <stdio.h>
 
 int get_max_photons(int n1, int n2, int n3) {
     cudaDeviceProp prop;
