@@ -9,7 +9,7 @@ extern double ***bcov;
 extern double ***ucon;
 extern double ***ucov; 
 extern double ****p; 
-extern struct of_geom ***geom;
+extern struct of_geom **geom;
 extern double ***ne;
 extern double ***thetae;
 extern double ***b;
@@ -123,7 +123,7 @@ void init_weight_table(void)
 			        K2 = K2_eval(Thetae);
 			        fac =
 			            (JCST * Ne * B * Thetae * Thetae /
-			             K2) * sfac * geom[i][j][k].g;
+			             K2) * sfac * geom[i][j].g;
 			        for (l = lstart; l < lend; l++)
 				        sum[l] += fac * F_eval(Thetae, B, nu[l]);
 			        }
@@ -247,11 +247,11 @@ static void init_zone(int i, int j, int k, double *nz, double *dnmax)
 		return;
 	}
 
-	*nz = geom[i][j][k].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	if (*nz > Ns * log(NUMAX / NUMIN)) {
 		fprintf(stderr,
-			"Something very wrong in zone %d %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
-			i, j, k, Bmag, Thetae, K2, ninterp);
+			"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
+			i, j, Bmag, Thetae, K2, ninterp);
 		*nz = 0.;
 		*dnmax = 0.;
 	}
@@ -362,7 +362,7 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 			bhat[1] = 1.;
 		}
 
-		make_tetrad(Ucon, bhat, geom[i][j][k].gcov, Econ, Ecov);
+		make_tetrad(Ucon, bhat, geom[i][j].gcov, Econ, Ecov);
 		zone_flag = 0;
 	}
 
@@ -427,7 +427,7 @@ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 }
 
 /* return boyer-lindquist coordinate of point */
-void bl_coord(double *X, double *r, double *th, double *phi)
+void bl_coord(double *X, double *r, double *th)
 {
     double theexp = X[1];
     double x1br = log(rbr - R0);
@@ -439,8 +439,8 @@ void bl_coord(double *X, double *r, double *th, double *phi)
 	//*r = exp(X[1]) + R0;
     *r = exp(theexp) + R0;
 	//*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
-    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2])) ;
-	*phi = X[3];
+    *th = M_PI_2*(1.0 + X[2]) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + X[2]));
+	//*phi = X[3];
 
 	return;
 }
@@ -490,22 +490,19 @@ void set_units(char *munitstr)
 /* set up all grid functions */
 void init_geometry()
 {
-	int i, j, k;
+	int i, j;
 	double X[NDIM];
 
 	for (i = 0; i < N1; i++) {
 		for (j = 0; j < N2; j++) {
-			for (k = 0; k < N3; k++) {
+			/* zone-centered, assuming X[3] symmetry */
+			coord(i, j, 0, X);
 
-				/* zone-centered */
-				coord(i, j, k, X);
+			gcov_func(X, geom[i][j].gcov);
 
-				gcov_func(X, geom[i][j][k].gcov);
+			geom[i][j].g = gdet_func(geom[i][j].gcov);
 
-				geom[i][j][k].g = gdet_func(geom[i][j][k].gcov);
-
-				gcon_func(X, geom[i][j][k].gcon);
-			}
+			gcon_func(geom[i][j].gcov, geom[i][j].gcon);
 		}
 	}
 }
@@ -647,7 +644,7 @@ void init_storage(void)
 	every point */
 	geom =
 	    //(struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom));
-	    (struct of_geom ***) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
+	    (struct of_geom **) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
 
 	return;
 }

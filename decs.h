@@ -111,7 +111,7 @@ extern int Ns;
 extern int N_superph_recorded, N_scatt;
 
 /* HARM model globals */
-extern struct of_geom ***geom;
+extern struct of_geom **geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
 
@@ -237,9 +237,10 @@ int stop_criterion(struct of_photon *ph);                        // defined in h
 int record_criterion(struct of_photon *ph);                      // defined in harm_model.c
 
 /* coordinate related */
-void get_connection(double *X, double lconn[][NDIM][NDIM]);    // defined in harm_model.c
+void get_connection(double *X, double conn[][NDIM][NDIM]);    // defined in harm_model.c
 void gcov_func(double *X, double gcov[][NDIM]);                // defined in harm_model.c
-void gcon_func(double *X, double gcon[][NDIM]);                // defined in harm_model.c
-
+//void gcon_func(double *X, double gcon[][NDIM]);                // defined in harm_model.c
+void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
+void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM]);
 /* misc. routines */
 char *rand_string(char *str, size_t size);

@@ -65,8 +65,8 @@ void track_super_photon(struct of_photon *ph)
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
-	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-				 Bcov);
+	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+
 	theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	nu = get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
@@ -115,9 +115,7 @@ void track_super_photon(struct of_photon *ph)
 			if (Ne == 0.)
 				bound_flag = 1;
 			if (!bound_flag) {
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (isnan(nu)) {
 					fprintf(stderr,
@@ -276,9 +274,8 @@ void track_super_photon(struct of_photon *ph)
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
 			fprintf(stderr,
-				"X1,X2,X3,K1,K2,K3,bias: %g %g %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->X[3], ph->K[1], ph->K[2], ph->K[3],
-				bias);
+				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+				ph->X[1], ph->X[2], ph->K[1], ph->K[2], bias);
 			break;
 		}
 

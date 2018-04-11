@@ -17,7 +17,7 @@ global double ***b;
 
 /* HARM model internal utilities */
 void init_weight_table(void);                       // defined in harm_utils.c
-void bl_coord(double *X, double *r, double *th, double *phi);    // defined in harm_utils.c
+void bl_coord(double *X, double *r, double *th);    // defined in harm_utils.c
 void make_zone_centered_tetrads(void);              // 
 void set_units(char *munitstr);                     // defined in harm_utils.c
 void init_geometry(void);                           // defined in harm_utils.c

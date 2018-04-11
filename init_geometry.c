@@ -47,7 +47,7 @@ double gdet_func(double gcov[][NDIM])
 
 /* invert gcov to get gcon */
 
-/*
+
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 {
 	int k, l, signum;
@@ -69,6 +69,6 @@ void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 
 	// done!
 }
-*/
+
 
 #undef DELTA

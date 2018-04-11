@@ -151,7 +151,7 @@ void init_harm_data(char *fname)
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = 2. * (startx[3] + N3 * dx[3]);
+	stopx[3] = startx[3] + N3 * dx[3];
 
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
@@ -181,7 +181,7 @@ void init_harm_data(char *fname)
             fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
 
             /* check that we've got the coordinate parameters right */
-		    bl_coord(x, &rp, &hp, &phip);
+		    bl_coord(x, &rp, &hp);
 		    if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {  // add phi test - GS
 			    fprintf(stderr, "grid setup error\n");
 			    fprintf(stderr, "rp, r, hp, h, phip, phi: %g %g %g %g %g %g\n", rp, r, hp, h, phip, phi);

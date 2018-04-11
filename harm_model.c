@@ -72,6 +72,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 		*quit_flag = 1;
 	else
 		*quit_flag = 0;
+
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
 		sample_zone_photon(zone_i, zone_j, zone_k, dnmax, ph);
@@ -159,12 +160,12 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
-			VdotV += geom[i][j][k].gcov[l][m] * Vcon[l] * Vcon[m];
-	Vfac = sqrt(-1. / geom[i][j][k].gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * geom[i][j][k].gcon[0][0];
+			VdotV += geom[i][j].gcov[l][m] * Vcon[l] * Vcon[m];
+	Vfac = sqrt(-1. / geom[i][j].gcon[0][0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * geom[i][j].gcon[0][0];
 	for (l = 1; l < NDIM; l++)
-		Ucon[l] = Vcon[l] - Vfac * geom[i][j][k].gcon[0][l];
-	lower(Ucon, geom[i][j][k].gcov, Ucov);
+		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0][l];
+	lower(Ucon, geom[i][j].gcov, Ucov);
 
 
     /* bernoulli criterion */
@@ -191,7 +192,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	Bcon[0] = UdotBp;
 	for (l = 1; l < NDIM; l++)
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
-	lower(Bcon, geom[i][j][k].gcov, Bcov);
+	lower(Bcon, geom[i][j].gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
@@ -264,7 +265,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Vcon[2] = interp_scalar(p[U2], i, j, k, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, k, coeff);
 
-	gcon_func(X, gcon);
+    gcov_func(X, gcov);
+	gcon_func(gcov, gcon);
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -334,6 +336,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define TH      2
 #define PH      3
 
+/*
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -343,7 +346,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double r, th, phi;
 	double hfac;
 	/* required by broken math.h */
-	void sincos(double in, double *sth, double *cth);
+/*	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
@@ -369,21 +372,24 @@ void gcon_func(double *X, double gcon[][NDIM])
 	gcon[3][1] = gcon[1][3];
 	gcon[3][3] = irho2 / (sth * sth);
 }
-
+*/
 
 void gcov_func(double *X, double gcov[][NDIM])
 {
-	int k, l;
+	int i, j, k, l;
 	double sth, cth, s2, rho2;
-//	double r, th;
 	double r, th, phi;
 	double tfac, rfac, hfac, pfac;
+
+    double dxdX[NDIM][NDIM];
+    double gcov_ks[NDIM][NDIM];
+
 	/* required by broken math.h */
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
 
-	bl_coord(X, &r, &th, &phi);
+	bl_coord(X, &r, &th);
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
@@ -393,7 +399,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
 	rfac = r - R0;
-	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+	hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
 	pfac = 1.;
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
@@ -410,12 +416,42 @@ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+
+    // Transformation to code coordinates
+
+    set_dxdX(X, dxdX);
+
+    DLOOP {
+        gcov_ks[k][l] = gcov[k][l];
+        gcov[k][l] = 0.;
+    }
+    
+    DLOOP {
+        for (int kk = 0; kk < NDIM; kk++) {
+            for (int ll = 0; ll < NDIM; ll++) {
+                gcov[k][l] += gcov_ks[kk][ll] * dxdX[kk][k] * dxdX[ll][l];
+            }
+        }
+    }
 }
 
 #undef TT
 #undef RR
 #undef TH
 #undef PH
+
+
+void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
+{
+    int k, l;
+
+    DLOOP dxdX[k][l] = 0.;
+
+    dxdX[0][0] = 1.;
+    dxdX[1][1] = exp(X[1]);
+    dxdX[2][2] = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+    dxdX[3][3] = 1.;
+}
 
 /* 
 
@@ -428,6 +464,7 @@ void gcov_func(double *X, double gcov[][NDIM])
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
 
+/*
 void get_connection(double X[4], double lconn[4][4][4])
 {
 	double r1, r2, r3, r4, sx, cx;
@@ -438,7 +475,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
 	/* required by broken math.h */
-	void sincos(double th, double *sth, double *cth);
+/*	void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
 	r2 = r1 * r1;
@@ -448,7 +485,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	sincos(2. * M_PI * X[2], &sx, &cx);
 
 	/* HARM-2D Modified Kerr-Schild (MKS) */
-	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
+/*	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
 	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
 	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
 
@@ -585,6 +622,57 @@ void get_connection(double X[4], double lconn[4][4][4])
 	lconn[3][3][3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 
 }
+*/
+
+#define DEL (1.e-5)
+void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
+{
+    int i, j, k, l;
+    double tmp[NDIM][NDIM][NDIM];
+    double Xh[NDIM], Xl[NDIM];
+    double gcon[NDIM][NDIM];
+    double gcov[NDIM][NDIM];
+    double gh[NDIM][NDIM];
+    double gl[NDIM][NDIM];
+
+    gcov_func(X, gcov);
+    gcon_func(gcov, gcon);
+
+    for (int k = 0; k < NDIM; k++) {
+        for (int l = 0; l < NDIM; l++)
+            Xh[l] = X[l];
+        for (int l = 0; l < NDIM; l++)
+            Xl[l] = X[l];
+        Xh[k] += DEL;
+        Xl[k] -= DEL;
+        gcov_func(Xh, gh);
+        gcov_func(Xl, gl);
+
+        for (int i = 0; i < NDIM; i++){
+            for (int j = 0; j < NDIM; j++){
+                conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+            }
+        }
+    }
+
+    // Rearrange to find \Gamma_{ijk}
+    for (int i = 0; i < NDIM; i++)
+        for (int j = 0; j < NDIM; j++)
+            for (int k = 0; k < NDIM; k++)
+                tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
+
+    // G_{ijk} -> G^i_{jk}
+    for (int i = 0; i < NDIM; i++) {
+        for (int j = 0; j < NDIM; j++) {
+            for (int k = 0; k < NDIM; k++) {
+                conn[i][j][k] = 0.;
+                for (int l = 0; l < NDIM; l++) 
+                    conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+            }
+        }
+    }
+}
+#undef DEL
 
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
@@ -657,8 +745,8 @@ double stepsize(double X[NDIM], double K[NDIM])
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
 	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
-//	dlx3 = EPS / (fabs(K[3]) + SMALL);
-	dlx3 = EPS * GSL_MIN(X[3], stopx[3] - X[3]) / (fabs(K[3]) + SMALL);
+	dlx3 = EPS / (fabs(K[3]) + SMALL);
+//	dlx3 = EPS * GSL_MIN(X[3], stopx[3] - X[3]) / (fabs(K[3]) + SMALL);
 //	dlx3 = EPS * GSL_MIN(X[3], fabs(stopx[3] - X[3] - 1.e-5)) / (fabs(K[3]) + SMALL);
 
 
