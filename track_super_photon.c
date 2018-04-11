@@ -123,11 +123,14 @@ void track_super_photon(struct of_photon *ph)
 		dl = stepsize(ph->X, ph->K);
 
 		/* step the geodesic */
+//        fprintf(stderr, "ph->X: %g %g %g %g %d\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], nstep);
 		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
+//        push_photon4(ph->X, ph->K, ph->dKdlam, dl);
 		if (stop_criterion(ph))
 			break;
 
 		/* allow photon to interact with matter, */
+//        fprintf(stderr, "ph->X: %g %g %g %g %d\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], nstep);
 		gcov_func(ph->X, Gcov);
 		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
 				 Bcon, Bcov);
@@ -219,8 +222,9 @@ void track_super_photon(struct of_photon *ph)
 					ph->w *= exp(-dtau);
 
 				/* Interpolate position and wave vector to scattering event */
-				push_photon(Xi, Ki, dKi, dl * frac, &E0,
-					    0);
+				push_photon(Xi, Ki, dKi, dl * frac, &E0, 0);
+//                push_photon4(Xi, Ki, dKi, dl*frac);
+
 				ph->X[0] = Xi[0];
 				ph->X[1] = Xi[1];
 				ph->X[2] = Xi[2];

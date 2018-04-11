@@ -126,7 +126,7 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &rbr);
 	fscanf(fp, "%lf ", &npow2);
 	fscanf(fp, "%lf ", &cpow2);
-	fscanf(fp, "%d ", &useless_int); //BL
+	fscanf(fp, "%d ", &BL); //BL
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;

@@ -76,7 +76,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		K[i] = Kcon[i] + dK;
 		X[i] += Kcon[i] * dl;
 	}
-
+//    fprintf(stderr, "In push_photon, dKcon, dK, Kcon: %g %g %g %g %g %g %g %g %g\n", dKcon[0], dKcon[1], dKcon[2], dKcon[3], dK, Kcon[0], Kcon[1], Kcon[2], Kcon[3]);
 	get_connection(X, lconn);
 
 	/* We're in a coordinate basis so take advantage of symmetry in the connection */

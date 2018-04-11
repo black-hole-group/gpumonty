@@ -163,6 +163,8 @@ extern double gam;
 extern double dMsim;
 extern double x1br, cpow2, npow2, rbr;
 
+extern int BL;
+
 extern double M_unit;
 extern double L_unit;
 extern double T_unit;
@@ -288,5 +290,9 @@ int record_criterion(struct of_photon *ph);
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
+/* coordinate related - HARMPI */
+void dxdxp_func(double *X, double dxdxp[][NDIM]);
+void bl_coord_vec(double *X, double *V);
+void vofx_gammiecoords(double *X, double *V);
 
 

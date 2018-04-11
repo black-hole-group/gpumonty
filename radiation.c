@@ -115,7 +115,7 @@ double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 		 K[1] * Ucov[1] + K[2] * Ucov[2] + K[3] * Ucov[3]);
 
 	nu = ener * ME * CL * CL / HPL;
-
+//    fprintf(stderr, "ener, nu: %g %g\n", ener, nu);
 	if (isnan(ener)) {
 		fprintf(stderr, "isnan get_fluid_nu, K: %g %g %g %g\n",
 			K[0], K[1], K[2], K[3]);

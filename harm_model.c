@@ -204,7 +204,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
-
+//    fprintf(stderr, "X = %g %g\n", X[1], X[2]);
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
 
@@ -229,7 +229,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Bp[1] = interp_scalar(p[B1], i, j, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, coeff);
 	Bp[3] = interp_scalar(p[B3], i, j, coeff);
-
+//    fprintf(stderr, "coeff, Bp = %g %g %g %g %g %g %g\n", coeff[0], coeff[1], coeff[2], coeff[3], Bp[1], Bp[2], Bp[3]);
 	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
 	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
@@ -293,7 +293,8 @@ void gcon_func(double *X, double gcon[][NDIM])
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild 
-	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+//	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
 	gcon[TT][1] = 2. * irho2;
@@ -319,9 +320,9 @@ void gcov_func(double *X, double gcov[][NDIM])
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
-
+//    fprintf(stderr, "before X = %g %g\n", X[1], X[2]);
 	bl_coord(X, &r, &th);
-
+//    fprintf(stderr, "after X = %g %g\n", X[1], X[2]);
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
@@ -330,7 +331,8 @@ void gcov_func(double *X, double gcov[][NDIM])
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
 	rfac = r - R0;
-	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+//	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
 	pfac = 1.;
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
@@ -348,6 +350,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[3][3] =
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
+
 
 #undef TT
 #undef RR
@@ -382,12 +385,16 @@ void get_connection(double X[4], double lconn[4][4][4])
 	r3 = r2 * r1;
 	r4 = r3 * r1;
 
-	sincos(2. * M_PI * X[2], &sx, &cx);
+//	sincos(2. * M_PI * X[2], &sx, &cx);
+	sincos(M_PI * (1. + X[2]), &sx, &cx);
 
 	/* HARM-2D MKS */
-	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
-	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
-	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
+//	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
+//	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
+//	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
+	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
+	dthdx2 = M_PI_2 - (M_PI_2 * (hslope - 1.))/2. * cx;
+	d2thdx22 = 0.5 * M_PI * M_PI_2 * (hslope - 1.) * sx;
 
 	dthdx22 = dthdx2 * dthdx2;
 
@@ -817,4 +824,67 @@ void report_spectrum(int N_superph_made)
 
 	fclose(fp);
 
+}
+
+/* functions added for HARMPI */
+
+#define DELTA 1.e-5
+void dxdxp_func(double *X, double dxdxp[][NDIM])
+{
+	int i, j, k, l;
+	double Xh[NDIM], Xl[NDIM];
+	double Vh[NDIM], Vl[NDIM];
+
+	if(BL){
+		for(k = 0; k < NDIM; k++){
+    		for(l = 0; l < NDIM; l++)
+				Xh[l] = X[l];
+			for(l = 0; l < NDIM; l++)
+				Xl[l] = X[l];
+			Xh[k] += DELTA;
+			Xl[k] -= DELTA;
+
+			bl_coord_vec(Xh,Vh);
+			bl_coord_vec(Xl,Vl);
+      
+			for(j = 0; j < NDIM; j++)
+				dxdxp[j][k] = (Vh[j] - Vl[j])/(Xh[k] - Xl[k]);
+		}
+	}
+	else{
+		for(i = 0; i < NDIM; i++){
+			for(j = 0; j < NDIM; j++){
+				dxdxp[i][j] = delta(i,j);
+			}
+		}
+	}
+}
+
+void bl_coord_vec(double *X, double *V)
+{
+
+    if (BL == 1){
+      //use original coordinates
+      vofx_gammiecoords(X, V);
+    }
+    else{
+        //use uniform coordinates
+        V[0] = X[0];
+        V[1] = X[1];
+        V[2] = X[2];
+        V[3] = X[3];
+    }
+}
+
+void vofx_gammiecoords(double *X, double *V)
+{
+	double theexp = X[1];
+  
+	if(X[1] > x1br)
+		theexp += cpow2 * pow(X[1] - x1br , npow2);
+	  
+	V[0] = X[0];
+	V[1] = exp(theexp) + R0;
+	V[2] = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + X[2]));
+	V[3] = X[3];
 }

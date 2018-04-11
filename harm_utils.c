@@ -152,18 +152,23 @@ void init_weight_table(void)
 			for (j = 0; j < N2; j++) {
 				get_fluid_zone(i, j, &Ne, &Thetae, &B,
 					       Ucon, Bcon);
+
 				if (Ne == 0. || Thetae < THETAE_MIN)
 					continue;
 				K2 = K2_eval(Thetae);
+
 				fac =
 				    (JCST * Ne * B * Thetae * Thetae /
 				     K2) * sfac * geom[i][j].g;
+
 				for (l = lstart; l < lend; l++)
 					sum[l] +=
 					    fac * F_eval(Thetae, B, nu[l]);
 			}
+
 #pragma omp barrier
 	}
+
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns));
@@ -428,7 +433,7 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
 	}
-
+//    fprintf(stderr, "X, *i, *j, del = %g %g %d %d %g %g\n", X[1], X[2], *i, *j, del[1], del[2]);
 	return;
 }
 
@@ -517,6 +522,7 @@ void init_geometry()
 
 		}
 	}
+    fprintf(stderr, "ARE WE HERE???\n");
 
 	/* done! */
 }
