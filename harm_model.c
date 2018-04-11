@@ -272,7 +272,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define RR      1
 #define TH      2
 #define PH      3
-
+/***
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -281,7 +281,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double r, th;
 	double hfac;
 	/* required by broken math.h */
-	void sincos(double in, double *sth, double *cth);
+/*	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
@@ -308,7 +308,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	gcon[3][1] = gcon[1][3];
 	gcon[3][3] = irho2 / (sth * sth);
 }
-
+*/
 
 void gcov_func(double *X, double gcov[][NDIM])
 {
@@ -331,7 +331,6 @@ void gcov_func(double *X, double gcov[][NDIM])
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
 	rfac = r - R0;
-//	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
     hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
 	pfac = 1.;
 
@@ -368,6 +367,58 @@ void gcov_func(double *X, double gcov[][NDIM])
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
 
+
+#define DEL (1.e-5)
+void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
+{
+    int i, j, k, l;
+    double tmp[NDIM][NDIM][NDIM];
+    double Xh[NDIM], Xl[NDIM];
+    double gcon[NDIM][NDIM];
+    double gcov[NDIM][NDIM];
+    double gh[NDIM][NDIM];
+    double gl[NDIM][NDIM];
+
+    gcov_func(X, gcov);
+    gcon_func(gcov, gcon);
+
+    for (int k = 0; k < NDIM; k++) {
+        for (int l = 0; l < NDIM; l++)
+            Xh[l] = X[l];
+        for (int l = 0; l < NDIM; l++)
+            Xl[l] = X[l];
+        Xh[k] += DEL;
+        Xl[k] -= DEL;
+        gcov_func(Xh, gh);
+        gcov_func(Xl, gl);
+
+        for (int i = 0; i < NDIM; i++){
+            for (int j = 0; j < NDIM; j++){
+                conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+            }
+        }
+    }
+
+    // Rearrange to find \Gamma_{ijk}
+    for (int i = 0; i < NDIM; i++)
+        for (int j = 0; j < NDIM; j++)
+            for (int k = 0; k < NDIM; k++)
+                tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
+
+    // G_{ijk} -> G^i_{jk}
+    for (int i = 0; i < NDIM; i++) {
+        for (int j = 0; j < NDIM; j++) {
+            for (int k = 0; k < NDIM; k++) {
+                conn[i][j][k] = 0.;
+                for (int l = 0; l < NDIM; l++) 
+                    conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+            }
+        }
+    }
+}
+#undef DEL
+
+/*******************
 void get_connection(double X[4], double lconn[4][4][4])
 {
 	double r1, r2, r3, r4, sx, cx;
@@ -378,7 +429,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
 	/* required by broken math.h */
-	void sincos(double th, double *sth, double *cth);
+/*	void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
 	r2 = r1 * r1;
@@ -392,7 +443,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 //	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
 //	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
 //	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
-	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
+/*	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
 	dthdx2 = M_PI_2 - (M_PI_2 * (hslope - 1.))/2. * cx;
 	d2thdx22 = 0.5 * M_PI * M_PI_2 * (hslope - 1.) * sx;
 
@@ -529,6 +580,8 @@ void get_connection(double X[4], double lconn[4][4][4])
 	lconn[3][3][3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 
 }
+*******************/
+
 
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
@@ -826,7 +879,7 @@ void report_spectrum(int N_superph_made)
 
 }
 
-/* functions added for HARMPI */
+/* functions added for HARMPI - unsure if we need them now, but declared and defined anyway */
 
 #define DELTA 1.e-5
 void dxdxp_func(double *X, double dxdxp[][NDIM])
