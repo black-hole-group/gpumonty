@@ -33,16 +33,20 @@ double interp_scalar(double ***var, int i, int j, int k, double coeff[8])
 {
 
 	double interp;
+	int ip1, jp1, kp1;
+
+	if (k == N3 - 1)
+		kp1 = 0; 
 
 	interp =
 	    var[i][j][k] * coeff[0] +
-	    var[i][j][k + 1] * coeff[1] +
-	    var[i][j + 1][k] * coeff[2] +
-	    var[i][j + 1][k + 1] * coeff[3] +
-	    var[i + 1][j][k] * coeff[4] +
-	    var[i + 1][j][k + 1] * coeff[5] +
-	    var[i + 1][j + 1][k] * coeff[6] +
-	    var[i + 1][j + 1][k + 1] * coeff[7];
+	    var[i][j][kp1] * coeff[1] +
+	    var[i][jp1][k] * coeff[2] +
+	    var[i][jp1][kp1] * coeff[3] +
+	    var[ip1][j][k] * coeff[4] +
+	    var[ip1][j][k + 1] * coeff[5] +
+	    var[ip1][jp1][k] * coeff[6] +
+	    var[ip1][jp1][kp1] * coeff[7];
 
 	return interp;
 }
@@ -643,8 +647,8 @@ void init_storage(void)
 	element there is a structure defining the metric values at
 	every point */
 	geom =
-	    //(struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom));
-	    (struct of_geom **) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
+	    (struct of_geom **) malloc_rank2(N1, N2, sizeof(struct of_geom));
+	    //(struct of_geom **) malloc_rank3(N1, N2, N3, sizeof(struct of_geom));
 
 	return;
 }

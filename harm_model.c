@@ -232,8 +232,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double pg, bsq, beta_plasma;
 
 	if (X[1] < startx[1] || X[1] > stopx[1] || 
-	    X[2] < startx[2] || X[2] > stopx[2] ||
-        X[3] < startx[3] || X[3] > stopx[3] ) {
+	    X[2] < startx[2] || X[2] > stopx[2] ) {
 
 		*Ne = 0.;
 
@@ -397,25 +396,25 @@ void gcov_func(double *X, double gcov[][NDIM])
 	rho2 = r * r + a * a * cth * cth;
 
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
-	tfac = 1.;
-	rfac = r - R0;
-	hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
-	pfac = 1.;
+	//tfac = 1.;
+	//rfac = r - R0;
+	//hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	//pfac = 1.;
 
-	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
-	gcov[TT][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[TT][3] = (-2. * a * r * s2 / rho2) * tfac * pfac;
+	gcov[TT][TT] = (-1. + 2. * r / rho2);// * tfac * tfac;
+	gcov[TT][1] = (2. * r / rho2);// * tfac * rfac;
+	gcov[TT][3] = (-2. * a * r * s2 / rho2);// * tfac * pfac;
 
 	gcov[1][TT] = gcov[TT][1];
-	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-a * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1][1] = (1. + 2. * r / rho2);// * rfac * rfac;
+	gcov[1][3] = (-a * s2 * (1. + 2. * r / rho2));// * rfac * pfac;
 
-	gcov[2][2] = rho2 * hfac * hfac;
+	gcov[2][2] = rho2;// * hfac * hfac;
 
 	gcov[3][TT] = gcov[TT][3];
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
-	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2));// * pfac * pfac;
 
     // Transformation to code coordinates
 
@@ -444,12 +443,17 @@ void gcov_func(double *X, double gcov[][NDIM])
 void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
 {
     int k, l;
+	double sx, cx;
+
+	void sincos(double th, double *sth, double *cth);
 
     DLOOP dxdX[k][l] = 0.;
 
+	sincos(2. * M_PI * X[2], &sx, &cx);
+	
     dxdX[0][0] = 1.;
     dxdX[1][1] = exp(X[1]);
-    dxdX[2][2] = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+    dxdX[2][2] = M_PI * (1. + (1 - hslope) * cx);
     dxdX[3][3] = 1.;
 }
 
@@ -638,35 +642,36 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
     gcov_func(X, gcov);
     gcon_func(gcov, gcon);
 
-    for (int k = 0; k < NDIM; k++) {
-        for (int l = 0; l < NDIM; l++)
+    for (k = 0; k < NDIM; k++) {
+        for (l = 0; l < NDIM; l++)
             Xh[l] = X[l];
-        for (int l = 0; l < NDIM; l++)
+        for (l = 0; l < NDIM; l++)
             Xl[l] = X[l];
         Xh[k] += DEL;
         Xl[k] -= DEL;
         gcov_func(Xh, gh);
         gcov_func(Xl, gl);
 
-        for (int i = 0; i < NDIM; i++){
-            for (int j = 0; j < NDIM; j++){
+        for (i = 0; i < NDIM; i++){
+            for (j = 0; j < NDIM; j++){
                 conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
             }
         }
     }
 
     // Rearrange to find \Gamma_{ijk}
-    for (int i = 0; i < NDIM; i++)
-        for (int j = 0; j < NDIM; j++)
-            for (int k = 0; k < NDIM; k++)
+    for (i = 0; i < NDIM; i++)
+        for (j = 0; j < NDIM; j++)
+            for (k = 0; k < NDIM; k++)
                 tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
 
     // G_{ijk} -> G^i_{jk}
-    for (int i = 0; i < NDIM; i++) {
-        for (int j = 0; j < NDIM; j++) {
-            for (int k = 0; k < NDIM; k++) {
+    for (i = 0; i < NDIM; i++) {
+        for (j = 0; j < NDIM; j++) {
+//			fprintf(stderr, "%d %d %g\n\n", i, j, gcon[i][j]);
+            for (k = 0; k < NDIM; k++) {
                 conn[i][j][k] = 0.;
-                for (int l = 0; l < NDIM; l++) 
+                for (l = 0; l < NDIM; l++) 
                     conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
             }
         }

@@ -26,20 +26,15 @@ void track_super_photon(struct of_photon *ph)
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
-	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
-	    Bcov[NDIM];
+	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep = 0;
 
 	// output filename
 //	char *file_out, *ran_string;
 
 	/* quality control */
-	if (isnan(ph->X[0]) ||
-	    isnan(ph->X[1]) ||
-	    isnan(ph->X[2]) ||
-	    isnan(ph->X[3]) ||
-	    isnan(ph->K[0]) ||
-	    isnan(ph->K[1]) ||
+	if (isnan(ph->X[0]) || isnan(ph->X[1]) || isnan(ph->X[2]) ||
+	    isnan(ph->X[3]) || isnan(ph->K[0]) || isnan(ph->K[1]) ||
 	    isnan(ph->K[2]) || isnan(ph->K[3]) ) {
 		fprintf(stderr, "track_super_photon: bad input photon.\n");
 		fprintf(stderr,
@@ -107,8 +102,7 @@ void track_super_photon(struct of_photon *ph)
 
 		/* allow photon to interact with matter, */
 		gcov_func(ph->X, Gcov);
-		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-				 Bcon, Bcov);
+		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
 			bound_flag = 0;
@@ -119,45 +113,32 @@ void track_super_photon(struct of_photon *ph)
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (isnan(nu)) {
 					fprintf(stderr,
-						"isnan nu: track_super_photon dl,E0 %g %g\n",
-						dl, E0);
+						"isnan nu: track_super_photon dl,E0 %g %g\n", dl, E0);
 					fprintf(stderr,
-						"Xi, %g %g %g %g\n", Xi[0],
-						Xi[1], Xi[2], Xi[3]);
+						"Xi, %g %g %g %g\n", Xi[0], Xi[1], Xi[2], Xi[3]);
 					fprintf(stderr,
-						"Ki, %g %g %g %g\n", Ki[0],
-						Ki[1], Ki[2], Ki[3]);
+						"Ki, %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
 					fprintf(stderr,
-						"dKi, %g %g %g %g\n",
-						dKi[0], dKi[1], dKi[2],
-						dKi[3]);
+						"dKi, %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
 					exit(1);
 				}
 			}
 
 			/* scattering optical depth along step */
 			if (bound_flag || nu < 0.) {
-				dtau_scatt =
-				    0.5 * alpha_scatti * dtauK * dl;
+				dtau_scatt = 0.5 * alpha_scatti * dtauK * dl;
 				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
 				alpha_scatti = alpha_absi = 0.;
 				bias = 0.;
 				bi = 0.;
 			} else {
-				alpha_scattf =
-				    alpha_inv_scatt(nu, Thetae, Ne);
-				dtau_scatt =
-				    0.5 * (alpha_scatti +
-					   alpha_scattf) * dtauK * dl; // eq. 23 of Dolence et al. 2009 - GS
+				alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne);
+				dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl; // eq. 23 of Dolence et al. 2009 - GS
 				alpha_scatti = alpha_scattf;
 
 				/* absorption optical depth along step */
-				alpha_absf =
-				    alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
-				dtau_abs =
-				    0.5 * (alpha_absi +
-					   alpha_absf) * dtauK * dl; // eq. 19 of Dolence et al. 2009 - GS
+				alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+				dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl; // eq. 19 of Dolence et al. 2009 - GS
 				alpha_absi = alpha_absf;
 
 				bf = bias_func(Thetae, ph->w);
@@ -184,19 +165,13 @@ void track_super_photon(struct of_photon *ph)
 				dtau_scatt *= frac;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau_abs < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph->w *= (1. - dtau / 24. * (24. - dtau *
+						(12. - dtau * (4. - dtau))));
 				else
 					ph->w *= exp(-dtau); // eq. 20 of Dolence et al. 2009 - GS
 
 				/* Interpolate position and wave vector to scattering event */
-				push_photon(Xi, Ki, dKi, dl * frac, &E0,
-					    0);
+				push_photon(Xi, Ki, dKi, dl * frac, &E0, 0);
 				ph->X[0] = Xi[0];
 				ph->X[1] = Xi[1];
 				ph->X[2] = Xi[2];
@@ -214,33 +189,24 @@ void track_super_photon(struct of_photon *ph)
 				/* Get plasma parameters at new position */
 				gcov_func(ph->X, Gcov);
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
-						 &B, Ucon, Ucov, Bcon,
-						 Bcov);
+						 &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
 					scatter_super_photon(ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov);
+							     Thetae, B, Ucon, Bcon, Gcov);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
 					track_super_photon(&php);
 				}
 
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (nu < 0.) {
 					alpha_scatti = alpha_absi = 0.;
 				} else {
-					alpha_scatti =
-					    alpha_inv_scatt(nu, Thetae,
-							    Ne);
-					alpha_absi =
-					    alpha_inv_abs(nu, Thetae, Ne,
-							  B, theta);
+					alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
+					alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 				}
 				bi = bias_func(Thetae, ph->w);
 
@@ -254,13 +220,8 @@ void track_super_photon(struct of_photon *ph)
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph->w *= (1. - dtau / 24. * (24. - dtau *
+						 (12. - dtau * (4. - dtau))));
 				else
 					ph->w *= exp(-dtau);
 			}
