@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	Ns = (int) Ntot;
 
 	// gets max number of photons GPU can hold at once
-	int nmaxgpu=get_max_photons(n1,n2,n3);
+	int nmaxgpu=get_max_photons(N1,N2,N3);
 	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
 
 	/* initialize random number generator */
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	for (i=0; i<nmaxgpu; i++) {
+	for (int i=0; i<nmaxgpu; i++) {
 		/* get pseudo-quanta */
 		make_super_photon(&ph, &quit_flag);
 

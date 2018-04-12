@@ -43,17 +43,17 @@
 # requires an openmp-enabled version of gcc
 #
 CC = nvcc
-CFLAGS = -O2 -fopenmp
-LDFLAGS = -lm -lgsl -lgslcblas -fopenmp
+CFLAGS = -O2 -Xcompiler -fopenmp
+LDFLAGS = -lm -lgsl -lgslcblas -lgomp
 
-SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
-radiation.c jnu_mixed.c hotcross.c track_super_photon.c \
-scatter_super_photon.c harm_model.c harm_utils.c init_harm_data.c \
+SRCS = grmonty.c compton.c init_geometry.c tetrads.c \
+ jnu_mixed.c hotcross.c  \
+ harm_model.c harm_utils.c init_harm_data.c \
 device_query.cu
  
-OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
-radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
-scatter_super_photon.o harm_model.o harm_utils.o init_harm_data.o \
+OBJS = grmonty.o compton.o init_geometry.o tetrads.o  \
+jnu_mixed.o hotcross.o  \
+ harm_model.o harm_utils.o init_harm_data.o \
 device_query.o
 
 INCS = decs.h constants.h harm_model.h 
