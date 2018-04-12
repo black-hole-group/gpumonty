@@ -245,7 +245,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
 	coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
 	coeff[2] = (1. - del[1]) * del[2] * (1. - del[3]);
-	coeff[3] = (1. - del[1]) * del[2] * (1. - del[3]);
+	coeff[3] = (1. - del[1]) * del[2] * del[3];
 	coeff[4] = del[1] * (1. - del[2]) * (1. - del[3]);
 	coeff[5] = del[1] * (1. - del[2]) * del[3];
 	coeff[6] = del[1] * del[2] * (1. - del[3]);
