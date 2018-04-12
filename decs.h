@@ -241,6 +241,6 @@ void get_connection(double *X, double conn[][NDIM][NDIM]);    // defined in harm
 void gcov_func(double *X, double gcov[][NDIM]);                // defined in harm_model.c
 //void gcon_func(double *X, double gcon[][NDIM]);                // defined in harm_model.c
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
-void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM]);
+void get_dxdX(double X[NDIM], double dxdX[NDIM][NDIM]);
 /* misc. routines */
 char *rand_string(char *str, size_t size);

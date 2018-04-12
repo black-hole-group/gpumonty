@@ -418,7 +418,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 
     // Transformation to code coordinates
 
-    set_dxdX(X, dxdX);
+    get_dxdX(X, dxdX);
 
     DLOOP {
         gcov_ks[k][l] = gcov[k][l];
@@ -440,7 +440,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 #undef PH
 
 
-void set_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
+void get_dxdX(double X[NDIM], double dxdX[NDIM][NDIM])
 {
     int k, l;
 	double sx, cx;

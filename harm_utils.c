@@ -35,6 +35,10 @@ double interp_scalar(double ***var, int i, int j, int k, double coeff[8])
 	double interp;
 	int ip1, jp1, kp1;
 
+	ip1 = i + 1;
+	jp1 = j + 1;
+	kp1 = k + 1;
+
 	if (k == N3 - 1)
 		kp1 = 0; 
 
@@ -44,7 +48,7 @@ double interp_scalar(double ***var, int i, int j, int k, double coeff[8])
 	    var[i][jp1][k] * coeff[2] +
 	    var[i][jp1][kp1] * coeff[3] +
 	    var[ip1][j][k] * coeff[4] +
-	    var[ip1][j][k + 1] * coeff[5] +
+	    var[ip1][j][kp1] * coeff[5] +
 	    var[ip1][jp1][k] * coeff[6] +
 	    var[ip1][jp1][kp1] * coeff[7];
 
