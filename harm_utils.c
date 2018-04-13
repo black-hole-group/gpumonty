@@ -385,7 +385,6 @@ void sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph)
 	ph->tau_abs = 0.;
 	ph->X1i = ph->X[1];
 	ph->X2i = ph->X[2];
-	ph->X3i = ph->X[3];
 	ph->nscatt = 0;
 	ph->ne0 = Ne;
 	ph->b0 = Bmag;
@@ -448,7 +447,6 @@ void bl_coord(double *X, double *r, double *th)
     *r = exp(theexp) + R0;
 	//*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
     *th = M_PI_2*(1.0 + X[2]) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + X[2]));
-	//*phi = X[3];
 
 	return;
 }
@@ -526,10 +524,15 @@ double dOmega_func(double x2i, double x2f)
 	double dO;
 
 	dO = 2. * M_PI *
-	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
-	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
-	    );
-
+		(-cos(M_PI_2 * (1.0 * x2f) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2f)))
+		+ cos(M_PI_2 * (1.0 * x2i) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2i)))
+		);
+/*
+ *	dO = 2. * M_PI *
+ *	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
+ *	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
+ *	    );
+*/
 	return (dO);
 }
 

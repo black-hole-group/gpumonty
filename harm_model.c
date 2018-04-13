@@ -178,6 +178,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
     else
         tpte = TP_OVER_TE_DISK;
 
+//	tpte = TP_OVER_TE;
     two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
    	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
 
@@ -289,6 +290,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     else
         tpte = TP_OVER_TE_DISK;
 
+//	tpte = TP_OVER_TE;
     two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
    	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
 
@@ -742,7 +744,6 @@ int record_criterion(struct of_photon *ph)
 #define EPS	0.04
 //#define EPS   0.01
 
-
 double stepsize(double X[NDIM], double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
@@ -751,9 +752,6 @@ double stepsize(double X[NDIM], double K[NDIM])
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
 	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
-//	dlx3 = EPS * GSL_MIN(X[3], stopx[3] - X[3]) / (fabs(K[3]) + SMALL);
-//	dlx3 = EPS * GSL_MIN(X[3], fabs(stopx[3] - X[3] - 1.e-5)) / (fabs(K[3]) + SMALL);
-
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
 	idlx2 = 1. / (fabs(dlx2) + SMALL);
@@ -819,8 +817,7 @@ void record_super_photon(struct of_photon *ph)
 	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
 	spect[ix2][iE].X1iav += ph->w * ph->X1i;
 	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-//	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-	spect[ix2][iE].X3fsq += ph->w * (ph->X3i * ph->X3i);
+	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
 	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
 	spect[ix2][iE].b0 += ph->w * (ph->b0);
 	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
@@ -937,16 +934,13 @@ void report_spectrum(int N_superph_made)
 			/* factor of 2 accounts for folding around equator */
 			dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
 
-			nuLnu =
-			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
-								     dlE);
+			nuLnu = (ME * CL * CL) * (4. * M_PI / dOmega) * (1. / dlE);
 
 			nuLnu *= spect[j][i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
-						     SMALL);
+			    spect[j][i].tau_scatt / (spect[j][i].dNdlE + SMALL);
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,

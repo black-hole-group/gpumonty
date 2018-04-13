@@ -57,7 +57,6 @@ struct of_photon {        // defined in grmonty.c, used elsewhere
 	double L;
 	double X1i;
 	double X2i;
-	double X3i;
 	double tau_abs;
 	double tau_scatt;
 	double ne0;

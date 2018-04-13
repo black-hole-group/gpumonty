@@ -35,7 +35,6 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		Kcon[i] += dK;
 		K[i] = Kcon[i] + dK;
 		X[i] += Kcon[i] * dl;
-//        fprintf(stderr, "X3 = %g\n", X[3]);
 	}
 
 	get_connection(X, lconn);
@@ -78,8 +77,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
 	errE = fabs((E1 - (*E0)) / (*E0));
 
-	if (n < 7
-	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
+	if (n < 7 && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
 		FAST_CPY(Xcpy, X);
 		FAST_CPY(Kcpy, Kcon);
 		FAST_CPY(dKcpy, dKcon);

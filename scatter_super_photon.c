@@ -34,8 +34,7 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			"normalization problem, killing superphoton: %g \n",
 			ph->K[0]);
 		ph->K[0] = fabs(ph->K[0]);
-//		fprintf(stderr, "X1,X2: %g %g\n", ph->X[1], ph->X[2]);
-		fprintf(stderr, "X1,X2,X3: %g %g %g\n", ph->X[1], ph->X[2], ph->X[3]);
+		fprintf(stderr, "X1,X2: %g %g\n", ph->X[1], ph->X[2]);
 		ph->w = 0.;
 		return;
 	}
@@ -127,7 +126,6 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 
 	php->X1i = ph->X[1];
 	php->X2i = ph->X[2];
-	php->X3i = ph->X[3];
 	php->X[0] = ph->X[0];
 	php->X[1] = ph->X[1];
 	php->X[2] = ph->X[2];
