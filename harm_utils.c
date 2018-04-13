@@ -509,6 +509,7 @@ void init_geometry()
 			geom[i][j].g = gdet_func(geom[i][j].gcov);
 
 			gcon_func(geom[i][j].gcov, geom[i][j].gcon);
+//			gcon_func(X, geom[i][j].gcon);
 		}
 	}
 }

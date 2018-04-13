@@ -88,6 +88,9 @@ void init_harm_data(char *fname)
 
     int GN1, GN2, GN3, nx, ny, nz;
     double ti, tj, tk;
+
+	double useless_double;
+	double useless_int;
     
 	fp = fopen(fname, "r");
 
@@ -99,7 +102,7 @@ void init_harm_data(char *fname)
 	}
 
 	/* get HARMPI header */
-    fscanf(fp, "%lf ", &t);
+/*    fscanf(fp, "%lf ", &t);
     fscanf(fp, "%d ", &N1);
     fscanf(fp, "%d ", &N2);
     fscanf(fp, "%d ", &N3);
@@ -144,19 +147,68 @@ void init_harm_data(char *fname)
     fscanf(fp, "%lf ", &npow2);
     fscanf(fp, "%lf ", &cpow2);
     fscanf(fp, "%d ", &BL);
+*/
 
+	fscanf(fp, "%lf ", &t);
+	fscanf(fp, "%d ", &N1);
+	fscanf(fp, "%d ", &N2);
+	N3 = 1;
+    fscanf(fp, "%d ", &useless_int); //N3
+    fscanf(fp, "%d ", &useless_int); //nx
+    fscanf(fp, "%d ", &useless_int); //ny
+    fscanf(fp, "%d ", &useless_int); //nz
+    fscanf(fp, "%d ", &useless_int); //GN1
+    fscanf(fp, "%d ", &useless_int); //GN2
+    fscanf(fp, "%d ", &useless_int); //GN3
+	fscanf(fp, "%lf ", &startx[1]);
+	fscanf(fp, "%lf ", &startx[2]);
+	fscanf(fp, "%lf ", &useless_double); //startx[3]
+	fscanf(fp, "%lf ", &dx[1]);
+	fscanf(fp, "%lf ", &dx[2]);
+	fscanf(fp, "%lf ", &useless_double); //dx[3]
+	fscanf(fp, "%lf ", &tf);
+	fscanf(fp, "%d ", &nstep);
+	fscanf(fp, "%lf ", &a);
+	fscanf(fp, "%lf ", &gam);
+	fscanf(fp, "%lf ", &cour);
+	fscanf(fp, "%lf ", &DTd);
+	fscanf(fp, "%lf ", &DTl);
+	fscanf(fp, "%lf ", &DTi);
+	fscanf(fp, "%lf ", &DTr);
+	fscanf(fp, "%d ", &useless_int); //DTr01
+	fscanf(fp, "%d ", &dump_cnt);
+	fscanf(fp, "%d ", &image_cnt);
+	fscanf(fp, "%d ", &rdump_cnt);
+	fscanf(fp, "%d ", &useless_int); //rdump01_cnt
+	fscanf(fp, "%lf ", &dt);
+	fscanf(fp, "%d ", &lim);
+	fscanf(fp, "%d ", &failed);
+	fscanf(fp, "%lf ", &Rin);
+	fscanf(fp, "%lf ", &Rout);
+	fscanf(fp, "%lf ", &hslope);
+	fscanf(fp, "%lf ", &R0);
+	fscanf(fp, "%d ", &useless_int); //npr
+	fscanf(fp, "%d ", &useless_int); //DOKTOT
+	fscanf(fp, "%lf ", &useless_double); //fractheta
+	fscanf(fp, "%lf ", &useless_double); //fracphi
+	fscanf(fp, "%lf ", &rbr);
+	fscanf(fp, "%lf ", &npow2);
+	fscanf(fp, "%lf ", &cpow2);
+	fscanf(fp, "%d ", &BL); //BL
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
 
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = startx[3] + N3 * dx[3];
+//	stopx[3] = startx[3] + N3 * dx[3];
+	stopx[3] = 2.*M_PI; // 2D
 
 	fprintf(stderr, "Sim range x1, x2, x3:  %g %g, %g %g, %g %g\n", startx[1],
 		stopx[1], startx[2], stopx[2], startx[3], stopx[3]);
 
 	dx[0] = 1.;
+	dx[3] = 2.*M_PI;
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -176,9 +228,11 @@ void init_harm_data(char *fname)
 		    j = kk % N2;
 		    i = (kk - j) / N2;
     
-            fscanf(fp, "%lf %lf %lf ", &ti, &tj, &tk);
+//            fscanf(fp, "%lf %lf %lf ", &ti, &tj, &tk);
+			fscanf(fp, "%lf %lf %lf", &useless_double, &useless_double, &useless_double); //ti, tj, tk
 
-            fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
+//            fscanf(fp, "%lf %lf %lf %lf %lf %lf ", &x[1], &x[2], &x[3], &r, &h, &phi);
+			fscanf(fp, "%lf %lf %lf %lf %lf %lf", &x[1], &x[2], &useless_double, &r, &h, &useless_double); //x[3], phi
 
             /* check that we've got the coordinate parameters right */
 		    bl_coord(x, &rp, &hp);
@@ -192,7 +246,9 @@ void init_harm_data(char *fname)
             fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf ",
                 &p[KRHO][i][j][k],
                 &p[UU][i][j][k], &p[U1][i][j][k], &p[U2][i][j][k], &p[U3][i][j][k],
-                &p[B1][i][j][k], &p[B2][i][j][k], &p[B3][i][j][k], &pktot);
+                &p[B1][i][j][k], &p[B2][i][j][k], &p[B3][i][j][k],
+				&useless_double);
+//				&pktot);
     
             fscanf(fp, "%lf", &divb);
 
