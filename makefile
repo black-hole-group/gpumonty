@@ -43,7 +43,7 @@
 # requires an openmp-enabled version of gcc
 #
 CC = gcc
-CFLAGS = -Wall -O2 -fopenmp -g
+CFLAGS = -Wall -O2 -fopenmp -g -pg -std=c99
 LDFLAGS = -lm -lgsl -lgslcblas -fopenmp
 
 SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
