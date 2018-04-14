@@ -1,7 +1,5 @@
-extern "C" {
-    #include "decs.h"    
-    #include "harm_model.h"
-}
+#include "decs.h"    
+#include "harm_model.h"
 
 /*
 Queries GPU for the amount of free memory.
@@ -15,7 +13,6 @@ out: max number of superphotons GPU can hold at once
 The GPU must hold the following n1xn2xn3 arrays in its 
 global memory during processing: 3*B, rho, T, 4*v
  */
-extern "C"
 int get_max_photons(int n1, int n2, int n3) {
     cudaDeviceProp prop;
     size_t free, total;
@@ -53,7 +50,6 @@ Transfer HARM arrays to GPU.
 TODO:
 - [ ] modify p to include extra spatial dimension
 */
-extern "C"
 void mallocDevice(int nprim, int n1, int n2, int n3) {
     cudaMalloc(&d_p, nprim*n1*n2*n3*sizeof(float));
     cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(float), cudaMemcpyHostToDevice);
@@ -67,7 +63,6 @@ void mallocDevice(int nprim, int n1, int n2, int n3) {
 Deallocates device variables
 
 */
-extern "C"
 void freeDevice() {
     cudaFree(d_p);
 }

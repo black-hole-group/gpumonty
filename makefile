@@ -4,9 +4,9 @@ CC = nvcc
 CFLAGS = -O2 -Xcompiler -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas -lgomp
 
-SRCS = grmonty.c compton.c init_geometry.c tetrads.c \
- jnu_mixed.c hotcross.c  \
- harm_model.c harm_utils.c init_harm_data.c 
+SRCS = grmonty.cpp compton.cpp init_geometry.cpp tetrads.cpp \
+ jnu_mixed.cpp hotcross.cpp  \
+ harm_model.cpp harm_utils.cpp init_harm_data.cpp 
  
 OBJS = grmonty.o compton.o init_geometry.o tetrads.o  \
 jnu_mixed.o hotcross.o  \
@@ -20,7 +20,7 @@ grmonty : $(OBJS) $(INCS) makefile
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 #$(OBJS) : $(INCS) makefile
-%.o: %.c $(INCS) makefile
+%.o: %.cpp $(INCS) makefile
 
 device_query.o: device_query.cu
 	$(CC) -c -o $@ $^
