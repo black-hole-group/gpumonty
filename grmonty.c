@@ -77,6 +77,11 @@ int main(int argc, char *argv[])
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
+	// send HARM arrays to device
+	wrapper that calls
+	cudaMalloc
+	cudaMemcpy xxxxxxxxxxxxx
+
 	/* 
 	Photon generation loop
 	==========================
@@ -104,8 +109,10 @@ int main(int argc, char *argv[])
 		N_superph_made += 1;
 	}
 
-
 	printf("Nph = %f\n", N_superph_made);
+
+	// gets results back from device
+	cudaFree device arrays
 
 #ifdef _OPENMP
 #pragma omp parallel
