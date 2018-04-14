@@ -147,13 +147,14 @@ extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(struct of_photon *ph);
+/*void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
+*/
 
 /* OpenMP specific functions */
 void omp_reduce_spect(void);
@@ -163,6 +164,7 @@ void init_monty_rand(int seed);
 double monty_rand(void);
 
 /* geodesic integration */
+/*
 void init_dKdlam(double X[], double Kcon[], double dK[]);
 void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
@@ -176,6 +178,7 @@ void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);
 int geodesic_deriv(double t, const double y[], double dy[], void *params);
 void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 			  double frac, double del_l);
+*/
 
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
@@ -194,6 +197,7 @@ void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 
 /* functions related to basic radiation functions & physics */
 	/* physics-independent */
+/*
 double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
 double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B);
@@ -203,6 +207,7 @@ double alpha_inv_abs(double nu, double thetae, double Ne, double B,
 double Bnu_inv(double nu, double thetae);
 double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
+*/
 
 	/* thermal synchrotron */
 double jnu_synch(double nu, double Ne, double Thetae, double B,
@@ -213,6 +218,7 @@ double F_eval(double Thetae, double Bmag, double nu);
 double K2_eval(double Thetae);
 
 	/* compton scattering */
+
 void init_hotcross(void);
 double total_compton_cross_lkup(double nu, double theta);
 double klein_nishina(double a, double ap);
@@ -245,4 +251,5 @@ void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
 
-
+// CUDA related 
+int get_max_photons(int n1, int n2, int n3);

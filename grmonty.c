@@ -59,6 +59,10 @@ int main(int argc, char *argv[])
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 
+	// gets max number of photons GPU can hold at once
+	int nmaxgpu=get_max_photons(N1,N2,N3);
+	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
+
 	/* initialize random number generator */
 #pragma omp parallel private(myid)
 	{
@@ -73,7 +77,17 @@ int main(int argc, char *argv[])
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
-	/** main loop **/
+	// send HARM arrays to device
+	mallocDevice(); // wrapper
+	cudaMalloc
+	cudaMemcpy xxxxxxxxxxxxx
+
+	/* 
+	Photon generation loop
+	==========================
+	Loop that generates enough photons to fill the GPU
+	memory (or less, if so specified)
+	*/
 	N_superph_made = 0;
 	N_superph_recorded = 0;
 	N_scatt = 0;
@@ -83,50 +97,30 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-#pragma omp parallel private(ph)
-	{
+	for (int i=0; i<nmaxgpu; i++) {
+		/* get pseudo-quanta */
+		make_super_photon(&ph, &quit_flag);
 
-		while (1) {
 
-			/* get pseudo-quanta */
-#pragma omp critical (MAKE_SPHOT)
-			{
-				if (!quit_flag)
-					make_super_photon(&ph, &quit_flag);
-			}
-			if (quit_flag)
-				break;
+		/* push them around */
+		//track_super_photon(&ph);
 
-			/* push them around */
-			track_super_photon(&ph);
-
-			/* step */
-#pragma omp atomic
-			N_superph_made += 1;
-
-			/* give interim reports on rates */
-			if (((int) (N_superph_made)) % 100000 == 0
-			    && N_superph_made > 0) {
-				currtime = time(NULL);
-				fprintf(stderr, "time %g, rate %g ph/s\n",
-					(double) (currtime - starttime),
-					N_superph_made / (currtime -
-							  starttime));
-			}
-		}
+		/* step */
+		N_superph_made += 1;
 	}
-	currtime = time(NULL);
-	fprintf(stderr, "Final time %g, rate %g ph/s\n",
-		(double) (currtime - starttime),
-		N_superph_made / (currtime - starttime));
+
+	printf("Nph = %f\n", N_superph_made);
+
+	// gets results back from device
+	cudaFree device arrays
 
 #ifdef _OPENMP
 #pragma omp parallel
 	{
-		omp_reduce_spect();
+		//omp_reduce_spect();
 	}
 #endif
-	report_spectrum((int) N_superph_made);
+	//report_spectrum((int) N_superph_made);
 
 	/* done! */
 	return (0);
