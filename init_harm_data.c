@@ -59,15 +59,15 @@ CFG 1 Sept 07
 void init_harm_data(char *fname)
 {
 	FILE *fp;
-	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
+	float x[4];
+	float rp, hp, V, dV, two_temp_gam;
 	int i, j, k;
 
 	/* header variables not used except locally */
-	double t, tf, cour, DTd, DTl, DTi, dt;
+	float t, tf, cour, DTd, DTl, DTi, dt;
 	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
-	double r, h, divb, vmin, vmax, gdet;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	float r, h, divb, vmin, vmax, gdet;
+	float Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
 	fp = fopen(fname, "r");
 
@@ -79,32 +79,32 @@ void init_harm_data(char *fname)
 	}
 
 	/* get standard HARM header */
-	fscanf(fp, "%lf ", &t);
+	fscanf(fp, "%f ", &t);
 	fscanf(fp, "%d ", &N1);
 	fscanf(fp, "%d ", &N2);
-	fscanf(fp, "%lf ", &startx[1]);
-	fscanf(fp, "%lf ", &startx[2]);
-	fscanf(fp, "%lf ", &dx[1]);
-	fscanf(fp, "%lf ", &dx[2]);
-	fscanf(fp, "%lf ", &tf);
+	fscanf(fp, "%f ", &startx[1]);
+	fscanf(fp, "%f ", &startx[2]);
+	fscanf(fp, "%f ", &dx[1]);
+	fscanf(fp, "%f ", &dx[2]);
+	fscanf(fp, "%f ", &tf);
 	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &a);
-	fscanf(fp, "%lf ", &gam);
-	fscanf(fp, "%lf ", &cour);
-	fscanf(fp, "%lf ", &DTd);
-	fscanf(fp, "%lf ", &DTl);
-	fscanf(fp, "%lf ", &DTi);
+	fscanf(fp, "%f ", &a);
+	fscanf(fp, "%f ", &gam);
+	fscanf(fp, "%f ", &cour);
+	fscanf(fp, "%f ", &DTd);
+	fscanf(fp, "%f ", &DTl);
+	fscanf(fp, "%f ", &DTi);
 	fscanf(fp, "%d ", &DTr);
 	fscanf(fp, "%d ", &dump_cnt);
 	fscanf(fp, "%d ", &image_cnt);
 	fscanf(fp, "%d ", &rdump_cnt);
-	fscanf(fp, "%lf ", &dt);
+	fscanf(fp, "%f ", &dt);
 	fscanf(fp, "%d ", &lim);
 	fscanf(fp, "%d ", &failed);
-	fscanf(fp, "%lf ", &Rin);
-	fscanf(fp, "%lf ", &Rout);
-	fscanf(fp, "%lf ", &hslope);
-	fscanf(fp, "%lf ", &R0);
+	fscanf(fp, "%f ", &Rin);
+	fscanf(fp, "%f ", &Rout);
+	fscanf(fp, "%f ", &hslope);
+	fscanf(fp, "%f ", &R0);
 
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
@@ -137,7 +137,7 @@ void init_harm_data(char *fname)
 	for (k = 0; k < N1 * N2; k++) {
 		j = k % N2;
 		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf %lf %lf", &x[1], &x[2], &r, &h);
+		fscanf(fp, "%f %f %f %f", &x[1], &x[2], &r, &h);
 
 		/* check that we've got the coordinate parameters right */
 		bl_coord(x, &rp, &hp);
@@ -150,7 +150,7 @@ void init_harm_data(char *fname)
 			exit(1);
 		}
 
-		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
+		fscanf(fp, "%f %f %f %f %f %f %f %f",
 		       &p[KRHO][i][j],
 		       &p[UU][i][j],
 		       &p[U1][i][j],
@@ -159,21 +159,21 @@ void init_harm_data(char *fname)
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
 
 
-		fscanf(fp, "%lf", &divb);
+		fscanf(fp, "%f", &divb);
 
-		fscanf(fp, "%lf %lf %lf %lf",
+		fscanf(fp, "%f %f %f %f",
 		       &Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Ucov[0],
+		fscanf(fp, "%f %f %f %f", &Ucov[0],
 		       &Ucov[1], &Ucov[2], &Ucov[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcon[0],
+		fscanf(fp, "%f %f %f %f", &Bcon[0],
 		       &Bcon[1], &Bcon[2], &Bcon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
+		fscanf(fp, "%f %f %f %f", &Bcov[0],
 		       &Bcov[1], &Bcov[2], &Bcov[3]);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf\n", &gdet);
+		fscanf(fp, "%f ", &vmin);
+		fscanf(fp, "%f ", &vmax);
+		fscanf(fp, "%f ", &vmin);
+		fscanf(fp, "%f ", &vmax);
+		fscanf(fp, "%f\n", &gdet);
 
 		bias_norm +=
 		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *

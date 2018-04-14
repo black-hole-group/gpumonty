@@ -47,16 +47,16 @@
 #define global extern
 #endif
 
-global double ****econ;
-global double ****ecov;
-global double ***bcon;
-global double ***bcov;
-global double ***ucon;
-global double ***ucov;
-global double ***p;
-global double **ne;
-global double **thetae;
-global double **b;
+global float ****econ;
+global float ****ecov;
+global float ***bcon;
+global float ***bcov;
+global float ***ucon;
+global float ***ucov;
+global float ***p;
+global float **ne;
+global float **thetae;
+global float **b;
 
 /* HARM model internal utilities */
 void init_weight_table(void);

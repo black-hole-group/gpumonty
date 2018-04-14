@@ -54,6 +54,8 @@ TODO:
 */
 extern "C"
 void mallocDevice(int nprim, int n1, int n2, int n3) {
+    float *d_p = 0; // pointer for device array
+
     cudaMalloc(&p, nprim*n1*n2*n3*sizeof(float));
     cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(float), cudaMemcpyHostToDevice);
 }
