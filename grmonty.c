@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	init_model(argv);
 
 	// send HARM arrays to device
-	wrapper that calls
+	mallocDevice(); // wrapper
 	cudaMalloc
 	cudaMemcpy xxxxxxxxxxxxx
 
