@@ -6,19 +6,19 @@
 #define global extern
 #endif
 
-global float ****econ;
-global float ****ecov;
-global float ***bcon;
-global float ***bcov;
-global float ***ucon;
-global float ***ucov;
-global float ***p;
-global float **ne;
-global float **thetae;
-global float **b;
+global double ****econ;
+global double ****ecov;
+global double ***bcon;
+global double ***bcov;
+global double ***ucon;
+global double ***ucov;
+global double ***p;
+global double **ne;
+global double **thetae;
+global double **b;
 
 // pointers for device arrays
-global float *d_p; 
+global double *d_p; 
 
 
 /* HARM model internal utilities */

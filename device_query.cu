@@ -51,8 +51,8 @@ TODO:
 - [ ] modify p to include extra spatial dimension
 */
 void mallocDevice(int nprim, int n1, int n2, int n3) {
-    cudaMalloc(&d_p, nprim*n1*n2*n3*sizeof(float));
-    cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_p, nprim*n1*n2*n3*sizeof(double));
+    cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(double), cudaMemcpyHostToDevice);
 }
 
 

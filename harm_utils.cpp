@@ -531,9 +531,9 @@ static double **malloc_rank2_cont(int n1, int n2)
 	double *space;
 	int i;
 
-	space = malloc_rank1(n1 * n2, sizeof(double));
+	space = (double *)malloc_rank1(n1 * n2, sizeof(double));
 
-	A = malloc_rank1(n1, sizeof(double *));
+	A = (double **)malloc_rank1(n1, sizeof(double *));
 
 	for (i = 0; i < n1; i++)
 		A[i] = &(space[i * n2]);
@@ -545,7 +545,7 @@ void init_storage(void)
 {
 	int i;
 
-	p = malloc_rank1(NPRIM, sizeof(double *));
+	p = (double ***)malloc_rank1(NPRIM, sizeof(double *));
 	for (i = 0; i < NPRIM; i++)
 		p[i] = (double **) malloc_rank2_cont(N1, N2);
 	geom =
