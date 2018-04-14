@@ -58,6 +58,10 @@ global float **ne;
 global float **thetae;
 global float **b;
 
+// pointers for device arrays
+float *d_p = 0; 
+
+
 /* HARM model internal utilities */
 void init_weight_table(void);
 void bl_coord(double *X, double *r, double *th);

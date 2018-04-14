@@ -4,15 +4,16 @@ extern "C" {
 }
 
 /*
- * Queries GPU for the amount of free memory.
- * Returns max number of photons that GPU can hold at once.
- * If number of photons desired is smaller than nmaxgpu, then
- * returns total number of photons desired instead.
- * in: size of HARM arrays along each dimension
- * out: max number of superphotons GPU can hold at once
- * 
- * The GPU must hold the following n1xn2xn3 arrays in its 
- * global memory during processing: 3*B, rho, T, 4*v
+Queries GPU for the amount of free memory.
+Returns max number of photons that GPU can hold at once.
+If number of photons desired is smaller than nmaxgpu, then
+returns total number of photons desired instead.
+
+in: size of HARM arrays along each dimension
+out: max number of superphotons GPU can hold at once
+ 
+The GPU must hold the following n1xn2xn3 arrays in its 
+global memory during processing: 3*B, rho, T, 4*v
  */
 extern "C"
 int get_max_photons(int n1, int n2, int n3) {
@@ -54,8 +55,19 @@ TODO:
 */
 extern "C"
 void mallocDevice(int nprim, int n1, int n2, int n3) {
-    float *d_p = 0; // pointer for device array
-
     cudaMalloc(&p, nprim*n1*n2*n3*sizeof(float));
     cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(float), cudaMemcpyHostToDevice);
+}
+
+
+
+
+/*
+
+Deallocates device variables
+
+*/
+extern "C"
+void freeDevice() {
+    cudaFree(d_p);
 }

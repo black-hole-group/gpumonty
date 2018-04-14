@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 	// xxxxxxxxxxxxxxxxTODO
 
 	// releases device memory
-	cudaFree(d_p);
+	freeDevice();
 
 #ifdef _OPENMP
 #pragma omp parallel
