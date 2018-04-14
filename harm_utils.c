@@ -433,7 +433,6 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
 	}
-//    fprintf(stderr, "X, *i, *j, del = %g %g %d %d %g %g\n", X[1], X[2], *i, *j, del[1], del[2]);
 	return;
 }
 
@@ -539,10 +538,15 @@ double dOmega_func(double x2i, double x2f)
 	double dO;
 
 	dO = 2. * M_PI *
-	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
-	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
-	    );
-
+		(-cos(M_PI_2 * (1.0 * x2f) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2f)))
+		+ cos(M_PI_2 * (1.0 * x2i) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2i)))
+		);
+/*
+ *	dO = 2. * M_PI *
+ *	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
+ *	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
+ *	    );
+*/
 	return (dO);
 }
 
