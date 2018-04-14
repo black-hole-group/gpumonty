@@ -1,3 +1,6 @@
+#ifndef DECS_H 
+#define DECS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -255,3 +258,5 @@ void gcon_func(double *X, double gcon[][NDIM]);
 int get_max_photons(int n1, int n2, int n3);
 void freeDevice();
 void mallocDevice(int nprim, int n1, int n2, int n3);
+
+#endif
