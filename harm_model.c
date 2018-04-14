@@ -67,7 +67,7 @@ void init_model(char *args[])
 	   mass and its accretion rate */
 	set_units(args[3]);
 
-	fprintf(stderr, "getting simulation data...\n");
+	fprintf(stderr, "getting simget_ulation data...\n");
 	init_harm_data(args[2]);	/* read in HARM simulation data */
 
 	/* initialize the metric */
@@ -204,7 +204,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
-//    fprintf(stderr, "X = %g %g\n", X[1], X[2]);
+
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
 
@@ -229,12 +229,13 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Bp[1] = interp_scalar(p[B1], i, j, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, coeff);
 	Bp[3] = interp_scalar(p[B3], i, j, coeff);
-//    fprintf(stderr, "coeff, Bp = %g %g %g %g %g %g %g\n", coeff[0], coeff[1], coeff[2], coeff[3], Bp[1], Bp[2], Bp[3]);
+
 	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
 	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
 
 	gcon_func(X, gcon);
+//	gcon_func(gcov, gcon);
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -280,6 +281,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double sth, cth, irho2;
 	double r, th;
 	double hfac;
+
 	// required by broken math.h
 	void sincos(double in, double *sth, double *cth);
 
@@ -288,6 +290,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	bl_coord(X, &r, &th);
 
 	sincos(th, &sth, &cth);
+
 	sth = fabs(sth) + SMALL;
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
@@ -391,8 +394,8 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
     double gl[NDIM][NDIM];
 
 	gcov_func(X, gcov);
-	gcon_func(gcov, gcon);
-//	gcon_func(X, gcon);
+//	gcon_func(gcov, gcon);
+	gcon_func(X, gcon);
 
     for (int k = 0; k < NDIM; k++) {
         for (int l = 0; l < NDIM; l++)

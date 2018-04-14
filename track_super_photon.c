@@ -50,6 +50,7 @@
 */
 
 #include "decs.h"
+#include <string.h>
 
 #define MAXNSTEP	1280000
 
@@ -66,9 +67,11 @@ void track_super_photon(struct of_photon *ph)
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
-	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
-	    Bcov[NDIM];
+	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep = 0;
+
+	// output filename
+//	char *file_out, *ran_string;
 
 	/* quality control */
 	if (isnan(ph->X[0]) ||
@@ -86,12 +89,20 @@ void track_super_photon(struct of_photon *ph)
 		return;
 	}
 
+	// Initialize filename that will hold photon's trajectory
+//	ran_string=malloc(SIZE_STR*sizeof(char)); 
+//	file_out=malloc((8+SIZE_STR)*sizeof(char)); // +1 for zero terminator
+//	rand_string(ran_string,10); // random string
+    // Concatenates strings to get full filename
+//	strcpy(file_out, "photon_");
+//	strcat(file_out, ran_string);
+
+
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
-	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov);
+	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 
 	theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	nu = get_fluid_nu(ph->X, ph->K, Ucov);
@@ -101,6 +112,9 @@ void track_super_photon(struct of_photon *ph)
 
 	/* Initialize dK/dlam */
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
+
+	// Initialize file that will hold photon trajectory
+//	FILE *f = fopen(file_out, "w");
 
 	while (!stop_criterion(ph)) {
 
@@ -123,68 +137,51 @@ void track_super_photon(struct of_photon *ph)
 		dl = stepsize(ph->X, ph->K);
 
 		/* step the geodesic */
-//        fprintf(stderr, "ph->X: %g %g %g %g %d\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], nstep);
 		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
-//        push_photon4(ph->X, ph->K, ph->dKdlam, dl);
+
 		if (stop_criterion(ph))
 			break;
 
 		/* allow photon to interact with matter, */
-//        fprintf(stderr, "ph->X: %g %g %g %g %d\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3], nstep);
 		gcov_func(ph->X, Gcov);
-		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-				 Bcon, Bcov);
+		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
 			bound_flag = 0;
 			if (Ne == 0.)
 				bound_flag = 1;
 			if (!bound_flag) {
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (isnan(nu)) {
 					fprintf(stderr,
 						"isnan nu: track_super_photon dl,E0 %g %g\n",
 						dl, E0);
 					fprintf(stderr,
-						"Xi, %g %g %g %g\n", Xi[0],
-						Xi[1], Xi[2], Xi[3]);
+						"Xi, %g %g %g %g\n", Xi[0],	Xi[1], Xi[2], Xi[3]);
 					fprintf(stderr,
-						"Ki, %g %g %g %g\n", Ki[0],
-						Ki[1], Ki[2], Ki[3]);
+						"Ki, %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
 					fprintf(stderr,
-						"dKi, %g %g %g %g\n",
-						dKi[0], dKi[1], dKi[2],
-						dKi[3]);
+						"dKi, %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
 					exit(1);
 				}
 			}
 
 			/* scattering optical depth along step */
 			if (bound_flag || nu < 0.) {
-				dtau_scatt =
-				    0.5 * alpha_scatti * dtauK * dl;
+				dtau_scatt = 0.5 * alpha_scatti * dtauK * dl;
 				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
 				alpha_scatti = alpha_absi = 0.;
 				bias = 0.;
 				bi = 0.;
 			} else {
-				alpha_scattf =
-				    alpha_inv_scatt(nu, Thetae, Ne);
-				dtau_scatt =
-				    0.5 * (alpha_scatti +
-					   alpha_scattf) * dtauK * dl;
+				alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne);
+				dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 				alpha_scatti = alpha_scattf;
 
 				/* absorption optical depth along step */
-				alpha_absf =
-				    alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
-				dtau_abs =
-				    0.5 * (alpha_absi +
-					   alpha_absf) * dtauK * dl;
+				alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+				dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 				alpha_absi = alpha_absf;
 
 				bf = bias_func(Thetae, ph->w);
@@ -223,7 +220,6 @@ void track_super_photon(struct of_photon *ph)
 
 				/* Interpolate position and wave vector to scattering event */
 				push_photon(Xi, Ki, dKi, dl * frac, &E0, 0);
-//                push_photon4(Xi, Ki, dKi, dl*frac);
 
 				ph->X[0] = Xi[0];
 				ph->X[1] = Xi[1];
@@ -242,33 +238,24 @@ void track_super_photon(struct of_photon *ph)
 				/* Get plasma parameters at new position */
 				gcov_func(ph->X, Gcov);
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
-						 &B, Ucon, Ucov, Bcon,
-						 Bcov);
+						 &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
 					scatter_super_photon(ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov);
+							     Thetae, B, Ucon, Bcon, Gcov);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
 					track_super_photon(&php);
 				}
 
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
+				theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (nu < 0.) {
 					alpha_scatti = alpha_absi = 0.;
 				} else {
-					alpha_scatti =
-					    alpha_inv_scatt(nu, Thetae,
-							    Ne);
-					alpha_absi =
-					    alpha_inv_abs(nu, Thetae, Ne,
-							  B, theta);
+					alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
+					alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 				}
 				bi = bias_func(Thetae, ph->w);
 
@@ -296,16 +283,21 @@ void track_super_photon(struct of_photon *ph)
 
 		nstep++;
 
+		// saves photon worldline here
+/*		fprintf(f, "%E %E %E %E %E %E %E %E\n",
+			ph->X[0], ph->X[1], ph->X[2], ph->X[3],
+			ph->K[0], ph->K[1], ph->K[2], ph->K[3]);
+*/
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
 			fprintf(stderr,
 				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
+				ph->X[1], ph->X[2], ph->K[1], ph->K[2], bias);
 			break;
 		}
 
 	}
+//	fclose(f); // closes file with geodesic worldline
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
