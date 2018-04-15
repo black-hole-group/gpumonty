@@ -119,6 +119,10 @@ int main(int argc, char *argv[])
 	// gets results back from device
 	// xxxxxxxxxxxxxxxxTODO
 
+	// Launch kernel 
+	testKernel<<<1,1>>>(d_p, NPRIM, N1, N2);
+
+
 	// releases device memory
 	cudaFree(d_p);
 
