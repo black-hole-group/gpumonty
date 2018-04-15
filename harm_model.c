@@ -297,7 +297,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild 
 //	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
-	hfac = M_PI_2 - 0.5 * M_PI * (hslope - 1.) * cos(M_PI * (X[2] + 1.));
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
 	gcon[TT][1] = 2. * irho2;
@@ -343,9 +343,9 @@ void gcov_func(double *X, double gcov[][NDIM])
   		rfac = r - R0;
 	}
     else {
-		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.));
+		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.)); // derivative of theexp in bl_coord
 	}
-	hfac = M_PI_2 - 0.5 * M_PI * (hslope - 1.) * cos(M_PI * (X[2] + 1.));
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
 	pfac = 1.;
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
