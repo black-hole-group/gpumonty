@@ -52,6 +52,10 @@ int main(int argc, char *argv[])
 	struct of_photon ph;
 	time_t currtime, starttime;
 
+	// device variables
+	double *d_p=0; 
+
+
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
 		exit(0);
@@ -78,7 +82,9 @@ int main(int argc, char *argv[])
 	init_model(argv);
 
 	// send HARM arrays to device
-	mallocDevice(NPRIM,N1,N2,N3); 
+    cudaMalloc(&d_p, NPRIM*N1*N2*N3*sizeof(double));
+    cudaMemcpy(d_p, p, NPRIM*N1*N2*N3*sizeof(double), cudaMemcpyHostToDevice);
+
 
 	/* 
 	Photon generation loop
@@ -113,7 +119,7 @@ int main(int argc, char *argv[])
 	// xxxxxxxxxxxxxxxxTODO
 
 	// releases device memory
-	freeDevice();
+	cudaFree(d_p);
 
 #ifdef _OPENMP
 #pragma omp parallel

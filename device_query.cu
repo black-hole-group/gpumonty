@@ -1,5 +1,4 @@
 #include "decs.h"    
-#include "harm_model.h"
 
 /*
 Queries GPU for the amount of free memory.
@@ -43,26 +42,3 @@ int get_max_photons(int n1, int n2, int n3) {
 
 
 
-
-/*
-Transfer HARM arrays to GPU.
-
-TODO:
-- [ ] modify p to include extra spatial dimension
-*/
-void mallocDevice(int nprim, int n1, int n2, int n3) {
-    cudaMalloc(&d_p, nprim*n1*n2*n3*sizeof(double));
-    cudaMemcpy(d_p, p, nprim*n1*n2*n3*sizeof(double), cudaMemcpyHostToDevice);
-}
-
-
-
-
-/*
-
-Deallocates device variables
-
-*/
-void freeDevice() {
-    cudaFree(d_p);
-}

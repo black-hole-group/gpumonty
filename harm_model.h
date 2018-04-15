@@ -17,10 +17,6 @@ global double **ne;
 global double **thetae;
 global double **b;
 
-// pointers for device arrays
-global double *d_p; 
-
-
 /* HARM model internal utilities */
 void init_weight_table(void);
 void bl_coord(double *X, double *r, double *th);

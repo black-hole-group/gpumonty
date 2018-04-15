@@ -256,7 +256,5 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 // CUDA related 
 int get_max_photons(int n1, int n2, int n3);
-void freeDevice();
-void mallocDevice(int nprim, int n1, int n2, int n3);
 
 #endif
