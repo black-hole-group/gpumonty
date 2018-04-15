@@ -68,7 +68,8 @@
 #define HOTCROSS	"hotcross.dat"
 
 double table[NW + 1][NT + 1];
-double dlw, dlT, lminw, lmint;
+double dlw, dlTT, lminw, lmint; // repeated def. in jnu_mixed.c, dlT=>dlTT
+//double dlw, lminw, lmint;
 
 void init_hotcross(void)
 {
@@ -78,7 +79,7 @@ void init_hotcross(void)
 	FILE *fp;
 
 	dlw = log10(MAXW / MINW) / NW;
-	dlT = log10(MAXT / MINT) / NT;
+	dlTT = log10(MAXT / MINT) / NT;
 	lminw = log10(MINW);
 	lmint = log10(MINT);
 
@@ -91,7 +92,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
+				lT = lmint + j * dlTT;
 				table[i][j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
@@ -111,7 +112,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
+				lT = lmint + j * dlTT;
 				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
 					lw, lT, table[i][j]);
 			}
@@ -163,9 +164,9 @@ double total_compton_cross_lkup(double w, double thetae)
 		lw = log10(w);
 		lT = log10(thetae);
 		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / dlT);
+		j = (int) ((lT - lmint) / dlTT);
 		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / dlT - j;
+		dj = (lT - lmint) / dlTT - j;
 
 		lcross =
 		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -

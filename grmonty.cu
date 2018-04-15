@@ -19,6 +19,7 @@
  */
 
 #include "decs.h"
+#include "harm_model.h"
 
 /* defining declarations for global variables */
 struct of_geom **geom;

@@ -111,6 +111,8 @@ extern int N_superph_recorded, N_scatt;
 extern struct of_geom **geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
+//extern double ***p; // HARM arrays
+
 
 
 /* some coordinate parameters */
