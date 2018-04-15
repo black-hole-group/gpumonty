@@ -45,6 +45,7 @@ gsl_integration_workspace *w;
 
 #pragma omp threadprivate(r)
 #include <time.h>
+#include "kernel.h"
 
 int main(int argc, char *argv[])
 {

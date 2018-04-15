@@ -3,35 +3,23 @@
 CC = nvcc
 CFLAGS = -O2 -Xcompiler -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas -lgomp
-
-SRCS = grmonty.cpp compton.cpp init_geometry.cpp tetrads.cpp \
- jnu_mixed.cpp hotcross.cpp  \
- harm_model.cpp harm_utils.cpp init_harm_data.cpp 
  
-OBJS = grmonty.o compton.o init_geometry.o tetrads.o  \
+OBJS = grmonty.cu.o compton.o init_geometry.o tetrads.o  \
 jnu_mixed.o hotcross.o  \
- harm_model.o harm_utils.o init_harm_data.o device_query.o
+harm_model.o harm_utils.o init_harm_data.o device_query.cu.o \
+kernel.cu.o
 
 INCS = decs.h constants.h harm_model.h 
 
-all: device_query.o grmonty.o grmonty
+#all: device_query.o grmonty.o grmonty
 
 grmonty: $(OBJS) $(INCS) makefile 
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-#$(OBJS) : $(INCS) makefile
-#%.o: %.cpp $(INCS) makefile
-%.o: %.cpp
-    $(CC) $(CFLAGS) -c $< -o $@
+%.o: %.cpp $(INCS) makefile
 
 %.cu.o: %.cu
-    $(CC) -c $< -o $@
-
-#device_query.o: device_query.cu
-#	$(CC) -c -o $@ $^
-
-#grmonty.o: grmonty.cu
-#	$(CC) -c -o $@ $^	
+	$(CC) -c -o $@ $^	
 
 clean:
 	/bin/rm *.o grmonty
