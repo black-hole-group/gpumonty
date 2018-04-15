@@ -14,9 +14,9 @@ jnu_mixed.o hotcross.o  \
 
 INCS = decs.h constants.h harm_model.h 
 
-all: device_query.o grmonty
+all: device_query.o grmonty.o grmonty
 
-grmonty : $(OBJS) $(INCS) makefile 
+grmonty: $(OBJS) $(INCS) makefile 
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 #$(OBJS) : $(INCS) makefile
@@ -24,6 +24,9 @@ grmonty : $(OBJS) $(INCS) makefile
 
 device_query.o: device_query.cu
 	$(CC) -c -o $@ $^
+
+grmonty.o: grmonty.cu
+	$(CC) -c -o $@ $^	
 
 clean:
 	/bin/rm *.o grmonty
