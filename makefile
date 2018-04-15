@@ -20,13 +20,18 @@ grmonty: $(OBJS) $(INCS) makefile
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 #$(OBJS) : $(INCS) makefile
-%.o: %.cpp $(INCS) makefile
+#%.o: %.cpp $(INCS) makefile
+%.o: %.cpp
+    $(CC) $(CFLAGS) -c $< -o $@
 
-device_query.o: device_query.cu
-	$(CC) -c -o $@ $^
+%.cu.o: %.cu
+    $(CC) -c $< -o $@
 
-grmonty.o: grmonty.cu
-	$(CC) -c -o $@ $^	
+#device_query.o: device_query.cu
+#	$(CC) -c -o $@ $^
+
+#grmonty.o: grmonty.cu
+#	$(CC) -c -o $@ $^	
 
 clean:
 	/bin/rm *.o grmonty

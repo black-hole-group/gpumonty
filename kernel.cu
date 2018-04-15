@@ -1,12 +1,16 @@
 #include <stdio.h>
-#define N 64
 #define TPB 32
 
 
-__global__ void distanceKernel(float *d_out, float ref, int len)
+__global__ void testKernel(double *d_p, int nprim, int n1, int n2)
 {
-  const int i = blockIdx.x*blockDim.x + threadIdx.x;
-  const float x = scale(i, len);
-  d_out[i] = distance(x, ref);
-  printf("i = %2d: dist from %f to %f is %f.\n", i, ref, x, d_out[i]);
+	const int i = blockIdx.x*blockDim.x + threadIdx.x;
+
+	for (int l=0; l<nprim; l++) {
+		for (int j=0; j<n1; j++) {
+			for (int k=0; k<n2; k++) {
+				printf("p[%d][%d][%d]=%lf\n", l,j,k,d_p[l][j][k]);
+			}
+		}
+	}
 }
