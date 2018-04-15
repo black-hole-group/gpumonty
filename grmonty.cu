@@ -20,6 +20,7 @@
 
 #include "decs.h"
 #include "harm_model.h"
+#include "kernel.h"
 
 /* defining declarations for global variables */
 struct of_geom **geom;
@@ -45,7 +46,6 @@ gsl_integration_workspace *w;
 
 #pragma omp threadprivate(r)
 #include <time.h>
-#include "kernel.h"
 
 int main(int argc, char *argv[])
 {
@@ -120,9 +120,7 @@ int main(int argc, char *argv[])
 	// gets results back from device
 	// xxxxxxxxxxxxxxxxTODO
 
-	// Launch kernel 
-	testKernel<<<1,1>>>(d_p, NPRIM, N1, N2);
-
+	launchKernel(d_p, NPRIM, N1, N2);
 
 	// releases device memory
 	cudaFree(d_p);
