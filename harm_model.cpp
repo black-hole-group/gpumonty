@@ -161,7 +161,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, double del[4]);
+	double interp_scalar(double *var, int n, int i, int j, double del[4]);
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
