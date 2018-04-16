@@ -518,11 +518,11 @@ void init_geometry()
 
 			geom[i][j].g = gdet_func(geom[i][j].gcov);
 
-			gcon_func(X, geom[i][j].gcon);
+//			gcon_func(X, geom[i][j].gcon);
+			gcon_func(geom[i][j].gcov, geom[i][j].gcon);
 
 		}
 	}
-    fprintf(stderr, "ARE WE HERE???\n");
 
 	/* done! */
 }
@@ -538,11 +538,16 @@ double dOmega_func(double x2i, double x2f)
 {
 	double dO;
 
+dO = 2. * M_PI *
+		(-cos(M_PI_2 * (1.0 * x2f) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2f)))
+		+ cos(M_PI_2 * (1.0 * x2i) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2i)))
+		);
+/*
 	dO = 2. * M_PI *
 	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
 	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
 	    );
-
+*/
 	return (dO);
 }
 

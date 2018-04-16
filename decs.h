@@ -287,7 +287,8 @@ int stop_criterion(struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
-void get_connection(double *X, double lconn[][NDIM][NDIM]);
+//void get_connection(double *X, double lconn[][NDIM][NDIM]);
+void get_connection(double *X, double conn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 //void gcon_func(double *X, double gcon[][NDIM]);
 void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
@@ -295,5 +296,3 @@ void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
 void dxdxp_func(double *X, double dxdxp[][NDIM]);
 void bl_coord_vec(double *X, double *V);
 void vofx_gammiecoords(double *X, double *V);
-
-

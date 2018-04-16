@@ -204,7 +204,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
-//    fprintf(stderr, "X = %g %g\n", X[1], X[2]);
+
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
 
@@ -229,12 +229,13 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Bp[1] = interp_scalar(p[B1], i, j, coeff);
 	Bp[2] = interp_scalar(p[B2], i, j, coeff);
 	Bp[3] = interp_scalar(p[B3], i, j, coeff);
-//    fprintf(stderr, "coeff, Bp = %g %g %g %g %g %g %g\n", coeff[0], coeff[1], coeff[2], coeff[3], Bp[1], Bp[2], Bp[3]);
+
 	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
 	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
 	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
 
 	gcon_func(X, gcon);
+//	gcon_func(gcov, gcon);
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -272,7 +273,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define RR      1
 #define TH      2
 #define PH      3
-/***
+/*
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -280,8 +281,8 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double sth, cth, irho2;
 	double r, th;
 	double hfac;
-	/* required by broken math.h */
-/*	void sincos(double in, double *sth, double *cth);
+	// required by broken math.h
+	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
@@ -320,9 +321,9 @@ void gcov_func(double *X, double gcov[][NDIM])
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
-//    fprintf(stderr, "before X = %g %g\n", X[1], X[2]);
+
 	bl_coord(X, &r, &th);
-//    fprintf(stderr, "after X = %g %g\n", X[1], X[2]);
+
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
@@ -379,7 +380,7 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
     double gh[NDIM][NDIM];
     double gl[NDIM][NDIM];
 
-    gcov_func(X, gcov);
+//    gcov_func(X, gcov);
     gcon_func(gcov, gcon);
 
     for (int k = 0; k < NDIM; k++) {
@@ -418,7 +419,7 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
 }
 #undef DEL
 
-/*******************
+/*
 void get_connection(double X[4], double lconn[4][4][4])
 {
 	double r1, r2, r3, r4, sx, cx;
@@ -428,8 +429,8 @@ void get_connection(double X[4], double lconn[4][4][4])
 	    irho23_dthdx2;
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
-	/* required by broken math.h */
-/*	void sincos(double th, double *sth, double *cth);
+	// required by broken math.h
+	void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
 	r2 = r1 * r1;
@@ -439,11 +440,11 @@ void get_connection(double X[4], double lconn[4][4][4])
 //	sincos(2. * M_PI * X[2], &sx, &cx);
 	sincos(M_PI * (1. + X[2]), &sx, &cx);
 
-	/* HARM-2D MKS */
+	// HARM-2D MKS
 //	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
 //	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
 //	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
-/*	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
+	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
 	dthdx2 = M_PI_2 - (M_PI_2 * (hslope - 1.))/2. * cx;
 	d2thdx22 = 0.5 * M_PI * M_PI_2 * (hslope - 1.) * sx;
 
@@ -580,7 +581,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	lconn[3][3][3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 
 }
-*******************/
+*/
 
 
 /* stopping criterion for geodesic integrator */

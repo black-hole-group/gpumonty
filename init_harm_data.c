@@ -85,6 +85,7 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &t);
 	fscanf(fp, "%d ", &N1);
 	fscanf(fp, "%d ", &N2);
+    N3=1;
     fscanf(fp, "%d ", &useless_int); //N3
     fscanf(fp, "%d ", &useless_int); //nx
     fscanf(fp, "%d ", &useless_int); //ny
