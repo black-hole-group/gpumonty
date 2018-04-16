@@ -18,6 +18,7 @@ __global__ void testKernel(double *d_p, int nprim, int n1, int n2)
 	const int i = c + r*w + s*w*h;
 	if ((c >= w) || (r >= h) || (s >= d)) return;
 
+	d_p[i]=d_p[i]*10.;
 	printf("p[%d][%d][%d]=%lf\n", r,c,s,d_p[i]);
 }
 

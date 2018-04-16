@@ -120,10 +120,29 @@ int main(int argc, char *argv[])
 	// gets results back from device
 	// xxxxxxxxxxxxxxxxTODO
 
+
+    // open file for writing
+    FILE *f = fopen("p_h.dat", "w");
+    for (int i=0; i<NPRIM*N1*N2; i++) {
+        fprintf(f, "%lf ", p[i]);
+    }
+    fclose(f);
+
 	launchKernel(d_p, NPRIM, N1, N2);
+
+	double *out;
+	out=(double *)malloc(NPRIM*N1*N2*sizeof(double));
+	cudaMemcpy(out, d_p, NPRIM*N1*N2*sizeof(double), cudaMemcpyDeviceToHost);	
+    // open file for writing
+    f = fopen("p_d.dat", "w");
+    for (int i=0; i<NPRIM*N1*N2; i++) {
+        fprintf(f, "%lf ", out[i]);
+    }
+    fclose(f);
 
 	// releases device memory
 	cudaFree(d_p);
+	free(out);
 
 #ifdef _OPENMP
 #pragma omp parallel
