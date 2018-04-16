@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
 	init_model(argv);
 
 	// send HARM arrays to device
-    cudaMalloc(&d_p, NPRIM*N1*N2*N3*sizeof(double));
-    cudaMemcpy(d_p, p, NPRIM*N1*N2*N3*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_p, NPRIM*N1*N2*sizeof(double));
+    cudaMemcpy(d_p, p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice);
 
 
 	/* 
