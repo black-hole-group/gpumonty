@@ -12,7 +12,7 @@ global double ***bcon;
 global double ***bcov;
 global double ***ucon;
 global double ***ucov;
-global double ***p;
+global double *p;
 global double **ne;
 global double **thetae;
 global double **b;

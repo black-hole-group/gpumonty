@@ -7,7 +7,7 @@ extern double ***bcon;
 extern double ***bcov;
 extern double ***ucon;
 extern double ***ucov;
-extern double ***p;
+extern double *p;
 extern struct of_geom **geom;
 extern double **ne;
 extern double **thetae;
@@ -26,6 +26,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
  ********************************************************************/
 
+/* old version, valid for an input 2d array
 double interp_scalar(double **var, int i, int j, double coeff[4])
 {
 
@@ -38,6 +39,28 @@ double interp_scalar(double **var, int i, int j, double coeff[4])
 
 	return interp;
 }
+*/
+
+/* 
+ * New version for the row-major 1D array for GPU code.
+ * - n=variable-selector index
+ * - i=x1 index
+ * - j=x2 index
+ */
+double interp_scalar(double *var, int n, int i, int j, double coeff[4])
+{
+
+	double interp;
+
+	interp =
+	    var[n*N1*N2+i*N2+j] * coeff[0] +
+	    var[n*N1*N2+i*N2+j+1] * coeff[1] +
+	    var[n*N1*N2+(i+1)*N2+j] * coeff[2] + 
+	    var[n*N1*N2+(i+1)*N2+j+1] * coeff[3];
+
+	return interp;
+}
+
 
 double lnu_min, lnu_max, dlnu;
 
@@ -543,11 +566,15 @@ static double **malloc_rank2_cont(int n1, int n2)
 
 void init_storage(void)
 {
-	int i;
+	//int i;
+	//
+	//p = (double ***)malloc_rank1(NPRIM, sizeof(double *));
+	//for (i = 0; i < NPRIM; i++)
+	//	p[i] = (double **) malloc_rank2_cont(N1, N2);
 
-	p = (double ***)malloc_rank1(NPRIM, sizeof(double *));
-	for (i = 0; i < NPRIM; i++)
-		p[i] = (double **) malloc_rank2_cont(N1, N2);
+	// row-major 1D array instead of 3d
+	p = (double *)malloc(NPRIM*N1*N2*sizeof(double));
+
 	geom =
 	    (struct of_geom **) malloc_rank2(N1, N2,
 					     sizeof(struct of_geom));

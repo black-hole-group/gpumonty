@@ -115,16 +115,16 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 
-	*Ne = p[KRHO][i][j] * Ne_unit;
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	*Ne = p[KRHO*N1*N2+i*N2+j] * Ne_unit;
+	*Thetae = p[UU*N1*N2+i*N2+j] / (*Ne) * Ne_unit * Thetae_unit;
 
-	Bp[1] = p[B1][i][j];
-	Bp[2] = p[B2][i][j];
-	Bp[3] = p[B3][i][j];
+	Bp[1] = p[B1*N1*N2+i*N2+j];
+	Bp[2] = p[B2*N1*N2+i*N2+j];
+	Bp[3] = p[B3*N1*N2+i*N2+j];
 
-	Vcon[1] = p[U1][i][j];
-	Vcon[2] = p[U2][i][j];
-	Vcon[3] = p[U3][i][j];
+	Vcon[1] = p[U1*N1*N2+i*N2+j];
+	Vcon[2] = p[U2*N1*N2+i*N2+j];
+	Vcon[3] = p[U3*N1*N2+i*N2+j];
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -173,24 +173,25 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	Xtoij(X, &i, &j, del);
 
+	// what is coeff?
 	coeff[0] = (1. - del[1]) * (1. - del[2]);
 	coeff[1] = (1. - del[1]) * del[2];
 	coeff[2] = del[1] * (1. - del[2]);
 	coeff[3] = del[1] * del[2];
 
-	rho = interp_scalar(p[KRHO], i, j, coeff);
-	uu = interp_scalar(p[UU], i, j, coeff);
+	rho = interp_scalar(p, KRHO, i, j, coeff);
+	uu = interp_scalar(p, UU, i, j, coeff);
 
 	*Ne = rho * Ne_unit;
 	*Thetae = uu / rho * Thetae_unit;
 
-	Bp[1] = interp_scalar(p[B1], i, j, coeff);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff);
+	Bp[1] = interp_scalar(p, B1, i, j, coeff);
+	Bp[2] = interp_scalar(p, B2, i, j, coeff);
+	Bp[3] = interp_scalar(p, B3, i, j, coeff);
 
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
+	Vcon[1] = interp_scalar(p, U1, i, j, coeff);
+	Vcon[2] = interp_scalar(p, U2, i, j, coeff);
+	Vcon[3] = interp_scalar(p, U3, i, j, coeff);
 
 	gcon_func(X, gcon);
 

@@ -1,7 +1,7 @@
 # requires an openmp-enabled version of gcc
 #
 CC = nvcc
-CFLAGS = -O2 -Xcompiler -fopenmp
+CFLAGS = -O2 -Xcompiler -fopenmp 
 LDFLAGS = -lm -lgsl -lgslcblas -lgomp
  
 OBJS = grmonty.cu.o compton.o init_geometry.o tetrads.o  \

@@ -150,13 +150,15 @@ void init_harm_data(char *fname)
 			exit(1);
 		}
 
+		// matrix[ i ][ j ][ k ] = array[ i*(N*M) + j*M + k ]
+        //         L    N    M
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
-		       &p[KRHO][i][j],
-		       &p[UU][i][j],
-		       &p[U1][i][j],
-		       &p[U2][i][j],
-		       &p[U3][i][j],
-		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
+		       &p[KRHO*N1*N2+i*N2+j], //p[KRHO][i][j],
+		       &p[UU*N1*N2+i*N2+j], //p[UU][i][j],
+		       &p[U1*N1*N2+i*N2+j], //p[U1][i][j],
+		       &p[U2*N1*N2+i*N2+j], //p[U2][i][j],
+		       &p[U3*N1*N2+i*N2+j], //p[U3][i][j],
+		       &p[B1*N1*N2+i*N2+j], &p[B2*N1*N2+i*N2+j], &p[B3*N1*N2+i*N2+j]);
 
 
 		fscanf(fp, "%lf", &divb);
@@ -176,15 +178,15 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf\n", &gdet);
 
 		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
+		    dV * gdet * pow(p[UU*N1*N2+i*N2+j] / p[KRHO*N1*N2+i*N2+j] *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */
 		if (i <= 20)
-			dMact += gdet * p[KRHO][i][j] * Ucon[1];
+			dMact += gdet * p[KRHO*N1*N2+i*N2+j] * Ucon[1];
 		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
+			Ladv += gdet * p[UU*N1*N2+i*N2+j] * Ucon[1] * Ucov[0];
 
 	}
 
