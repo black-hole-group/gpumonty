@@ -50,8 +50,11 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
-/** data structures **/
-/*struct of_photon { // old format
+/** data structures *
+   We keep the struct below in order to reuse many functions
+   for photon generation
+*/
+struct of_photon { 
 	double X[NDIM];
 	double K[NDIM];
 	double dKdlam[NDIM];
@@ -68,11 +71,14 @@
 	double E0;
 	double E0s;
 	int nscatt;
-};*/
+};
+
 /* 
 Explanation of new format for of_photon:
-I am now defining a row-major 1D array with the following
-structure:
+I am now defining a row-major 1D array that stores all photons
+produced that will be propagated in the GPU.
+
+It has the following structure:
 	ph2d[nphotons][NPHVARS] => ph1d[]
 	ph2d[i][j] => ph1d[i*NPHVARS+j] 
 where the first dimension corresponds to the different 
@@ -85,17 +91,17 @@ Below are the mnemonics for the different photon variables
 #define X1      1
 #define X2      2
 #define X3      3
-#define K0      4
-#define K1      5
-#define K2      6
-#define K3      7
+#define K0_      4
+#define K1_      5
+#define K2_      6
+#define K3_      7
 #define D0      8
 #define D1      9
 #define D2      10
 #define D3      11
 #define W       12
-#define EPH       13
-#define L       14
+#define E_       13
+#define L_       14
 #define X1I     15
 #define X2I     16
 #define TAUA    17
@@ -103,7 +109,7 @@ Below are the mnemonics for the different photon variables
 #define NE0     19
 #define TH0     20
 #define B0      21
-#define E0PH      22
+#define E0_      22
 #define E0S     23
 #define NS      24 // this guy was an int before, now it will be a double or float
 

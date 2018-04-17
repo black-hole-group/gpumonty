@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 {
 	double Ntot, N_superph_made;
 	int quit_flag, myid;
-	//struct of_photon ph;
+	struct of_photon ph;
 
 	//time_t currtime, starttime;
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
 
 	// photons array that will be sent to device
-	double *ph = (double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
+	double *pharr = (double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
 
 
 	/* initialize random number generator */
@@ -105,22 +105,45 @@ int main(int argc, char *argv[])
 	//starttime = time(NULL);
 	//quit_flag = 0;
 
+	// photon generation method call goes here
+	// =========================================
+	// xxxxxxxxxxx
+
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	//double *oneph;
-
 	// index i goes through each photon
 	for (int i=0; i<nmaxgpu; i++) {
-		// format data for one photon
-		IDEA=REUSE PH STRUCT FOR EACH PHOTON, ONCE COMPUTED PASS TO ARRAY
-		ENCAPSULATE EVERYTHING IN FUNCTIONS WHICH HIDE THE OPEARTIONS FROM THE USER
-		double tmp={&ph[i*NPHVARS+X0],&ph[i*NPHVARS+X1],&ph[i*NPHVARS+X2],&ph[i*NPHVARS+X3],&ph[i*NPHVARS+K0],&ph[i*NPHVARS+K1],&ph[i*NPHVARS+K2],&ph[i*NPHVARS+K3],&ph[i*NPHVARS+D0],&ph[i*NPHVARS+D1],&ph[i*NPHVARS+D2],&ph[i*NPHVARS+D3],&ph[i*NPHVARS+W],&ph[i*NPHVARS+EPH],&ph[i*NPHVARS+L],&ph[i*NPHVARS+X1I],&ph[i*NPHVARS+X2I],&ph[i*NPHVARS+TAUA],&ph[i*NPHVARS+TAUS],&ph[i*NPHVARS+NE0],&ph[i*NPHVARS+TH0],&ph[i*NPHVARS+B0],&ph[i*NPHVARS+E0PH],&ph[i*NPHVARS+E0S],&ph[i*NPHVARS+NS]};
-		double *oneph=&tmp;
+		/* generates one superphoton */
+		make_super_photon(&ph, &quit_flag);
 
-		/* get pseudo-quanta */
-		//make_super_photon(&oneph, &quit_flag);
-
+		// adds photon information to array
+		pharr[i*NPHVARS+X0]=ph.X[0];
+		pharr[i*NPHVARS+X1]=ph.X[1]; 
+		pharr[i*NPHVARS+X2]=ph.X[2]; 
+		pharr[i*NPHVARS+X3]=ph.X[3];
+		pharr[i*NPHVARS+K0_]=ph.K[0];
+		pharr[i*NPHVARS+K1_]=ph.K[1];
+		pharr[i*NPHVARS+K2_]=ph.K[2];
+		pharr[i*NPHVARS+K3_]=ph.K[3];
+		pharr[i*NPHVARS+D0]=ph.dKdlam[0];
+		pharr[i*NPHVARS+D1]=ph.dKdlam[1];
+		pharr[i*NPHVARS+D2]=ph.dKdlam[2];
+		pharr[i*NPHVARS+D3]=ph.dKdlam[3];
+		pharr[i*NPHVARS+W]=ph.w;
+		pharr[i*NPHVARS+E_]=ph.E;
+		pharr[i*NPHVARS+L_]=ph.L;
+		pharr[i*NPHVARS+X1I]=ph.X1i;
+		pharr[i*NPHVARS+X2I]=ph.X2i;
+		pharr[i*NPHVARS+TAUA]=ph.tau_abs;
+		pharr[i*NPHVARS+TAUS]=ph.tau_scatt;
+		pharr[i*NPHVARS+NE0]=ph.ne0;
+		pharr[i*NPHVARS+TH0]=ph.thetae0;
+		pharr[i*NPHVARS+B0]=ph.b0;
+		pharr[i*NPHVARS+E0_]=ph.E0;
+		pharr[i*NPHVARS+E0S]=ph.E0s;
+		pharr[i*NPHVARS+NS]=(double)ph.nscatt;
+		
 		/* step */
 		N_superph_made += 1;
 	}
