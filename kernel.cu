@@ -18,9 +18,9 @@ __global__ void testKernel(double *d_p, int nprim, int n1, int n2)
 	const int i = c + r*w + s*w*h;
 	if ((c >= w) || (r >= h) || (s >= d)) return;
 
-	//d_p[i]=d_p[i]*10.;
-	printf("p[%d][%d][%d]=%lf\n", r,c,s,d_p[i]);
+	//printf("p[%d][%d][%d]=%lf\n", r,c,s,d_p[i]);
 }
+
 
 
 void launchKernel(double *d_p, int nprim, int n1, int n2) {
@@ -31,6 +31,5 @@ void launchKernel(double *d_p, int nprim, int n1, int n2) {
 	const dim3 gridSize(divUp(W, TX), divUp(H, TY), divUp(D, TZ));
 
 	testKernel<<<gridSize, blockSize>>>(d_p, nprim, n1, n2);
-	//testKernel<<<1,1>>>(d_p, nprim, n1, n2);
 	cudaDeviceSynchronize();
 }

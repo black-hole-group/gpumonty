@@ -105,11 +105,8 @@ int main(int argc, char *argv[])
 
 	for (int i=0; i<nmaxgpu; i++) {
 		/* get pseudo-quanta */
+		create array of photon properties instead of struct
 		make_super_photon(&ph, &quit_flag);
-
-
-		/* push them around */
-		//track_super_photon(&ph);
 
 		/* step */
 		N_superph_made += 1;
@@ -122,15 +119,16 @@ int main(int argc, char *argv[])
 
 
     // open file for writing
-    FILE *f = fopen("p_h.dat", "w");
+    /*FILE *f = fopen("p_h.dat", "w");
     for (int i=0; i<NPRIM*N1*N2; i++) {
         fprintf(f, "%lf ", p[i]);
     }
     fclose(f);
+    */
 
 	launchKernel(d_p, NPRIM, N1, N2);
 
-	double *out;
+	/*double *out;
 	out=(double *)malloc(NPRIM*N1*N2*sizeof(double));
 	cudaMemcpy(out, d_p, NPRIM*N1*N2*sizeof(double), cudaMemcpyDeviceToHost);	
     // open file for writing
@@ -139,10 +137,11 @@ int main(int argc, char *argv[])
         fprintf(f, "%lf ", out[i]);
     }
     fclose(f);
+    */
 
 	// releases device memory
 	cudaFree(d_p);
-	free(out);
+	//free(out);
 
 #ifdef _OPENMP
 #pragma omp parallel
