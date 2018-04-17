@@ -59,6 +59,7 @@ int n2gen = -1;
 double dnmax;
 int zone_i, zone_j;
 
+xxxxxxx
 void make_super_photon(double *ph, int *quit_flag)
 {
 

@@ -320,6 +320,7 @@ void sample_zone_photon(int i, int j, double dnmax, double *ph)
 	static double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
 
 	//coord(i, j, ph->X);
+	xxxxxxxx
 	double *y={&x[0],&x[1],&x[2],&x[3]};
 	coord(i, j, ph[]); 
 

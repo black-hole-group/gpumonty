@@ -103,7 +103,7 @@ Below are the mnemonics for the different photon variables
 #define NE0     19
 #define TH0     20
 #define B0      21
-#define E0      22
+#define E0PH      22
 #define E0S     23
 #define NS      24 // this guy was an int before, now it will be a double or float
 
