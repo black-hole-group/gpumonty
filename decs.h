@@ -19,6 +19,11 @@
 #define NDIM	4
 #define NPRIM	8
 
+/* number of variables necessary for each photon.
+   change this for 3D GRMHD simulations
+*/
+#define NPHVARS 25 
+
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
 #define NUMAX 1.e16
@@ -46,7 +51,7 @@
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
 /** data structures **/
-struct of_photon {
+/*struct of_photon { // old format
 	double X[NDIM];
 	double K[NDIM];
 	double dKdlam[NDIM];
@@ -63,7 +68,45 @@ struct of_photon {
 	double E0;
 	double E0s;
 	int nscatt;
-};
+};*/
+/* 
+Explanation of new format for of_photon:
+I am now defining a row-major 1D array with the following
+structure:
+	ph2d[nphotons][NPHVARS] => ph1d[]
+	ph2d[i][j] => ph1d[i*NPHVARS+j] 
+where the first dimension corresponds to the different 
+superphotons and the second gives one of the variables from
+the old struct.
+
+Below are the mnemonics for the different photon variables
+*/
+#define X0      0
+#define X1      1
+#define X2      2
+#define X3      3
+#define K0      4
+#define K1      5
+#define K2      6
+#define K3      7
+#define D0      8
+#define D1      9
+#define D2      10
+#define D3      11
+#define W       12
+#define EPH       13
+#define L       14
+#define X1I     15
+#define X2I     16
+#define TAUA    17
+#define TAUS    18
+#define NE0     19
+#define TH0     20
+#define B0      21
+#define E0      22
+#define E0S     23
+#define NS      24 // this guy was an int before, now it will be a double or float
+
 
 struct of_geom {
 	double gcon[NDIM][NDIM];

@@ -309,7 +309,7 @@ int get_zone(int *i, int *j, double *dnmax)
 	return in2gen;
 }
 
-void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
+void sample_zone_photon(int i, int j, double dnmax, double *ph)
 {
 /* Set all initial superphoton attributes */
 
@@ -319,7 +319,9 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
 	static double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
 
-	coord(i, j, ph->X);
+	//coord(i, j, ph->X);
+	double *y={&x[0],&x[1],&x[2],&x[3]};
+	coord(i, j, ph[]); 
 
 	Nln = lnu_max - lnu_min;
 

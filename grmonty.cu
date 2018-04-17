@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 {
 	double Ntot, N_superph_made;
 	int quit_flag, myid;
-	struct of_photon ph;
+	//struct of_photon ph;
+
 	time_t currtime, starttime;
 
 	// device variables
@@ -68,6 +69,10 @@ int main(int argc, char *argv[])
 	// gets max number of photons GPU can hold at once
 	int nmaxgpu=get_max_photons(N1,N2,N3);
 	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
+
+	// photons array that will be sent to device
+	double *ph = (double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
+
 
 	/* initialize random number generator */
 #pragma omp parallel private(myid)
@@ -97,7 +102,7 @@ int main(int argc, char *argv[])
 	N_superph_made = 0;
 	N_superph_recorded = 0;
 	N_scatt = 0;
-	starttime = time(NULL);
+	//starttime = time(NULL);
 	quit_flag = 0;
 
 	fprintf(stderr, "Entering main loop...\n");
