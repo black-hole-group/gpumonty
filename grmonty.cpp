@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     // photon generation, host
     genPhotons(pharr, nmaxgpu);
 
-    /* propagate photons, device
+    /* propagate photons (device)
        ==========================
     */
     launchKernel(p, NPRIM, N1, N2, pharr, nmaxgpu, NPHVARS);
