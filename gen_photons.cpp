@@ -9,7 +9,7 @@ memory (or less, if so specified)
 */
 void genPhotons(double *pharr, int nmaxgpu) {
 	int N_superph_made = 0;
-	int quit_flag	
+	int quit_flag;	
 	//N_superph_recorded = 0;
 	//N_scatt = 0;
 	//starttime = time(NULL);
@@ -55,6 +55,6 @@ void genPhotons(double *pharr, int nmaxgpu) {
 		N_superph_made += 1;
 	}
 
-	printf("Nph = %f\n", N_superph_made);
+	printf("Nph = %d\n", N_superph_made);
 
 }

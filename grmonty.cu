@@ -68,10 +68,6 @@ int main(int argc, char *argv[])
 	int nmaxgpu=get_max_photons(N1,N2,N3);
 	if (Ntot<nmaxgpu) nmaxgpu=(int)Ntot;
 
-	// photons array that will be sent to device
-	double *pharr = (double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
-
-
 	/* initialize random number generator */
 #pragma omp parallel private(myid)
 	{
@@ -90,8 +86,11 @@ int main(int argc, char *argv[])
     cudaMalloc(&d_p, NPRIM*N1*N2*sizeof(double));
     cudaMemcpy(d_p, p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice);
 
+	// photons array that will be sent to device
+	double *pharr;
+	pharr=(double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
     // photon generation, host
-    genPhotons(&pharr, nmaxgpu);
+    genPhotons(pharr, nmaxgpu);
 
     // send photons initial conditions to device
 
@@ -126,9 +125,11 @@ int main(int argc, char *argv[])
     fclose(f);
     */
 
-	// releases device memory
+	// releases memory
+	// device
 	cudaFree(d_p);
-	//free(out);
+	// host
+	free(pharr);
 
 #ifdef _OPENMP
 #pragma omp parallel
