@@ -216,6 +216,7 @@ void omp_reduce_spect(void);
 /* MC/RT utilities */
 void init_monty_rand(int seed);
 double monty_rand(void);
+void genPhotons(double *pharr, int nmaxgpu);
 
 /* geodesic integration */
 /*
