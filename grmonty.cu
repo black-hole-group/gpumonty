@@ -155,12 +155,17 @@ int main(int argc, char *argv[])
 
 
     // open file for writing
-    /*FILE *f = fopen("p_h.dat", "w");
-    for (int i=0; i<NPRIM*N1*N2; i++) {
-        fprintf(f, "%lf ", p[i]);
+    /*
+    FILE *f = fopen("photons.dat", "w");
+    for (int i=0; i<nmaxgpu*NPHVARS; i++) {
+        fprintf(f, "%lf ", pharr[i]);
+        if (!(i % NPHVARS)) {
+			fprintf(f, "\n");
+		}
     }
     fclose(f);
     */
+    
 
 	launchKernel(d_p, NPRIM, N1, N2);
 
