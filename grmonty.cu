@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
 	//time_t currtime, starttime;
 
 	// device variables
-	double *d_p=0; 
+	double *d_p=0; // HARM arrays
+	double *d_pharr=0; // superphoton array
 
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
@@ -79,20 +80,26 @@ int main(int argc, char *argv[])
 	dlE = 0.25;		/* bin width */
 	lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
 
-	/* initialize model data, auxiliary variables */
+	/* initialize model data, auxiliary variables 
+	   ==========================================
+	*/
 	init_model(argv);
 
 	// send HARM arrays to device
     cudaMalloc(&d_p, NPRIM*N1*N2*sizeof(double));
     cudaMemcpy(d_p, p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice);
 
+    /* generate photons (host)
+       =========================
+	*/
 	// photons array that will be sent to device
-	double *pharr;
-	pharr=(double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
+	double *pharr=(double *)malloc(NPHVARS*nmaxgpu*sizeof(double));
     // photon generation, host
     genPhotons(pharr, nmaxgpu);
 
     // send photons initial conditions to device
+    cudaMalloc(&d_pharr, NPHVARS*nmaxgpu*sizeof(double));
+    cudaMemcpy(d_pharr, pharr, NPHVARS*nmaxgpu*sizeof(double), cudaMemcpyHostToDevice);
 
     // propagate photons, device
 
@@ -112,7 +119,7 @@ int main(int argc, char *argv[])
     */
     
 
-	launchKernel(d_p, NPRIM, N1, N2);
+	//launchKernel(d_p, NPRIM, N1, N2);
 
 	/*double *out;
 	out=(double *)malloc(NPRIM*N1*N2*sizeof(double));
@@ -128,6 +135,7 @@ int main(int argc, char *argv[])
 	// releases memory
 	// device
 	cudaFree(d_p);
+	cudaFree(d_pharr);
 	// host
 	free(pharr);
 
