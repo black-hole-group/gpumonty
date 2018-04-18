@@ -1,18 +1,21 @@
+#include "decs.h"
+#include "harm_model.h"
 
-	/* 
-	Photon generation loop
-	==========================
-	Loop that generates enough photons to fill the GPU
-	memory (or less, if so specified)
-	*/
-	N_superph_made = 0;
-	N_superph_recorded = 0;
-	N_scatt = 0;
+/* 
+Photon generation function
+
+Loop that generates enough photons to fill the GPU
+memory (or less, if so specified)
+*/
+void genPhotons(double *pharr, int nmaxgpu) {
+	int N_superph_made = 0;
+	int quit_flag	
+	//N_superph_recorded = 0;
+	//N_scatt = 0;
 	//starttime = time(NULL);
 	//quit_flag = 0;
+	struct of_photon ph;
 
-	// photon generation method call goes here
-	// =========================================
 	fprintf(stderr, "Photon generation...\n");
 	fflush(stderr);
 
@@ -53,3 +56,5 @@
 	}
 
 	printf("Nph = %f\n", N_superph_made);
+
+}

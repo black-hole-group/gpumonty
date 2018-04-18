@@ -49,15 +49,13 @@ gsl_integration_workspace *w;
 
 int main(int argc, char *argv[])
 {
-	double Ntot, N_superph_made;
-	int quit_flag, myid;
-	struct of_photon ph;
+	double Ntot;
+	int myid;
 
 	//time_t currtime, starttime;
 
 	// device variables
 	double *d_p=0; 
-
 
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
@@ -93,7 +91,7 @@ int main(int argc, char *argv[])
     cudaMemcpy(d_p, p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice);
 
     // photon generation, host
-    genPhotons(pharr);
+    genPhotons(&pharr, nmaxgpu);
 
     // send photons initial conditions to device
 
