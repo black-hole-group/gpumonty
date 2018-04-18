@@ -101,13 +101,17 @@ int main(int argc, char *argv[])
     cudaMalloc(&d_pharr, NPHVARS*nmaxgpu*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nmaxgpu*sizeof(double), cudaMemcpyHostToDevice);
 
-    // propagate photons, device
+    /* propagate photons, device
+       ==========================
+    */
+    launchKernel(d_p, NPRIM, N1, N2, d_pharr, nmaxgpu, NPHVARS);
+
 
 	// gets results back from device
 
 
     // open file for writing
-    /*
+    
     FILE *f = fopen("photons.dat", "w");
     for (int i=0; i<nmaxgpu*NPHVARS; i++) {
         fprintf(f, "%lf ", pharr[i]);
@@ -116,10 +120,9 @@ int main(int argc, char *argv[])
 		}
     }
     fclose(f);
-    */
+    
     
 
-	//launchKernel(d_p, NPRIM, N1, N2);
 
 	/*double *out;
 	out=(double *)malloc(NPRIM*N1*N2*sizeof(double));
