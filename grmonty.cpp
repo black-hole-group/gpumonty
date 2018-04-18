@@ -54,10 +54,6 @@ int main(int argc, char *argv[])
 
 	//time_t currtime, starttime;
 
-	// device variables
-	double *d_p=0; // HARM arrays
-	double *d_pharr=0; // superphoton array
-
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
 		exit(0);
@@ -85,10 +81,6 @@ int main(int argc, char *argv[])
 	*/
 	init_model(argv);
 
-	// send HARM arrays to device
-    cudaMalloc(&d_p, NPRIM*N1*N2*sizeof(double));
-    cudaMemcpy(d_p, p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice);
-
     /* generate photons (host)
        =========================
 	*/
@@ -97,21 +89,17 @@ int main(int argc, char *argv[])
     // photon generation, host
     genPhotons(pharr, nmaxgpu);
 
-    // send photons initial conditions to device
-    cudaMalloc(&d_pharr, NPHVARS*nmaxgpu*sizeof(double));
-    cudaMemcpy(d_pharr, pharr, NPHVARS*nmaxgpu*sizeof(double), cudaMemcpyHostToDevice);
-
     /* propagate photons, device
        ==========================
     */
-    launchKernel(d_p, NPRIM, N1, N2, d_pharr, nmaxgpu, NPHVARS);
+    launchKernel(p, NPRIM, N1, N2, pharr, nmaxgpu, NPHVARS);
 
 
 	// gets results back from device
 
 
     // open file for writing
-    
+    /*
     FILE *f = fopen("photons.dat", "w");
     for (int i=0; i<nmaxgpu*NPHVARS; i++) {
         fprintf(f, "%lf ", pharr[i]);
@@ -120,7 +108,7 @@ int main(int argc, char *argv[])
 		}
     }
     fclose(f);
-    
+    */
     
 
 
@@ -136,10 +124,6 @@ int main(int argc, char *argv[])
     */
 
 	// releases memory
-	// device
-	cudaFree(d_p);
-	cudaFree(d_pharr);
-	// host
 	free(pharr);
 
 #ifdef _OPENMP
