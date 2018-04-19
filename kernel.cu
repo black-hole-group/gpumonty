@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "constants.h"
 #include "kernel.h"  
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
@@ -10,9 +11,9 @@
    previously written host-code.
 */
 __device__
-struct of_photon arr2struct(int i, double *pharr, int NPHVARS) 
+struct d_photon arr2struct(int i, double *pharr, int NPHVARS) 
 {
-	struct of_photon ph;
+	struct d_photon ph;
 
 	ph.X[0]=pharr[i*NPHVARS+X0];
 	ph.X[1]=pharr[i*NPHVARS+X1]; 
@@ -61,9 +62,12 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 	// how to grab each photon:
 	// printf("photon[%d]=%lf\n", i,d_pharr[i*nphvars+var]);
 
-	// grab the photon i corresponding to the current thread from
-	// the input array
-	ph=arr2struct(i, d_pharr, nphvars);
+	/* grab the photon i corresponding to the current thread from
+	   the input array.
+	   Notice that I might be using unnecessary device memory here.
+	   Should investigate using a struct pointing to d_pharr instead.
+	*/
+	struct d_photon ph=arr2struct(i, d_pharr, nphvars);
 
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -72,7 +76,7 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 	double alpha_absi, alpha_absf;
 	double dl, x1;
 	double nu, Thetae, Ne, B, theta;
-	struct of_photon php;
+	struct d_photon php;
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
@@ -80,19 +84,22 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 	    Bcov[NDIM];
 	int nstep = 0;
 
-	/* quality control */
-	if (isnan(ph->X[0]) ||
-	    isnan(ph->X[1]) ||
-	    isnan(ph->X[2]) ||
-	    isnan(ph->X[3]) ||
-	    isnan(ph->K[0]) ||
-	    isnan(ph->K[1]) ||
-	    isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
+	/* quality control 
+	   here, previously we had statements ph->X[0] which were
+	   replaced by ph.X[0].
+	*/
+	if (isnan(ph.X[0]) || 
+	    isnan(ph.X[1]) ||
+	    isnan(ph.X[2]) ||
+	    isnan(ph.X[3]) ||
+	    isnan(ph.K[0]) ||
+	    isnan(ph.K[1]) ||
+	    isnan(ph.K[2]) || isnan(ph.K[3]) || ph.w == 0.) {
 		fprintf(stderr, "track_super_photon: bad input photon.\n");
 		fprintf(stderr,
 			"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
-			ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0],
-			ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
+			ph.X[0], ph.X[1], ph.X[2], ph.X[3], ph.K[0],
+			ph.K[1], ph.K[2], ph.K[3], ph.w, ph.nscatt);
 		return;
 	}
 

@@ -4,9 +4,11 @@
 /*
   Definitions needed for CUDA functions
   ======================================
+  
+  Some of them are repeated from decs.h.
 */
-
-
+#define NDIM	4
+#define NPRIM	8
 
 /* mnemonics for primitive HARM vars; conserved vars */
 #define KRHO     0
@@ -52,7 +54,7 @@
 /* Data structure needed for reusing many functions previously
    written for the host, in the device.
 */
-struct of_photon { 
+struct d_photon { 
 	double X[NDIM];
 	double K[NDIM];
 	double dKdlam[NDIM];
@@ -70,6 +72,8 @@ struct of_photon {
 	double E0s;
 	int nscatt;
 };
+
+
 
 void launchKernel(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars);
 
