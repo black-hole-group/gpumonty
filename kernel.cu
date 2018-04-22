@@ -53,7 +53,7 @@ struct d_photon arr2struct(int i, double *pharr, int NPHVARS)
 	assumes superphotons do not step out of simulation then back in
 */
 __global__
-void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars)
+void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars, double L_unit)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -95,9 +95,13 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 	    isnan(ph.K[0]) ||
 	    isnan(ph.K[1]) ||
 	    isnan(ph.K[2]) || isnan(ph.K[3]) || ph.w == 0.) {
-		fprintf(stderr, "track_super_photon: bad input photon.\n");
-		fprintf(stderr,
-			"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
+		// fprintf(stderr, "track_super_photon: bad input photon.\n");
+		// fprintf(stderr,
+		// 	"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
+		// 	ph.X[0], ph.X[1], ph.X[2], ph.X[3], ph.K[0],
+		// 	ph.K[1], ph.K[2], ph.K[3], ph.w, ph.nscatt);
+		printf("track_super_photon: bad input photon.\n");
+		printf("X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
 			ph.X[0], ph.X[1], ph.X[2], ph.X[3], ph.K[0],
 			ph.K[1], ph.K[2], ph.K[3], ph.w, ph.nscatt);
 		return;
@@ -336,7 +340,7 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 
 
 
-void launchKernel(double *p, int nprim, int n1, int n2, double *pharr, int nph, int nphvars) 
+void launchKernel(double *p, int nprim, int n1, int n2, double *pharr, int nph, int nphvars, double L_unit) 
 {
 	// device variables
 	double *d_p=0; // HARM arrays
@@ -350,7 +354,7 @@ void launchKernel(double *p, int nprim, int n1, int n2, double *pharr, int nph, 
     cudaMalloc(&d_pharr, nphvars*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, nphvars*nph*sizeof(double), cudaMemcpyHostToDevice);
 
-	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, nprim, n1, n2, d_pharr, nph, nphvars);
+	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, nprim, n1, n2, d_pharr, nph, nphvars, L_unit);
 
 	// frees device memory
 	cudaFree(d_p);

@@ -4,7 +4,7 @@
 /*
   Definitions needed for CUDA functions
   ======================================
-  
+
   Some of them are repeated from decs.h.
 */
 #define NDIM	4
@@ -75,6 +75,6 @@ struct d_photon {
 
 
 
-void launchKernel(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars);
+void launchKernel(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars, double L_unit);
 
 #endif
