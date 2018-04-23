@@ -303,7 +303,9 @@ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
+__host____device__
 void gcov_func(double *X, double gcov[][NDIM]);
+__host____device__
 void gcon_func(double *X, double gcon[][NDIM]);
 
 // CUDA related 
