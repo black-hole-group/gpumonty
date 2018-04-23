@@ -109,10 +109,10 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
-	// /* Initialize opacities */
-	// gcov_func(ph->X, Gcov);
-	// get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-	// 		 Bcov);
+	/* Initialize opacities */
+	gcov_func(ph->X, Gcov);
+	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+			 Bcov);
 
 	// theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	// nu = get_fluid_nu(ph->X, ph->K, Ucov);
