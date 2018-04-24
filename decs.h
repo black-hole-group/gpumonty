@@ -61,13 +61,13 @@
 
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
-#define NUMAX 1.e16
+#define NUMAX 1.e20
 
 #define THETAE_MAX	1000.	/* Only used for harm3d models */
 #define THETAE_MIN	0.3
 #define TP_OVER_TE	(3.)
 
-#define WEIGHT_MIN	(1.e31)
+#define WEIGHT_MIN	(1.e28)
 
 /* mnemonics for primitive vars; conserved vars */
 #define KRHO     0
@@ -84,6 +84,9 @@
 
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
+
+/* define size of random string in photon filenames */
+#define SIZE_STR 10
 
 /** data structures **/
 struct of_photon {
@@ -290,9 +293,13 @@ int record_criterion(struct of_photon *ph);
 //void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void get_connection(double *X, double conn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
-//void gcon_func(double *X, double gcon[][NDIM]);
-void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
-/* coordinate related - HARMPI */
+void gcon_func(double *X, double gcon[][NDIM]);
+//void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
+
+/* coordinate related - HARMPI - may not need these */
 void dxdxp_func(double *X, double dxdxp[][NDIM]);
 void bl_coord_vec(double *X, double *V);
 void vofx_gammiecoords(double *X, double *V);
+
+/* misc. routines */
+char *rand_string(char *str, size_t size);

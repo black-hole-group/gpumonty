@@ -67,7 +67,7 @@ void init_model(char *args[])
 	   mass and its accretion rate */
 	set_units(args[3]);
 
-	fprintf(stderr, "getting simulation data...\n");
+	fprintf(stderr, "getting simget_ulation data...\n");
 	init_harm_data(args[2]);	/* read in HARM simulation data */
 
 	/* initialize the metric */
@@ -274,6 +274,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define TH      2
 #define PH      3
 /*
+
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -281,6 +282,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double sth, cth, irho2;
 	double r, th;
 	double hfac;
+
 	// required by broken math.h
 	void sincos(double in, double *sth, double *cth);
 
@@ -289,13 +291,14 @@ void gcon_func(double *X, double gcon[][NDIM])
 	bl_coord(X, &r, &th);
 
 	sincos(th, &sth, &cth);
+
 	sth = fabs(sth) + SMALL;
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild 
 //	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
-    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
 	gcon[TT][1] = 2. * irho2;
@@ -309,7 +312,6 @@ void gcon_func(double *X, double gcon[][NDIM])
 	gcon[3][1] = gcon[1][3];
 	gcon[3][3] = irho2 / (sth * sth);
 }
-*/
 
 void gcov_func(double *X, double gcov[][NDIM])
 {
@@ -317,7 +319,8 @@ void gcov_func(double *X, double gcov[][NDIM])
 	double sth, cth, s2, rho2;
 	double r, th;
 	double tfac, rfac, hfac, pfac;
-	/* required by broken math.h */
+
+	// required by broken math.h
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
@@ -329,10 +332,21 @@ void gcov_func(double *X, double gcov[][NDIM])
 	s2 = sth * sth;
 	rho2 = r * r + a * a * cth * cth;
 
-	/* transformation for Kerr-Schild -> modified Kerr-Schild */
+	// transformation for Kerr-Schild -> modified Kerr-Schild
+/*
+ *	tfac = 1.;
+ *	rfac = r - R0;
+ *  hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+ *	pfac = 1.;
+**/
 	tfac = 1.;
-	rfac = r - R0;
-    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	if (r < rbr) {
+  		rfac = r - R0;
+	}
+    else {
+		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.)); // derivative of theexp in bl_coord
+	}
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
 	pfac = 1.;
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
@@ -368,7 +382,7 @@ void gcov_func(double *X, double gcov[][NDIM])
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
 
-
+/*
 #define DEL (1.e-5)
 void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
 {
@@ -380,8 +394,9 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
     double gh[NDIM][NDIM];
     double gl[NDIM][NDIM];
 
-//    gcov_func(X, gcov);
-    gcon_func(gcov, gcon);
+	gcov_func(X, gcov);
+//	gcon_func(gcov, gcon);
+	gcon_func(X, gcon);
 
     for (int k = 0; k < NDIM; k++) {
         for (int l = 0; l < NDIM; l++)
@@ -418,8 +433,8 @@ void get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
     }
 }
 #undef DEL
+*/
 
-/*
 void get_connection(double X[4], double lconn[4][4][4])
 {
 	double r1, r2, r3, r4, sx, cx;
@@ -429,6 +444,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	    irho23_dthdx2;
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
+
 	// required by broken math.h
 	void sincos(double th, double *sth, double *cth);
 
@@ -581,8 +597,6 @@ void get_connection(double X[4], double lconn[4][4][4])
 	lconn[3][3][3] = (-a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 
 }
-*/
-
 
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
@@ -880,7 +894,11 @@ void report_spectrum(int N_superph_made)
 
 }
 
-/* functions added for HARMPI - unsure if we need them now, but declared and defined anyway */
+/****************************************************************
+ * functions added for HARMPI - unsure if we need them now (or ever),
+ * but they are declared and defined anyway
+ * note: these functions below are NOT called
+****************************************************************/
 
 #define DELTA 1.e-5
 void dxdxp_func(double *X, double dxdxp[][NDIM])

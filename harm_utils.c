@@ -433,7 +433,6 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
 	}
-//    fprintf(stderr, "X, *i, *j, del = %g %g %d %d %g %g\n", X[1], X[2], *i, *j, del[1], del[2]);
 	return;
 }
 
@@ -518,8 +517,8 @@ void init_geometry()
 
 			geom[i][j].g = gdet_func(geom[i][j].gcov);
 
-//			gcon_func(X, geom[i][j].gcon);
-			gcon_func(geom[i][j].gcov, geom[i][j].gcon);
+			gcon_func(X, geom[i][j].gcon);
+//			gcon_func(geom[i][j].gcov, geom[i][j].gcon);
 
 		}
 	}
