@@ -155,7 +155,6 @@ extern struct of_geom **geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
 
-
 /* some coordinate parameters */
 extern double a;
 extern double R0, Rin, Rh, Rout, Rms;

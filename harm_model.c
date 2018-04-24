@@ -77,7 +77,7 @@ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	Rh = 1 + sqrt(1. - a * a);
+	Rh = 1. + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();
@@ -124,6 +124,8 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 }
 
 
+// old function (before illinois mods)
+/*
 double bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
@@ -142,6 +144,33 @@ double bias_func(double Te, double w)
 
 	return bias / TP_OVER_TE;
 }
+*/
+
+
+/*
+
+produces a bias (> 1) for probability of Compton scattering
+as a function of local temperature 
+
+*/
+
+double bias_func(double Te, double w)
+{
+	double bias, max ;
+
+	max = 0.5 * w / WEIGHT_MIN;
+
+	bias = Te*Te/(5. * max_tau_scatt) ;
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+
+	if (bias < TP_OVER_TE)
+		bias = TP_OVER_TE;
+	if (bias > max)
+		bias = max;
+
+	return bias / TP_OVER_TE;
+}
+
 
 /* 
 
@@ -156,6 +185,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	int l, m;
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+    double sig;
 
 	*Ne = p[KRHO][i][j] * Ne_unit;
 	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
@@ -191,6 +221,10 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
+	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
+
 }
 
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -204,6 +238,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
+    double sig;
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -260,6 +295,10 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
+	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
+
 }
 
 
@@ -273,7 +312,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 #define RR      1
 #define TH      2
 #define PH      3
-/*
+
 
 void gcon_func(double *X, double gcon[][NDIM])
 {
@@ -299,6 +338,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	// transformation for Kerr-Schild -> modified Kerr-Schild 
 //	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
+//    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
 	gcon[TT][1] = 2. * irho2;
@@ -312,6 +352,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	gcon[3][1] = gcon[1][3];
 	gcon[3][3] = irho2 / (sth * sth);
 }
+
 
 void gcov_func(double *X, double gcov[][NDIM])
 {
@@ -334,11 +375,13 @@ void gcov_func(double *X, double gcov[][NDIM])
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild
 /*
- *	tfac = 1.;
- *	rfac = r - R0;
- *  hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
- *	pfac = 1.;
-**/
+	tfac = 1.;
+	rfac = r - R0;
+//    hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
+	pfac = 1.;
+*/
+
 	tfac = 1.;
 	if (r < rbr) {
   		rfac = r - R0;
@@ -738,7 +781,8 @@ void record_super_photon(struct of_photon *ph)
 	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
 	spect[ix2][iE].b0 += ph->w * (ph->b0);
 	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-	spect[ix2][iE].nscatt += ph->nscatt;
+//	spect[ix2][iE].nscatt += ph->nscatt;
+	spect[ix2][iE].nscatt += ph->w * ph->nscatt;        // illinois
 	spect[ix2][iE].nph += 1.;
 
 }
@@ -825,6 +869,9 @@ void report_spectrum(int N_superph_made)
 	double dx2, dOmega, nuLnu, tau_scatt, L;
 	FILE *fp;
 
+	double nu0,nu1,nu,fnu ;     // illinois
+	double dsource = 8000*PC ;      //illinois
+
 	fp = fopen(SPECTRUM_FILE_NAME, "w");
 	if (fp == NULL) {
 		fprintf(stderr, "trouble opening spectrum file\n");
@@ -873,10 +920,24 @@ void report_spectrum(int N_superph_made)
 				      (spect[j][i].dNdlE + SMALL)))
 			    );
 
+			nu0 = ME * CL * CL * exp((i - 0.5) * dlE + lE0) / HPL ;     // illinois
+			nu1 = ME * CL * CL * exp((i + 0.5) * dlE + lE0) / HPL ;     // illinois
+
+			if(nu0 < 230.e9 && nu1 > 230.e9) {      // illinois
+				nu = ME * CL * CL * exp(i * dlE + lE0) / HPL ;      // illinois
+				fnu = nuLnu*LSUN/(4.*M_PI*dsource*dsource*nu*JY) ;      // illinois
+				fprintf(stderr,"fnu: %10.5g\n",fnu) ;       // illinois
+			}       // illinois
+
+			/* added to give average # scatterings */       // illinois
+			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (      // illinois
+				spect[j][i].dNdlE + SMALL)) ;       // illinois
+
 			if (tau_scatt > max_tau_scatt)
 				max_tau_scatt = tau_scatt;
 
-			L += nuLnu * dOmega * dlE;
+//			L += nuLnu * dOmega * dlE;
+            L += nuLnu * dOmega * dlE / (4. * M_PI);        // illinois
 		}
 		fprintf(fp, "\n");
 	}

@@ -165,7 +165,7 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf", &x[1], &x[2], &useless_double, &r, &h, &useless_double); //x[3], phi
 
 		/* check that we've got the coordinate parameters right */
-		bl_coord(x, &rp, &hp);
+/*		bl_coord(x, &rp, &hp);
 		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
 			fprintf(stderr, "grid setup error\n");
 			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
@@ -174,7 +174,7 @@ void init_harm_data(char *fname)
 				"edit R0, hslope, compile, and continue\n");
 			exit(1);
 		}
-
+*/
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
 		       &p[KRHO][i][j],
 		       &p[UU][i][j], &p[U1][i][j], &p[U2][i][j], &p[U3][i][j],
