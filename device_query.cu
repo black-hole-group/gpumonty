@@ -23,8 +23,9 @@ int get_max_photons(int n1, int n2, int n3) {
     float memtotal=(float)prop.totalGlobalMem; // bytes
     float memfree=(float)free; // bytes
 
-    // total size of HARM arrays in bytes, 9 arrays
-    float sizeHARM=9.0*n1*n2*n3;
+    // total size of HARM arrays in bytes, 
+    // n_arrays * 8 bytes * array total size
+    float sizeHARM=9.0*8.0*n1*n2*n3; //
 
     /* estimates max number of photons GPU can process at once
        based on size of of_photon struct
