@@ -414,19 +414,20 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 
 
 
-void launchKernel(double *p, int nprim, int n1, int n2, double *pharr, int nph, int nphvars, double L_unit) 
+void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph) 
 {
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
+	ALLOCATE DEVICE STRUCTS
 
 	// send HARM arrays to device
-    cudaMalloc(&d_p, nprim*n1*n2*sizeof(double));
-    cudaMemcpy(d_p, p, nprim*n1*n2*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_p, NPRIM*n1*n2*sizeof(double));
+    cudaMemcpy(d_p, p, NPRIM*n1*n2*sizeof(double), cudaMemcpyHostToDevice);
 
     // send photon initial conditions to device
-    cudaMalloc(&d_pharr, nphvars*nph*sizeof(double));
-    cudaMemcpy(d_pharr, pharr, nphvars*nph*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
+    cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
 	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, nprim, n1, n2, d_pharr, nph, nphvars, L_unit);
 

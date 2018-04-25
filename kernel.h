@@ -10,6 +10,12 @@
 #define NDIM	4
 #define NPRIM	8
 
+/* number of variables necessary for each photon.
+   change this for 3D GRMHD simulations
+*/
+#define NPHVARS 25 
+
+
 /* mnemonics for primitive HARM vars; conserved vars */
 #define KRHO     0
 #define UU      1
@@ -51,6 +57,43 @@
 
 
 
+
+/* Data structures
+   ===============
+
+   Required for passing variables to device
+*/
+
+// Data structure carrying all GRMHD variables
+struct simvars { 
+	// harm dimensions
+	int N1, N2, N3; 
+	int n_within_horizon;
+
+	/* some coordinate parameters */
+	double a;
+	double R0, Rin, Rh, Rout, Rms;
+	double hslope;
+	double startx[NDIM], stopx[NDIM], dx[NDIM];
+	double dlE, lE0;
+	double gam;
+	double dMsim;
+};
+
+
+struct allunits {
+	double M_unit;
+	double L_unit;
+	double T_unit;
+	double RHO_unit;
+	double U_unit;
+	double B_unit;
+	double Ne_unit;
+	double Thetae_unit;
+};
+
+
+
 /* Data structure needed for reusing many functions previously
    written for the host, in the device.
 */
@@ -75,6 +118,6 @@ struct d_photon {
 
 
 
-void launchKernel(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars, double L_unit);
+void launchKernel(double *d_p, simvars sim, allunits units, double *d_pharr, int nph, int nphvars, double L_unit);
 
 #endif
