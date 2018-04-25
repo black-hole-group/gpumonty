@@ -303,8 +303,8 @@ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
-__host__ __device__ void gcov_func(double *X, double gcov[][NDIM]);
-__host__ __device__ void gcon_func(double *X, double gcon[][NDIM]);
+void gcov_func(double *X, double gcov[][NDIM]);
+void gcon_func(double *X, double gcon[][NDIM]);
 
 // CUDA related 
 int get_max_photons(int n1, int n2, int n3);
