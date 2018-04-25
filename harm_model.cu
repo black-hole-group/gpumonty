@@ -154,6 +154,8 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 
 
+
+
 /* 
    Current metric: modified Kerr-Schild, squashed in theta
    to give higher resolution at the equator 
