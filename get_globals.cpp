@@ -8,7 +8,7 @@ Photon generation function
 Loop that generates enough photons to fill the GPU
 memory (or less, if so specified)
 */
-void genPhotons(struct simvars *sim) {
+void getGlobals(struct simvars *sim) {
 	// harm dimensions
 	sim->N1=N1;
 	sim->N2=N2; 

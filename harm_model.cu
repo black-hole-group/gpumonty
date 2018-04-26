@@ -167,7 +167,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 #define TH      2
 #define PH      3
 
-__host__ __device__
+//__host__ __device__
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -204,7 +204,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 }
 
 
-__host__ __device__
+//__host__ __device__
 void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;

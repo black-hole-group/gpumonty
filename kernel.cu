@@ -11,7 +11,7 @@
    previously written host-code.
 */
 __device__
-struct d_photon arr2struct(int i, double *pharr, int NPHVARS) 
+struct d_photon arr2struct(int i, double *pharr) 
 {
 	struct d_photon ph;
 
@@ -47,75 +47,75 @@ struct d_photon arr2struct(int i, double *pharr, int NPHVARS)
 
 
 
-__device__
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-		      double *Thetae, double *B, double Ucon[NDIM],
-		      double Ucov[NDIM], double Bcon[NDIM],
-		      double Bcov[NDIM])
-{
-	int i, j;
-	double del[NDIM];
-	double rho, uu;
-	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double *var, int n, int i, int j, double del[4]);
+// __device__
+// void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+// 		      double *Thetae, double *B, double Ucon[NDIM],
+// 		      double Ucov[NDIM], double Bcon[NDIM],
+// 		      double Bcov[NDIM])
+// {
+// 	int i, j;
+// 	double del[NDIM];
+// 	double rho, uu;
+// 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+// 	double gcon[NDIM][NDIM], coeff[4];
+// 	double interp_scalar(double *var, int n, int i, int j, double del[4]);
 
-	if (X[1] < startx[1] ||
-	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+// 	if (X[1] < startx[1] ||
+// 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
 
-		*Ne = 0.;
+// 		*Ne = 0.;
 
-		return;
-	}
+// 		return;
+// 	}
 
-	Xtoij(X, &i, &j, del);
+// 	Xtoij(X, &i, &j, del);
 
-	// what is coeff?
-	coeff[0] = (1. - del[1]) * (1. - del[2]);
-	coeff[1] = (1. - del[1]) * del[2];
-	coeff[2] = del[1] * (1. - del[2]);
-	coeff[3] = del[1] * del[2];
+// 	// what is coeff?
+// 	coeff[0] = (1. - del[1]) * (1. - del[2]);
+// 	coeff[1] = (1. - del[1]) * del[2];
+// 	coeff[2] = del[1] * (1. - del[2]);
+// 	coeff[3] = del[1] * del[2];
 
-	rho = interp_scalar(p, KRHO, i, j, coeff);
-	uu = interp_scalar(p, UU, i, j, coeff);
+// 	rho = interp_scalar(p, KRHO, i, j, coeff);
+// 	uu = interp_scalar(p, UU, i, j, coeff);
 
-	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
+// 	*Ne = rho * Ne_unit;
+// 	*Thetae = uu / rho * Thetae_unit;
 
-	Bp[1] = interp_scalar(p, B1, i, j, coeff);
-	Bp[2] = interp_scalar(p, B2, i, j, coeff);
-	Bp[3] = interp_scalar(p, B3, i, j, coeff);
+// 	Bp[1] = interp_scalar(p, B1, i, j, coeff);
+// 	Bp[2] = interp_scalar(p, B2, i, j, coeff);
+// 	Bp[3] = interp_scalar(p, B3, i, j, coeff);
 
-	Vcon[1] = interp_scalar(p, U1, i, j, coeff);
-	Vcon[2] = interp_scalar(p, U2, i, j, coeff);
-	Vcon[3] = interp_scalar(p, U3, i, j, coeff);
+// 	Vcon[1] = interp_scalar(p, U1, i, j, coeff);
+// 	Vcon[2] = interp_scalar(p, U2, i, j, coeff);
+// 	Vcon[3] = interp_scalar(p, U3, i, j, coeff);
 
-	gcon_func(X, gcon);
+// 	gcon_func(X, gcon);
 
-	/* Get Ucov */
-	VdotV = 0.;
-	for (i = 1; i < NDIM; i++)
-		for (j = 1; j < NDIM; j++)
-			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
-	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * gcon[0][0];
-	for (i = 1; i < NDIM; i++)
-		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
-	lower(Ucon, gcov, Ucov);
+// 	/* Get Ucov */
+// 	VdotV = 0.;
+// 	for (i = 1; i < NDIM; i++)
+// 		for (j = 1; j < NDIM; j++)
+// 			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+// 	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
+// 	Ucon[0] = -Vfac * gcon[0][0];
+// 	for (i = 1; i < NDIM; i++)
+// 		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
+// 	lower(Ucon, gcov, Ucov);
 
-	/* Get B and Bcov */
-	UdotBp = 0.;
-	for (i = 1; i < NDIM; i++)
-		UdotBp += Ucov[i] * Bp[i];
-	Bcon[0] = UdotBp;
-	for (i = 1; i < NDIM; i++)
-		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-	lower(Bcon, gcov, Bcov);
+// 	/* Get B and Bcov */
+// 	UdotBp = 0.;
+// 	for (i = 1; i < NDIM; i++)
+// 		UdotBp += Ucov[i] * Bp[i];
+// 	Bcon[0] = UdotBp;
+// 	for (i = 1; i < NDIM; i++)
+// 		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
+// 	lower(Bcon, gcov, Bcov);
 
-	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+// 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+// 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
-}
+// }
 
 
 
@@ -127,7 +127,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	assumes superphotons do not step out of simulation then back in
 */
 __global__
-void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr, int nph, int nphvars, double L_unit)
+void track_super_photon(double *d_p, int n1, int n2, double *d_pharr, int nph)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -141,7 +141,7 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 	   Notice that I might be using unnecessary device memory here.
 	   Should investigate using a struct pointing to d_pharr instead.
 	*/
-	struct d_photon ph=arr2struct(i, d_pharr, nphvars);
+	struct d_photon ph=arr2struct(i, d_pharr);
 
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -181,12 +181,12 @@ void track_super_photon(double *d_p, int nprim, int n1, int n2, double *d_pharr,
 		return;
 	}
 
-	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
+	//dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
-	gcov_func(ph->X, Gcov);
-	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov);
+	//gcov_func(ph->X, Gcov);
+	//get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+	//		 Bcov);
 
 	// theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	// nu = get_fluid_nu(ph->X, ph->K, Ucov);
@@ -419,19 +419,19 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
-	ALLOCATE DEVICE STRUCTS
+	//ALLOCATE DEVICE STRUCTS
 
 	// send HARM arrays to device
-    cudaMalloc(&d_p, NPRIM*n1*n2*sizeof(double));
-    cudaMemcpy(d_p, p, NPRIM*n1*n2*sizeof(double), cudaMemcpyHostToDevice);
+    //cudaMalloc(&d_p, NPRIM*n1*n2*sizeof(double));
+    //cudaMemcpy(d_p, p, NPRIM*n1*n2*sizeof(double), cudaMemcpyHostToDevice);
 
     // send photon initial conditions to device
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
-	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, nprim, n1, n2, d_pharr, nph, nphvars, L_unit);
+	//track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, n1, n2, d_pharr, nph);
 
 	// frees device memory
-	cudaFree(d_p);
+	//cudaFree(d_p);
 	cudaFree(d_pharr);
 }
