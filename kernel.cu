@@ -161,7 +161,7 @@ struct d_photon arr2struct(int i, double *pharr)
 	assumes superphotons do not step out of simulation then back in
 */
 __global__
-void track_super_photon(double *d_p, int n1, int n2, double *d_pharr, int nph)
+void track_super_photon(double *d_p, double *d_pharr, int nph)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -215,7 +215,7 @@ void track_super_photon(double *d_p, int n1, int n2, double *d_pharr, int nph)
 		return;
 	}
 
-	//dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
+	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
 	//gcov_func(ph->X, Gcov);
@@ -498,7 +498,7 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
-	//track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, n1, n2, d_pharr, nph);
+	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, nph);
 	//test<<<1, 1>>>(d_sim, d_units);
 
 	// frees device memory
