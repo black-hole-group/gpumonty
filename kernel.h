@@ -118,6 +118,6 @@ struct d_photon {
 
 
 
-void launchKernel(double *d_p, simvars sim, allunits units, double *d_pharr, int nph, int nphvars, double L_unit);
+void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph);
 
 #endif

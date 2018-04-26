@@ -87,7 +87,6 @@ int main(int argc, char *argv[])
 	// units packaged for device
 	struct allunits units;
 	getUnits(&units);
-	printf("host=%lf struct=%lf\n", Ne_unit, units.Ne_unit);
 
 
 
@@ -102,7 +101,7 @@ int main(int argc, char *argv[])
     /* propagate photons (device)
        ==========================
     */
-    //xxxxxxlaunchKernel(p, sim, units, pharr, nmaxgpu);
+    launchKernel(p, sim, units, pharr, nmaxgpu);
 
 
 	// gets results back from device

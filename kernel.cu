@@ -419,11 +419,18 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
-	//ALLOCATE DEVICE STRUCTS
+    simvars *d_sim; // struct with grmhd dimensions 
+    allunits *d_units; // struct with code units
+
+	// send structs to device
+    cudaMalloc(&d_sim, sizeof(simvars));
+    cudaMalloc(&d_units, sizeof(allunits));
+    cudaMemcpy(d_sim, &sim, sizeof(simvars), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_units, &units, sizeof(allunits), cudaMemcpyHostToDevice);
 
 	// send HARM arrays to device
-    //cudaMalloc(&d_p, NPRIM*n1*n2*sizeof(double));
-    //cudaMemcpy(d_p, p, NPRIM*n1*n2*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));
+    cudaMemcpy(d_p, p, NPRIM*sim.N1*sim.N2*sizeof(double), cudaMemcpyHostToDevice);
 
     // send photon initial conditions to device
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
@@ -432,6 +439,8 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
 	//track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, n1, n2, d_pharr, nph);
 
 	// frees device memory
-	//cudaFree(d_p);
+	cudaFree(d_sim);
+	cudaFree(d_units);
+	cudaFree(d_p);
 	cudaFree(d_pharr);
 }
