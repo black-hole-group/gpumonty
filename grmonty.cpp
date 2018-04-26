@@ -80,10 +80,10 @@ int main(int argc, char *argv[])
 	   ==========================================
 	*/
 	init_model(argv);
-	
+
 	// global vars packaged for device
-	struct simvars sim; xxxxxxx WRITE FUNCTIONS
-	getGlobals(sim);
+	struct simvars sim;
+	getGlobals(&sim);
 	// units packaged for device
 	struct allunits units;
 	getUnits(units);
