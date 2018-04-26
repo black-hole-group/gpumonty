@@ -81,6 +81,15 @@ int main(int argc, char *argv[])
 	*/
 	init_model(argv);
 
+	// global vars packaged for device
+	struct simvars sim;
+	getGlobals(&sim);
+	// units packaged for device
+	struct allunits units;
+	getUnits(&units);
+
+
+
     /* generate photons (host)
        =========================
 	*/
@@ -92,7 +101,7 @@ int main(int argc, char *argv[])
     /* propagate photons (device)
        ==========================
     */
-    launchKernel(p, NPRIM, N1, N2, pharr, nmaxgpu, NPHVARS);
+    launchKernel(p, sim, units, pharr, nmaxgpu);
 
 
 	// gets results back from device

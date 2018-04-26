@@ -27,6 +27,11 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
  ********************************************************************/
 
 /* old version, valid for an input 2d array
+
+ * Finds interpolated value of var at location given by i,j.
+ * What is coeff?
+ */
+/*
 double interp_scalar(double **var, int i, int j, double coeff[4])
 {
 

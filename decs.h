@@ -309,4 +309,9 @@ void gcon_func(double *X, double gcon[][NDIM]);
 // CUDA related 
 int get_max_photons(int n1, int n2, int n3);
 
+// prepare basic variables for device
+void getGlobals(struct simvars *sim);
+void getUnits(struct allunits *units);
+
+
 #endif
