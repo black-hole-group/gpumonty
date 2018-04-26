@@ -3,11 +3,14 @@
 #include "kernel.h"
 
 /* 
-Photon generation function
-
-Loop that generates enough photons to fill the GPU
-memory (or less, if so specified)
+  Routines that create structs containing all variables that define
+  the GRMHD simulation properties and units. These will be passed
+  to the device, since we cannot define global variables visible
+  in the host and device as previously done.
 */
+
+
+
 void getGlobals(struct simvars *sim) {
 	// harm dimensions
 	sim->N1=N1;
@@ -39,4 +42,18 @@ void getGlobals(struct simvars *sim) {
 	sim->lE0=lE0;
 	sim->gam=gam;
 	sim->dMsim=dMsim;
+}
+
+
+
+
+void getUnits(struct allunits *units) {
+	units->M_unit=M_unit;
+	units->L_unit=L_unit;
+	units->T_unit=T_unit;
+	units->RHO_unit=RHO_unit;
+	units->U_unit=U_unit;
+	units->B_unit=B_unit;
+	units->Ne_unit=Ne_unit;
+	units->Thetae_unit=Thetae_unit;	
 }

@@ -85,8 +85,10 @@ int main(int argc, char *argv[])
 	struct simvars sim;
 	getGlobals(&sim);
 	// units packaged for device
-	//struct allunits units;
-	//getUnits(units);
+	struct allunits units;
+	getUnits(&units);
+	printf("host=%lf struct=%lf\n", Ne_unit, units.Ne_unit);
+
 
 
     /* generate photons (host)
