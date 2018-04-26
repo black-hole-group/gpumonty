@@ -4,6 +4,40 @@
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
 
+/*
+  device global variables
+  ========================
+*/
+// harm dimensions
+ __constant__ int N1, N2, N3; 
+ __constant__ int n_within_horizon;
+
+// some coordinate parameters 
+ __constant__ double a;
+ __constant__ double R0, Rin, Rh, Rout, Rms;
+ __constant__ double hslope;
+ __constant__ double startx[NDIM], stopx[NDIM], dx[NDIM];
+ __constant__ double dlE, lE0;
+ __constant__ double gam;
+ __constant__ double dMsim;
+
+// units
+ __constant__ double M_unit;
+ __constant__ double L_unit;
+ __constant__ double T_unit;
+ __constant__ double RHO_unit;
+ __constant__ double U_unit;
+ __constant__ double B_unit;
+ __constant__ double Ne_unit;
+ __constant__ double Thetae_unit;
+
+
+
+
+
+
+
+
 
 /* grabs a photon from the device input array and puts it
    in a ph struct,
@@ -408,15 +442,15 @@ void track_super_photon(double *d_p, int n1, int n2, double *d_pharr, int nph)
 
 
 
-__global__
-void test(simvars *d_sim, allunits *d_units)
-{
-	//const int i = blockIdx.x*blockDim.x + threadIdx.x;
+// __global__
+// void test(simvars *d_sim, allunits *d_units)
+// {
+// 	//const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
-	//if (i >= nph) return;
-	printf("%d\n", d_sim->N1);
-	printf("%lf\n", d_units->M_unit);
-}
+// 	//if (i >= nph) return;
+// 	printf("%d\n", d_sim->N1);
+// 	printf("%lf\n", d_units->M_unit);
+// }
 
 
 
@@ -427,14 +461,34 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
-    simvars *d_sim; // struct with grmhd dimensions 
-    allunits *d_units; // struct with code units
 
-	// send structs to device
-    cudaMalloc(&d_sim, sizeof(simvars));
-    cudaMalloc(&d_units, sizeof(allunits));
-    cudaMemcpy(d_sim, &sim, sizeof(simvars), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_units, &units, sizeof(allunits), cudaMemcpyHostToDevice);
+	// define global device variables in constant memory
+	cudaMemcpyToSymbol(N1, &sim.N1, sizeof(int));
+	cudaMemcpyToSymbol(N2, &sim.N2, sizeof(int));
+	cudaMemcpyToSymbol(N3, &sim.N3, sizeof(int));
+	cudaMemcpyToSymbol(n_within_horizon, &sim.n_within_horizon, sizeof(int));
+	cudaMemcpyToSymbol(a, &sim.a, sizeof(double));
+	cudaMemcpyToSymbol(R0, &sim.R0, sizeof(double));
+	cudaMemcpyToSymbol(Rin, &sim.Rin, sizeof(double));
+	cudaMemcpyToSymbol(Rh, &sim.Rh, sizeof(double));
+	cudaMemcpyToSymbol(Rout, &sim.Rout, sizeof(double));
+	cudaMemcpyToSymbol(Rms, &sim.Rms, sizeof(double));
+	cudaMemcpyToSymbol(hslope, &sim.hslope, sizeof(double));
+	cudaMemcpyToSymbol(startx, &sim.startx, sizeof(double));
+	cudaMemcpyToSymbol(stopx, &sim.stopx, sizeof(double));
+	cudaMemcpyToSymbol(dx, &sim.dx, sizeof(double));
+	cudaMemcpyToSymbol(dlE, &sim.dlE, sizeof(double));
+	cudaMemcpyToSymbol(lE0, &sim.lE0, sizeof(double));
+	cudaMemcpyToSymbol(gam, &sim.gam, sizeof(double));
+	cudaMemcpyToSymbol(dMsim, &sim.dMsim, sizeof(double));
+	cudaMemcpyToSymbol(M_unit, &units.M_unit, sizeof(double));
+	cudaMemcpyToSymbol(L_unit, &units.L_unit, sizeof(double));
+	cudaMemcpyToSymbol(T_unit, &units.T_unit, sizeof(double));
+	cudaMemcpyToSymbol(RHO_unit, &units.RHO_unit, sizeof(double));
+	cudaMemcpyToSymbol(U_unit, &units.U_unit, sizeof(double));
+	cudaMemcpyToSymbol(B_unit, &units.B_unit, sizeof(double));
+	cudaMemcpyToSymbol(Ne_unit, &units.Ne_unit, sizeof(double));
+	cudaMemcpyToSymbol(Thetae_unit, &units.Thetae_unit, sizeof(double));
 
 	// send HARM arrays to device
     cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));
@@ -445,11 +499,9 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
 	//track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, n1, n2, d_pharr, nph);
-	test<<<1, 1>>>(d_sim, d_units);
+	//test<<<1, 1>>>(d_sim, d_units);
 
 	// frees device memory
-	cudaFree(d_sim);
-	cudaFree(d_units);
 	cudaFree(d_p);
 	cudaFree(d_pharr);
 }
