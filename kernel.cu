@@ -218,7 +218,7 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
-	//gcov_func(ph->X, Gcov);
+	gcov_func(ph->X, Gcov);
 	//get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
 	//		 Bcov);
 
@@ -443,13 +443,12 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 
 
 // __global__
-// void test(simvars *d_sim, allunits *d_units)
+// void test()
 // {
 // 	//const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
 // 	//if (i >= nph) return;
-// 	printf("%d\n", d_sim->N1);
-// 	printf("%lf\n", d_units->M_unit);
+// 	printf("%d\n", N1);
 // }
 
 
@@ -499,7 +498,7 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
 	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, nph);
-	//test<<<1, 1>>>(d_sim, d_units);
+	//test<<<1, 1>>>();
 
 	// frees device memory
 	cudaFree(d_p);
