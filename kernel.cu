@@ -408,7 +408,15 @@ void track_super_photon(double *d_p, int n1, int n2, double *d_pharr, int nph)
 
 
 
+__global__
+void test(simvars *d_sim, allunits *d_units)
+{
+	//const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
+	//if (i >= nph) return;
+	printf("%d\n", d_sim->N1);
+	printf("%lf\n", d_units->M_unit);
+}
 
 
 
@@ -437,6 +445,7 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
 	//track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, n1, n2, d_pharr, nph);
+	test<<<1, 1>>>(d_sim, d_units);
 
 	// frees device memory
 	cudaFree(d_sim);

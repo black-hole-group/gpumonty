@@ -96,6 +96,9 @@ struct allunits {
 
 /* Data structure needed for reusing many functions previously
    written for the host, in the device.
+
+   THIS IS PROBABLY AN UNNECESSARY REPRETITION OF PHOTON STRUCT,
+   REMOVE IN THE FUTURE
 */
 struct d_photon { 
 	double X[NDIM];
