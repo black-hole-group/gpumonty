@@ -15,6 +15,12 @@
 */
 #define NPHVARS 25 
 
+/* numerical convenience */
+#define SMALL	1.e-40
+
+/* physical parameters */
+#define MMW	0.5		/* mean molecular weight, in units of mp */
+
 
 /* mnemonics for primitive HARM vars; conserved vars */
 #define KRHO     0
@@ -54,6 +60,60 @@
 #define E0_      22
 #define E0S     23
 #define NS      24 // this guy was an int before, now it will be a double or float
+
+/* mnemonics for dimensional indices */
+#define TT      0
+#define RR      1
+#define TH      2
+#define PH      3
+
+
+/* some useful macros */
+#define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
+#define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
+#define MYSIN(x,sx) 	{							\
+			double _xp = (x)-M_PI; 					\
+			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp)); 	\
+			sx = -_yp*(0.225*fabs(_yp)+0.775);			\
+			}
+#define MYCOS(x,cx) 	{							\
+			double _xp = (x)-THREEPI_TWO; 					\
+			_xp += (_xp<-M_PI)*2.*M_PI; 				\
+			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
+			cx = _yp*(0.225*fabs(_yp)+0.775);			\
+			}
+
+
+
+/*
+  device global variables
+  ========================
+*/
+// harm dimensions
+ __constant__ int N1, N2, N3; 
+ __constant__ int n_within_horizon;
+
+// some coordinate parameters 
+ __constant__ double a;
+ __constant__ double R0, Rin, Rh, Rout, Rms;
+ __constant__ double hslope;
+ __constant__ double startx[NDIM], stopx[NDIM], dx[NDIM];
+ __constant__ double dlE, lE0;
+ __constant__ double gam;
+ __constant__ double dMsim;
+
+// units
+ __constant__ double M_unit;
+ __constant__ double L_unit;
+ __constant__ double T_unit;
+ __constant__ double RHO_unit;
+ __constant__ double U_unit;
+ __constant__ double B_unit;
+ __constant__ double Ne_unit;
+ __constant__ double Thetae_unit;
+
+
+
 
 
 
