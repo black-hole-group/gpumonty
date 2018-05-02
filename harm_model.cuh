@@ -1,3 +1,7 @@
+/*
+  Functions that were previously in harm_model.c and need to
+  be executed on the device. 
+*/
 
 __host__ __device__
 void gcon_func(double *X, double gcon[][NDIM])
