@@ -1,6 +1,6 @@
 #include "constants.h"
 #include "decs.h"
-#include "kernel.h"
+//#include "kernel.h"
 
 /* 
   Routines that create structs containing all variables that define

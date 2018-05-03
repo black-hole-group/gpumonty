@@ -50,29 +50,6 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
-/** data structures *
-   We keep the struct below in order to reuse many functions
-   for photon generation
-*/
-struct of_photon { 
-	double X[NDIM];
-	double K[NDIM];
-	double dKdlam[NDIM];
-	double w;
-	double E;
-	double L;
-	double X1i;
-	double X2i;
-	double tau_abs;
-	double tau_scatt;
-	double ne0;
-	double thetae0;
-	double b0;
-	double E0;
-	double E0s;
-	int nscatt;
-};
-
 /* 
 Explanation of new format for of_photon:
 I am now defining a row-major 1D array that stores all photons
@@ -114,6 +91,33 @@ Below are the mnemonics for the different photon variables
 #define NS      24 // this guy was an int before, now it will be a double or float
 
 
+
+
+/* 
+   Data structures
+   ===============
+*/
+
+
+struct of_photon { 
+	double X[NDIM];
+	double K[NDIM];
+	double dKdlam[NDIM];
+	double w;
+	double E;
+	double L;
+	double X1i;
+	double X2i;
+	double tau_abs;
+	double tau_scatt;
+	double ne0;
+	double thetae0;
+	double b0;
+	double E0;
+	double E0s;
+	int nscatt;
+};
+
 struct of_geom {
 	double gcon[NDIM][NDIM];
 	double gcov[NDIM][NDIM];
@@ -146,6 +150,43 @@ struct of_grid {
 	int nlist;
 	int *in;
 };
+
+/*
+   structs required for passing variables to device
+*/
+
+
+// Data structure carrying all GRMHD variables
+struct simvars { 
+	// harm dimensions
+	int N1, N2, N3; 
+	int n_within_horizon;
+
+	/* some coordinate parameters */
+	double a;
+	double R0, Rin, Rh, Rout, Rms;
+	double hslope;
+	double startx[NDIM], stopx[NDIM], dx[NDIM];
+	double dlE, lE0;
+	double gam;
+	double dMsim;
+};
+
+
+struct allunits {
+	double M_unit;
+	double L_unit;
+	double T_unit;
+	double RHO_unit;
+	double U_unit;
+	double B_unit;
+	double Ne_unit;
+	double Thetae_unit;
+};
+
+
+
+
 
 /** global variables **/
 /** model independent */
