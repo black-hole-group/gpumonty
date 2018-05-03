@@ -19,9 +19,9 @@
    previously written host-code.
 */
 __device__
-struct d_photon arr2struct(int i, double *pharr) 
+struct of_photon arr2struct(int i, double *pharr) 
 {
-	struct d_photon ph;
+	struct of_photon ph;
 
 	ph.X[0]=pharr[i*NPHVARS+X0];
 	ph.X[1]=pharr[i*NPHVARS+X1]; 
@@ -149,7 +149,7 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	   Notice that I might be using unnecessary device memory here.
 	   Should investigate using a struct pointing to d_pharr instead.
 	*/
-	struct d_photon ph=arr2struct(i, d_pharr);
+	struct of_photon ph=arr2struct(i, d_pharr);
 
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -158,7 +158,7 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	double alpha_absi, alpha_absf;
 	double dl, x1;
 	double nu, Thetae, Ne, B, theta;
-	struct d_photon php;
+	struct of_photon php;
 	double dtauK, frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
