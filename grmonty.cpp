@@ -20,7 +20,7 @@
 
 #include "decs.h"
 #include "harm_model.h"
-#include "kernel.h"
+//#include "kernel.h"
 
 /* defining declarations for global variables */
 struct of_geom **geom;

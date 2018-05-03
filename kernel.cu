@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "constants.h"
+#include "decs.h"
 #include "kernel.h"  
 #include "harm_utils.cuh"
 #include "harm_model.cuh" // device functions previously in harm_model.c

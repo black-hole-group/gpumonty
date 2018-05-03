@@ -45,7 +45,4 @@
 
 
 
-
-void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph);
-
 #endif
