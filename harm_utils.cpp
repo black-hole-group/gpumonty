@@ -403,6 +403,18 @@ void coord(int i, int j, double *X)
 }
 
 
+/* return boyer-lindquist coordinate of point */
+void bl_coord(double *X, double *r, double *th)
+{
+
+	*r = exp(X[1]) + R0;
+	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
+	return;
+}
+
+
+
 void set_units(char *munitstr)
 {
 	double MBH;

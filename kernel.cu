@@ -7,6 +7,9 @@
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
 
+
+
+
 /*
   device global variables
   ========================
