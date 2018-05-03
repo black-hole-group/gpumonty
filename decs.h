@@ -50,6 +50,12 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
+/* mnemonics for dimensional indices */
+#define TT      0
+#define RR      1
+#define TH      2
+#define PH      3
+
 /** data structures *
    We keep the struct below in order to reuse many functions
    for photon generation

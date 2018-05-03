@@ -1,9 +1,12 @@
 /*
   Functions that were previously in harm_model.c and need to
   be executed on the device. 
+
+  Have to repeat definitions separately in order to avoid conflict
+  of global host variables and __constant__ device ones.
 */
 
-__host__ __device__
+__device__
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -40,7 +43,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 }
 
 
-__host__ __device__
+__device__
 void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
