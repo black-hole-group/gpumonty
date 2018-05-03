@@ -7,7 +7,7 @@
 */
 
 __device__
-void gcon_func(double *X, double gcon[][NDIM])
+void d_gcon_func(double *X, double gcon[][NDIM])
 {
 
 	int k, l;
@@ -19,7 +19,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	DLOOP gcon[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	d_bl_coord(X, &r, &th);
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
@@ -44,7 +44,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 
 __device__
-void gcov_func(double *X, double gcov[][NDIM])
+void d_gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
@@ -55,7 +55,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 
 	DLOOP gcov[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	d_bl_coord(X, &r, &th);
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;

@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include "constants.h"
 #include "kernel.h"  
-#include "harm_utils.cuh"
-#include "harm_model.cuh" // device functions previously in harm_model.c
 
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
-
 
 
 
@@ -36,6 +33,14 @@
  __constant__ double B_unit;
  __constant__ double Ne_unit;
  __constant__ double Thetae_unit;
+
+
+/* 
+  Device functions
+  =================
+*/
+#include "harm_utils.cuh"
+#include "harm_model.cuh" // device functions previously in harm_model.c
 
 
 
@@ -222,7 +227,7 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
-	gcov_func(ph.X, Gcov);
+	d_gcov_func(ph.X, Gcov);
 	//get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
 	//		 Bcov);
 
