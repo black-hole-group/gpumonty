@@ -46,25 +46,6 @@ double interp_scalar(double **var, int i, int j, double coeff[4])
 }
 */
 
-/* 
- * New version for the row-major 1D array for GPU code.
- * - n=variable-selector index
- * - i=x1 index
- * - j=x2 index
- */
-double interp_scalar(double *var, int n, int i, int j, double coeff[4])
-{
-
-	double interp;
-
-	interp =
-	    var[n*N1*N2+i*N2+j] * coeff[0] +
-	    var[n*N1*N2+i*N2+j+1] * coeff[1] +
-	    var[n*N1*N2+(i+1)*N2+j] * coeff[2] + 
-	    var[n*N1*N2+(i+1)*N2+j+1] * coeff[3];
-
-	return interp;
-}
 
 
 double lnu_min, lnu_max, dlnu;
