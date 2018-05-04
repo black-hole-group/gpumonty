@@ -7,78 +7,6 @@
 */
 
 
-__device__
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-		      double *Thetae, double *B, double Ucon[NDIM],
-		      double Ucov[NDIM], double Bcon[NDIM],
-		      double Bcov[NDIM])
-{
-	int i, j;
-	double del[NDIM];
-	double rho, uu;
-	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double *var, int n, int i, int j, double del[4]);
-
-	if (X[1] < startx[1] ||
-	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
-
-		*Ne = 0.;
-
-		return;
-	}
-
-	Xtoij(X, &i, &j, del);
-
-	// what is coeff?
-	coeff[0] = (1. - del[1]) * (1. - del[2]);
-	coeff[1] = (1. - del[1]) * del[2];
-	coeff[2] = del[1] * (1. - del[2]);
-	coeff[3] = del[1] * del[2];
-
-	rho = interp_scalar(d_p, KRHO, i, j, coeff);
-	uu = interp_scalar(d_p, UU, i, j, coeff);
-
-	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
-
-	Bp[1] = interp_scalar(d_p, B1, i, j, coeff);
-	Bp[2] = interp_scalar(d_p, B2, i, j, coeff);
-	Bp[3] = interp_scalar(d_p, B3, i, j, coeff);
-
-	Vcon[1] = interp_scalar(d_p, U1, i, j, coeff);
-	Vcon[2] = interp_scalar(d_p, U2, i, j, coeff);
-	Vcon[3] = interp_scalar(d_p, U3, i, j, coeff);
-
-	gcon_func(X, gcon);
-
-	/* Get Ucov */
-	VdotV = 0.;
-	for (i = 1; i < NDIM; i++)
-		for (j = 1; j < NDIM; j++)
-			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
-	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * gcon[0][0];
-	for (i = 1; i < NDIM; i++)
-		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
-	lower(Ucon, gcov, Ucov);
-
-	/* Get B and Bcov */
-	UdotBp = 0.;
-	for (i = 1; i < NDIM; i++)
-		UdotBp += Ucov[i] * Bp[i];
-	Bcon[0] = UdotBp;
-	for (i = 1; i < NDIM; i++)
-		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-	lower(Bcon, gcov, Bcov);
-
-	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
-
-}
-
-
-
 
 // also host
 __device__
@@ -159,4 +87,80 @@ void d_gcov_func(double *X, double gcov[][NDIM])
 	gcov[3][3] =
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
+
+
+
+
+
+__device__
+void get_fluid_params(double *d_p, double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+		      double *Thetae, double *B, double Ucon[NDIM],
+		      double Ucov[NDIM], double Bcon[NDIM],
+		      double Bcov[NDIM])
+{
+	int i, j;
+	double del[NDIM];
+	double rho, uu;
+	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+	double gcon[NDIM][NDIM], coeff[4];
+	double interp_scalar(double *var, int n, int i, int j, double del[4]);
+
+	if (X[1] < startx[1] ||
+	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+
+		*Ne = 0.;
+
+		return;
+	}
+
+	Xtoij(X, &i, &j, del);
+
+	// what is coeff?
+	coeff[0] = (1. - del[1]) * (1. - del[2]);
+	coeff[1] = (1. - del[1]) * del[2];
+	coeff[2] = del[1] * (1. - del[2]);
+	coeff[3] = del[1] * del[2];
+
+	rho = interp_scalar(d_p, KRHO, i, j, coeff);
+	uu = interp_scalar(d_p, UU, i, j, coeff);
+
+	*Ne = rho * Ne_unit;
+	*Thetae = uu / rho * Thetae_unit;
+
+	Bp[1] = interp_scalar(d_p, B1, i, j, coeff);
+	Bp[2] = interp_scalar(d_p, B2, i, j, coeff);
+	Bp[3] = interp_scalar(d_p, B3, i, j, coeff);
+
+	Vcon[1] = interp_scalar(d_p, U1, i, j, coeff);
+	Vcon[2] = interp_scalar(d_p, U2, i, j, coeff);
+	Vcon[3] = interp_scalar(d_p, U3, i, j, coeff);
+
+	d_gcon_func(X, gcon);
+
+	/* Get Ucov */
+	VdotV = 0.;
+	for (i = 1; i < NDIM; i++)
+		for (j = 1; j < NDIM; j++)
+			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * gcon[0][0];
+	for (i = 1; i < NDIM; i++)
+		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
+	lower(Ucon, gcov, Ucov);
+
+	/* Get B and Bcov */
+	UdotBp = 0.;
+	for (i = 1; i < NDIM; i++)
+		UdotBp += Ucov[i] * Bp[i];
+	Bcon[0] = UdotBp;
+	for (i = 1; i < NDIM; i++)
+		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
+	lower(Bcon, gcov, Bcov);
+
+	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
+
+}
+
+
 
