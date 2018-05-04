@@ -464,29 +464,7 @@ int record_criterion(struct of_photon *ph)
 }
 
 
-/* EPS really ought to be related to the number of
-   zones in the simulation. */
-#define EPS	0.04
-//#define EPS   0.01
 
-
-double stepsize(double X[NDIM], double K[NDIM])
-{
-	double dl, dlx1, dlx2, dlx3;
-	double idlx1, idlx2, idlx3;
-
-	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
-	dlx3 = EPS / (fabs(K[3]) + SMALL);
-
-	idlx1 = 1. / (fabs(dlx1) + SMALL);
-	idlx2 = 1. / (fabs(dlx2) + SMALL);
-	idlx3 = 1. / (fabs(dlx3) + SMALL);
-
-	dl = 1. / (idlx1 + idlx2 + idlx3);
-
-	return (dl);
-}
 
 /* 
 	record contribution of super photon to spectrum.

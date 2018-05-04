@@ -68,6 +68,11 @@
 #define PH      3
 
 
+/* EPS really ought to be related to the number of
+   zones in the simulation. Used in harm_mode/stepsize.
+*/
+#define EPS	0.04
+
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
