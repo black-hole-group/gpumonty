@@ -39,6 +39,7 @@
   Device functions
   =================
 */
+#include "tetrads.cuh"
 #include "harm_utils.cuh"
 #include "harm_model.cuh" // device functions previously in harm_model.c
 
