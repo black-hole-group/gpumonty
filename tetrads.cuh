@@ -8,7 +8,7 @@ all functions related to creation and manipulation of tetrads
 
 
 /* input and vectors are contravariant (index up) */
-__device__ void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
+__device__ void d_coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM])
 {
 	int k;
@@ -22,7 +22,7 @@ __device__ void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 }
 
 /* input and vectors are contravariant (index up) */
-__device__ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
+__device__ void d_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM])
 {
 	int l;
@@ -36,20 +36,55 @@ __device__ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[ND
 	return;
 }
 
+
+__device__
+double d_delta(int i, int j)
+{
+	if (i == j)
+		return (1.);
+	else
+		return (0.);
+}
+
+__device__ void d_lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
+{
+
+	ucov[0] = Gcov[0][0] * ucon[0]
+	    + Gcov[0][1] * ucon[1]
+	    + Gcov[0][2] * ucon[2]
+	    + Gcov[0][3] * ucon[3];
+	ucov[1] = Gcov[1][0] * ucon[0]
+	    + Gcov[1][1] * ucon[1]
+	    + Gcov[1][2] * ucon[2]
+	    + Gcov[1][3] * ucon[3];
+	ucov[2] = Gcov[2][0] * ucon[0]
+	    + Gcov[2][1] * ucon[1]
+	    + Gcov[2][2] * ucon[2]
+	    + Gcov[2][3] * ucon[3];
+	ucov[3] = Gcov[3][0] * ucon[0]
+	    + Gcov[3][1] * ucon[1]
+	    + Gcov[3][2] * ucon[2]
+	    + Gcov[3][3] * ucon[3];
+
+	return;
+}
+
+
+
 #define SMALL_VECTOR	1.e-30
 
 /* make orthonormal basis 
    first basis vector || U
    second basis vector || B
 */
-__device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
+__device__ void d_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM])
 {
 	int k, l;
 	double norm;
-	void normalize(double *vcon, double Gcov[4][4]);
-	void project_out(double *vcona, double *vconb, double Gcov[4][4]);
+	void d_normalize(double *vcon, double Gcov[4][4]);
+	void d_project_out(double *vcona, double *vconb, double Gcov[4][4]);
 
 	/* econ/ecov index explanation:
 	   Econ[k][l]
@@ -67,7 +102,7 @@ __device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	/* start w/ time component parallel to U */
 	for (k = 0; k < 4; k++)
 		Econ[0][k] = Ucon[k];
-	normalize(Econ[0], Gcov);
+	d_normalize(Econ[0], Gcov);
 
 	/*** done w/ basis vector 0 ***/
 
@@ -79,36 +114,36 @@ __device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 			norm += trial[k] * trial[l] * Gcov[k][l];
 	if (norm <= SMALL_VECTOR) {	/* bad trial vector; default to radial direction */
 		for (k = 0; k < 4; k++)	/* trial vector */
-			trial[k] = delta(k, 1);
+			trial[k] = d_delta(k, 1);
 	}
 
 	for (k = 0; k < 4; k++)	/* trial vector */
 		Econ[1][k] = trial[k];
 
 	/* project out econ0 */
-	project_out(Econ[1], Econ[0], Gcov);
-	normalize(Econ[1], Gcov);
+	d_project_out(Econ[1], Econ[0], Gcov);
+	d_normalize(Econ[1], Gcov);
 
 	/*** done w/ basis vector 1 ***/
 
 	/* repeat for x2 unit basis vector */
 	for (k = 0; k < 4; k++)	/* trial vector */
-		Econ[2][k] = delta(k, 2);
+		Econ[2][k] = d_delta(k, 2);
 	/* project out econ[0-1] */
-	project_out(Econ[2], Econ[0], Gcov);
-	project_out(Econ[2], Econ[1], Gcov);
-	normalize(Econ[2], Gcov);
+	d_project_out(Econ[2], Econ[0], Gcov);
+	d_project_out(Econ[2], Econ[1], Gcov);
+	d_normalize(Econ[2], Gcov);
 
 	/*** done w/ basis vector 2 ***/
 
 	/* and repeat for x3 unit basis vector */
 	for (k = 0; k < 4; k++)	/* trial vector */
-		Econ[3][k] = delta(k, 3);
+		Econ[3][k] = d_delta(k, 3);
 	/* project out econ[0-2] */
-	project_out(Econ[3], Econ[0], Gcov);
-	project_out(Econ[3], Econ[1], Gcov);
-	project_out(Econ[3], Econ[2], Gcov);
-	normalize(Econ[3], Gcov);
+	d_project_out(Econ[3], Econ[0], Gcov);
+	d_project_out(Econ[3], Econ[1], Gcov);
+	d_project_out(Econ[3], Econ[2], Gcov);
+	d_normalize(Econ[3], Gcov);
 
 	/*** done w/ basis vector 3 ***/
 
@@ -150,39 +185,8 @@ __device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 
 }
 
-__device__
-double delta(int i, int j)
-{
-	if (i == j)
-		return (1.);
-	else
-		return (0.);
-}
 
-__device__ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
-{
-
-	ucov[0] = Gcov[0][0] * ucon[0]
-	    + Gcov[0][1] * ucon[1]
-	    + Gcov[0][2] * ucon[2]
-	    + Gcov[0][3] * ucon[3];
-	ucov[1] = Gcov[1][0] * ucon[0]
-	    + Gcov[1][1] * ucon[1]
-	    + Gcov[1][2] * ucon[2]
-	    + Gcov[1][3] * ucon[3];
-	ucov[2] = Gcov[2][0] * ucon[0]
-	    + Gcov[2][1] * ucon[1]
-	    + Gcov[2][2] * ucon[2]
-	    + Gcov[2][3] * ucon[3];
-	ucov[3] = Gcov[3][0] * ucon[0]
-	    + Gcov[3][1] * ucon[1]
-	    + Gcov[3][2] * ucon[2]
-	    + Gcov[3][3] * ucon[3];
-
-	return;
-}
-
-__device__ void normalize(double *vcon, double Gcov[NDIM][NDIM])
+__device__ void d_normalize(double *vcon, double Gcov[NDIM][NDIM])
 {
 	int k, l;
 	double norm;
@@ -199,7 +203,7 @@ __device__ void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	return;
 }
 
-__device__ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
+__device__ void d_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 {
 
 	double adotb, vconb_sq;
@@ -221,7 +225,7 @@ __device__ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM
 	return;
 }
 
-__device__ void normalize_null(double Gcov[NDIM][NDIM], double K[])
+__device__ void d_normalize_null(double Gcov[NDIM][NDIM], double K[])
 {
 	int k, l;
 	double A, B, C;
