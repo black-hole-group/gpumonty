@@ -41,8 +41,8 @@
 */
 #include "tetrads.cuh"
 #include "harm_utils.cuh"
-#include "harm_model.cuh" // device functions previously in harm_model.c
-
+#include "harm_model.cuh" 
+#include "radiation.cuh"
 
 
 
