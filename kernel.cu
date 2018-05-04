@@ -43,6 +43,8 @@
 #include "harm_utils.cuh"
 #include "harm_model.cuh" 
 #include "radiation.cuh"
+#include "compton.cuh"
+#include "jnu_mixed.cuh"
 
 
 
