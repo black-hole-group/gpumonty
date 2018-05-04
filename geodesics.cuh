@@ -1,46 +1,4 @@
-
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
-#include "decs.h"
+//#include "decs.h"
 /*
 
 this is the main photon orbit integrator 
@@ -51,6 +9,8 @@ this is the main photon orbit integrator
 
 #define ETOL 1.e-3
 #define MAX_ITER 2
+
+__device__
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n)
 {
@@ -112,7 +72,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 
 	FAST_CPY(K, Kcon);
 
-	gcov_func(X, Gcov);
+	d_gcov_func(X, Gcov);
 	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
 	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
 	errE = fabs((E1 - (*E0)) / (*E0));
@@ -133,6 +93,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 }
 
 /* spare photon integrator: 4th order Runge-Kutta */
+__device__
 void push_photon4(double X[], double K[], double dK[], double dl)
 {
 
@@ -259,6 +220,7 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 	/* done */
 }
 
+__device__
 void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;
