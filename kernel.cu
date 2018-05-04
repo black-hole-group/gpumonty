@@ -45,6 +45,7 @@
 #include "radiation.cuh"
 #include "compton.cuh"
 #include "jnu_mixed.cuh"
+#include "hotcross.cuh"
 
 
 
