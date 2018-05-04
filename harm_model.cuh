@@ -466,3 +466,48 @@ double stepsize(double X[NDIM], double K[NDIM])
 
 
 
+
+/* stopping criterion for geodesic integrator */
+/* K not referenced intentionally */
+
+#define RMAX	100.
+#define ROULETTE	1.e4
+
+__device__
+int stop_criterion(struct of_photon *ph)
+{
+	double wmin, X1min, X1max;
+
+	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
+
+	X1min = log(Rh);	/* this is coordinate-specific; stop
+				   at event horizon */
+	X1max = log(RMAX);	/* this is coordinate and simulation
+				   specific: stop at large distance */
+
+	if (ph->X[1] < X1min)
+		return 1;
+
+	if (ph->X[1] > X1max) {
+		if (ph->w < wmin) {
+			if (monty_rand() <= 1. / ROULETTE) {
+				ph->w *= ROULETTE;
+			} else
+				ph->w = 0.;
+		}
+		return 1;
+	}
+
+	if (ph->w < wmin) {
+		if (monty_rand() <= 1. / ROULETTE) {
+			ph->w *= ROULETTE;
+		} else {
+			ph->w = 0.;
+			return 1;
+		}
+	}
+
+	return (0);
+}
+
+
