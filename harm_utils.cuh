@@ -33,7 +33,10 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 	return;
 }
 
-/* return boyer-lindquist coordinate of point */
+/* 
+  return boyer-lindquist coordinate of point 
+  also defined on host
+*/
 __device__
 void d_bl_coord(double *X, double *r, double *th)
 {
