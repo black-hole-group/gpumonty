@@ -1,4 +1,4 @@
-#include "decs.h"
+//#include "decs.h"
 
 /* 
 
@@ -23,90 +23,23 @@
 #define NW	220
 #define NT	80
 
-#define HOTCROSS	"hotcross.dat"
+//#define HOTCROSS	"hotcross.dat"
 
 double table[NW + 1][NT + 1];
 double dlw, dlTT, lminw, lmint; // repeated def. in jnu_mixed.c, dlT=>dlTT
 //double dlw, lminw, lmint;
 
-void init_hotcross(void)
-{
-	int i, j, nread;
-	double lw, lT;
-	double total_compton_cross_num(double w, double thetae);
-	FILE *fp;
-
-	dlw = log10(MAXW / MINW) / NW;
-	dlTT = log10(MAXT / MINT) / NT;
-	lminw = log10(MINW);
-	lmint = log10(MINT);
-
-	fp = fopen(HOTCROSS, "r");
-	if (fp == NULL) {
-		fprintf(stderr, "file %s not found.\n", HOTCROSS);
-		fprintf(stderr,
-			"making lookup table for compton cross section...\n");
-#pragma omp parallel for private(i,j,lw,lT)
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlTT;
-				table[i][j] =
-				    log10(total_compton_cross_num
-					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
-						j, lw, lT);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-		fprintf(stderr, "writing to file...\n");
-		fp = fopen(HOTCROSS, "w");
-		if (fp == NULL) {
-			fprintf(stderr, "couldn't write to file\n");
-			exit(0);
-		}
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlTT;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
-					lw, lT, table[i][j]);
-			}
-		fprintf(stderr, "done.\n\n");
-	} else {
-		fprintf(stderr,
-			"reading hot cross section data from %s...\n",
-			HOTCROSS);
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				nread =
-				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
-					   &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
-					fprintf(stderr,
-						"error on table read: %d %d\n",
-						i, j);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-	}
-
-	fclose(fp);
-
-	return;
-}
+//void init_hotcross(void)
 
 
 
+__device__
 double total_compton_cross_lkup(double w, double thetae)
 {
 	int i, j;
 	double lw, lT, di, dj, lcross;
-	double total_compton_cross_num(double w, double thetae);
-	double hc_klein_nishina(double we);
+	__device__ double total_compton_cross_num(double w, double thetae);
+	__device__ double d_hc_klein_nishina(double we);
 
 	/* cold/low-energy: just use thomson cross section */
 	if (w * thetae < 1.e-6)
@@ -114,7 +47,7 @@ double total_compton_cross_lkup(double w, double thetae)
 
 	/* cold, but possible high energy photon: use klein-nishina */
 	if (thetae < MINT)
-		return (hc_klein_nishina(w) * SIGMA_THOMSON);
+		return (d_hc_klein_nishina(w) * SIGMA_THOMSON);
 
 	/* in-bounds for table */
 	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
@@ -141,7 +74,7 @@ double total_compton_cross_lkup(double w, double thetae)
 	}
 
 	fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
-	return (total_compton_cross_num(w, thetae));
+	return (d_total_compton_cross_num(w, thetae));
 
 }
 
@@ -149,12 +82,13 @@ double total_compton_cross_lkup(double w, double thetae)
 #define DMUE		0.05
 #define DGAMMAE		0.05
 
-double total_compton_cross_num(double w, double thetae)
+__device__
+double d_total_compton_cross_num(double w, double thetae)
 {
 	double dmue, dgammae, mue, gammae, f, cross;
-	double dNdgammae(double thetae, double gammae);
-	double boostcross(double w, double mue, double gammae);
-	double hc_klein_nishina(double we);
+	__device__ double d_dNdgammae(double thetae, double gammae);
+	__device__ double d_boostcross(double w, double mue, double gammae);
+	__device__ double d_hc_klein_nishina(double we);
 
 	if (isnan(w)) {
 		fprintf(stderr, "compton cross isnan: %g %g\n", w, thetae);
@@ -165,7 +99,7 @@ double total_compton_cross_num(double w, double thetae)
 	if (thetae < MINT && w < MINW)
 		return (SIGMA_THOMSON);
 	if (thetae < MINT)
-		return (hc_klein_nishina(w) * SIGMA_THOMSON);
+		return (d_hc_klein_nishina(w) * SIGMA_THOMSON);
 
 	dmue = DMUE;
 	dgammae = thetae * DGAMMAE;
@@ -178,17 +112,17 @@ double total_compton_cross_num(double w, double thetae)
 		for (gammae = 1. + 0.5 * dgammae;
 		     gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
 
-			f = 0.5 * dNdgammae(thetae, gammae);
+			f = 0.5 * d_dNdgammae(thetae, gammae);
 
 			cross +=
-			    dmue * dgammae * boostcross(w, mue,
+			    dmue * dgammae * d_boostcross(w, mue,
 							gammae) * f;
 
 			if (isnan(cross)) {
 				fprintf(stderr, "%g %g %g %g %g %g\n", w,
 					thetae, mue, gammae,
-					dNdgammae(thetae, gammae),
-					boostcross(w, mue, gammae));
+					d_dNdgammae(thetae, gammae),
+					d_boostcross(w, mue, gammae));
 			}
 		}
 
@@ -198,7 +132,8 @@ double total_compton_cross_num(double w, double thetae)
 
 /* normalized (per unit proper electron number density)
    electron distribution */
-double dNdgammae(double thetae, double gammae)
+__device__
+double d_dNdgammae(double thetae, double gammae)
 {
 	double K2f;
 
@@ -212,16 +147,17 @@ double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
-double boostcross(double w, double mue, double gammae)
+__device__
+double d_boostcross(double w, double mue, double gammae)
 {
 	double we, boostcross, v;
-	double hc_klein_nishina(double we);
+	double d_hc_klein_nishina(double we);
 
 	/* energy in electron rest frame */
 	v = sqrt(gammae * gammae - 1.) / gammae;
 	we = w * gammae * (1. - mue * v);
 
-	boostcross = hc_klein_nishina(we) * (1. - mue * v);
+	boostcross = d_hc_klein_nishina(we) * (1. - mue * v);
 
 	if (boostcross > 2) {
 		fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
@@ -239,7 +175,8 @@ double boostcross(double w, double mue, double gammae)
 	return (boostcross);
 }
 
-double hc_klein_nishina(double we)
+__device__
+double d_hc_klein_nishina(double we)
 {
 	double sigma;
 
