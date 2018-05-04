@@ -151,7 +151,7 @@ __device__ void d_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	for (k = 0; k < 4; k++) {
 
 		/* lower coordinate basis index */
-		lower(Econ[k], Gcov, Ecov[k]);
+		d_lower(Econ[k], Gcov, Ecov[k]);
 	}
 
 	/* then raise tetrad basis index */

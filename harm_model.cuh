@@ -103,7 +103,7 @@ void get_fluid_params(double *d_p, double X[NDIM], double gcov[NDIM][NDIM], doub
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double *var, int n, int i, int j, double del[4]);
+	__device__ double interp_scalar(double *var, int n, int i, int j, double del[4]);
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -146,7 +146,7 @@ void get_fluid_params(double *d_p, double X[NDIM], double gcov[NDIM][NDIM], doub
 	Ucon[0] = -Vfac * gcon[0][0];
 	for (i = 1; i < NDIM; i++)
 		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
-	lower(Ucon, gcov, Ucov);
+	d_lower(Ucon, gcov, Ucov);
 
 	/* Get B and Bcov */
 	UdotBp = 0.;
@@ -155,7 +155,7 @@ void get_fluid_params(double *d_p, double X[NDIM], double gcov[NDIM][NDIM], doub
 	Bcon[0] = UdotBp;
 	for (i = 1; i < NDIM; i++)
 		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-	lower(Bcon, gcov, Bcov);
+	d_lower(Bcon, gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
