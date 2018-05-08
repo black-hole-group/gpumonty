@@ -49,20 +49,28 @@ int main(int argc, char *argv[]) {
 	double Ntot, N_superph_made;
 	int quit_flag, myid;
 	struct of_photon *phs;
+	unsigned long int seed;
 	time_t currtime, starttime;
 
-	if (argc < 3) {
-		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
+	if (argc < 4) {
+		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed > 0\n");
 		exit(0);
 	}
+	if (argc > 4) {
+		sscanf(argv[4], "%lu", &seed);
+	}
+	else seed = -1;
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 
 	/* initialize random number generator */
 	#pragma omp parallel private(myid)
 	{
-		myid = omp_get_thread_num();
-		init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
+		if (seed > 0) init_monty_rand(seed);
+		else {
+			myid = omp_get_thread_num();
+			init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
+		}
 	}
 
 	/* spectral bin parameters */
