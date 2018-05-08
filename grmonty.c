@@ -1,20 +1,20 @@
-/* 
+/*
    Using monte carlo method, estimate spectrum of an appropriately
-   scaled axisymmetric GRMHD simulation as a function of 
+   scaled axisymmetric GRMHD simulation as a function of
    latitudinal viewing angle.
 
-   Input simulation data is assumed to be in dump format provided by 
+   Input simulation data is assumed to be in dump format provided by
    HARM code.  Location of input file is, at present, hard coded
-   (see init_sim_data.c).  
+   (see init_sim_data.c).
 
    Nph super-photons are generated in total and then allowed
    to propagate.  They are weighted according to the emissivity.
    The photons are pushed by the geodesic equation.
    Their weight decays according to the local absorption coefficient.
    The photons also scatter with probability related to the local
-   scattering opacity.  
+   scattering opacity.
 
-   The electrons are assumed to have a thermal distribution 
+   The electrons are assumed to have a thermal distribution
    function, and to be at the same temperature as the protons.
  */
 
@@ -45,11 +45,10 @@ gsl_integration_workspace *w;
 #pragma omp threadprivate(r)
 #include <time.h>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	double Ntot, N_superph_made;
 	int quit_flag, myid;
-	struct of_photon ph;
+	struct of_photon *phs;
 	time_t currtime, starttime;
 
 	if (argc < 3) {
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
 	Ns = (int) Ntot;
 
 	/* initialize random number generator */
-#pragma omp parallel private(myid)
+	#pragma omp parallel private(myid)
 	{
 		myid = omp_get_thread_num();
 		init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
@@ -80,52 +79,51 @@ int main(int argc, char *argv[])
 	starttime = time(NULL);
 	quit_flag = 0;
 
+	fprintf(stderr, "Generating photons...\n");
+	fflush(stderr);
+
+	int phs_max = Ns;
+	phs = malloc(phs_max * sizeof(struct of_photon));
+	while(1) {
+		if (N_superph_made == phs_max) {
+			phs_max = 2*phs_max;
+			phs = realloc(phs, phs_max*sizeof(struct of_photon));
+		}
+		if (!quit_flag) make_super_photon(&phs[(int)N_superph_made], &quit_flag);
+		else break;
+		N_superph_made++;
+	}
+	phs = realloc(phs, N_superph_made*sizeof(struct of_photon)); //trim excedent memory
+
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-#pragma omp parallel private(ph)
-	{
+	#pragma omp parallel for
+	for (int i = 0; i < (int) N_superph_made; i++) {
+		/* push ph around */
+		track_super_photon(&phs[i]);
 
-		while (1) {
-
-			/* get pseudo-quanta */
-#pragma omp critical (MAKE_SPHOT)
-			{
-				if (!quit_flag)
-					make_super_photon(&ph, &quit_flag);
-			}
-			if (quit_flag)
-				break;
-
-			/* push them around */
-			track_super_photon(&ph);
-
-			/* step */
-#pragma omp atomic
-			N_superph_made += 1;
-
-			/* give interim reports on rates */
-			if (((int) (N_superph_made)) % 100000 == 0
-			    && N_superph_made > 0) {
-				currtime = time(NULL);
-				fprintf(stderr, "time %g, rate %g ph/s\n",
-					(double) (currtime - starttime),
-					N_superph_made / (currtime -
-							  starttime));
-			}
-		}
+		// /* give interim reports on rates */
+		// if (((int) (N_superph_made)) % 100000 == 0
+		//     && N_superph_made > 0) {
+		// 	currtime = time(NULL);
+		// 	fprintf(stderr, "time %g, rate %g ph/s\n",
+		// 		(double) (currtime - starttime),
+		// 		N_superph_made / (currtime -
+		// 				  starttime));
+		// }
 	}
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
 		(double) (currtime - starttime),
 		N_superph_made / (currtime - starttime));
 
-#ifdef _OPENMP
-#pragma omp parallel
+	#ifdef _OPENMP
+	#pragma omp parallel
 	{
 		omp_reduce_spect();
 	}
-#endif
+	#endif
 	report_spectrum((int) N_superph_made);
 
 	/* done! */
