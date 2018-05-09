@@ -81,7 +81,8 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 	return;
 }
 
-
+//old
+/*
 double bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
@@ -100,6 +101,28 @@ double bias_func(double Te, double w)
 
 	return bias / TP_OVER_TE;
 }
+*/
+
+//new
+
+double bias_func(double Te, double w)
+{
+	double bias, max ;
+
+	max = 0.5 * w / WEIGHT_MIN;
+
+	bias = Te*Te/(5. * max_tau_scatt) ;
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+
+	if (bias < TP_OVER_TE)
+		bias = TP_OVER_TE;
+	if (bias > max)
+		bias = max;
+
+	return bias / TP_OVER_TE;
+}
+
+
 
 /* 
 
