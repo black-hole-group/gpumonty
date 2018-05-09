@@ -39,13 +39,13 @@
   Device functions
   =================
 */
-#include "tetrads.cuh"
+//#include "tetrads.cuh"
 #include "harm_utils.cuh"
 #include "harm_model.cuh" 
-#include "radiation.cuh"
-#include "compton.cuh"
-#include "jnu_mixed.cuh"
-#include "hotcross.cuh"
+// #include "radiation.cuh"
+// #include "compton.cuh"
+// #include "jnu_mixed.cuh"
+// #include "hotcross.cuh"
 
 
 
