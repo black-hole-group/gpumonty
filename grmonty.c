@@ -91,24 +91,27 @@ int main(int argc, char *argv[]) {
 	fflush(stderr);
 
 	int phs_max = Ns;
+	int ph_count = 0;
 	phs = malloc(phs_max * sizeof(struct of_photon));
-	while(1) {
-		if (N_superph_made == phs_max) {
+	while (!quit_flag) {
+		if (ph_count == phs_max) {
 			phs_max = 2*phs_max;
 			phs = realloc(phs, phs_max*sizeof(struct of_photon));
 		}
-		if (!quit_flag) make_super_photon(&phs[(int)N_superph_made], &quit_flag);
-		else break;
-		N_superph_made++;
+		make_super_photon(&phs[ph_count], &quit_flag);
+		ph_count++;
 	}
-	phs = realloc(phs, N_superph_made*sizeof(struct of_photon)); //trim excedent memory
+	ph_count--;
+	phs = realloc(phs, ph_count*sizeof(struct of_photon)); //trim excedent memory
+	N_superph_made = ph_count;
 
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
 	#pragma omp parallel for
-	for (int i = 0; i < (int) N_superph_made; i++) {
+	for (int i = 0; i < ph_count; i++) {
 		/* push ph around */
+
 		track_super_photon(&phs[i]);
 
 		// /* give interim reports on rates */
