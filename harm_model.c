@@ -335,10 +335,9 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
-	// transformation for Kerr-Schild -> modified Kerr-Schild 
+	// transformation for Kerr-Schild -> modified Kerr-Schild: derive th with respect to x2
 //	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
-//	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
-	hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
 	gcon[TT][1] = 2. * irho2;
@@ -373,12 +372,12 @@ void gcov_func(double *X, double gcov[][NDIM])
 	s2 = sth * sth;
 	rho2 = r * r + a * a * cth * cth;
 
-	// transformation for Kerr-Schild -> modified Kerr-Schild
-/*
+	// transformation for Kerr-Schild -> modified Kerr-Schild: derive r and th with respect to x1 and x2
+
+	/*
 	tfac = 1.;
 	rfac = r - R0;
-	hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
-//	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
 	pfac = 1.;
 */
 
@@ -387,11 +386,11 @@ void gcov_func(double *X, double gcov[][NDIM])
   		rfac = r - R0;
 	}
     else {
-		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.)); // derivative of theexp in bl_coord
+		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.)); // derivative of r wrt x1
 	}
-	hfac = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
-//	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
+	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative of th wrt x2
 	pfac = 1.;
+
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[TT][1] = (2. * r / rho2) * tfac * rfac;
@@ -931,8 +930,8 @@ void report_spectrum(int N_superph_made)
 			}       // illinois
 
 			/* added to give average # scatterings */       // illinois
-			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (      // illinois
-				spect[j][i].dNdlE + SMALL)) ;       // illinois
+//			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (      // illinois
+//				spect[j][i].dNdlE + SMALL)) ;       // illinois
 
 			if (tau_scatt > max_tau_scatt)
 				max_tau_scatt = tau_scatt;

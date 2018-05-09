@@ -102,6 +102,7 @@ double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
 double max_tau_scatt, Ladv, dMact, bias_norm;
 double x1br, cpow2, npow2, rbr;
 int BL;
+int thecount = 0;
 
 gsl_rng *r;
 gsl_integration_workspace *w;

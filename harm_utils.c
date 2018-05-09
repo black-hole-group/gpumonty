@@ -447,7 +447,7 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 
 /* return boyer-lindquist coordinate of point */
 // old
-
+/*
 void bl_coord(double *X, double *r, double *th)
 {
 	*r = exp(X[1]) + R0;
@@ -456,9 +456,9 @@ void bl_coord(double *X, double *r, double *th)
 
 	return;
 }
-
+*/
 // new
-/*
+
 void bl_coord(double *X, double *r, double *th)
 {
     double theexp = X[1];
@@ -473,7 +473,7 @@ void bl_coord(double *X, double *r, double *th)
 
 	return;
 }
-*/
+
 void coord(int i, int j, double *X)
 {
 
