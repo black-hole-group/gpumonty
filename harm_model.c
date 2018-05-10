@@ -336,7 +336,10 @@ void gcon_func(double *X, double gcon[][NDIM])
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild: derive th with respect to x2
+	// Gammie MKS
 //	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+
+	// Sasha MKS
 	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2]));
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
@@ -374,13 +377,37 @@ void gcov_func(double *X, double gcov[][NDIM])
 
 	// transformation for Kerr-Schild -> modified Kerr-Schild: derive r and th with respect to x1 and x2
 
-	/*
+/*
+	// Gammie MKS
+	tfac = 1.;
+	rfac = r - R0;
+	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
+	pfac = 1.;
+*/
+
+
+	// Sasha MKS
 	tfac = 1.;
 	rfac = r - R0;
 	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative dtheta/dx_2
 	pfac = 1.;
+
+
+/*
+	// Hyperexponential, Gammie MKS
+	tfac = 1.;
+	if (r < rbr) {
+  		rfac = r - R0;
+	}
+    else {
+		rfac = (r - R0) * (1. + npow2 * cpow2 * pow((-x1br + X[1]), npow2 - 1.)); // derivative of r wrt x1
+	}
+	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]); // derivative of th wrt x2
+	pfac = 1.;
 */
 
+/*
+	// Hyperexponential, Sasha MKS
 	tfac = 1.;
 	if (r < rbr) {
   		rfac = r - R0;
@@ -390,7 +417,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	}
 	hfac = M_PI_2 + M_PI_2 * (1. - hslope) * cos(M_PI * (1. + X[2])); // derivative of th wrt x2
 	pfac = 1.;
-
+*/
 
 	gcov[TT][TT] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[TT][1] = (2. * r / rho2) * tfac * rfac;
@@ -496,16 +523,21 @@ void get_connection(double X[4], double lconn[4][4][4])
 	r3 = r2 * r1;
 	r4 = r3 * r1;
 
-//	sincos(2. * M_PI * X[2], &sx, &cx);
-	sincos(M_PI * (1. + X[2]), &sx, &cx);
+//	sincos(2. * M_PI * X[2], &sx, &cx);	// Gammie MKS
+	sincos(M_PI * (1. + X[2]), &sx, &cx);	// Sasha MKS
 
-	// HARM-2D MKS
-//	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
-//	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
-//	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
+/*
+	// HARM-2D, Gammie MKS
+	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
+	dthdx2 = M_PI * (1. + (1 - hslope) * cx);
+	d2thdx22 = -2. * M_PI * M_PI * (1 - hslope) * sx;
+*/
+
+	// HARMPI, Sasha MKS
 	th = M_PI_2 * (1.0 + X[2]) + ((1. - hslope)/2.) * sx;
 	dthdx2 = M_PI_2 - (M_PI_2 * (hslope - 1.))/2. * cx;
 	d2thdx22 = 0.5 * M_PI * M_PI_2 * (hslope - 1.) * sx;
+
 
 	dthdx22 = dthdx2 * dthdx2;
 
@@ -644,7 +676,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
 
-#define RMAX	100.
+#define RMAX	50.
 #define ROULETTE	1.e4
 int stop_criterion(struct of_photon *ph)
 {

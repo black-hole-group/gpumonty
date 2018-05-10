@@ -447,18 +447,18 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 
 /* return boyer-lindquist coordinate of point */
 // old
-/*
+
 void bl_coord(double *X, double *r, double *th)
 {
 	*r = exp(X[1]) + R0;
-//	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
-    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+//	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);	// Gammie MKS
+    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));	// Sasha MKS
 
 	return;
 }
-*/
-// new
 
+// new
+/*
 void bl_coord(double *X, double *r, double *th)
 {
     double theexp = X[1];
@@ -468,11 +468,12 @@ void bl_coord(double *X, double *r, double *th)
         theexp += cpow2 * pow(X[1] - x1br, npow2);
 
 	*r = exp(theexp) + R0;
-//	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
-    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));
+	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);		// Gammie MKS
+//    *th = M_PI_2*(1.0+X[2]) + ((1. - hslope)/2.)*sin(M_PI*(1.0+X[2]));	// Sasha MKS
 
 	return;
 }
+*/
 
 void coord(int i, int j, double *X)
 {
@@ -559,11 +560,15 @@ double dOmega_func(double x2i, double x2f)
 {
 	double dO;
 
-dO = 2. * M_PI *
+
+	// Sasha MKS
+	dO = 2. * M_PI *
 		(-cos(M_PI_2 * (1.0 * x2f) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2f)))
 		+ cos(M_PI_2 * (1.0 * x2i) + ((1. - hslope)/2.) * sin(M_PI * (1.0 + x2i)))
 		);
+
 /*
+	// Gammie MKS
 	dO = 2. * M_PI *
 	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
 	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
