@@ -66,7 +66,7 @@ void init_harm_data(char *fname)
   /* not set automatically */
   a = 0.9375;
   Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
-  Rout = 40.;
+  Rout = 1000.;
   hslope = 0.3;
   R0 = 0.0;
   fprintf(stderr,"coordinate parameters: Rin,Rout,hslope,R0,dx[1],dx[2]: %g %g %g %g %g %g\n",
