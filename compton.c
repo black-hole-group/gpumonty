@@ -1,44 +1,4 @@
 
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
 #include "decs.h"
 #pragma omp threadprivate(r)
 
@@ -186,17 +146,22 @@ void boost(double v[4], double u[4], double vp[4])
 	gm1 = g - 1.;
 
 	/* general Lorentz boost into frame u from lab frame */
-	vp[0] = u[0] * v[0] - u[1] * v[1] - u[2] * v[2] - u[3] * v[3];
-	vp[1] =
-	    -u[1] * v[0] + (1. + n1 * n1 * gm1) * v[1] +
-	    n1 * n2 * gm1 * v[2] + n1 * n3 * gm1 * v[3];
-	vp[2] =
-	    -u[2] * v[0] + n2 * n1 * gm1 * v[1] + (1. +
-						   n2 * n2 * gm1) * v[2] +
-	    n2 * n3 * gm1 * v[3];
-	vp[3] =
-	    -u[3] * v[0] + n3 * n1 * gm1 * v[1] + n3 * n2 * gm1 * v[2] +
-	    (1. + n3 * n3 * gm1) * v[3];
+	vp[0] = u[0]*v[0] - 
+		u[1]*v[1] - 
+		u[2]*v[2] - 
+		u[3]*v[3];
+	vp[1] = -u[1] * v[0] + 
+		(1. + n1 * n1 * gm1) * v[1] +
+	    	n1 * n2 * gm1 * v[2] + 
+		n1 * n3 * gm1 * v[3];
+	vp[2] = -u[2] * v[0] + 
+		n2 * n1 * gm1 * v[1] + 
+		(1. + n2 * n2 * gm1) * v[2] +
+	    	n2 * n3 * gm1 * v[3];
+	vp[3] = -u[3] * v[0] + 
+		n3 * n1 * gm1 * v[1] + 
+		n3 * n2 * gm1 * v[2] +
+	    	(1. + n3 * n3 * gm1) * v[3];
 
 }
 
@@ -235,7 +200,7 @@ double sample_klein_nishina(double k0)
 	/* a low efficiency sampling algorithm, particularly for large k0;
 	   limiting efficiency is log(2 k0)/(2 k0) */
 	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
-	k0pmax = k0;		/* at theta = 0 */
+	k0pmax = k0;			/* at theta = 0 */
 	do {
 
 		/* tentative value */
@@ -307,9 +272,8 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 		} else {
 
 			/* Klein-Nishina cross-section / Thomson */
-			sigma_KN =
-			    (3. / (4. * K * K)) * (2. +
-						   K * K * (1. +
+			sigma_KN = (3. / (4. * K * K)) * (2. +
+					   K * K * (1. +
 							    K) / ((1. +
 								   2. *
 								   K) *
@@ -374,14 +338,11 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	sth = sqrt(1. - mu * mu);
 
 	p[0] = gamma_e;
-	p[1] =
-	    gamma_e * beta_e * (cth * v0x +
+	p[1] = gamma_e * beta_e * (cth * v0x +
 				sth * (cphi * v1x + sphi * v2x));
-	p[2] =
-	    gamma_e * beta_e * (cth * v0y +
+	p[2] = gamma_e * beta_e * (cth * v0y +
 				sth * (cphi * v1y + sphi * v2y));
-	p[3] =
-	    gamma_e * beta_e * (cth * v0z +
+	p[3] = gamma_e * beta_e * (cth * v0z +
 				sth * (cphi * v1z + sphi * v2z));
 
 	if (beta_e < 0) {

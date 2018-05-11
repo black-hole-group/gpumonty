@@ -1,45 +1,4 @@
 
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
 /*
 
 	main transport subroutine for tracking, absorbing,
@@ -70,6 +29,7 @@ void track_super_photon(struct of_photon *ph)
 	    Bcov[NDIM];
 	int nstep = 0;
 
+	   // isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -77,7 +37,7 @@ void track_super_photon(struct of_photon *ph)
 	    isnan(ph->X[3]) ||
 	    isnan(ph->K[0]) ||
 	    isnan(ph->K[1]) ||
-	    isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
+	    isnan(ph->K[2]) || isnan(ph->K[3]) ) {
 		fprintf(stderr, "track_super_photon: bad input photon.\n");
 		fprintf(stderr,
 			"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
@@ -91,7 +51,7 @@ void track_super_photon(struct of_photon *ph)
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov);
+				 Bcov);
 
 	theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	nu = get_fluid_nu(ph->X, ph->K, Ucov);

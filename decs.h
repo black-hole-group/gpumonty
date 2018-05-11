@@ -1,46 +1,4 @@
 
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -59,15 +17,17 @@
 #define NDIM	4
 #define NPRIM	8
 
+// Radiative processes
+#define BREMSSTRAHLUNG (1)
+
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
-#define NUMAX 1.e16
+#define NUMAX 1.e20
 
-#define THETAE_MAX	1000.	/* Only used for harm3d models */
+#define THETAE_MAX	1000.	
 #define THETAE_MIN	0.3
 #define TP_OVER_TE	(3.)
-
-#define WEIGHT_MIN	(1.e31)
+#define WEIGHT_MIN	(1.e28)
 
 /* mnemonics for primitive vars; conserved vars */
 #define KRHO     0
@@ -152,7 +112,6 @@ extern struct of_geom **geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
 
-
 /* some coordinate parameters */
 extern double a;
 extern double R0, Rin, Rh, Rout, Rms;
@@ -176,17 +135,6 @@ extern double max_tau_scatt, Ladv, dMact, bias_norm;
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
-#define MYSIN(x,sx) 	{							\
-			double _xp = (x)-M_PI; 					\
-			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp)); 	\
-			sx = -_yp*(0.225*fabs(_yp)+0.775);			\
-			}
-#define MYCOS(x,cx) 	{							\
-			double _xp = (x)-THREEPI_TWO; 					\
-			_xp += (_xp<-M_PI)*2.*M_PI; 				\
-			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
-			cx = _yp*(0.225*fabs(_yp)+0.775);			\
-			}
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
@@ -247,13 +195,20 @@ double Bnu_inv(double nu, double thetae);
 double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
-	/* thermal synchrotron */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta);
-double int_jnu(double Ne, double Thetae, double Bmag, double nu);
+// Emissivity - general
+double jnu(double nu, double Ne, double Thetae, double B, double theta);
+double int_jnu(double Ne, double Thetae, double B, double nu);
 void init_emiss_tables(void);
 double F_eval(double Thetae, double Bmag, double nu);
 double K2_eval(double Thetae);
+
+	/* thermal synchrotron */
+double jnu_synch(double nu, double Ne, double Thetae, double B, double theta);
+double int_jnu_synch(double Ne, double Thetae, double Bmag, double nu);
+
+// Free-free Bremsstrahlung
+double jnu_brems(double nu, double Ne, double Thetae);
+double int_jnu_brems(double Ne, double Thetae, double nu);
 
 	/* compton scattering */
 void init_hotcross(void);
