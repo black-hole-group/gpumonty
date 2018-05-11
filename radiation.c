@@ -26,7 +26,7 @@ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 {
 	double j;
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta);
+	j = jnu(nu, Ne, Thetae, B, theta);
 
 	return (j / (nu * nu));
 }

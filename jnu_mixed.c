@@ -2,6 +2,7 @@
 
 #include "decs.h"
 #pragma omp threadprivate(r)
+
 /* 
 
 "mixed" emissivity formula 
@@ -13,9 +14,81 @@ good for Thetae > 1
 
 */
 
+double jnu_brems(double nu, double Ne, double Thetae);
+double int_jnu_brems(double Ne, double Thetae, double nu);
+double jnu_synch(double nu, double Ne, double Thetae, double B, double theta);
+double int_jnu_synch(double Ne, double Thetae, double Bmag, double nu);
+
+/* Emissivity - general routines */
+
+double jnu(double nu, double Ne, double Thetae, double B, double theta)
+{
+	double j = 0.;
+
+	// Synchrotron contribution
+	j += jnu_synch(nu, Ne, Thetae, B, theta);
+	
+	// add Bremsstrahlung if necessary
+	#if BREMSSTRAHLUNG
+	j += jnu_brems(nu, Ne, Thetae);
+	#endif
+	
+	return j;
+}
+
+double int_jnu(double Ne, double Thetae, double B, double nu)
+{
+	double intj = 0.;
+	
+	// Synchrotron contribution
+	intj += int_jnu_synch(Ne, Thetae, B, nu);
+
+	// add Bremsstrahlung if necessary
+	#if BREMSSTRAHLUNG
+	intj += int_jnu_brems(Ne, Thetae, nu);
+	#endif
+
+	return intj;
+}
+
+/* End of: Emissivity - general routines */
+
+
+/* Bremsstrahlung functions */
+
+double jnu_brems(double nu, double Ne, double Thetae)
+{
+	// This is taken from Rybicki+Lightman 1979 (RL1979)
+	// Relativistic contribution (relfac):
+	// 		see equation 2.1.31 of Novikov+Thorne 1973
+	//		or equation 5.25 of RL1979
+
+	double Te = ME*CL*CL*Thetae/KBOL;
+	double relfac = 1. + 4.4e-10*Te;
+	double Gff = 1.2;
+	double fac1 = 32.*pow(EE, 6.)/(3.*pow(CL, 3.)*ME);
+	double fac2 = sqrt(2.*M_PI/(3.*KBOL*ME));
+	double fac3 = Ne*Ne*1./(sqrt(Te));
+	double x = HPL*nu/(KBOL*Te);	// Should I add a Taylor-exp if x is too small?
+	double expfac = exp(-x);
+
+	double j = fac1 * fac2 * fac3 * expfac * Gff * relfac;
+
+	return j;
+}
+
+double int_jnu_brems(double Ne, double Thetae, double nu)
+{
+	return 4.*M_PI*jnu_brems(nu, Ne, Thetae);
+}
+
+/* End of: Bremsstrahlung functions */
+
+
+/* Synchrotron functions */
+
 #define CST 1.88774862536	/* 2^{11/12} */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta)
+double jnu_synch(double nu, double Ne, double Thetae, double B, double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
 	double K2_eval(double Thetae);
@@ -34,16 +107,14 @@ double jnu_synch(double nu, double Ne, double Thetae, double B,
 	xp1 = pow(x, 1. / 3.);
 	xx = sqrt(x) + CST * sqrt(xp1);
 	f = xx * xx;
-	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f *
-	    exp(-xp1);
+	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f * exp(-xp1);
 
 	return (j);
 }
-
 #undef CST
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-double int_jnu(double Ne, double Thetae, double Bmag, double nu)
+double int_jnu_synch(double Ne, double Thetae, double Bmag, double nu)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/
@@ -64,8 +135,10 @@ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 
 	return JCST * j_fac * F_eval(Thetae, Bmag, nu);
 }
-
 #undef JCST
+
+/* End of: Synchrotron functions */
+
 
 #define CST 1.88774862536	/* 2^{11/12} */
 double jnu_integrand(double th, void *params)
@@ -81,7 +154,6 @@ double jnu_integrand(double th, void *params)
 	return sth * sth * pow(sqrt(x) + CST * pow(x, 1. / 6.),
 			       2.) * exp(-pow(x, 1. / 3.));
 }
-
 #undef CST
 
 /* Tables */

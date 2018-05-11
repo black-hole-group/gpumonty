@@ -312,13 +312,15 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 		 (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
 
 	ph->w = weight;
-	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+//	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);	// Synchrotron only
+	jmax = jnu(nu, Ne, Thetae, Bmag, M_PI / 2.);	// Synchrotron + Bremmstrahlung
 	do {
 		cth = 2. * monty_rand() - 1.;
 		th = acos(cth);
 
 	} while (monty_rand() >
-		 jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
+//		 jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);	// Synchrotron only
+		 jnu(nu, Ne, Thetae, Bmag, th) / jmax);		// Synchrotron + Bremsstrahlung
 
 	sth = sqrt(1. - cth * cth);
 	phi = 2. * M_PI * monty_rand();

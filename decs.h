@@ -17,6 +17,9 @@
 #define NDIM	4
 #define NPRIM	8
 
+// Radiative processes
+#define BREMSSTRAHLUNG (1)
+
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
 #define NUMAX 1.e20
@@ -192,13 +195,20 @@ double Bnu_inv(double nu, double thetae);
 double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
-	/* thermal synchrotron */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta);
-double int_jnu(double Ne, double Thetae, double Bmag, double nu);
+// Emissivity - general
+double jnu(double nu, double Ne, double Thetae, double B, double theta);
+double int_jnu(double Ne, double Thetae, double B, double nu);
 void init_emiss_tables(void);
 double F_eval(double Thetae, double Bmag, double nu);
 double K2_eval(double Thetae);
+
+	/* thermal synchrotron */
+double jnu_synch(double nu, double Ne, double Thetae, double B, double theta);
+double int_jnu_synch(double Ne, double Thetae, double Bmag, double nu);
+
+// Free-free Bremsstrahlung
+double jnu_brems(double nu, double Ne, double Thetae);
+double int_jnu_brems(double Ne, double Thetae, double nu);
 
 	/* compton scattering */
 void init_hotcross(void);
