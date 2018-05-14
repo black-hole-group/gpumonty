@@ -26,20 +26,6 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 				Interpolation routines
 
  ********************************************************************/
-/*
-double interp_scalar(double **var, int i, int j, double coeff[4])
-{
-
-	double interp;
-
-	interp =
-	    var[i][j] * coeff[0] +
-	    var[i][j + 1] * coeff[1] +
-	    var[i + 1][j] * coeff[2] + var[i + 1][j + 1] * coeff[3];
-
-	return interp;
-}
-*/
 
 double interp_scalar(double **var, double X[NDIM])
 {
