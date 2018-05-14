@@ -174,7 +174,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
-//	double interp_scalar(double **var, int i, int j, double del[4]);
 	double interp_scalar(double **var, double X[NDIM]);
 	double sig ;
 
@@ -185,26 +184,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 		return;
 	}
-/*
-	Xtoij(X, &i, &j, del);
-
-	coeff[0] = (1. - del[1]) * (1. - del[2]);
-	coeff[1] = (1. - del[1]) * del[2];
-	coeff[2] = del[1] * (1. - del[2]);
-	coeff[3] = del[1] * del[2];
-
-	rho = interp_scalar(p[KRHO], i, j, coeff);
-	uu = interp_scalar(p[UU], i, j, coeff);
-
-	Bp[1] = interp_scalar(p[B1], i, j, coeff);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff);
-
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
-*/
-
 
 	rho = interp_scalar(p[KRHO], X);
 	uu = interp_scalar(p[UU], X);
