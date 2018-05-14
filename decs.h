@@ -97,7 +97,6 @@ struct of_grid {
 
 /** global variables **/
 /** model independent */
-extern gsl_rng *r;
 
 extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 
@@ -226,7 +225,7 @@ double sample_y_distr(double theta);
 void sample_scattered_photon(double k[NDIM], double p[NDIM],
 			     double kp[NDIM]);
 
-/** model dependent functions required by code: these 
+/** model dependent functions required by code: these
    basic interfaces define the model **/
 
 /* physics related */
@@ -244,5 +243,3 @@ int record_criterion(struct of_photon *ph);
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
-
-

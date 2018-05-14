@@ -1,6 +1,8 @@
 
 #include "decs.h"
-#pragma omp threadprivate(r)
+
+gsl_rng *rng;
+#pragma omp threadprivate(rng)
 
 /*
 
@@ -17,22 +19,22 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 
 void init_monty_rand(int seed)
 {
-	r = gsl_rng_alloc(gsl_rng_mt19937);	/* use Mersenne twister */
-	gsl_rng_set(r, seed);
+	rng = gsl_rng_alloc(gsl_rng_mt19937);	/* use Mersenne twister */
+	gsl_rng_set(rng, seed);
 }
 
 /* return pseudo-random value between 0 and 1 */
 double monty_rand()
 {
-	return (gsl_rng_uniform(r));
+	return (gsl_rng_uniform(rng));
 }
 
 
 /*
    given photon w/ wavevector $k$ colliding w/ electron with
-   momentum $p$, ($p$ is actually the four-velocity) 
-   find new wavevector $kp$ 
-   
+   momentum $p$, ($p$ is actually the four-velocity)
+   find new wavevector $kp$
+
 */
 
 void sample_scattered_photon(double k[4], double p[4], double kp[4])
@@ -65,7 +67,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
-	gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
+	gsl_ran_dir_3d(rng, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -190,8 +192,6 @@ This routine is inefficient; it needs improvement.
 double sample_klein_nishina(double k0)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
-	int n = 0;
-
 	/* a low efficiency sampling algorithm, particularly for large k0;
 	   limiting efficiency is log(2 k0)/(2 k0) */
 	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
@@ -206,19 +206,17 @@ double sample_klein_nishina(double k0)
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
 		x1 *= monty_rand();
 
-		n++;
-
 	} while (x1 >= klein_nishina(k0, k0p_tent));
 
 	return (k0p_tent);
 }
 
-/*  
+/*
 
-   differential cross section for scattering from 
+   differential cross section for scattering from
    frequency a -> frequency ap.  Frequencies are
    in units of m_e.  Unnormalized!
-   
+
 */
 
 double klein_nishina(double a, double ap)
@@ -231,7 +229,7 @@ double klein_nishina(double a, double ap)
 	return (kn);
 }
 
-/* 
+/*
 
 	sample electron distribution to find which electron was
 	scattered.
@@ -306,7 +304,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	v0z /= v0;
 
 	/* pick zero-angle for coordinate system */
-	gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
+	gsl_ran_dir_3d(rng, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */
@@ -326,7 +324,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	v2y = v0z * v1x - v0x * v1z;
 	v2z = v0x * v1y - v0y * v1x;
 
-	/* now resolve new momentum vector along unit vectors 
+	/* now resolve new momentum vector along unit vectors
 	   and create a four-vector $p$ */
 	phi = monty_rand() * 2. * M_PI;	/* orient uniformly */
 	sincos(phi, &sphi, &cphi);
@@ -352,12 +350,12 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	return;
 }
 
-/* 
+/*
    sample dimensionless speed of electron
-   from relativistic maxwellian 
+   from relativistic maxwellian
 
-   checked. 
-   
+   checked.
+
 */
 
 void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
@@ -375,13 +373,13 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 
 }
 
-/* 
+/*
 
    sample y, which is the temperature-normalized
    kinetic energy.
    Uses procedure outlined in Canfield et al. 1987,
-   p. 572 et seq. 
-   
+   p. 572 et seq.
+
 */
 
 double sample_y_distr(double Thetae)
@@ -406,13 +404,13 @@ double sample_y_distr(double Thetae)
 		x1 = monty_rand();
 
 		if (x1 < pi_3) {
-			x = gsl_ran_chisq(r, 3);
+			x = gsl_ran_chisq(rng, 3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = gsl_ran_chisq(r, 4);
+			x = gsl_ran_chisq(rng, 4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = gsl_ran_chisq(r, 5);
+			x = gsl_ran_chisq(rng, 5);
 		} else {
-			x = gsl_ran_chisq(r, 6);
+			x = gsl_ran_chisq(rng, 6);
 		}
 
 		/* this translates between defn of distr in
