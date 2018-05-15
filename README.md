@@ -23,15 +23,16 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump019 4.e19 
+    ./grmonty 5000000 dump019 4.e19 [C]
 
 Arguments are:
 
 - estimate of photon number (actual number is probabilistic due to scattering)
 - harm dump file for model
 - mass unit (few x 10^19 is appropriate for Sgr A*)
+- the integer C, if provided, will be the seed of the random number generator
 
-This will output spectrum to `grmonty.spec`  which should be identical to `grmonty_spec_verify`.
+This will output spectrum to `grmonty.spec` ~~which should be identical to `grmonty_spec_verify`~~.
 
 # Plotting
 
@@ -47,7 +48,7 @@ plots.plot('grmonty.spec')
 Replace `harm_model.c` with your own source model.  Begin by modifying `harm_model.c`. You must supply
 
 ```
-init_model 
+init_model
 make_super_photon
 bias_func
 get_fluid_params
@@ -55,8 +56,8 @@ report_spectrum
 stop_criterion
 record_criterion
 
-gcon_func 
-gcov_func 
+gcon_func
+gcov_func
 get_connection
 ```
 
@@ -79,7 +80,7 @@ in the model file.
 - `cuda`, in progress: CUDA version
 - `building-cuda`: CUDA progress by Caio
 
-## Misc. 
+## Misc.
 
 - `track_ph`: output photon world lines for visualization
 
@@ -113,7 +114,7 @@ You are morally obligated to cite the following paper in any scientific literatu
 > [Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009, Astrophysical Journal Supplement, 184, 387]((http://adsabs.harvard.edu/abs/2009ApJS..184..387D))
 
 
-# LICENSE 
+# LICENSE
 
 `grmonty` is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
