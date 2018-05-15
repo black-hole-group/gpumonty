@@ -24,7 +24,6 @@
 /* defining declarations for global variables */
 struct of_geom **geom;
 int N1, N2, N3, n_within_horizon;
-double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 int Ns, N_superph_recorded, N_scatt;
 
 /* some coordinate parameters */

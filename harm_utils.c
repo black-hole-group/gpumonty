@@ -13,6 +13,8 @@ extern double **ne;
 extern double **thetae;
 extern double **b;
 
+ double wgt[N_ESAMP + 1];
+
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
@@ -422,7 +424,7 @@ void set_units(char *munitstr)
 	double MBH;
 
 	/* set black hole mass */
-	/** could be read in from file here, 
+	/** could be read in from file here,
 	    along with M_unit and other parameters **/
 	MBH = 4.e6;
 

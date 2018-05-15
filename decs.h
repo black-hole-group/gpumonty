@@ -98,8 +98,6 @@ struct of_grid {
 /** global variables **/
 /** model independent */
 
-extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-
 extern int Ns;
 extern int N_superph_recorded, N_scatt;
 
