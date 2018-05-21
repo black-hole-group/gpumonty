@@ -98,12 +98,19 @@ double bias_func(double Te, double w)
 	bias = Te*Te/(5. * max_tau_scatt) ;
 	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
+	#if (BETAPRESCRIPTION || MOSC2014)
+//	if (bias < tpte)
+//		bias = tpte;
+	if (bias > max)
+		bias = max;	
+	return bias;// / tpte;
+	#else
 	if (bias < TP_OVER_TE)
 		bias = TP_OVER_TE;
 	if (bias > max)
 		bias = max;
-
 	return bias / TP_OVER_TE;
+	#endif
 }
 
 /* 
@@ -119,10 +126,8 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	int l, m;
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double sig ;
-
-	*Ne = p[KRHO][i][j] * Ne_unit;
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	double sig;
+	double pg, bsq, beta_plasma, bplsq;
 
 	Bp[1] = p[B1][i][j];
 	Bp[2] = p[B2][i][j];
@@ -132,7 +137,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	Vcon[2] = p[U2][i][j];
 	Vcon[3] = p[U3][i][j];
 
-	/* Get Ucov */
+	// Get Ucov
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
@@ -143,7 +148,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		Ucon[l] = Vcon[l] - Vfac * geom[i][j].gcon[0][l];
 	lower(Ucon, geom[i][j].gcov, Ucov);
 
-	/* Get B and Bcov */
+	// Get B and Bcov
 	UdotBp = 0.;
 	for (l = 1; l < NDIM; l++)
 		UdotBp += Ucov[l] * Bp[l];
@@ -152,16 +157,49 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
 	lower(Bcon, geom[i][j].gcov, Bcov);
 
-
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
+	*Ne = p[KRHO][i][j] * Ne_unit;
+
+	#if BETAPRESCRIPTION
+	// use plasma beta to calculate electron temperature
+	pg = (gam - 1.) * p[UU][i][j];
+	bsq = Bcon[0] * Bcov[0] +
+			Bcon[1] * Bcov[1] +
+			Bcon[2] * Bcov[2] +
+			Bcon[3] * Bcov[3];
+	beta_plasma = 2.*pg/bsq;
+	bplsq = pow(beta_plasma, 2.);
+	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
+	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	#elif MOSC2014
+	pg = (gam - 1.) * p[UU][i][j];
+	bsq = Bcon[0] * Bcov[0] +
+			Bcon[1] * Bcov[1] +
+			Bcon[2] * Bcov[2] +
+			Bcon[3] * Bcov[3];
+	beta_plasma = 2.*pg/bsq;
+	bplsq = pow(beta_plasma, 2.);
+	if (beta_plasma > 0.2){
+		tpte = TPTE_DISK;
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	}
+	else {
+		tpte = TPTE_JET;
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	}
+	#else
+	// Thetae_unit already calculated in initialization
+	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	#endif
 
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
-
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
 	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
-
 }
 
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -170,12 +208,12 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double Bcov[NDIM])
 {
 	int i, j;
-	double del[NDIM];
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
+	double gcon[NDIM][NDIM];
 	double interp_scalar(double **var, double X[NDIM]);
-	double sig ;
+	double sig;
+	double pg, bsq, beta_plasma, bplsq;
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -198,7 +236,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	gcon_func(X, gcon);
 
-	/* Get Ucov */
+	// Get Ucov
 	VdotV = 0.;
 	for (i = 1; i < NDIM; i++)
 		for (j = 1; j < NDIM; j++)
@@ -209,7 +247,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
 	lower(Ucon, gcov, Ucov);
 
-	/* Get B and Bcov */
+	// Get B and Bcov
 	UdotBp = 0.;
 	for (i = 1; i < NDIM; i++)
 		UdotBp += Ucov[i] * Bp[i];
@@ -222,12 +260,47 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
 	*Ne = rho * Ne_unit;
+
+	#if BETAPRESCRIPTION
+	// use plasma beta to calculate electron temperature
+    pg = (gam - 1.) * uu;
+	bsq = Bcon[0] * Bcov[0] +
+			Bcon[1] * Bcov[1] +
+			Bcon[2] * Bcov[2] +
+			Bcon[3] * Bcov[3];
+    beta_plasma = 2.*pg/bsq;
+	bplsq = pow(beta_plasma, 2.);
+	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
+	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = uu / rho * Thetae_unit;
+	#elif MOSC2014
+	pg = (gam - 1.) * p[UU][i][j];
+	bsq = Bcon[0] * Bcov[0] +
+			Bcon[1] * Bcov[1] +
+			Bcon[2] * Bcov[2] +
+			Bcon[3] * Bcov[3];
+    beta_plasma = 2.*pg/bsq;
+	bplsq = pow(beta_plasma, 2.);
+	if (beta_plasma > 0.2){
+		tpte = TPTE_DISK;
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	}
+	else {
+		tpte = TPTE_JET;
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	}
+	#else
+	// Thetae_unit already calculated in initialization
+	*Thetae = uu / rho * Thetae_unit;
+	#endif
 
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
 	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
 }
+
 
 /* 
    Current metric: modified Kerr-Schild, squashed in theta
