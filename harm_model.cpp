@@ -35,7 +35,7 @@ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	Rh = 1 + sqrt(1. - a * a);
+	Rh = 1. + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();

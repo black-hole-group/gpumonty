@@ -11,14 +11,14 @@
 __device__
 double bias_func(double Te, double w)
 {
-	double bias, max, avg_num_scatt;
+	double bias, max;
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
-	bias =
-	    100. * Te * Te / (bias_norm * max_tau_scatt *
-			      (avg_num_scatt + 2));
+	//avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt *
+	//		      (avg_num_scatt + 2));
+	bias = Te*Te/(5.*max_tau_scatt);
 
 	if (bias < TP_OVER_TE)
 		bias = TP_OVER_TE;
