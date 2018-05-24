@@ -39,7 +39,7 @@ double gam;
 double dMsim;
 double M_unit, L_unit, T_unit;
 double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
-double max_tau_scatt, Ladv, dMact, bias_norm;
+double max_tau_scatt, Ladv, dMact; //bias_norm;
 
 gsl_rng *r;
 gsl_integration_workspace *w;
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     /* propagate photons (device)
        ==========================
     */
-    launchKernel(p, sim, units, pharr, nmaxgpu);
+    launchKernel(p, sim, units, max_tau_scatt, pharr, nmaxgpu);
 
 
 	// gets results back from device

@@ -85,7 +85,7 @@ void init_harm_data(char *fname)
 
 	dMact = 0.;
 	Ladv = 0.;
-	bias_norm = 0.;
+	//bias_norm = 0.;
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
 	for (k = 0; k < N1 * N2; k++) {
@@ -131,9 +131,9 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf ", &vmax);
 		fscanf(fp, "%lf\n", &gdet);
 
-		bias_norm +=
-		    dV * gdet * pow(p[UU*N1*N2+i*N2+j] / p[KRHO*N1*N2+i*N2+j] *
-				    Thetae_unit, 2.);
+		//bias_norm +=
+		//    dV * gdet * pow(p[UU*N1*N2+i*N2+j] / p[KRHO*N1*N2+i*N2+j] *
+		//		    Thetae_unit, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */
@@ -144,7 +144,7 @@ void init_harm_data(char *fname)
 
 	}
 
-	bias_norm /= V;
+	//bias_norm /= V;
 	dMact *= dx[3] * dx[2];
 	dMact /= 21.;
 	Ladv *= dx[3] * dx[2];

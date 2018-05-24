@@ -188,7 +188,7 @@ extern double B_unit;
 extern double Ne_unit;
 extern double Thetae_unit;
 
-extern double max_tau_scatt, Ladv, dMact, bias_norm;
+extern double max_tau_scatt, Ladv, dMact; //bias_norm;
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)

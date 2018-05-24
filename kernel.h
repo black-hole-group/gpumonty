@@ -15,6 +15,16 @@
 */
 #define NPHVARS 25 
 
+/* Range of initial superphoton frequencies */
+#define NUMIN 1.e9
+#define NUMAX 1.e16
+
+#define THETAE_MAX	1000.	/* Only used for harm3d models */
+#define THETAE_MIN	0.3
+#define TP_OVER_TE	3.
+
+#define WEIGHT_MIN 1.e31
+
 /* numerical convenience */
 #define SMALL	1.e-40
 
@@ -157,6 +167,6 @@ struct d_photon {
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, double max_tau_scatt, double *pharr, int nph);
 
 #endif
