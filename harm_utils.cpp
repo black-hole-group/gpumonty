@@ -170,7 +170,7 @@ void init_nint_table(void)
 			dn = F_eval(1., Bmag,
 				    exp(j * dlnu +
 					lnu_min)) / (exp(wgt[j]) +
-						     1.e-100);
+						     1.e-100); // do we really need this?
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
@@ -219,8 +219,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		for (l = 0; l <= N_ESAMP; l++) {
 			dn = F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[l]) +
-						     1.e-100);
+					lnu_min)) / exp(wgt[l]); //+ 1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
@@ -316,7 +315,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 		nu = exp(monty_rand() * Nln + lnu_min);
 		weight = linear_interp_weight(nu);
 	} while (monty_rand() >
-		 (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		 (F_eval(Thetae, Bmag, nu) / weight) / dnmax); // removed +1e-100 
 
 	ph->w = weight;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
