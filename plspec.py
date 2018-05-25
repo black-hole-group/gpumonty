@@ -42,7 +42,7 @@ plt.step(lw, nLn[4], label = '4')
 plt.step(lw, nLn[5], label = '5')
 #
 # in case I want the mean of the th_bins
-#nLn_mean = np.mean(nLn, axis = 0)
+nLn_mean = np.mean(nLn, axis = 0)
 #plt.step(lw, nLn_mean, label = 'mean')
 # labels
 plt.rc('text', usetex=True) 
@@ -51,8 +51,8 @@ plt.rc('font', family='times new roman')
 plt.xlabel('$\\nu [{\\rm Hz}]$', weight='bold', fontsize=20)
 plt.ylabel('$\\nu L_\\nu [{\\rm erg\\,\\,s}^{-1}]$', weight='bold', fontsize=20)
 #
-minlognu = 9
-maxlognu = 22
+minlognu = 8
+maxlognu = 25
 #
 eV = 1.602e-12
 mum = 1.e-4 # 1 micron
@@ -71,7 +71,7 @@ plotenergy(c/(10.*mum), '10 $\\mu$m')
 plotenergy(c/0.1, '1 mm')
 #
 plt.xlim((minlognu, maxlognu))
-plt.ylim((33.5-5, 33.5+2))
+plt.ylim((33+4, 33+12))
 #
 plt.legend()
 # plot on screen, where you can save to file after viewing plot

@@ -868,8 +868,14 @@ void report_spectrum(int N_superph_made)
 		L * LSUN / (dMact * M_unit * CL * CL / T_unit),
 		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
 		max_tau_scatt);
+
+	fprintf(stderr, "\n");
+//	double Mdot = dMact * M_unit / T_unit;
+//	fprintf(stderr, "Mdot = %g\n", Mdot);
+
 	fprintf(stderr, "\n");
 	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);
+	fprintf(stderr, "N_superph_scatt: %d\n", N_scatt);
 	fprintf(stderr, "N_superph_recorded: %d\n", N_superph_recorded);
 
 	fclose(fp);
