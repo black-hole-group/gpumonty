@@ -1,6 +1,6 @@
 /*
 
-	HARM model specification routines 
+	HARM model specification routines
 
 */
 
@@ -15,8 +15,8 @@ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
 /*
 
-	encapsulates all initialization routines 
-	
+	encapsulates all initialization routines
+
 */
 
 void init_model(char *args[])
@@ -35,7 +35,7 @@ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	Rh = 1 + sqrt(1. - a * a);
+	Rh = 1. + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();
@@ -52,7 +52,7 @@ void init_model(char *args[])
 }
 
 /*
-	make super photon 
+	make super photon
 */
 
 int n2gen = -1;
@@ -81,17 +81,21 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 	return;
 }
 
+/*
+
+produces a bias (> 1) for probability of Compton scattering
+as a function of local temperature
+
+*/
 
 double bias_func(double Te, double w)
 {
-	double bias, max, avg_num_scatt;
+	double bias, max ;
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	avg_num_scatt = N_scatt / (1. * N_superph_recorded + 1.);
-	bias =
-	    100. * Te * Te / (bias_norm * max_tau_scatt *
-			      (avg_num_scatt + 2));
+	bias = Te*Te/(5. * max_tau_scatt) ;
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
 	if (bias < TP_OVER_TE)
 		bias = TP_OVER_TE;
@@ -101,7 +105,7 @@ double bias_func(double Te, double w)
 	return bias / TP_OVER_TE;
 }
 
-/* 
+/*
 
 	these supply basic model data to grmonty
 
@@ -114,6 +118,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	int l, m;
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+	double sig ;
 
 	*Ne = p[KRHO][i][j] * Ne_unit;
 	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
@@ -146,12 +151,19 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
 	lower(Bcon, geom[i][j].gcov, Bcov);
 
+
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
+
+	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
+
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
+
 }
 
-/* 
+/*
  * Returns the fluid variables at the location indicated by X
  */
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -165,6 +177,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
 	double interp_scalar(double **var, int i, int j, double del[4]);
+	double sig ;
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -220,12 +233,14 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
 
+	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
 }
 
-
-/* 
+/*
    Current metric: modified Kerr-Schild, squashed in theta
-   to give higher resolution at the equator 
+   to give higher resolution at the equator
 */
 
 /* mnemonics for dimensional indices */
@@ -253,7 +268,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
-	// transformation for Kerr-Schild -> modified Kerr-Schild 
+	// transformation for Kerr-Schild -> modified Kerr-Schild
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
@@ -315,10 +330,10 @@ void gcov_func(double *X, double gcov[][NDIM])
 #undef TH
 #undef PH
 
-/* 
+/*
 
    connection calculated analytically for modified Kerr-Schild
-   	coordinates 
+   	coordinates
 
 
    this gives the connection coefficient
@@ -566,7 +581,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	return (dl);
 }
 
-/* 
+/*
 	record contribution of super photon to spectrum.
 
 	This routine should make minimal assumptions about the
@@ -624,7 +639,7 @@ void record_super_photon(struct of_photon *ph)
 	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
 	spect[ix2][iE].b0 += ph->w * (ph->b0);
 	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-	spect[ix2][iE].nscatt += ph->nscatt;
+	spect[ix2][iE].nscatt += ph->w * ph->nscatt;
 	spect[ix2][iE].nph += 1.;
 
 }
@@ -697,9 +712,9 @@ void omp_reduce_spect()
 	}
 }
 
-/* 
+/*
 
-	output spectrum to file 
+	output spectrum to file
 
 */
 
@@ -710,6 +725,9 @@ void report_spectrum(int N_superph_made)
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;
 	FILE *fp;
+
+	double nu0,nu1,nu,fnu ;
+	double dsource = 8000*PC ;
 
 	fp = fopen(SPECTRUM_FILE_NAME, "w");
 	if (fp == NULL) {
@@ -727,7 +745,7 @@ void report_spectrum(int N_superph_made)
 
 		for (j = 0; j < N_THBINS; j++) {
 
-			/* convert accumulated photon number in each bin 
+			/* convert accumulated photon number in each bin
 			   to \nu L_\nu, in units of Lsun */
 			dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
 
@@ -759,10 +777,24 @@ void report_spectrum(int N_superph_made)
 				      (spect[j][i].dNdlE + SMALL)))
 			    );
 
+
+			nu0 = ME * CL * CL * exp((i - 0.5) * dlE + lE0) / HPL ;
+			nu1 = ME * CL * CL * exp((i + 0.5) * dlE + lE0) / HPL ;
+
+			if(nu0 < 230.e9 && nu1 > 230.e9) {
+				nu = ME * CL * CL * exp(i * dlE + lE0) / HPL ;
+				fnu = nuLnu*LSUN/(4.*M_PI*dsource*dsource*nu*JY) ;
+				fprintf(stderr,"fnu: %10.5g\n",fnu) ;
+			}
+
+			/* added to give average # scatterings */
+			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (
+				spect[j][i].dNdlE + SMALL)) ;
+
 			if (tau_scatt > max_tau_scatt)
 				max_tau_scatt = tau_scatt;
 
-			L += nuLnu * dOmega * dlE;
+			L += nuLnu * dOmega * dlE / (4. * M_PI);
 		}
 		fprintf(fp, "\n");
 	}

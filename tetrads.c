@@ -220,22 +220,3 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 	return;
 }
 
-void normalize_null(double Gcov[NDIM][NDIM], double K[])
-{
-	int k, l;
-	double A, B, C;
-
-	/* pop K back onto the light cone */
-	A = Gcov[0][0];
-	B = 0.;
-	for (k = 1; k < 4; k++)
-		B += 2. * Gcov[k][0] * K[k];
-	C = 0.;
-	for (k = 1; k < 4; k++)
-		for (l = 1; l < 4; l++)
-			C += Gcov[k][l] * K[k] * K[l];
-
-	K[0] = (-B - sqrt(fabs(B * B - 4. * A * C))) / (2. * A);
-
-	return;
-}

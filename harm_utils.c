@@ -130,7 +130,7 @@ void init_weight_table(void)
 	}
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++)
-		wgt[i] = log(sum[i] / (HPL * Ns));
+		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
@@ -141,8 +141,9 @@ void init_weight_table(void)
 #undef JCST
 
 #define BTHSQMIN	(1.e-4)
-#define BTHSQMAX	(1.e8)
-#define	NINT		(20000)
+#define BTHSQMAX	(1.e9)
+#define	NINT		(40000)
+
 double lb_min, dlb;
 double nint[NINT + 1];
 double dndlnu_max[NINT + 1];
@@ -166,8 +167,7 @@ void init_nint_table(void)
 		for (j = 0; j < N_ESAMP; j++) {
 			dn = F_eval(1., Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[j]) +
-						     1.e-100);
+					lnu_min)) / (exp(wgt[j]) + 1.e-100);
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
@@ -208,16 +208,17 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		*nz = 0.;
 		return;
 	} else if (l >= NINT) {
+
 		fprintf(stderr,
 			"warning: outside of nint table range %g...change in harm_utils.c\n",
 			Bmag * Thetae * Thetae);
+		fprintf(stderr,"%g %g %g %g\n",Bmag,Thetae,lbth,(lbth - lb_min)/dlb) ;
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (l = 0; l <= N_ESAMP; l++) {
 			dn = F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[l]) +
-						     1.e-100);
+					lnu_min)) / exp(wgt[l]);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
@@ -313,7 +314,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 		nu = exp(monty_rand() * Nln + lnu_min);
 		weight = linear_interp_weight(nu);
 	} while (monty_rand() >
-		 (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		 (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
 
 	ph->w = weight;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
@@ -334,6 +335,12 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	K_tetrad[1] = E * cth;
 	K_tetrad[2] = E * cphi * sth;
 	K_tetrad[3] = E * sphi * sth;
+
+	/*
+	if(E > 1.e-4) fprintf(stdout,"HOT: %d %d %g %g %g %g %g\n",
+		i,j,E/(0.22*(EE*Bmag/(2.*M_PI*ME*CL))*(HPL/(ME*CL*CL))*Thetae*Thetae),
+		ph->X[1],ph->X[2], Thetae,Bmag) ;
+	*/
 
 	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
 		if (Bmag > 0.) {
@@ -423,18 +430,11 @@ void set_units(char *munitstr)
 {
 	double MBH;
 
-	/* set black hole mass */
-	/** could be read in from file here,
-	    along with M_unit and other parameters **/
-	MBH = 4.e6;
-
 	sscanf(munitstr, "%lf", &M_unit);
-
-	/** input parameters appropriate to Sgr A* **/
-	MBH *= MSUN;
 
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
+	MBH = 4.6e6 * MSUN ;
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 

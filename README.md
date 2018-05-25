@@ -63,22 +63,21 @@ get_connection
 
 in the model file.
 
-# Explanation of branches
+# Explanation of main branches
 
 - `master`, stable: matches the original release functionality, supports only input from `HARM2D`
 - `illinois`: latest bug corrections by Gammie's group, `HARM2D`
-- `progressbar`, stable: displays progress bar
 
-## 3D HARMPI support
+Please note that all other branches include significant amount of work which has not been made public yet.
 
-- `3dtests`, in progress, possibly unstable: new features being implemented, dump → ASCII
-- `3d-stable`, stable: starting point for GPU version, dump → ASCII
-- `read_harmpi`, buggy: trying to read `HARMPI` dumps directly in `grmonty`
+## 3D HARM support
+
+work in progress...
 
 ## GPU support
 
-- `cuda`, in progress: CUDA version
-- `building-cuda`: CUDA progress by Caio
+- `cuda`, in progress: CUDA version in progress, lead by Rodrigo
+- `openacc`: OpenACC in progress, lead by Matheus
 
 ## Misc.
 
@@ -95,7 +94,7 @@ A set of python codes written only for educational purposes, for understanding w
 # TODO
 
 - [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
-- [ ] GPU support: CUDA
+- [ ] GPU support: CUDA, OpenACC
 - [ ] add bremsstrahlung
 - [ ] nonthermal electron distribution
 - [ ] dynamic metrics as input

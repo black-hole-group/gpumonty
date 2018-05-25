@@ -148,17 +148,22 @@ void boost(double v[4], double u[4], double vp[4])
 	gm1 = g - 1.;
 
 	/* general Lorentz boost into frame u from lab frame */
-	vp[0] = u[0] * v[0] - u[1] * v[1] - u[2] * v[2] - u[3] * v[3];
-	vp[1] =
-	    -u[1] * v[0] + (1. + n1 * n1 * gm1) * v[1] +
-	    n1 * n2 * gm1 * v[2] + n1 * n3 * gm1 * v[3];
-	vp[2] =
-	    -u[2] * v[0] + n2 * n1 * gm1 * v[1] + (1. +
-						   n2 * n2 * gm1) * v[2] +
-	    n2 * n3 * gm1 * v[3];
-	vp[3] =
-	    -u[3] * v[0] + n3 * n1 * gm1 * v[1] + n3 * n2 * gm1 * v[2] +
-	    (1. + n3 * n3 * gm1) * v[3];
+	vp[0] = u[0]*v[0] - 
+		u[1]*v[1] - 
+		u[2]*v[2] - 
+		u[3]*v[3];
+	vp[1] = -u[1] * v[0] + 
+		(1. + n1 * n1 * gm1) * v[1] +
+	    	n1 * n2 * gm1 * v[2] + 
+		n1 * n3 * gm1 * v[3];
+	vp[2] = -u[2] * v[0] + 
+		n2 * n1 * gm1 * v[1] + 
+		(1. + n2 * n2 * gm1) * v[2] +
+	    	n2 * n3 * gm1 * v[3];
+	vp[3] = -u[3] * v[0] + 
+		n3 * n1 * gm1 * v[1] + 
+		n3 * n2 * gm1 * v[2] +
+	    	(1. + n3 * n3 * gm1) * v[3];
 
 }
 
@@ -195,7 +200,7 @@ double sample_klein_nishina(double k0)
 	/* a low efficiency sampling algorithm, particularly for large k0;
 	   limiting efficiency is log(2 k0)/(2 k0) */
 	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
-	k0pmax = k0;		/* at theta = 0 */
+	k0pmax = k0;			/* at theta = 0 */
 	do {
 
 		/* tentative value */
@@ -265,9 +270,8 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 		} else {
 
 			/* Klein-Nishina cross-section / Thomson */
-			sigma_KN =
-			    (3. / (4. * K * K)) * (2. +
-						   K * K * (1. +
+			sigma_KN = (3. / (4. * K * K)) * (2. +
+					   K * K * (1. +
 							    K) / ((1. +
 								   2. *
 								   K) *
@@ -332,14 +336,11 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	sth = sqrt(1. - mu * mu);
 
 	p[0] = gamma_e;
-	p[1] =
-	    gamma_e * beta_e * (cth * v0x +
+	p[1] = gamma_e * beta_e * (cth * v0x +
 				sth * (cphi * v1x + sphi * v2x));
-	p[2] =
-	    gamma_e * beta_e * (cth * v0y +
+	p[2] = gamma_e * beta_e * (cth * v0y +
 				sth * (cphi * v1y + sphi * v2y));
-	p[3] =
-	    gamma_e * beta_e * (cth * v0z +
+	p[3] = gamma_e * beta_e * (cth * v0z +
 				sth * (cphi * v1z + sphi * v2z));
 
 	if (beta_e < 0) {

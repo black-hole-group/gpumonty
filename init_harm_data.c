@@ -22,6 +22,7 @@ void init_harm_data(char *fname)
 	int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
 	double r, h, divb, vmin, vmax, gdet;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	double J ;
 
 	fp = fopen(fname, "r");
 
@@ -123,11 +124,23 @@ void init_harm_data(char *fname)
 		       &Bcon[1], &Bcon[2], &Bcon[3]);
 		fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
 		       &Bcov[1], &Bcov[2], &Bcov[3]);
+
 		fscanf(fp, "%lf ", &vmin);
 		fscanf(fp, "%lf ", &vmax);
 		fscanf(fp, "%lf ", &vmin);
 		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf\n", &gdet);
+		fscanf(fp, "%lf ", &gdet);
+
+	        /* additional stuff: current */
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf ", &J) ;
+
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf ", &J) ;
+		fscanf(fp, "%lf\n", &J) ;
 
 		bias_norm +=
 		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
