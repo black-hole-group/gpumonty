@@ -46,25 +46,6 @@ double interp_scalar(double **var, int i, int j, double coeff[4])
 }
 */
 
-/* 
- * New version for the row-major 1D array for GPU code.
- * - n=variable-selector index
- * - i=x1 index
- * - j=x2 index
- */
-double interp_scalar(double *var, int n, int i, int j, double coeff[4])
-{
-
-	double interp;
-
-	interp =
-	    var[n*N1*N2+i*N2+j] * coeff[0] +
-	    var[n*N1*N2+i*N2+j+1] * coeff[1] +
-	    var[n*N1*N2+(i+1)*N2+j] * coeff[2] + 
-	    var[n*N1*N2+(i+1)*N2+j+1] * coeff[3];
-
-	return interp;
-}
 
 
 double lnu_min, lnu_max, dlnu;
@@ -189,7 +170,7 @@ void init_nint_table(void)
 			dn = F_eval(1., Bmag,
 				    exp(j * dlnu +
 					lnu_min)) / (exp(wgt[j]) +
-						     1.e-100);
+						     1.e-100); // do we really need this?
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
@@ -238,8 +219,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		for (l = 0; l <= N_ESAMP; l++) {
 			dn = F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[l]) +
-						     1.e-100);
+					lnu_min)) / exp(wgt[l]); //+ 1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
@@ -335,7 +315,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 		nu = exp(monty_rand() * Nln + lnu_min);
 		weight = linear_interp_weight(nu);
 	} while (monty_rand() >
-		 (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		 (F_eval(Thetae, Bmag, nu) / weight) / dnmax); // removed +1e-100 
 
 	ph->w = weight;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
@@ -401,6 +381,18 @@ void coord(int i, int j, double *X)
 
 	return;
 }
+
+
+/* return boyer-lindquist coordinate of point */
+void bl_coord(double *X, double *r, double *th)
+{
+
+	*r = exp(X[1]) + R0;
+	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
+	return;
+}
+
 
 
 void set_units(char *munitstr)

@@ -16,6 +16,10 @@
 #include <omp.h>
 #include "constants.h"
 
+/* 
+  Basic definitions
+  ===================
+*/
 #define NDIM	4
 #define NPRIM	8
 
@@ -34,6 +38,8 @@
 
 #define WEIGHT_MIN	(1.e31)
 
+#define RMAX 100.
+
 /* mnemonics for primitive vars; conserved vars */
 #define KRHO     0
 #define UU      1
@@ -49,6 +55,35 @@
 
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
+
+/* mnemonics for dimensional indices */
+#define TT      0
+#define RR      1
+#define TH      2
+#define PH      3
+
+/** data structures *
+   We keep the struct below in order to reuse many functions
+   for photon generation
+*/
+struct of_photon { 
+	double X[NDIM];
+	double K[NDIM];
+	double dKdlam[NDIM];
+	double w;
+	double E;
+	double L;
+	double X1i;
+	double X2i;
+	double tau_abs;
+	double tau_scatt;
+	double ne0;
+	double thetae0;
+	double b0;
+	double E0;
+	double E0s;
+	int nscatt;
+};
 
 /* 
 Explanation of new format for of_photon:
@@ -223,7 +258,7 @@ extern double B_unit;
 extern double Ne_unit;
 extern double Thetae_unit;
 
-extern double max_tau_scatt, Ladv, dMact, bias_norm;
+extern double max_tau_scatt, Ladv, dMact; //bias_norm;
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
@@ -354,6 +389,7 @@ void launchKernel(double *p, simvars sim, allunits units, double *pharr, int nph
 // prepare basic variables for device
 void getGlobals(struct simvars *sim);
 void getUnits(struct allunits *units);
+void getSettings(struct settings *setup);
 
 
 #endif
