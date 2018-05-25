@@ -16,6 +16,12 @@
 #include <omp.h>
 #include "constants.h"
 
+/* 
+  Basic definitions
+  ===================
+*/
+
+
 #define NDIM	4
 #define NPRIM	8
 
@@ -318,6 +324,7 @@ int get_max_photons(int n1, int n2, int n3);
 // prepare basic variables for device
 void getGlobals(struct simvars *sim);
 void getUnits(struct allunits *units);
+void getSettings(struct settings *setup);
 
 
 #endif

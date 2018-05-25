@@ -34,7 +34,9 @@
  __constant__ double Ne_unit;
  __constant__ double Thetae_unit;
 
+// misc
 __constant__ double max_tau_scatt;
+__constant__ double RMAX;
 
 
 
@@ -42,7 +44,7 @@ __constant__ double max_tau_scatt;
   Device functions
   =================
 */
-//#include "tetrads.cuh"
+#include "tetrads.cuh"
 #include "harm_utils.cuh"
 #include "harm_model.cuh" 
 // #include "radiation.cuh"
@@ -399,13 +401,14 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, double max_tau_scatt, double *pharr, int nph) 
+void launchKernel(double *p, simvars sim, allunits units, misc setup, double *pharr, int nph) 
 {
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
 
 	// define global device variables in constant memory
+	// GRMHD 
 	cudaMemcpyToSymbol(N1, &sim.N1, sizeof(int));
 	cudaMemcpyToSymbol(N2, &sim.N2, sizeof(int));
 	cudaMemcpyToSymbol(N3, &sim.N3, sizeof(int));
@@ -424,6 +427,7 @@ void launchKernel(double *p, simvars sim, allunits units, double max_tau_scatt, 
 	cudaMemcpyToSymbol(lE0, &sim.lE0, sizeof(double));
 	cudaMemcpyToSymbol(gam, &sim.gam, sizeof(double));
 	cudaMemcpyToSymbol(dMsim, &sim.dMsim, sizeof(double));
+	// units
 	cudaMemcpyToSymbol(M_unit, &units.M_unit, sizeof(double));
 	cudaMemcpyToSymbol(L_unit, &units.L_unit, sizeof(double));
 	cudaMemcpyToSymbol(T_unit, &units.T_unit, sizeof(double));
@@ -432,7 +436,9 @@ void launchKernel(double *p, simvars sim, allunits units, double max_tau_scatt, 
 	cudaMemcpyToSymbol(B_unit, &units.B_unit, sizeof(double));
 	cudaMemcpyToSymbol(Ne_unit, &units.Ne_unit, sizeof(double));
 	cudaMemcpyToSymbol(Thetae_unit, &units.Thetae_unit, sizeof(double));
-	cudaMemcpyToSymbol(max_tau_scatt, &max_tau_scatt, sizeof(double));
+	// misc
+	cudaMemcpyToSymbol(max_tau_scatt, &setup.max_tau_scatt, sizeof(double));
+	cudaMemcpyToSymbol(RMAX, &setup.RMAX, sizeof(double));
 
 	// send HARM arrays to device
     cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));

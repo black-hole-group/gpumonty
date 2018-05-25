@@ -57,3 +57,10 @@ void getUnits(struct allunits *units) {
 	units->Ne_unit=Ne_unit;
 	units->Thetae_unit=Thetae_unit;	
 }
+
+
+
+void getSettings(struct misc *setup) {
+	setup->max_tau_scatt=max_tau_scatt;
+	setup->RMAX=att;
+}

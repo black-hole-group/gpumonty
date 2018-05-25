@@ -138,6 +138,11 @@ struct allunits {
 	double Thetae_unit;
 };
 
+// Structure with misc. values 
+struct misc {
+	double max_tau_scatt;
+	double RMAX;
+};
 
 
 /* Data structure needed for reusing many functions previously
@@ -167,6 +172,6 @@ struct d_photon {
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, double max_tau_scatt, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph);
 
 #endif
