@@ -51,8 +51,8 @@ plt.rc('font', family='times new roman')
 plt.xlabel('$\\nu [{\\rm Hz}]$', weight='bold', fontsize=20)
 plt.ylabel('$\\nu L_\\nu [{\\rm erg\\,\\,s}^{-1}]$', weight='bold', fontsize=20)
 #
-minlognu = 8
-maxlognu = 25
+minlognu = 9
+maxlognu = 22
 #
 eV = 1.602e-12
 mum = 1.e-4 # 1 micron
@@ -71,7 +71,7 @@ plotenergy(c/(10.*mum), '10 $\\mu$m')
 plotenergy(c/0.1, '1 mm')
 #
 plt.xlim((minlognu, maxlognu))
-plt.ylim((33+4, 33+12))
+plt.ylim((33.5-2.5, 33.5+3.5)) # (31, 37) if Sgr A*
 #
 plt.legend()
 # plot on screen, where you can save to file after viewing plot

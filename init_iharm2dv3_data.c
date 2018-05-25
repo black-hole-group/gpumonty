@@ -21,6 +21,7 @@ void init_harm_data(char *fname)
 	double x[4];
 	double V, dV, two_temp_gam;
 	int i, j, k;
+	double Be, pg, bsq, beta_plasma, bplsq, Thetae;
 
 	/* header variables not used except locally */
 	double t, tf, cour, DTd, DTl, DTi, dt;
@@ -59,17 +60,17 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%d ", &rdump_cnt);
 	fscanf(fp, "%lf ", &dt);
 
-  /* finish reading out the line */
-  fseek(fp, 0, SEEK_SET);
-  while ( (i=fgetc(fp)) != '\n' ) ;
+	/* finish reading out the line */
+	fseek(fp, 0, SEEK_SET);
+	while ( (i=fgetc(fp)) != '\n' ) ;
 
-  /* not set automatically */
-  a = 0.9375;
-  Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
-  Rout = 1000.;
-  hslope = 0.3;
-  R0 = 0.0;
-  fprintf(stderr,"coordinate parameters: Rin,Rout,hslope,R0,dx[1],dx[2]: %g %g %g %g %g %g\n",
+	/* not set automatically */
+	a = 0.9375;
+	Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
+	Rout = 1000.;
+	hslope = 0.3;
+	R0 = 0.0;
+	fprintf(stderr,"coordinate parameters: Rin,Rout,hslope,R0,dx[1],dx[2]: %g %g %g %g %g %g\n",
           Rin,Rout,hslope,R0,dx[1],dx[2]) ;
 
 	/* nominal non-zero values for axisymmetric simulations */
@@ -90,10 +91,10 @@ void init_harm_data(char *fname)
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
 
-	two_temp_gam =
-	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
-		   gam);
-	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+//	two_temp_gam =
+//	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
+//		   gam);
+//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -140,9 +141,33 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf ", &J) ;
 		fscanf(fp, "%lf\n", &J) ;
 
-		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
-				    Thetae_unit, 2.);
+		// calculate Bernoulli parameter
+		Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
+
+		#if BETAPRESCRIPTION
+		// use plasma beta to calculate electron temperature
+		pg = (gam - 1.) * p[UU][i][j];
+		bsq = Bcon[0] * Bcov[0] +
+				Bcon[1] * Bcov[1] +
+				Bcon[2] * Bcov[2] +
+				Bcon[3] * Bcov[3];
+		beta_plasma = 2.*pg/bsq;
+		bplsq = pow(beta_plasma, 2.);
+		tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+		Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+
+		#else
+		// Single-temperature ratio everywhere
+		Thetae_unit = (gam - 1.) * (MP / ME) / TP_OVER_TE;
+		Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
+		#if BERNOULLI
+		if (Be > 1.02)
+			Thetae = THETAE_JET;
+		#endif
+		#endif
+
+		bias_norm += dV * gdet * pow(Thetae, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */

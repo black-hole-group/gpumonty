@@ -95,10 +95,10 @@ double bias_func(double Te, double w)
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	bias = Te*Te/(5. * max_tau_scatt) ;
-	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+//	bias = Te*Te/(5. * max_tau_scatt) ;
+	bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
-	#if (BETAPRESCRIPTION || MOSC2014)
+	#if (BETAPRESCRIPTION)
 //	if (bias < tpte)
 //		bias = tpte;
 	if (bias > max)
@@ -127,7 +127,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double sig;
-	double pg, bsq, beta_plasma, bplsq;
+	double Be, pg, bsq, beta_plasma, bplsq;
 
 	Bp[1] = p[B1][i][j];
 	Bp[2] = p[B2][i][j];
@@ -162,6 +162,9 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 	*Ne = p[KRHO][i][j] * Ne_unit;
 
+	// calculate Bernoulli
+	Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
+
 	#if BETAPRESCRIPTION
 	// use plasma beta to calculate electron temperature
 	pg = (gam - 1.) * p[UU][i][j];
@@ -174,32 +177,22 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	#elif MOSC2014
-	pg = (gam - 1.) * p[UU][i][j];
-	bsq = Bcon[0] * Bcov[0] +
-			Bcon[1] * Bcov[1] +
-			Bcon[2] * Bcov[2] +
-			Bcon[3] * Bcov[3];
-	beta_plasma = 2.*pg/bsq;
-	bplsq = pow(beta_plasma, 2.);
-	if (beta_plasma > 0.2){
-		tpte = TPTE_DISK;
-		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	}
-	else {
-		tpte = TPTE_JET;
-		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	}
+	
 	#else
-	// Thetae_unit already calculated in initialization
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	// Single-temperature ratio everywhere
+	Thetae_unit = (gam - 1.) * (MP / ME) / TP_OVER_TE;
+	*Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
+	#if BERNOULLI
+	if (Be > 1.02)
+		*Thetae = THETAE_JET;
+	#endif
 	#endif
 
-	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
-	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
-	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
+	if(*Thetae > THETAE_MAX)
+		*Thetae = THETAE_MAX;
+	sig = pow(*B/B_unit, 2.) / (*Ne/Ne_unit);
+	if(sig > 1.)
+		*Ne = 1.e-10*Ne_unit ;
 }
 
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -213,7 +206,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double gcon[NDIM][NDIM];
 	double interp_scalar(double **var, double X[NDIM]);
 	double sig;
-	double pg, bsq, beta_plasma, bplsq;
+	double Be, pg, bsq, beta_plasma, bplsq;
 
 	if (X[1] < startx[1] ||
 	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
@@ -261,6 +254,9 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	*Ne = rho * Ne_unit;
 
+	// calculate Bernoulli
+	Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
+
 	#if BETAPRESCRIPTION
 	// use plasma beta to calculate electron temperature
     pg = (gam - 1.) * uu;
@@ -273,32 +269,22 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = uu / rho * Thetae_unit;
-	#elif MOSC2014
-	pg = (gam - 1.) * p[UU][i][j];
-	bsq = Bcon[0] * Bcov[0] +
-			Bcon[1] * Bcov[1] +
-			Bcon[2] * Bcov[2] +
-			Bcon[3] * Bcov[3];
-    beta_plasma = 2.*pg/bsq;
-	bplsq = pow(beta_plasma, 2.);
-	if (beta_plasma > 0.2){
-		tpte = TPTE_DISK;
-		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	}
-	else {
-		tpte = TPTE_JET;
-		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-		*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	}
+
 	#else
-	// Thetae_unit already calculated in initialization
+	// Single-temperature ratio everywhere
+	Thetae_unit = (gam - 1.) * (MP / ME) / TP_OVER_TE;
 	*Thetae = uu / rho * Thetae_unit;
+	#if BERNOULLI
+	if (Be > 1.02)
+		*Thetae = THETAE_JET;
+	#endif
 	#endif
 
-	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
-	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
-	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
+	if(*Thetae > THETAE_MAX)
+		*Thetae = THETAE_MAX;
+	sig = pow(*B/B_unit, 2.)/(*Ne/Ne_unit);
+	if(sig > 1.)
+		*Ne = 1.e-10*Ne_unit;
 }
 
 

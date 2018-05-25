@@ -443,7 +443,7 @@ void set_units(char *munitstr)
 
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
-	MBH = 6.2e9 * MSUN ;
+	MBH = 4.5e6 * MSUN ;
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 
