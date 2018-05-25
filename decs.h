@@ -20,8 +20,6 @@
   Basic definitions
   ===================
 */
-
-
 #define NDIM	4
 #define NPRIM	8
 
@@ -39,6 +37,8 @@
 #define TP_OVER_TE	(3.)
 
 #define WEIGHT_MIN	(1.e31)
+
+#define RMAX 100.
 
 /* mnemonics for primitive vars; conserved vars */
 #define KRHO     0
