@@ -465,7 +465,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	double idlx1, idlx2, idlx3;
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+	dlx2 = EPS * fmin(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
