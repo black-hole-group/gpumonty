@@ -500,7 +500,7 @@ int stop_criterion(struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (monty_rand() <= 1. / ROULETTE) {
+			if (d_monty_rand() <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -509,7 +509,7 @@ int stop_criterion(struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (monty_rand() <= 1. / ROULETTE) {
+		if (d_monty_rand() <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;
