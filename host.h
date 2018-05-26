@@ -106,14 +106,14 @@ extern double max_tau_scatt, Ladv, dMact; //bias_norm;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-/*void track_super_photon(struct of_photon *ph);
-void record_super_photon(struct of_photon *ph);
+// void track_super_photon(struct of_photon *ph);
+// void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
-void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
-			  double Ne, double Thetae, double B,
-			  double Ucon[NDIM], double Bcon[NDIM],
-			  double Gcov[NDIM][NDIM]);
-*/
+// void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
+// 			  double Ne, double Thetae, double B,
+// 			  double Ucon[NDIM], double Bcon[NDIM],
+// 			  double Gcov[NDIM][NDIM]);
+
 
 /* OpenMP specific functions */
 void omp_reduce_spect(void);

@@ -380,7 +380,10 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 
 	// }
 
-	// /* accumulate result in spectrum on escape */
+	/*
+	  accumulate result in spectrum on escape 
+	  Do this on the host
+	*/
 	// if (record_criterion(ph) && nstep < MAXNSTEP)
 	// 	record_super_photon(ph);
 

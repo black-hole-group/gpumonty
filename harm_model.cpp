@@ -235,7 +235,72 @@ void gcov_func(double *X, double gcov[][NDIM])
 
 //int record_criterion(struct of_photon *ph)
 
-//void record_super_photon(struct of_photon *ph)
+
+/* 
+	record contribution of super photon to spectrum.
+
+	This routine should make minimal assumptions about the
+	coordinate system.
+
+*/
+void record_super_photon(struct of_photon *ph)
+{
+	double lE, dx2;
+	int iE, ix2;
+
+	if (isnan(ph->w) || isnan(ph->E)) {
+		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
+		return;
+	}
+	// SERIOUS ISSUE: tries to modify global variables max_tau_scatt
+	// below.
+//#pragma omp critical (MAXTAU)
+	//{
+	//if (ph->tau_scatt > max_tau_scatt)
+	//	max_tau_scatt = ph->tau_scatt;
+	//}
+	/* currently, bin in x2 coordinate */
+
+	/* get theta bin, while folding around equator */
+	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
+		ix2 = (int) (ph->X[2] / dx2);
+	else
+		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
+
+	/* check limits */
+	if (ix2 < 0 || ix2 >= N_THBINS)
+		return;
+
+	/* get energy bin */
+	lE = log(ph->E);
+	iE = (int) ((lE - lE0) / dlE + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
+
+	/* check limits */
+	if (iE < 0 || iE >= N_EBINS)
+		return;
+
+// #pragma omp atomic
+// 	N_superph_recorded++;
+// #pragma omp atomic
+// 	N_scatt += ph->nscatt;
+
+	/* sum in photon */
+	spect[ix2][iE].dNdlE += ph->w;
+	spect[ix2][iE].dEdlE += ph->w * ph->E;
+	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
+	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
+	spect[ix2][iE].X1iav += ph->w * ph->X1i;
+	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
+	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
+	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
+	spect[ix2][iE].b0 += ph->w * (ph->b0);
+	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
+	spect[ix2][iE].nscatt += ph->nscatt;
+	spect[ix2][iE].nph += 1.;
+
+}
+
 
 
 struct of_spectrum shared_spect[N_THBINS][N_EBINS] = { };

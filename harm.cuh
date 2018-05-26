@@ -1,10 +1,85 @@
 /*************************************************************
+  Functions that were previously in harm_utils.c and need to
+  be executed on the device. 
+**************************************************************
+*/
+
+/* 
+ * New version for the row-major 1D array for GPU code.
+ * - n=variable-selector index
+ * - i=x1 index
+ * - j=x2 index
+ */
+__device__
+double interp_scalar(double *var, int n, int i, int j, double coeff[4])
+{
+
+	double interp;
+
+	interp =
+	    var[n*N1*N2+i*N2+j] * coeff[0] +
+	    var[n*N1*N2+i*N2+j+1] * coeff[1] +
+	    var[n*N1*N2+(i+1)*N2+j] * coeff[2] + 
+	    var[n*N1*N2+(i+1)*N2+j+1] * coeff[3];
+
+	return interp;
+}
+
+__device__
+void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+{
+
+	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
+	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
+
+	if (*i < 0) {
+		*i = 0;
+		del[1] = 0.;
+	} else if (*i > N1 - 2) {
+		*i = N1 - 2;
+		del[1] = 1.;
+	} else {
+		del[1] = (X[1] - ((*i + 0.5) * dx[1] + startx[1])) / dx[1];
+	}
+
+	if (*j < 0) {
+		*j = 0;
+		del[2] = 0.;
+	} else if (*j > N2 - 2) {
+		*j = N2 - 2;
+		del[2] = 1.;
+	} else {
+		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
+	}
+
+	return;
+}
+
+/* 
+  return boyer-lindquist coordinate of point 
+  also defined on host
+*/
+__device__
+void d_bl_coord(double *X, double *r, double *th)
+{
+
+	*r = exp(X[1]) + R0;
+	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
+	return;
+}
+
+
+
+
+
+
+
+
+/*************************************************************
   Functions that were previously in harm_model.c and need to
   be executed on the device. 
 **************************************************************
-
-  Have to repeat definitions separately in order to avoid conflict
-  of global host variables and __constant__ device ones.
 */
 
 
@@ -380,71 +455,6 @@ int record_criterion(struct of_photon *ph)
 
 
 
-/* 
-	record contribution of super photon to spectrum.
-
-	This routine should make minimal assumptions about the
-	coordinate system.
-
-*/
-__device__
-void record_super_photon(struct of_photon *ph)
-{
-	double lE, dx2;
-	int iE, ix2;
-
-	if (isnan(ph->w) || isnan(ph->E)) {
-		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
-		return;
-	}
-	// SERIOUS ISSUE: tries to modify global variables max_tau_scatt
-	// below.
-//#pragma omp critical (MAXTAU)
-	//{
-	//if (ph->tau_scatt > max_tau_scatt)
-	//	max_tau_scatt = ph->tau_scatt;
-	//}
-	/* currently, bin in x2 coordinate */
-
-	/* get theta bin, while folding around equator */
-	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
-	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
-		ix2 = (int) (ph->X[2] / dx2);
-	else
-		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
-
-	/* check limits */
-	if (ix2 < 0 || ix2 >= N_THBINS)
-		return;
-
-	/* get energy bin */
-	lE = log(ph->E);
-	iE = (int) ((lE - lE0) / dlE + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
-
-	/* check limits */
-	if (iE < 0 || iE >= N_EBINS)
-		return;
-
-// #pragma omp atomic
-// 	N_superph_recorded++;
-// #pragma omp atomic
-// 	N_scatt += ph->nscatt;
-
-	/* sum in photon */
-	spect[ix2][iE].dNdlE += ph->w;
-	spect[ix2][iE].dEdlE += ph->w * ph->E;
-	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
-	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
-	spect[ix2][iE].X1iav += ph->w * ph->X1i;
-	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
-	spect[ix2][iE].b0 += ph->w * (ph->b0);
-	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-	spect[ix2][iE].nscatt += ph->nscatt;
-	spect[ix2][iE].nph += 1.;
-
-}
 
 
 
@@ -518,76 +528,3 @@ int stop_criterion(struct of_photon *ph)
 
 
 
-
-
-
-/*************************************************************
-  Functions that were previously in harm_utils.c and need to
-  be executed on the device. 
-**************************************************************
-*/
-
-/* 
- * New version for the row-major 1D array for GPU code.
- * - n=variable-selector index
- * - i=x1 index
- * - j=x2 index
- */
-__device__
-double interp_scalar(double *var, int n, int i, int j, double coeff[4])
-{
-
-	double interp;
-
-	interp =
-	    var[n*N1*N2+i*N2+j] * coeff[0] +
-	    var[n*N1*N2+i*N2+j+1] * coeff[1] +
-	    var[n*N1*N2+(i+1)*N2+j] * coeff[2] + 
-	    var[n*N1*N2+(i+1)*N2+j+1] * coeff[3];
-
-	return interp;
-}
-
-__device__
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
-{
-
-	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
-	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
-
-	if (*i < 0) {
-		*i = 0;
-		del[1] = 0.;
-	} else if (*i > N1 - 2) {
-		*i = N1 - 2;
-		del[1] = 1.;
-	} else {
-		del[1] = (X[1] - ((*i + 0.5) * dx[1] + startx[1])) / dx[1];
-	}
-
-	if (*j < 0) {
-		*j = 0;
-		del[2] = 0.;
-	} else if (*j > N2 - 2) {
-		*j = N2 - 2;
-		del[2] = 1.;
-	} else {
-		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
-	}
-
-	return;
-}
-
-/* 
-  return boyer-lindquist coordinate of point 
-  also defined on host
-*/
-__device__
-void d_bl_coord(double *X, double *r, double *th)
-{
-
-	*r = exp(X[1]) + R0;
-	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
-
-	return;
-}
