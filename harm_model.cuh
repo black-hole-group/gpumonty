@@ -424,10 +424,10 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-#pragma omp atomic
-	N_superph_recorded++;
-#pragma omp atomic
-	N_scatt += ph->nscatt;
+// #pragma omp atomic
+// 	N_superph_recorded++;
+// #pragma omp atomic
+// 	N_scatt += ph->nscatt;
 
 	/* sum in photon */
 	spect[ix2][iE].dNdlE += ph->w;
