@@ -165,7 +165,7 @@ struct allunits {
 // Structure with misc. values 
 struct misc {
 	double max_tau_scatt;
-	double R_MAX; // RMAX, cannot give the same name because will result in conflict
+	//double R_MAX; // RMAX, cannot give the same name because will result in conflict
 };
 
 

@@ -62,5 +62,5 @@ void getUnits(struct allunits *units) {
 
 void getSettings(struct misc *setup) {
 	setup->max_tau_scatt=max_tau_scatt;
-	setup->R_MAX=RMAX;
+	//setup->R_MAX=RMAX;
 }
