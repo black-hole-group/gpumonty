@@ -396,11 +396,13 @@ void record_super_photon(struct of_photon *ph)
 		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
-#pragma omp critical (MAXTAU)
-	{
-		if (ph->tau_scatt > max_tau_scatt)
-			max_tau_scatt = ph->tau_scatt;
-	}
+	// SERIOUS ISSUE: tries to modify global variables max_tau_scatt
+	// below.
+//#pragma omp critical (MAXTAU)
+	//{
+	//if (ph->tau_scatt > max_tau_scatt)
+	//	max_tau_scatt = ph->tau_scatt;
+	//}
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
