@@ -440,7 +440,7 @@ void launchKernel(double *p, simvars sim, allunits units, misc setup, double *ph
 	cudaMemcpyToSymbol(Thetae_unit, &units.Thetae_unit, sizeof(double));
 	// misc
 	cudaMemcpyToSymbol(max_tau_scatt, &setup.max_tau_scatt, sizeof(double));
-	cudaMemcpyToSymbol(RMAX, &setup.RMAX, sizeof(double));
+	cudaMemcpyToSymbol(RMAX, &setup.R_MAX, sizeof(double));
 
 	// send HARM arrays to device
     cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));
