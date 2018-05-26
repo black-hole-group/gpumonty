@@ -47,8 +47,7 @@ __constant__ double max_tau_scatt;
   =================
 */
 #include "tetrads.cuh"
-#include "harm_utils.cuh"
-#include "harm_model.cuh" 
+#include "harm.cuh" 
 // #include "radiation.cuh"
 // #include "compton.cuh"
 // #include "jnu_mixed.cuh"
