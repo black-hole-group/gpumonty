@@ -18,9 +18,9 @@
    function, and to be at the same temperature as the protons.
  */
 
-#include "decs.h"
+#include "host-device.h"
+#include "host.h"
 #include "harm_model.h"
-//#include "kernel.h"
 
 /* defining declarations for global variables */
 struct of_geom **geom;
@@ -87,6 +87,10 @@ int main(int argc, char *argv[])
 	// units packaged for device
 	struct allunits units;
 	getUnits(&units);
+	// pther misc. values
+	struct misc setup;
+	getUnits(&units);
+
 
 
 
@@ -101,7 +105,7 @@ int main(int argc, char *argv[])
     /* propagate photons (device)
        ==========================
     */
-    launchKernel(p, sim, units, max_tau_scatt, pharr, nmaxgpu);
+    launchKernel(p, sim, units, setup, pharr, nmaxgpu);
 
 
 	// gets results back from device

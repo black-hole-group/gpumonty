@@ -2,7 +2,7 @@
 #include "constants.h"
 //#include "decs.h"
 #include "host-device.h"
-#include "kernel.h"  
+#include "device.h"  
 
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration

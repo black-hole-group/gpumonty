@@ -1,6 +1,6 @@
 #include "constants.h"
-#include "decs.h"
-//#include "kernel.h"
+#include "host-device.h"
+#include "host.h"
 
 /* 
   Routines that create structs containing all variables that define
@@ -62,5 +62,5 @@ void getUnits(struct allunits *units) {
 
 void getSettings(struct misc *setup) {
 	setup->max_tau_scatt=max_tau_scatt;
-	setup->RMAX=att;
+	setup->R_MAX=RMAX;
 }

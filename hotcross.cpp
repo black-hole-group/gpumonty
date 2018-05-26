@@ -1,4 +1,5 @@
-#include "decs.h"
+#include "host-device.h"
+#include "host.h"
 
 /* 
 

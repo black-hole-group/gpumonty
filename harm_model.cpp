@@ -1,10 +1,9 @@
 /*
-
 	HARM model specification routines 
-
 */
 
-#include "decs.h"
+#include "host-device.h"
+#include "host.h"
 #define global
 #include "harm_model.h"
 #undef global

@@ -4,7 +4,8 @@ all functions related to creation and manipulation of tetrads
 
 */
 
-#include "decs.h"
+#include "host-device.h"
+#include "host.h"
 
 
 /* input and vectors are contravariant (index up) */

@@ -9,7 +9,7 @@ jnu_mixed.o hotcross.o harm_model.o harm_utils.o  \
 init_harm_data.o device_query.o kernel.o gen_photons.o \
 get_globals.o 
 
-INCS = decs.h constants.h harm_model.h 
+INCS = host.h host-device.h constants.h harm_model.h 
 
 #all: device_query.o grmonty.o grmonty
 

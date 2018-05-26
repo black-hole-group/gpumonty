@@ -1,3 +1,6 @@
+#ifndef HOSTDEVICE_H 
+#define HOSTDEVICE_H
+
 /* 
   Definitions needed for both host and device
 */
@@ -162,7 +165,7 @@ struct allunits {
 // Structure with misc. values 
 struct misc {
 	double max_tau_scatt;
-	double RMAX;
+	double R_MAX; // RMAX, cannot give the same name because will result in conflict
 };
 
 
@@ -187,3 +190,5 @@ struct misc {
 			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
 			cx = _yp*(0.225*fabs(_yp)+0.775);			\
 			}
+
+#endif
