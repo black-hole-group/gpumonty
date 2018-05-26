@@ -12,14 +12,18 @@
 #define NDIM	4
 #define NPRIM	8
 
-/* number of variables necessary for each photon.
-   change this for 3D GRMHD simulations
+/* 
+  number of variables necessary for each photon.
+  change this for 3D GRMHD simulations
 */
 #define NPHVARS 25 
 
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
 #define NUMAX 1.e16
+
+#define N_EBINS		200
+#define N_THBINS	6
 
 #define THETAE_MAX	1000.	/* Only used for harm3d models */
 #define THETAE_MIN	0.3

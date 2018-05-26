@@ -49,8 +49,6 @@ struct of_spectrum {
 };
 
 #define N_ESAMP		200
-#define N_EBINS		200
-#define N_THBINS	6
 
 struct of_grid {
 	struct of_spectrum spec[N_EBINS];
