@@ -483,9 +483,6 @@ double stepsize(double X[NDIM], double K[NDIM])
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
 
-#define RMAX	100.
-#define ROULETTE	1.e4
-
 __device__
 int stop_criterion(struct of_photon *ph)
 {

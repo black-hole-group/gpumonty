@@ -45,6 +45,10 @@
 */
 #define EPS	0.04
 
+// used in stop_criterion
+#define ROULETTE	1.e4
+
+
 /*
   Mnemonics for indices
   =======================
