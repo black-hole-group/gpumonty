@@ -129,6 +129,7 @@ struct of_photon {
 /*
    structs required for passing variables to device
 */
+
 // Data structure carrying all GRMHD variables
 struct simvars { 
 	// harm dimensions

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "constants.h"
-#include "decs.h"
+//#include "decs.h"
+#include "host-device.h"
 #include "kernel.h"  
 
 #define TPB 32 // number of threads per block 
