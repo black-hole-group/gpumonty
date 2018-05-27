@@ -23,7 +23,7 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump019 4.e19 
+    ./grmonty 5000000 dump1000 4.e19 
 
 Arguments are:
 
