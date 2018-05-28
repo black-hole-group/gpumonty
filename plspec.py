@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 #
 # open spectrum file
 data = np.loadtxt("spectrum.dat")
-tdata = np.transpose( data )
+tdata = np.transpose(data)
 #
 lw = tdata[0,:]	# log of photon energy in electron rest-mass units
 #
@@ -34,13 +34,16 @@ lw = lw + np.log10(me*c*c/h)   # convert to Hz from electron rest-mass energy
 Lsol = 3.83e33  
 nLn = nLn + np.log10(Lsol)  # convert to erg/s from Lsol
 #
-plt.step(lw, nLn[0])
-plt.step(lw, nLn[1])
-plt.step(lw, nLn[2])
-plt.step(lw, nLn[3])
-plt.step(lw, nLn[4])
-plt.step(lw, nLn[5])
+#plt.step(lw, nLn[0])
+#plt.step(lw, nLn[1])
+#plt.step(lw, nLn[2])
+#plt.step(lw, nLn[3])
+#plt.step(lw, nLn[4])
+#plt.step(lw, nLn[5])
 #
+# in case I want the mean of the th_bins
+nLn_mean = np.mean(nLn, axis = 0)
+plt.step(lw, nLn_mean, label = 'mean')
 # labels
 plt.rc('text', usetex=True) 
 plt.rc('font', size = 16)
@@ -70,6 +73,7 @@ plotenergy(c/0.1, '1 mm')
 plt.xlim((minlognu, maxlognu))
 plt.ylim((33.5-5, 33.5+2))
 #
+plt.legend()
 # plot on screen, where you can save to file after viewing plot
 plt.show()
 # or, uncomment to save directly...
