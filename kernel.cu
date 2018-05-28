@@ -3,6 +3,7 @@
 //#include "decs.h"
 #include "host-device.h"
 #include "device.h"  
+#include <curand_kernel.h>
 
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
@@ -108,7 +109,7 @@ struct of_photon arr2struct(int i, double *pharr)
 	assumes superphotons do not step out of simulation then back in
 */
 __global__
-void track_super_photon(double *d_p, double *d_pharr, int nph)
+void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int nph)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -138,6 +139,17 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+
+	/* Initializes random number generator
+	   ====================================
+	Each thread gets same seed, a different sequence number, 
+	no offset. To get different numbers every time, associate the
+	seed with the current time */
+	curand_init(1234, i, 0, &d_rng[i]);
+	/* Copy RNG state to local memory for efficiency 
+	`localState` should now be passed to d_monty_rand for correct
+	RNG. */ 
+	curandState localState = d_rng[i];			
 
 	/* quality control 
 	   here, previously we had statements ph->X[0] which were
@@ -387,6 +399,9 @@ void track_super_photon(double *d_p, double *d_pharr, int nph)
 	// if (record_criterion(ph) && nstep < MAXNSTEP)
 	// 	record_super_photon(ph);
 
+	/* Copy RNG state back to global memory */ 
+	d_rng[i] = localState;
+
 	/* done! */
 }
 
@@ -410,6 +425,10 @@ void launchKernel(double *p, simvars sim, allunits units, misc setup, double *ph
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
+	curandState *d_rng; // for RNG
+
+	// allocate space for RNG states on device 
+    cudaMalloc((void **)&d_rng, nph*sizeof(curandState));	
 
 	// define global device variables in constant memory
 	// GRMHD 
@@ -452,10 +471,11 @@ void launchKernel(double *p, simvars sim, allunits units, misc setup, double *ph
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
-	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, nph);
+	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, d_rng, nph);
 	//test<<<1, 1>>>();
 
 	// frees device memory
+	cudaFree(d_rng);
 	cudaFree(d_p);
 	cudaFree(d_pharr);
 }

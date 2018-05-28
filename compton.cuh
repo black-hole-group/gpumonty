@@ -1,12 +1,8 @@
-
-//#include "decs.h"
-//#pragma omp threadprivate(r)
-
 /*
 
 Routines for treating Compton scattering via Monte Carlo.
 
-Uses a Gnu Scientific Library (GSL) random number generator.
+Uses the cuRAND random number generator.
 The choice of generator can be changed in init_monty_rand;
 now set to Mersenne twister.
 
@@ -15,12 +11,15 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 
 */
 
+//#include "decs.h"
+//#pragma omp threadprivate(r)
 
 /* return pseudo-random value between 0 and 1 */
 __device__
-double d_monty_rand()
+double d_monty_rand(curandState *state)
 {
-	return (gsl_rng_uniform(r));
+	return (curand_uniform_double(&state));	
+	//return (gsl_rng_uniform(r));
 }
 
 
@@ -28,7 +27,6 @@ double d_monty_rand()
    given photon w/ wavevector $k$ colliding w/ electron with
    momentum $p$, ($p$ is actually the four-velocity) 
    find new wavevector $kp$ 
-   
 */
 __device__
 void sample_scattered_photon(double k[4], double p[4], double kp[4])
