@@ -24,6 +24,120 @@ double d_monty_rand()
 }
 
 
+
+
+/*
+
+Lorentz boost vector v into frame given by four-velocity u.
+Result goes out in vp.
+Assumes all four-velocities are given in orthonormal coordinates.
+
+*/
+__device__
+void boost(double v[4], double u[4], double vp[4])
+{
+	double g, V, n1, n2, n3, gm1;
+
+	g = u[0];
+	V = sqrt(fabs(1. - 1. / (g * g)));
+	n1 = u[1] / (g * V + SMALL);
+	n2 = u[2] / (g * V + SMALL);
+	n3 = u[3] / (g * V + SMALL);
+	gm1 = g - 1.;
+
+	/* general Lorentz boost into frame u from lab frame */
+	vp[0] = u[0] * v[0] - u[1] * v[1] - u[2] * v[2] - u[3] * v[3];
+	vp[1] =
+	    -u[1] * v[0] + (1. + n1 * n1 * gm1) * v[1] +
+	    n1 * n2 * gm1 * v[2] + n1 * n3 * gm1 * v[3];
+	vp[2] =
+	    -u[2] * v[0] + n2 * n1 * gm1 * v[1] + (1. +
+						   n2 * n2 * gm1) * v[2] +
+	    n2 * n3 * gm1 * v[3];
+	vp[3] =
+	    -u[3] * v[0] + n3 * n1 * gm1 * v[1] + n3 * n2 * gm1 * v[2] +
+	    (1. + n3 * n3 * gm1) * v[3];
+
+}
+
+
+
+/* return a cos(theta) consistent w/ Thomson
+   differential cross section */
+
+/* uses simple rejection scheme */
+__device__
+double sample_thomson()
+{
+	double x1, x2;
+
+	do {
+
+		x1 = 2. * d_monty_rand() - 1.;
+		x2 = (3. / 4.) * d_monty_rand();
+
+	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
+
+	return (x1);
+}
+
+
+/*  
+
+   differential cross section for scattering from 
+   frequency a -> frequency ap.  Frequencies are
+   in units of m_e.  Unnormalized!
+   
+*/
+__device__
+double klein_nishina(double a, double ap)
+{
+	double ch, kn;
+
+	ch = 1. + 1. / a - 1. / ap;
+	kn = (a / ap + ap / a - 1. + ch * ch) / (a * a);
+
+	return (kn);
+}
+
+/*
+
+sample Klein-Nishina differential cross section.
+
+This routine is inefficient; it needs improvement.
+
+*/
+__device__
+double sample_klein_nishina(double k0)
+{
+	double k0pmin, k0pmax, k0p_tent, x1;
+	int n = 0;
+
+	/* a low efficiency sampling algorithm, particularly for large k0;
+	   limiting efficiency is log(2 k0)/(2 k0) */
+	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
+	k0pmax = k0;		/* at theta = 0 */
+	do {
+
+		/* tentative value */
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * d_monty_rand();
+
+		/* rejection sample in box of height = kn(kmin) */
+		x1 = 2. * (1. + 2. * k0 +
+			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
+		x1 *= d_monty_rand();
+
+		n++;
+
+	} while (x1 >= klein_nishina(k0, k0p_tent));
+
+	return (k0p_tent);
+}
+
+
+
+
+
 /*
    given photon w/ wavevector $k$ colliding w/ electron with
    momentum $p$, ($p$ is actually the four-velocity) 
@@ -84,7 +198,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * monty_rand();
+	phi = 2. * M_PI * d_monty_rand();
 	sincos(phi, &sphi, &cphi);
 
 	p[1] *= -1.;
@@ -122,110 +236,102 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	/* done! */
 }
 
-/*
 
-Lorentz boost vector v into frame given by four-velocity u.
-Result goes out in vp.
-Assumes all four-velocities are given in orthonormal coordinates.
+/* 
 
-*/
-__device__
-void boost(double v[4], double u[4], double vp[4])
-{
-	double g, V, n1, n2, n3, gm1;
-
-	g = u[0];
-	V = sqrt(fabs(1. - 1. / (g * g)));
-	n1 = u[1] / (g * V + SMALL);
-	n2 = u[2] / (g * V + SMALL);
-	n3 = u[3] / (g * V + SMALL);
-	gm1 = g - 1.;
-
-	/* general Lorentz boost into frame u from lab frame */
-	vp[0] = u[0] * v[0] - u[1] * v[1] - u[2] * v[2] - u[3] * v[3];
-	vp[1] =
-	    -u[1] * v[0] + (1. + n1 * n1 * gm1) * v[1] +
-	    n1 * n2 * gm1 * v[2] + n1 * n3 * gm1 * v[3];
-	vp[2] =
-	    -u[2] * v[0] + n2 * n1 * gm1 * v[1] + (1. +
-						   n2 * n2 * gm1) * v[2] +
-	    n2 * n3 * gm1 * v[3];
-	vp[3] =
-	    -u[3] * v[0] + n3 * n1 * gm1 * v[1] + n3 * n2 * gm1 * v[2] +
-	    (1. + n3 * n3 * gm1) * v[3];
-
-}
-
-/* return a cos(theta) consistent w/ Thomson
-   differential cross section */
-
-/* uses simple rejection scheme */
-__device__
-double sample_thomson()
-{
-	double x1, x2;
-
-	do {
-
-		x1 = 2. * monty_rand() - 1.;
-		x2 = (3. / 4.) * monty_rand();
-
-	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
-
-	return (x1);
-}
-
-/*
-
-sample Klein-Nishina differential cross section.
-
-This routine is inefficient; it needs improvement.
-
-*/
-__device__
-double sample_klein_nishina(double k0)
-{
-	double k0pmin, k0pmax, k0p_tent, x1;
-	int n = 0;
-
-	/* a low efficiency sampling algorithm, particularly for large k0;
-	   limiting efficiency is log(2 k0)/(2 k0) */
-	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
-	k0pmax = k0;		/* at theta = 0 */
-	do {
-
-		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * monty_rand();
-
-		/* rejection sample in box of height = kn(kmin) */
-		x1 = 2. * (1. + 2. * k0 +
-			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= monty_rand();
-
-		n++;
-
-	} while (x1 >= klein_nishina(k0, k0p_tent));
-
-	return (k0p_tent);
-}
-
-/*  
-
-   differential cross section for scattering from 
-   frequency a -> frequency ap.  Frequencies are
-   in units of m_e.  Unnormalized!
+   sample y, which is the temperature-normalized
+   kinetic energy.
+   Uses procedure outlined in Canfield et al. 1987,
+   p. 572 et seq. 
    
 */
 __device__
-double klein_nishina(double a, double ap)
+double sample_y_distr(double Thetae)
 {
-	double ch, kn;
 
-	ch = 1. + 1. / a - 1. / ap;
-	kn = (a / ap + ap / a - 1. + ch * ch) / (a * a);
+	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
+	double num, den;
 
-	return (kn);
+	pi_3 = sqrt(M_PI) / 4.;
+	pi_4 = sqrt(0.5 * Thetae) / 2.;
+	pi_5 = 3. * sqrt(M_PI) * Thetae / 8.;
+	pi_6 = Thetae * sqrt(0.5 * Thetae);
+
+	S_3 = pi_3 + pi_4 + pi_5 + pi_6;
+
+	pi_3 /= S_3;
+	pi_4 /= S_3;
+	pi_5 /= S_3;
+	pi_6 /= S_3;
+
+	do {
+		x1 = d_monty_rand();
+
+		if (x1 < pi_3) {
+			x = gsl_ran_chisq(r, 3);
+		} else if (x1 < pi_3 + pi_4) {
+			x = gsl_ran_chisq(r, 4);
+		} else if (x1 < pi_3 + pi_4 + pi_5) {
+			x = gsl_ran_chisq(r, 5);
+		} else {
+			x = gsl_ran_chisq(r, 6);
+		}
+
+		/* this translates between defn of distr in
+		   Canfield et al. and standard chisq distr */
+		y = sqrt(x / 2);
+
+		x2 = d_monty_rand();
+		num = sqrt(1. + 0.5 * Thetae * y * y);
+		den = (1. + y * sqrt(0.5 * Thetae));
+
+		prob = num / den;
+
+	} while (x2 >= prob);
+
+	return (y);
 }
+
+
+/* 
+   sample dimensionless speed of electron
+   from relativistic maxwellian 
+
+   checked. 
+   
+*/
+__device__
+void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
+{
+	double y;
+
+	/* checked */
+	y = sample_y_distr(Thetae);
+
+	/* checked */
+	*gamma_e = y * y * Thetae + 1.;
+	*beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+
+	return;
+
+}
+
+
+
+__device__
+double sample_mu_distr(double beta_e)
+{
+	double mu, x1, det;
+
+	x1 = d_monty_rand();
+	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
+	if (det < 0.)
+		fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
+	mu = (1. - sqrt(det)) / beta_e;
+	return (mu);
+}
+
+
 
 /* 
 
@@ -277,7 +383,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 						   log(1. + 2. * K));
 		}
 
-		x1 = monty_rand();
+		x1 = d_monty_rand();
 
 		sample_cnt++;
 
@@ -324,7 +430,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
-	phi = monty_rand() * 2. * M_PI;	/* orient uniformly */
+	phi = d_monty_rand() * 2. * M_PI;	/* orient uniformly */
 	sincos(phi, &sphi, &cphi);
 	cth = mu;
 	sth = sqrt(1. - mu * mu);
@@ -346,95 +452,4 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	}
 
 	return;
-}
-
-/* 
-   sample dimensionless speed of electron
-   from relativistic maxwellian 
-
-   checked. 
-   
-*/
-__device__
-void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
-{
-	double y;
-
-	/* checked */
-	y = sample_y_distr(Thetae);
-
-	/* checked */
-	*gamma_e = y * y * Thetae + 1.;
-	*beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
-
-	return;
-
-}
-
-/* 
-
-   sample y, which is the temperature-normalized
-   kinetic energy.
-   Uses procedure outlined in Canfield et al. 1987,
-   p. 572 et seq. 
-   
-*/
-__device__
-double sample_y_distr(double Thetae)
-{
-
-	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
-	double num, den;
-
-	pi_3 = sqrt(M_PI) / 4.;
-	pi_4 = sqrt(0.5 * Thetae) / 2.;
-	pi_5 = 3. * sqrt(M_PI) * Thetae / 8.;
-	pi_6 = Thetae * sqrt(0.5 * Thetae);
-
-	S_3 = pi_3 + pi_4 + pi_5 + pi_6;
-
-	pi_3 /= S_3;
-	pi_4 /= S_3;
-	pi_5 /= S_3;
-	pi_6 /= S_3;
-
-	do {
-		x1 = monty_rand();
-
-		if (x1 < pi_3) {
-			x = gsl_ran_chisq(r, 3);
-		} else if (x1 < pi_3 + pi_4) {
-			x = gsl_ran_chisq(r, 4);
-		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = gsl_ran_chisq(r, 5);
-		} else {
-			x = gsl_ran_chisq(r, 6);
-		}
-
-		/* this translates between defn of distr in
-		   Canfield et al. and standard chisq distr */
-		y = sqrt(x / 2);
-
-		x2 = monty_rand();
-		num = sqrt(1. + 0.5 * Thetae * y * y);
-		den = (1. + y * sqrt(0.5 * Thetae));
-
-		prob = num / den;
-
-	} while (x2 >= prob);
-
-	return (y);
-}
-
-__device__
-double sample_mu_distr(double beta_e)
-{
-	double mu, x1, det;
-
-	x1 = monty_rand();
-	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
-	if (det < 0.)
-		fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
-	mu = (1. - sqrt(det)) / beta_e;
-	return (mu);
 }
