@@ -6,7 +6,7 @@
 get HARM simulation data from fname
 
 checks for consistency of coordinates in data file with
-values of coordinate parameters 
+values of coordinate parameters
 
 Uses standard HARM data file format
 
@@ -150,7 +150,6 @@ void init_harm_data(char *fname)
 			dMact += gdet * p[KRHO][i][j] * Ucon[1];
 		if (i >= 20 && i < 40)
 			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
-
 	}
 
 	bias_norm /= V;
@@ -160,7 +159,5 @@ void init_harm_data(char *fname)
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
 
-
 	/* done! */
-
 }
