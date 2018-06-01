@@ -4,11 +4,15 @@
 # you must edit the file to change which variable is plotted!
 #
 # import
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 #
 # open spectrum file
-data = np.loadtxt("spectrum.dat")
+if len(sys.argv) == 2:
+    data = np.loadtxt(sys.argv[1])
+else:
+    data = np.loadtxt("spectrum.dat")
 tdata = np.transpose( data )
 #
 lw = tdata[0,:]	# log of photon energy in electron rest-mass units
@@ -42,14 +46,14 @@ plt.step(lw, nLn[4])
 plt.step(lw, nLn[5])
 #
 # labels
-plt.rc('text', usetex=True) 
+plt.rc('text', usetex=False) 
 plt.rc('font', size = 16)
 plt.rc('font', family='times new roman')
 plt.xlabel('$\\nu [{\\rm Hz}]$', weight='bold', fontsize=20)
 plt.ylabel('$\\nu L_\\nu [{\\rm erg\\,\\,s}^{-1}]$', weight='bold', fontsize=20)
 #
 minlognu = 9
-maxlognu = 22
+maxlognu = 23
 #
 eV = 1.602e-12
 mum = 1.e-4 # 1 micron
@@ -68,7 +72,7 @@ plotenergy(c/(10.*mum), '10 $\\mu$m')
 plotenergy(c/0.1, '1 mm')
 #
 plt.xlim((minlognu, maxlognu))
-plt.ylim((33.5-5, 33.5+2))
+plt.ylim((20, 40))
 #
 # plot on screen, where you can save to file after viewing plot
 plt.show()
