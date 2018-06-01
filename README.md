@@ -23,7 +23,7 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump019 4.e19 [C]
+    ./grmonty 5000000 dump1000 4.e19 [C]
 
 Arguments are:
 
@@ -36,12 +36,12 @@ This will output spectrum to `grmonty.spec` ~~which should be identical to `grmo
 
 # Plotting
 
-Use python and the [`nmmn`](https://github.com/rsnemmen/nmmn) module:
-
-```python
-from  nmmn import plots
-plots.plot('grmonty.spec')
 ```
+./plspec.py [filename]
+```
+
+Where filename is optional, beeing 'spectrum.dat' by default.
+
 
 # Calculate spectra from other sources
 
