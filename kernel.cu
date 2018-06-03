@@ -1,9 +1,9 @@
 #include <stdio.h>
+#include <curand_kernel.h>
 #include "constants.h"
 //#include "decs.h"
 #include "host-device.h"
 #include "device.h"  
-#include <curand_kernel.h>
 
 #define TPB 32 // number of threads per block 
 #define MAXNSTEP	1280000 // for geodesic integration
