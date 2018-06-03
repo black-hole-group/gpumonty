@@ -4,7 +4,7 @@ CC = nvcc
 CFLAGS = -O2 -Xcompiler -fopenmp 
 LDFLAGS = -lm -lgsl -lgslcblas -lgomp
  
-OBJS = grmonty.o compton.o init_geometry.o tetrads.o  \
+OBJS = main.o compton.o init_geometry.o tetrads.o  \
 jnu_mixed.o hotcross.o harm_model.o harm_utils.o  \
 init_harm_data.o device_query.o kernel.o gen_photons.o \
 get_globals.o 
