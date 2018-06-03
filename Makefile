@@ -1,8 +1,7 @@
 EXEC   = grmonty
 
-OPTIMIZE =  -O2  
+DIR = ./src 
 
-DIR = ./src # source dir
 CFILES = $(wildcard $(DIR)/*.c)
 CPPFILES = $(wildcard $(DIR)/*.cpp)
 CUDAFILES = $(wildcard $(DIR)/*.cu)
@@ -44,7 +43,9 @@ CXXFLAGS  = $(CFLAGS)
 
 
 $(EXEC): $(OBJS) 
-	 	 $(NVCC) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) $(NVLIBS) -o $(EXEC) $(INCL)   
+	@echo $(CUDAFILES)
+	@echo $(OBJS)
+	$(NVCC) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) $(NVLIBS) -o $(EXEC) $(INCL)   
 
 #$(OBJS): $(INCL) 
 
