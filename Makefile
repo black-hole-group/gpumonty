@@ -2,81 +2,35 @@ EXEC   = grmonty
 
 OPTIMIZE =  -O2  
 
-DIR = ./src
+DIR = ./src # source dir
 CFILES = $(wildcard $(DIR)/*.c)
 CPPFILES = $(wildcard $(DIR)/*.cpp)
 CUDAFILES = $(wildcard $(DIR)/*.cu)
 
 OBJS   = $(subst .c,.o,$(CFILES)) $(subst .cpp,.o,$(CPPFILES)) $(subst .cu,.o,$(CUDAFILES)) 
 
-#To use GPUs, CUDA must be turned on here
-#Optional error checking can also be enabled
-CUDA = -DCUDA #-DCUDA_ERROR_CHECK
-
-#To use MPI, MPI_FLAGS must be set to -DMPI_CHOLLA
-#otherwise gcc/g++ will be used for serial compilation
-MPI_FLAGS =  -DMPI_CHOLLA
-
-ifdef MPI_FLAGS
-  CC	= mpicc
-  CXX   = mpicxx
-
-  #MPI_FLAGS += -DSLAB
-  MPI_FLAGS += -DBLOCK
-
-else
-  CC	= gcc
-  CXX   = g++
-endif
-
-#define the NVIDIA CUDA compiler
+# compilers
+CC	= gcc
+CXX   = g++
 NVCC	= nvcc
 
 .SUFFIXES : .c .cpp .cu .o
 
-#PRECISION = -DPRECISION=1
-PRECISION = -DPRECISION=2
+#CUDA_INCLUDE = -I/usr/local/cuda/include/
+#CUDA_LIBS = -L/usr/local/cuda/lib64 -lcuda -lcudart
+#INCL   = -I./ $(HDF5_INCLUDE)
+#NVINCL = $(INCL) $(CUDA_INCLUDE)
 
-OUTPUT = -DBINARY
-#OUTPUT = -DHDF5
-
-#RECONSTRUCTION = -DPCM
-#RECONSTRUCTION = -DPLMP
-#RECONSTRUCTION = -DPLMC
-#RECONSTRUCTION = -DPPMP
-RECONSTRUCTION = -DPPMC
-
-SOLVER = -DEXACT
-#SOLVER = -DROE
-
-INTEGRATOR = -DCTU
-#INTEGRATOR = -DVL
-
-#COOLING = -DCOOLING_GPU
-
-
-ifdef CUDA
-CUDA_INCLUDE = -I/usr/local/cuda/include/
-CUDA_LIBS = -L/usr/local/cuda/lib64 -lcuda -lcudart
-endif
-
-ifeq ($(OUTPUT),-DHDF5)
-HDF5_INCLUDE = -I/usr/local/hdf5/1.8.16/include/
-HDF5_LIBS = -lhdf5 -L/usr/local/hdf5/1.8.16/lib/
-endif
-
-INCL   = -I./ $(HDF5_INCLUDE)
-NVINCL = $(INCL) $(CUDA_INCLUDE)
 NVLIBS = $(CUDA_LIBS)
-LIBS   = -lm $(HDF5_LIBS)
+LIBS   = -lm -lgsl -lgslcblas -lgomp
 
 
 
-FLAGS = $(CUDA) $(PRECISION) $(OUTPUT) $(RECONSTRUCTION) $(SOLVER) $(INTEGRATOR) $(COOLING) 
-CFLAGS 	  = $(OPTIMIZE) $(FLAGS) $(MPI_FLAGS) $(FFT_FLAGS) -m64
-CXXFLAGS  = $(OPTIMIZE) $(FLAGS) $(MPI_FLAGS) $(FFT_FLAGS) -m64 
-NVCCFLAGS = $(FLAGS) -m64 -arch=compute_60 -fmad=false -ccbin=$(CC)
-LDFLAGS	  = -m64
+#FLAGS = $(CUDA) $(PRECISION) $(OUTPUT)$(COOLING) 
+CFLAGS 	  = -O2 -Xcompiler -fopenmp 
+CXXFLAGS  = $(CFLAGS) 
+#NVCCFLAGS = $(FLAGS) -m64 -arch=compute_60 -fmad=false -ccbin=$(CC)
+#LDFLAGS	  = -m64
 
 
 %.o:	%.c
@@ -90,7 +44,7 @@ LDFLAGS	  = -m64
 
 
 $(EXEC): $(OBJS) 
-	 	 $(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) $(NVLIBS) -o $(EXEC) $(INCL)   
+	 	 $(NVCC) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) $(NVLIBS) -o $(EXEC) $(INCL)   
 
 #$(OBJS): $(INCL) 
 
