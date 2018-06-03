@@ -1,26 +1,101 @@
-# requires an openmp-enabled version of gcc
-#
-CC = nvcc
-CFLAGS = -O2 -Xcompiler -fopenmp 
-LDFLAGS = -lm -lgsl -lgslcblas -lgomp
- 
-OBJS = main.o compton.o init_geometry.o tetrads.o  \
-jnu_mixed.o hotcross.o harm_model.o harm_utils.o  \
-init_harm_data.o device_query.o kernel.o gen_photons.o \
-get_globals.o 
+EXEC   = grmonty
 
-INCS = host.h host-device.h constants.h harm_model.h 
+OPTIMIZE =  -O2  
 
-#all: device_query.o grmonty.o grmonty
+DIR = ./src
+CFILES = $(wildcard $(DIR)/*.c)
+CPPFILES = $(wildcard $(DIR)/*.cpp)
+CUDAFILES = $(wildcard $(DIR)/*.cu)
 
-grmonty: $(OBJS) $(INCS) makefile 
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+OBJS   = $(subst .c,.o,$(CFILES)) $(subst .cpp,.o,$(CPPFILES)) $(subst .cu,.o,$(CUDAFILES)) 
 
-%.o: %.cpp $(INCS) makefile
+#To use GPUs, CUDA must be turned on here
+#Optional error checking can also be enabled
+CUDA = -DCUDA #-DCUDA_ERROR_CHECK
 
-%.o: %.cu
-	$(CC) -c $< -o $@ 	
+#To use MPI, MPI_FLAGS must be set to -DMPI_CHOLLA
+#otherwise gcc/g++ will be used for serial compilation
+MPI_FLAGS =  -DMPI_CHOLLA
+
+ifdef MPI_FLAGS
+  CC	= mpicc
+  CXX   = mpicxx
+
+  #MPI_FLAGS += -DSLAB
+  MPI_FLAGS += -DBLOCK
+
+else
+  CC	= gcc
+  CXX   = g++
+endif
+
+#define the NVIDIA CUDA compiler
+NVCC	= nvcc
+
+.SUFFIXES : .c .cpp .cu .o
+
+#PRECISION = -DPRECISION=1
+PRECISION = -DPRECISION=2
+
+OUTPUT = -DBINARY
+#OUTPUT = -DHDF5
+
+#RECONSTRUCTION = -DPCM
+#RECONSTRUCTION = -DPLMP
+#RECONSTRUCTION = -DPLMC
+#RECONSTRUCTION = -DPPMP
+RECONSTRUCTION = -DPPMC
+
+SOLVER = -DEXACT
+#SOLVER = -DROE
+
+INTEGRATOR = -DCTU
+#INTEGRATOR = -DVL
+
+#COOLING = -DCOOLING_GPU
+
+
+ifdef CUDA
+CUDA_INCLUDE = -I/usr/local/cuda/include/
+CUDA_LIBS = -L/usr/local/cuda/lib64 -lcuda -lcudart
+endif
+
+ifeq ($(OUTPUT),-DHDF5)
+HDF5_INCLUDE = -I/usr/local/hdf5/1.8.16/include/
+HDF5_LIBS = -lhdf5 -L/usr/local/hdf5/1.8.16/lib/
+endif
+
+INCL   = -I./ $(HDF5_INCLUDE)
+NVINCL = $(INCL) $(CUDA_INCLUDE)
+NVLIBS = $(CUDA_LIBS)
+LIBS   = -lm $(HDF5_LIBS)
+
+
+
+FLAGS = $(CUDA) $(PRECISION) $(OUTPUT) $(RECONSTRUCTION) $(SOLVER) $(INTEGRATOR) $(COOLING) 
+CFLAGS 	  = $(OPTIMIZE) $(FLAGS) $(MPI_FLAGS) $(FFT_FLAGS) -m64
+CXXFLAGS  = $(OPTIMIZE) $(FLAGS) $(MPI_FLAGS) $(FFT_FLAGS) -m64 
+NVCCFLAGS = $(FLAGS) -m64 -arch=compute_60 -fmad=false -ccbin=$(CC)
+LDFLAGS	  = -m64
+
+
+%.o:	%.c
+		$(CC) $(CFLAGS)  $(INCL)  -c $< -o $@ 
+
+%.o:	%.cpp
+		$(CXX) $(CXXFLAGS)  $(INCL)  -c $< -o $@ 
+
+%.o:	%.cu
+		$(NVCC) $(NVCCFLAGS)  $(INCL)  -c $< -o $@ 
+
+
+$(EXEC): $(OBJS) 
+	 	 $(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) $(NVLIBS) -o $(EXEC) $(INCL)   
+
+#$(OBJS): $(INCL) 
+
+.PHONY : clean
 
 clean:
-	/bin/rm *.o grmonty
+	 rm -f $(OBJS) $(EXEC)
 
