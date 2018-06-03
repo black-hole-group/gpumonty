@@ -16,7 +16,7 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 
 /* return pseudo-random value between 0 and 1 */
 __device__
-double d_monty_rand(curandState *state)
+double d_monty_rand(curandState state)
 {
 	return (curand_uniform_double(&state));	
 	//return (gsl_rng_uniform(r));
