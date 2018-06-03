@@ -66,14 +66,14 @@ void boost(double v[4], double u[4], double vp[4])
 
 /* uses simple rejection scheme */
 __device__
-double sample_thomson()
+double sample_thomson(curandState state)
 {
 	double x1, x2;
 
 	do {
 
-		x1 = 2. * d_monty_rand() - 1.;
-		x2 = (3. / 4.) * d_monty_rand();
+		x1 = 2. * d_monty_rand(state) - 1.;
+		x2 = (3. / 4.) * d_monty_rand(state);
 
 	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
 
@@ -107,7 +107,7 @@ This routine is inefficient; it needs improvement.
 
 */
 __device__
-double sample_klein_nishina(double k0)
+double sample_klein_nishina(double k0, curandState state)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	int n = 0;
@@ -119,12 +119,12 @@ double sample_klein_nishina(double k0)
 	do {
 
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * d_monty_rand();
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * d_monty_rand(state);
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= d_monty_rand();
+		x1 *= d_monty_rand(state);
 
 		n++;
 
@@ -143,7 +143,7 @@ double sample_klein_nishina(double k0)
    find new wavevector $kp$ 
 */
 __device__
-void sample_scattered_photon(double k[4], double p[4], double kp[4])
+void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState state)
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -157,11 +157,11 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 
 	boost(k, p, ke);
 	if (ke[0] > 1.e-4) {
-		k0p = sample_klein_nishina(ke[0]);
+		k0p = sample_klein_nishina(ke[0], state);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
-		cth = sample_thomson();
+		cth = sample_thomson(state);
 	}
 	sth = sqrt(fabs(1. - cth * cth));
 
@@ -196,7 +196,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * d_monty_rand();
+	phi = 2. * M_PI * d_monty_rand(state);
 	sincos(phi, &sphi, &cphi);
 
 	p[1] *= -1.;
@@ -244,7 +244,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
    
 */
 __device__
-double sample_y_distr(double Thetae)
+double sample_y_distr(double Thetae, curandState state)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -263,7 +263,7 @@ double sample_y_distr(double Thetae)
 	pi_6 /= S_3;
 
 	do {
-		x1 = d_monty_rand();
+		x1 = d_monty_rand(state);
 
 		if (x1 < pi_3) {
 			x = gsl_ran_chisq(r, 3);
@@ -279,7 +279,7 @@ double sample_y_distr(double Thetae)
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = d_monty_rand();
+		x2 = d_monty_rand(state);
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
@@ -299,12 +299,12 @@ double sample_y_distr(double Thetae)
    
 */
 __device__
-void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
+void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState state)
 {
 	double y;
 
 	/* checked */
-	y = sample_y_distr(Thetae);
+	y = sample_y_distr(Thetae, state);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -317,11 +317,11 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 
 
 __device__
-double sample_mu_distr(double beta_e)
+double sample_mu_distr(double beta_e, curandState state)
 {
 	double mu, x1, det;
 
-	x1 = d_monty_rand();
+	x1 = d_monty_rand(state);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	if (det < 0.)
 		fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
@@ -338,7 +338,7 @@ double sample_mu_distr(double beta_e)
 
 */
 __device__
-void sample_electron_distr_p(double k[4], double p[4], double Thetae)
+void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState state)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -350,8 +350,8 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	void sincos(double x, double *sin, double *cos);
 
 	do {
-		sample_beta_distr(Thetae, &gamma_e, &beta_e);
-		mu = sample_mu_distr(beta_e);
+		sample_beta_distr(Thetae, &gamma_e, &beta_e, state);
+		mu = sample_mu_distr(beta_e, state);
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -381,7 +381,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 						   log(1. + 2. * K));
 		}
 
-		x1 = d_monty_rand();
+		x1 = d_monty_rand(state);
 
 		sample_cnt++;
 
@@ -428,7 +428,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
-	phi = d_monty_rand() * 2. * M_PI;	/* orient uniformly */
+	phi = d_monty_rand(state) * 2. * M_PI;	/* orient uniformly */
 	sincos(phi, &sphi, &cphi);
 	cth = mu;
 	sth = sqrt(1. - mu * mu);

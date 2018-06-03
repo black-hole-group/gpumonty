@@ -484,7 +484,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 /* K not referenced intentionally */
 
 __device__
-int stop_criterion(struct of_photon *ph)
+int stop_criterion(struct of_photon *ph, curandState state)
 {
 	double wmin, X1min, X1max;
 
@@ -500,7 +500,7 @@ int stop_criterion(struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (d_monty_rand() <= 1. / ROULETTE) {
+			if (d_monty_rand(state) <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -509,7 +509,7 @@ int stop_criterion(struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (d_monty_rand() <= 1. / ROULETTE) {
+		if (d_monty_rand(state) <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;
