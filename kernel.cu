@@ -146,8 +146,8 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 	   no offset. To get different numbers every time, associate the
 	   seed with the current time 
 
-	   ATTENTION: it might be faster to do this in a different kernel
-	   call, see https://docs.nvidia.com/cuda/curand/device-api-overview.html#performance-notes
+	   ATTENTION (SERIOUS): it might be faster to do the RNG initialization 
+	   in a different kernel call, see https://docs.nvidia.com/cuda/curand/device-api-overview.html#performance-notes
 	*/
 	curand_init(1234, i, 0, &d_rng[i]);
 	/* Copy RNG state to local memory for efficiency 
