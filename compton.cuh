@@ -266,13 +266,13 @@ double sample_y_distr(double Thetae, curandState *state)
 		x1 = d_monty_rand(state);
 
 		if (x1 < pi_3) {
-			x = gsl_ran_chisq(r, 3);
+			x = cu_ran_chisq_double(state, 3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = gsl_ran_chisq(r, 4);
+			x = cu_ran_chisq_double(state, 4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = gsl_ran_chisq(r, 5);
+			x = cu_ran_chisq_double(state, 5);
 		} else {
-			x = gsl_ran_chisq(r, 6);
+			x = cu_ran_chisq_double(state, 6);
 		}
 
 		/* this translates between defn of distr in

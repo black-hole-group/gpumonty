@@ -46,8 +46,12 @@ __constant__ double max_tau_scatt;
   Device functions
   =================
 */
+// replace GSL routines
+#include "../cusl/sphere.cuh" 
+#include "../cusl/gamma.cuh" 
+#include "../cusl/chisq.cuh"   
+
 #include "tetrads.cuh"
-#include "../cusl/sphere.cuh" // imports cu_ran_dir_3d
 #include "compton.cuh"
 #include "harm.cuh" 
 // #include "radiation.cuh"
