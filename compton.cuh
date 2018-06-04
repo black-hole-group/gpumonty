@@ -173,7 +173,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState
 
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
-	gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
+	cu_ran_dir_3d_double(state, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -317,7 +317,7 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandSta
 
 
 __device__
-double sample_mu_distr(double beta_e, curandState state)
+double sample_mu_distr(double beta_e, curandState *state)
 {
 	double mu, x1, det;
 
@@ -406,7 +406,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandStat
 	v0z /= v0;
 
 	/* pick zero-angle for coordinate system */
-	gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
+	cu_ran_dir_3d_double(state, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */

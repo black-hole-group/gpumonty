@@ -484,7 +484,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 /* K not referenced intentionally */
 
 __device__
-int stop_criterion(struct of_photon *ph, curandState state)
+int stop_criterion(struct of_photon *ph, curandState *state)
 {
 	double wmin, X1min, X1max;
 

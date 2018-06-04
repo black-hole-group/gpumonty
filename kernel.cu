@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <curand_kernel.h>
 #include "constants.h"
-//#include "decs.h"
 #include "host-device.h"
 #include "device.h"  
 
@@ -48,6 +47,7 @@ __constant__ double max_tau_scatt;
   =================
 */
 #include "tetrads.cuh"
+#include "../cusl/sphere.cuh" // imports cu_ran_dir_3d
 #include "compton.cuh"
 #include "harm.cuh" 
 // #include "radiation.cuh"
