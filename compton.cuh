@@ -16,9 +16,9 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 
 /* return pseudo-random value between 0 and 1 */
 __device__
-double d_monty_rand(curandState state)
+double d_monty_rand(curandState *state)
 {
-	return (curand_uniform_double(&state));	
+	return (curand_uniform_double(state));	
 	//return (gsl_rng_uniform(r));
 }
 
@@ -66,7 +66,7 @@ void boost(double v[4], double u[4], double vp[4])
 
 /* uses simple rejection scheme */
 __device__
-double sample_thomson(curandState state)
+double sample_thomson(curandState *state)
 {
 	double x1, x2;
 
@@ -107,7 +107,7 @@ This routine is inefficient; it needs improvement.
 
 */
 __device__
-double sample_klein_nishina(double k0, curandState state)
+double sample_klein_nishina(double k0, curandState *state)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	int n = 0;
@@ -143,7 +143,7 @@ double sample_klein_nishina(double k0, curandState state)
    find new wavevector $kp$ 
 */
 __device__
-void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState state)
+void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState *state)
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -244,7 +244,7 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState
    
 */
 __device__
-double sample_y_distr(double Thetae, curandState state)
+double sample_y_distr(double Thetae, curandState *state)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -299,7 +299,7 @@ double sample_y_distr(double Thetae, curandState state)
    
 */
 __device__
-void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState state)
+void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState *state)
 {
 	double y;
 
@@ -338,7 +338,7 @@ double sample_mu_distr(double beta_e, curandState state)
 
 */
 __device__
-void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState state)
+void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState *state)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;

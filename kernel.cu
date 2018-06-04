@@ -282,7 +282,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 	// 			bi = bf;
 	// 		}
 
-	// 		x1 = -log(monty_rand());
+	// 		x1 = -log(d_monty_rand(&localState));
 	// 		php.w = ph->w / bias;
 	// 		if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 	// 			if (isnan(php.w) || isinf(php.w)) {
