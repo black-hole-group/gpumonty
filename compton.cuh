@@ -217,18 +217,13 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState
 
 	/* quality control */
 	if (kp[0] < 0 || isnan(kp[0])) {
-		fprintf(stderr, "in sample_scattered_photon:\n");
-		fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
-		fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
-			kpe[2], kpe[3]);
-		fprintf(stderr, "k:  %g %g %g %g\n", k[0], k[1], k[2],
-			k[3]);
-		fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
-			ke[3]);
-		fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
-			p[3]);
-		fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
-			kp[3]);
+		printf("in sample_scattered_photon:\n");
+		printf("kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
+		printf("kpe: %g %g %g %g\n", kpe[0], kpe[1],kpe[2], kpe[3]);
+		printf("k:  %g %g %g %g\n", k[0], k[1], k[2],k[3]);
+		printf("ke: %g %g %g %g\n", ke[0], ke[1], ke[2],ke[3]);
+		printf("p:   %g %g %g %g\n", p[0], p[1], p[2], p[3]);
+		printf("kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],kp[3]);
 	}
 
 	/* done! */
@@ -324,7 +319,7 @@ double sample_mu_distr(double beta_e, curandState *state)
 	x1 = d_monty_rand(state);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	if (det < 0.)
-		fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
+		printf("det < 0  %g %g\n\n", beta_e, x1);
 	mu = (1. - sqrt(det)) / beta_e;
 	return (mu);
 }
@@ -386,8 +381,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandStat
 		sample_cnt++;
 
 		if (sample_cnt > 10000000) {
-			fprintf(stderr,
-				"in sample_electron mu, gamma_e, K, sigma_KN, x1: %g %g %g %g %g %g\n",
+			printf("in sample_electron mu, gamma_e, K, sigma_KN, x1: %g %g %g %g %g %g\n",
 				Thetae, mu, gamma_e, K, sigma_KN, x1);
 			/* This is a kluge to prevent stalling for large values of \Theta_e */
 			Thetae *= 0.5;
@@ -445,7 +439,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandStat
 				sth * (cphi * v1z + sphi * v2z));
 
 	if (beta_e < 0) {
-		fprintf(stderr, "betae error: %g %g %g %g\n",
+		printf("betae error: %g %g %g %g\n",
 			p[0], p[1], p[2], p[3]);
 	}
 

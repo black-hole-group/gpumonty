@@ -13,10 +13,10 @@ INCS = host.h host-device.h constants.h harm_model.h
 
 #all: device_query.o grmonty.o grmonty
 
-grmonty: $(OBJS) $(INCS) makefile 
+grmonty: $(OBJS) $(INCS) Makefile 
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-%.o: %.cpp $(INCS) makefile
+%.o: %.cpp $(INCS) Makefile
 
 %.o: %.cu
 	$(CC) -c $< -o $@ 	
