@@ -73,6 +73,15 @@ plotenergy(c/0.1, '1 mm')
 plt.xlim((minlognu, maxlognu))
 plt.ylim((33.5-2.5, 33.5+3.5)) # (31, 37) if Sgr A*
 #
+# plotting the measured data at 1.3mm
+xx = c*10/1.3
+# if Sgr A*
+yy = 34.7
+# else, if M87
+#yy = 
+# plot data
+plt.plot(xx, yy, marker='o', markersize=3, color="black")
+#
 plt.legend()
 # plot on screen, where you can save to file after viewing plot
 plt.show()
