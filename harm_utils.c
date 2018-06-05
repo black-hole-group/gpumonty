@@ -27,15 +27,27 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
  ********************************************************************/
 
-double interp_scalar(double **var, int i, int j, double coeff[4])
+double interp_scalar(double **var, double X[NDIM])
 {
 
-	double interp;
+	double interp, del[NDIM], coeff[4];
+	int i, j, ip1, jp1;
+
+	Xtoij(X, &i, &j, del);
+
+	ip1 = i + 1;
+	jp1 = j + 1;
+
+	coeff[0] = (1. - del[1]) * (1. - del[2]);
+	coeff[1] = (1. - del[1]) * del[2];
+	coeff[2] = del[1] * (1. - del[2]);
+	coeff[3] = del[1] * del[2];
 
 	interp =
 	    var[i][j] * coeff[0] +
-	    var[i][j + 1] * coeff[1] +
-	    var[i + 1][j] * coeff[2] + var[i + 1][j + 1] * coeff[3];
+	    var[i][jp1] * coeff[1] +
+	    var[ip1][j] * coeff[2] +
+		var[ip1][jp1] * coeff[3];
 
 	return interp;
 }
@@ -431,7 +443,7 @@ void set_units(char *munitstr)
 
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
-	MBH = 4.6e6 * MSUN ;
+	MBH = 4.5e6 * MSUN ;
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 

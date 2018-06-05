@@ -70,7 +70,7 @@ void init_storage(void);
 double dOmega_func(double x2i, double x2f);
 
 void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph);
-double interp_scalar(double **var, int i, int j, double coeff[4]);
+double interp_scalar(double **var, double X[NDIM]);
 int get_zone(int *i, int *j, double *dnamx);
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);

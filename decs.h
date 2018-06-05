@@ -18,7 +18,14 @@
 #define NPRIM	8
 
 // Radiative processes
-#define BREMSSTRAHLUNG (1)
+#define BREMSSTRAHLUNG (0)
+
+// Two temperature ratios (disk and jet)
+#define BERNOULLI (0)
+#define BETAPRESCRIPTION (1)
+#define TPTE_DISK (20.)
+#define TPTE_JET  (1.)
+#define THETAE_JET (20.)
 
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
@@ -131,6 +138,8 @@ extern double Ne_unit;
 extern double Thetae_unit;
 
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
+
+extern double tpte; // used when we have two temp. ratios (disk and jet)
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
