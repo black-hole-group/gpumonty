@@ -24,6 +24,7 @@
 
 #define N_EBINS		200
 #define N_THBINS	6
+#define N_ESAMP		200
 
 #define THETAE_MAX	1000.	/* Only used for harm3d models */
 #define THETAE_MIN	0.3

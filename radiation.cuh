@@ -26,9 +26,23 @@ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 {
 	double j;
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta);
+	j = d_jnu_synch(nu, Ne, Thetae, B, theta);
 
 	return (j / (nu * nu));
+}
+
+
+
+/* return electron scattering opacity, in cgs */
+__device__
+double kappa_es(double nu, double Thetae)
+{
+	double Eg;
+
+	/* assume pure hydrogen gas to 
+	   convert cross section to opacity */
+	Eg = HPL * nu / (ME * CL * CL);
+	return (total_compton_cross_lkup(Eg, Thetae) / MP);
 }
 
 /* return Lorentz invariant scattering opacity */
@@ -56,17 +70,6 @@ double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 }
 
 
-/* return electron scattering opacity, in cgs */
-__device__
-double kappa_es(double nu, double Thetae)
-{
-	double Eg;
-
-	/* assume pure hydrogen gas to 
-	   convert cross section to opacity */
-	Eg = HPL * nu / (ME * CL * CL);
-	return (total_compton_cross_lkup(Eg, Thetae) / MP);
-}
 
 /* get frequency in fluid frame, in Hz */
 __device__

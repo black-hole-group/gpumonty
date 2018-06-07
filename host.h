@@ -48,7 +48,6 @@ struct of_spectrum {
 	double E0;
 };
 
-#define N_ESAMP		200
 
 struct of_grid {
 	struct of_spectrum spec[N_EBINS];

@@ -9,56 +9,6 @@
 
 
 
-/*
-  device global variables
-  ========================
-*/
-// harm dimensions
- __constant__ int N1, N2, N3; 
- __constant__ int n_within_horizon;
-
-// some coordinate parameters 
- __constant__ double a;
- __constant__ double R0, Rin, Rh, Rout, Rms;
- __constant__ double hslope;
- __constant__ double startx[NDIM], stopx[NDIM], dx[NDIM];
- __constant__ double dlE, lE0;
- __constant__ double gam;
- __constant__ double dMsim;
-
-// units
- __constant__ double M_unit;
- __constant__ double L_unit;
- __constant__ double T_unit;
- __constant__ double RHO_unit;
- __constant__ double U_unit;
- __constant__ double B_unit;
- __constant__ double Ne_unit;
- __constant__ double Thetae_unit;
-
-// misc
-__constant__ double max_tau_scatt;
-//__constant__ double RMAX;
-
-
-
-/* 
-  Device functions
-  =================
-*/
-// replace GSL routines
-#include "../cusl/sphere.cuh" 
-#include "../cusl/gamma.cuh" 
-#include "../cusl/chisq.cuh"   
-
-#include "tetrads.cuh"
-#include "compton.cuh"
-#include "harm.cuh" 
-// #include "radiation.cuh"
-// #include "jnu_mixed.cuh"
-// #include "hotcross.cuh"
-
-
 
 
 
@@ -189,11 +139,11 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 	get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
 			 Bcov);
 
-	// theta = get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
-	// nu = get_fluid_nu(ph->X, ph->K, Ucov);
-	// alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
-	// alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	// bi = bias_func(Thetae, ph->w);
+	theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
+	nu = get_fluid_nu(ph.X, ph.K, Ucov);
+	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
+	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+	bi = bias_func(Thetae, ph.w);
 
 	// /* Initialize dK/dlam */
 	// init_dKdlam(ph->X, ph->K, ph->dKdlam);

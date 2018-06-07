@@ -33,51 +33,6 @@ double dlw, dlTT, lminw, lmint; // repeated def. in jnu_mixed.c, dlT=>dlTT
 
 
 
-__device__
-double total_compton_cross_lkup(double w, double thetae)
-{
-	int i, j;
-	double lw, lT, di, dj, lcross;
-	__device__ double total_compton_cross_num(double w, double thetae);
-	__device__ double d_hc_klein_nishina(double we);
-
-	/* cold/low-energy: just use thomson cross section */
-	if (w * thetae < 1.e-6)
-		return (SIGMA_THOMSON);
-
-	/* cold, but possible high energy photon: use klein-nishina */
-	if (thetae < MINT)
-		return (d_hc_klein_nishina(w) * SIGMA_THOMSON);
-
-	/* in-bounds for table */
-	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
-
-		lw = log10(w);
-		lT = log10(thetae);
-		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / dlTT);
-		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / dlTT - j;
-
-		lcross =
-		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
-								dj) *
-		    table[i + 1][j] + (1. - di) * dj * table[i][j + 1] +
-		    di * dj * table[i + 1][j + 1];
-
-		if (isnan(lcross)) {
-			fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
-				j, di, dj);
-		}
-
-		return (pow(10., lcross));
-	}
-
-	fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
-	return (d_total_compton_cross_num(w, thetae));
-
-}
-
 #define MAXGAMMA	12.
 #define DMUE		0.05
 #define DGAMMAE		0.05
@@ -130,6 +85,52 @@ double d_total_compton_cross_num(double w, double thetae)
 	return (cross * SIGMA_THOMSON);
 }
 
+__device__
+double total_compton_cross_lkup(double w, double thetae)
+{
+	int i, j;
+	double lw, lT, di, dj, lcross;
+	__device__ double total_compton_cross_num(double w, double thetae);
+	__device__ double d_hc_klein_nishina(double we);
+
+	/* cold/low-energy: just use thomson cross section */
+	if (w * thetae < 1.e-6)
+		return (SIGMA_THOMSON);
+
+	/* cold, but possible high energy photon: use klein-nishina */
+	if (thetae < MINT)
+		return (d_hc_klein_nishina(w) * SIGMA_THOMSON);
+
+	/* in-bounds for table */
+	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
+
+		lw = log10(w);
+		lT = log10(thetae);
+		i = (int) ((lw - lminw) / dlw);
+		j = (int) ((lT - lmint) / dlTT);
+		di = (lw - lminw) / dlw - i;
+		dj = (lT - lmint) / dlTT - j;
+
+		lcross =
+		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
+								dj) *
+		    table[i + 1][j] + (1. - di) * dj * table[i][j + 1] +
+		    di * dj * table[i + 1][j + 1];
+
+		if (isnan(lcross)) {
+			fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
+				j, di, dj);
+		}
+
+		return (pow(10., lcross));
+	}
+
+	fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
+	return (d_total_compton_cross_num(w, thetae));
+
+}
+
+
 /* normalized (per unit proper electron number density)
    electron distribution */
 __device__
@@ -138,7 +139,7 @@ double d_dNdgammae(double thetae, double gammae)
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
+		K2f = cu_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
 	} else {
 		K2f = sqrt(M_PI * thetae / 2.);
 	}
