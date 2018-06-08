@@ -19,7 +19,7 @@ double d_jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
-	__device__ double d_K2_eval(double Thetae);
+	//__device__ double d_K2_eval(double Thetae);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -150,7 +150,7 @@ __device__
 double d_K2_eval(double Thetae)
 {
 
-	__device__ double d_linear_interp_K2(double);
+	//__device__ double d_linear_interp_K2(double);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
