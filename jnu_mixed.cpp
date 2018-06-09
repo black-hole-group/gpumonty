@@ -83,11 +83,6 @@ double jnu_integrand(double th, void *params)
 
 #undef CST
 
-/* Tables */
-double FF[N_ESAMP + 1], K2[N_ESAMP + 1]; // avoid repeating def. in grmonty.cu, F=>FF
-//double K2[N_ESAMP + 1];
-double lK_min, dlK;
-double lT_min, dlT;
 
 // #define EPSABS 0.
 // #define EPSREL 1.e-6
@@ -122,7 +117,7 @@ void init_emiss_tables(void)
 		gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL,
 				    1000, GSL_INTEG_GAUSS61, w, &result,
 				    &err);
-		FF[k] = log(4 * M_PI * result);
+		F[k] = log(4 * M_PI * result);
 	}
 	gsl_integration_workspace_free(w);
 
@@ -210,5 +205,5 @@ double linear_interp_F(double K)
 	i = (int) di;
 	di = di - i;
 
-	return exp((1. - di) * FF[i] + di * FF[i + 1]);
+	return exp((1. - di) * F[i] + di * F[i + 1]);
 }
