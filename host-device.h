@@ -49,6 +49,20 @@
 // used in stop_criterion
 #define ROULETTE	1.e4
 
+/*
+  # Definitions that were previously scattered in subroutines
+
+*/
+
+// jnu_mixed
+#define EPSABS 0.
+#define EPSREL 1.e-6
+#define KMIN 0.002
+#define KMAX 1.e7
+#define TMIN THETAE_MIN
+#define TMAX 1.e2
+
+
 
 /*
   Mnemonics for indices

@@ -89,12 +89,12 @@ double FF[N_ESAMP + 1], K2[N_ESAMP + 1]; // avoid repeating def. in grmonty.cu, 
 double lK_min, dlK;
 double lT_min, dlT;
 
-#define EPSABS 0.
-#define EPSREL 1.e-6
-#define KMIN (0.002)
-#define KMAX (1.e7)
-#define TMIN (THETAE_MIN)
-#define TMAX (1.e2)
+// #define EPSABS 0.
+// #define EPSREL 1.e-6
+// #define KMIN (0.002)
+// #define KMAX (1.e7)
+// #define TMIN (THETAE_MIN)
+// #define TMAX (1.e2)
 void init_emiss_tables(void)
 {
 
@@ -177,11 +177,11 @@ double F_eval(double Thetae, double Bmag, double nu)
 	}
 }
 
-#undef KFAC
-#undef KMIN
-#undef KMAX
-#undef EPSABS
-#undef EPSREL
+// #undef KFAC
+// #undef KMIN
+// #undef KMAX
+// #undef EPSABS
+// #undef EPSREL
 
 double linear_interp_K2(double Thetae)
 {
