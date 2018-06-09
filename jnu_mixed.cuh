@@ -14,6 +14,46 @@ good for Thetae > 1
 
 #define CST 1.88774862536	/* 2^{11/12} */
 
+
+
+
+__device__
+double d_linear_interp_K2(double Thetae)
+{
+
+	int i;
+	double di, lT;
+
+	lT = log(Thetae);
+
+	di = (lT - lT_min) * dlT;
+	i = (int) di;
+	di = di - i;
+
+	return exp((1. - di) * K2[i] + di * K2[i + 1]);
+}
+
+
+
+
+/* rapid evaluation of K_2(1/\Thetae) */
+__device__
+double d_K2_eval(double Thetae)
+{
+
+	//__device__ double d_linear_interp_K2(double);
+
+	if (Thetae < THETAE_MIN)
+		return 0.;
+	if (Thetae > TMAX)
+		return 2. * Thetae * Thetae;
+
+	return d_linear_interp_K2(Thetae);
+}
+
+
+
+
 __device__
 double d_jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
@@ -145,20 +185,7 @@ double lT_min, dlT;
 // 	return;
 // }
 
-/* rapid evaluation of K_2(1/\Thetae) */
-__device__
-double d_K2_eval(double Thetae)
-{
 
-	//__device__ double d_linear_interp_K2(double);
-
-	if (Thetae < THETAE_MIN)
-		return 0.;
-	if (Thetae > TMAX)
-		return 2. * Thetae * Thetae;
-
-	return d_linear_interp_K2(Thetae);
-}
 
 // #define KFAC	(9*M_PI*ME*CL/EE)
 // double F_eval(double Thetae, double Bmag, double nu)
@@ -186,21 +213,7 @@ double d_K2_eval(double Thetae)
 //#undef EPSABS
 //#undef EPSREL
 
-__device__
-double d_linear_interp_K2(double Thetae)
-{
 
-	int i;
-	double di, lT;
-
-	lT = log(Thetae);
-
-	di = (lT - lT_min) * dlT;
-	i = (int) di;
-	di = di - i;
-
-	return exp((1. - di) * K2[i] + di * K2[i + 1]);
-}
 
 // double linear_interp_F(double K)
 // {
