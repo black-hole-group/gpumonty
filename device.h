@@ -69,6 +69,6 @@ __constant__ double lT_min, dlT;
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, settings setup, compton cross, double *pharr, int nph);
 
 #endif

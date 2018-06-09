@@ -63,7 +63,7 @@ struct of_photon arr2struct(int i, double *pharr)
 	assumes superphotons do not step out of simulation then back in
 */
 __global__
-void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int nph)
+void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compton *d_cross, int nph)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 
@@ -141,7 +141,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 
 	theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
 	nu = get_fluid_nu(ph.X, ph.K, Ucov);
-	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne);
+	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
 	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 	bi = bias_func(Thetae, ph.w);
 
@@ -378,12 +378,13 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph) 
+void launchKernel(double *p, simvars sim, allunits units, settings setup, compton cross, double *pharr, int nph) 
 {
 	// device variables
 	double *d_p=0; // HARM arrays
 	double *d_pharr=0; // superphoton array
 	curandState *d_rng; // for RNG
+    compton *d_cross; // hot cross sections info
 
 	// allocate space for RNG states on device 
     cudaMalloc((void **)&d_rng, nph*sizeof(curandState));	
@@ -431,15 +432,20 @@ void launchKernel(double *p, simvars sim, allunits units, settings setup, double
     cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));
     cudaMemcpy(d_p, p, NPRIM*sim.N1*sim.N2*sizeof(double), cudaMemcpyHostToDevice);
 
+    // send cross sections to device
+    cudaMalloc(&d_cross, sizeof(compton));
+    cudaMemcpy(d_cross, &cross, sizeof(compton), cudaMemcpyHostToDevice);
+
     // send photon initial conditions to device
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
-	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, d_rng, nph);
+	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, d_rng, d_cross, nph);
 	//test<<<1, 1>>>();
 
 	// frees device memory
 	cudaFree(d_rng);
 	cudaFree(d_p);
 	cudaFree(d_pharr);
+	cudaFree(d_cross);
 }

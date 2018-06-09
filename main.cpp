@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     /* propagate photons (device)
        ==========================
     */
-    launchKernel(p, sim, units, setup, pharr, nmaxgpu);
+    launchKernel(p, sim, units, setup, cross, pharr, nmaxgpu);
 
 
 	// gets results back from device

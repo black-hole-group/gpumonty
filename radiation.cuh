@@ -35,23 +35,23 @@ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 
 /* return electron scattering opacity, in cgs */
 __device__
-double kappa_es(double nu, double Thetae)
+double kappa_es(double nu, double Thetae, compton *d_cross)
 {
 	double Eg;
 
 	/* assume pure hydrogen gas to 
 	   convert cross section to opacity */
 	Eg = HPL * nu / (ME * CL * CL);
-	return (total_compton_cross_lkup(Eg, Thetae) / MP);
+	return (total_compton_cross_lkup(Eg, Thetae, d_cross) / MP);
 }
 
 /* return Lorentz invariant scattering opacity */
 __device__
-double alpha_inv_scatt(double nu, double Thetae, double Ne)
+double alpha_inv_scatt(double nu, double Thetae, double Ne, compton *d_cross)
 {
 	double kappa;
 
-	kappa = kappa_es(nu, Thetae);
+	kappa = kappa_es(nu, Thetae, d_cross);
 
 	return (nu * kappa * Ne * MP);
 }

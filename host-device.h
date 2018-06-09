@@ -171,7 +171,7 @@ struct of_photon {
 };
 
 /*
-   structs required for passing variables to device
+   structs used for transferring global variables to device
 */
 
 // Data structure carrying all GRMHD variables
@@ -211,6 +211,14 @@ struct settings {
 	double lT_min, dlT;
 };
 
+// structure with cross section info for Compton scattering
+// calculations, used in hotcross.[cpp, cu]. Careful because
+// there are two dlT vars with different meanings in hotcross
+// and jnu_mixed
+struct compton {
+	double lminw, dlw, lmint, dlT;
+	double table[NW + 1][NT + 1];
+};
 
 
 

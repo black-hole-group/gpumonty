@@ -17,6 +17,10 @@
    
 */
 
+/* Modified routine to return a struct compton with some 
+   variables which will be used in the GPU for Compton
+   scattering calculations in hotcross.
+*/
 void init_hotcross(void)
 {
 	int i, j, nread;
@@ -24,10 +28,10 @@ void init_hotcross(void)
 	double total_compton_cross_num(double w, double thetae);
 	FILE *fp;
 
-	dlw = log10(MAXW / MINW) / NW;
-	dlTh = log10(MAXT / MINT) / NT;
-	lminw = log10(MINW);
-	lmint = log10(MINT);
+	cross.dlw = log10(MAXW / MINW) / NW;
+	cross.dlT = log10(MAXT / MINT) / NT;
+	cross.lminw = log10(MINW);
+	cross.lmint = log10(MINT);
 
 	fp = fopen(HOTCROSS, "r");
 	if (fp == NULL) {
@@ -37,12 +41,12 @@ void init_hotcross(void)
 #pragma omp parallel for private(i,j,lw,lT)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlTh;
-				table[i][j] =
+				lw = cross.lminw + i * cross.dlw;
+				lT = cross.lmint + j * cross.dlT;
+				cross.table[i][j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i][j])) {
+				if (isnan(cross.table[i][j])) {
 					fprintf(stderr, "%d %d %g %g\n", i,
 						j, lw, lT);
 					exit(0);
@@ -57,10 +61,10 @@ void init_hotcross(void)
 		}
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlTh;
+				lw = cross.lminw + i * cross.dlw;
+				lT = cross.lmint + j * cross.dlT;
 				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
-					lw, lT, table[i][j]);
+					lw, lT, cross.table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
 	} else {
@@ -71,8 +75,8 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				nread =
 				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
-					   &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
+					   &cross.table[i][j]);
+				if (isnan(cross.table[i][j]) || nread != 1) {
 					fprintf(stderr,
 						"error on table read: %d %d\n",
 						i, j);

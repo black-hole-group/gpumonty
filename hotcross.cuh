@@ -138,7 +138,7 @@ double d_total_compton_cross_num(double w, double thetae)
 }
 
 __device__
-double total_compton_cross_lkup(double w, double thetae)
+double total_compton_cross_lkup(double w, double thetae, compton *d_cross)
 {
 	int i, j;
 	double lw, lT, di, dj, lcross;
@@ -158,16 +158,16 @@ double total_compton_cross_lkup(double w, double thetae)
 
 		lw = log10(w);
 		lT = log10(thetae);
-		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / dlTT);
-		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / dlTT - j;
+		i = (int) ((lw - d_cross->lminw) / d_cross->dlw);
+		j = (int) ((lT - d_cross->lmint) / d_cross->dlT);
+		di = (lw - d_cross->lminw) / d_cross->dlw - i;
+		dj = (lT - d_cross->lmint) / d_cross->dlT - j;
 
 		lcross =
-		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
+		    (1. - di) * (1. - dj) * d_cross->table[i][j] + di * (1. -
 								dj) *
-		    table[i + 1][j] + (1. - di) * dj * table[i][j + 1] +
-		    di * dj * table[i + 1][j + 1];
+		    d_cross->table[i + 1][j] + (1. - di) * dj * d_cross->table[i][j + 1] +
+		    di * dj * d_cross->table[i + 1][j + 1];
 
 		if (isnan(lcross)) {
 			printf("%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);

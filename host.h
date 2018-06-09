@@ -93,13 +93,12 @@ extern double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
 extern int N_superph_recorded, N_scatt, Ns;
 extern double max_tau_scatt, Ladv, dMact; //bias_norm;
 // Tables, used in jnu_mixed 
-double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
-double lK_min, dlK; // related to tables above
-double lT_min, dlT;
+extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
+extern double lK_min, dlK; // related to tables above
+extern double lT_min, dlT;
+// used in hotcross
+extern struct compton cross;
 
-// hotcross related 
-double table[NW + 1][NT + 1];
-double dlw, dlTh, lminw, lmint; // repeated def. in jnu_mixed.c, dlT=>dlTT
 
 
 /*
@@ -216,7 +215,7 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 // CUDA related 
 int get_max_photons(int n1, int n2, int n3);
-void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, settings setup, compton cross, double *pharr, int nph);
 
 // prepare basic variables for device
 void getGlobals(struct simvars *sim);
