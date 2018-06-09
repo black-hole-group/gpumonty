@@ -22,6 +22,42 @@
 #include "host.h"
 #include "harm_model.h"
 
+/* 
+  Global variable _definitions_
+*/
+/** model independent */
+gsl_rng *r;
+gsl_integration_workspace *w;
+
+/* HARM model globals */
+struct of_geom **geom;
+int N1, N2, N3;
+int n_within_horizon;
+
+/* some coordinate parameters */
+double a;
+double R0, Rin, Rh, Rout, Rms;
+double hslope;
+double startx[NDIM], stopx[NDIM], dx[NDIM];
+
+// fluid
+double dlE, lE0;
+double gam;
+double dMsim;
+
+// units
+double M_unit, L_unit, T_unit;
+double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
+
+// related to radiative transport
+int N_superph_recorded, N_scatt, Ns;
+double max_tau_scatt, Ladv, dMact; //bias_norm;
+// Tables, used in jnu_mixed 
+double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
+double lK_min, dlK; // related to tables above
+double lT_min, dlT;
+// used in hotcross
+struct compton cross;
 
 #pragma omp threadprivate(r)
 #include <time.h>

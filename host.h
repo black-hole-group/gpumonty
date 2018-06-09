@@ -61,8 +61,8 @@ struct of_grid {
 
 
 /*
-  global variables 
-  =================
+  global variables _declarations_
+  ================================
 */
 
 /** model independent */
@@ -98,6 +98,10 @@ extern double lK_min, dlK; // related to tables above
 extern double lT_min, dlT;
 // used in hotcross
 extern struct compton cross;
+
+
+
+
 
 
 
