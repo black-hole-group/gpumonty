@@ -378,7 +378,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, int np
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, misc setup, double *pharr, int nph) 
+void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph) 
 {
 	// device variables
 	double *d_p=0; // HARM arrays
@@ -419,7 +419,13 @@ void launchKernel(double *p, simvars sim, allunits units, misc setup, double *ph
 	cudaMemcpyToSymbol(Thetae_unit, &units.Thetae_unit, sizeof(double));
 	// misc
 	cudaMemcpyToSymbol(max_tau_scatt, &setup.max_tau_scatt, sizeof(double));
-	//cudaMemcpyToSymbol(RMAX, &setup.R_MAX, sizeof(double));
+	cudaMemcpyToSymbol(F, &setup.F, sizeof(double)); // table
+	cudaMemcpyToSymbol(K2, &setup.K2, sizeof(double)); // table
+	cudaMemcpyToSymbol(lK_min, &setup.lK_min, sizeof(double));
+	cudaMemcpyToSymbol(dlK, &setup.dlK, sizeof(double));
+	cudaMemcpyToSymbol(lT_min, &setup.lT_min, sizeof(double));
+	cudaMemcpyToSymbol(dlT, &setup.dlT, sizeof(double));
+
 
 	// send HARM arrays to device
     cudaMalloc(&d_p, NPRIM*sim.N1*sim.N2*sizeof(double));

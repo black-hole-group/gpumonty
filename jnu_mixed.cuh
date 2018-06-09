@@ -125,11 +125,7 @@ double d_jnu_synch(double nu, double Ne, double Thetae, double B,
 
 // #undef CST
 
-/* Tables */
-double FF[N_ESAMP + 1], K2[N_ESAMP + 1]; // avoid repeating def. in grmonty.cu, F=>FF
-//double K2[N_ESAMP + 1];
-double lK_min, dlK;
-double lT_min, dlT;
+
 
 
 

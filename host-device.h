@@ -186,9 +186,11 @@ struct allunits {
 
 
 // Structure with misc. values 
-struct misc {
+struct settings {
 	double max_tau_scatt;
-	//double R_MAX; // RMAX, cannot give the same name because will result in conflict
+	double F[N_ESAMP+1], K2[N_ESAMP+1]; 
+	double lK_min, dlK; 
+	double lT_min, dlT;
 };
 
 

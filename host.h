@@ -212,7 +212,7 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 // CUDA related 
 int get_max_photons(int n1, int n2, int n3);
-void launchKernel(double *p, simvars sim, allunits units, misc setup, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph);
 
 // prepare basic variables for device
 void getGlobals(struct simvars *sim);

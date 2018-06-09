@@ -37,9 +37,9 @@
 
 // misc
 __constant__ double max_tau_scatt;
-//__constant__ double RMAX;
-
-
+__constant__ double F[N_ESAMP + 1], K2[N_ESAMP + 1]; 
+__constant__ double lK_min, dlK;
+__constant__ double lT_min, dlT;
 
 
 
@@ -69,6 +69,6 @@ __constant__ double max_tau_scatt;
 
 
 
-void launchKernel(double *p, simvars sim, allunits units, misc setup, double *pharr, int nph);
+void launchKernel(double *p, simvars sim, allunits units, settings setup, double *pharr, int nph);
 
 #endif

@@ -25,8 +25,12 @@
 /* defining declarations for global variables */
 struct of_geom **geom;
 int N1, N2, N3, n_within_horizon;
-double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 int Ns, N_superph_recorded, N_scatt;
+
+/* Tables */
+double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
+double lK_min, dlK; // related to tables above
+double lT_min, dlT;
 
 /* some coordinate parameters */
 double a;
@@ -87,9 +91,9 @@ int main(int argc, char *argv[])
 	// units packaged for device
 	struct allunits units;
 	getUnits(&units);
-	// pther misc. values
-	struct misc setup;
-	getUnits(&units);
+	// other misc. values
+	struct settings setup;
+	getSettings(&setup);
 
 
 

@@ -60,7 +60,13 @@ void getUnits(struct allunits *units) {
 
 
 
-void getSettings(struct misc *setup) {
+void getSettings(struct settings *setup) {
 	setup->max_tau_scatt=max_tau_scatt;
 	//setup->R_MAX=RMAX;
+	setup->F[N_ESAMP + 1]=F[N_ESAMP + 1];
+	setup->K2[N_ESAMP + 1]=K2[N_ESAMP + 1]; 
+	setup->lK_min=lK_min;
+	setup->dlK=dlK;
+	setup->lT_min=lT_min;
+	setup->dlT=dlT;
 }
