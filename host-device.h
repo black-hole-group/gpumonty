@@ -39,7 +39,8 @@
 #define SMALL	1.e-40
 
 /* physical parameters */
-#define MMW	0.5		/* mean molecular weight, in units of mp */
+/* mean molecular weight, in units of mp */
+#define MMW	0.5		
 
 /* EPS really ought to be related to the number of
    zones in the simulation. Used in harm_mode/stepsize.
@@ -50,7 +51,11 @@
 #define ROULETTE	1.e4
 
 /*
-  # Definitions that were previously scattered in subroutines
+  # Definitions moved from subroutines
+    ==================================
+  
+  The definitions below were previously scattered in subroutines,
+  and grouped together here.
 
 */
 
@@ -61,6 +66,19 @@
 #define KMAX 1.e7
 #define TMIN THETAE_MIN
 #define TMAX 1.e2
+
+// hotcross
+#define MINW	1.e-12
+#define MAXW	1.e6
+#define MINT	0.0001
+#define MAXT	1.e4
+#define NW	220
+#define NT	80
+#define HOTCROSS	"hotcross.dat"
+
+#define MAXGAMMA	12.
+#define DMUE		0.05
+#define DGAMMAE		0.05
 
 
 

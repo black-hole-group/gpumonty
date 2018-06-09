@@ -92,10 +92,15 @@ extern double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
 // related to radiative transport
 extern int N_superph_recorded, N_scatt, Ns;
 extern double max_tau_scatt, Ladv, dMact; //bias_norm;
-/* Tables */
+// Tables, used in jnu_mixed 
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
 double lK_min, dlK; // related to tables above
 double lT_min, dlT;
+
+// hotcross related 
+double table[NW + 1][NT + 1];
+double dlw, dlTh, lminw, lmint; // repeated def. in jnu_mixed.c, dlT=>dlTT
+
 
 /*
   Subroutines and functions
