@@ -22,31 +22,6 @@
 #include "host.h"
 #include "harm_model.h"
 
-/* defining declarations for global variables */
-struct of_geom **geom;
-int N1, N2, N3, n_within_horizon;
-int Ns, N_superph_recorded, N_scatt;
-
-/* Tables */
-double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
-double lK_min, dlK; // related to tables above
-double lT_min, dlT;
-
-/* some coordinate parameters */
-double a;
-double R0, Rin, Rh, Rout, Rms;
-double hslope;
-double startx[NDIM], stopx[NDIM], dx[NDIM];
-
-double dlE, lE0;
-double gam;
-double dMsim;
-double M_unit, L_unit, T_unit;
-double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
-double max_tau_scatt, Ladv, dMact; //bias_norm;
-
-gsl_rng *r;
-gsl_integration_workspace *w;
 
 #pragma omp threadprivate(r)
 #include <time.h>

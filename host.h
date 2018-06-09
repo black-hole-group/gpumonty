@@ -60,43 +60,42 @@ struct of_grid {
 
 
 
-/** global variables **/
+/*
+  global variables 
+  =================
+*/
+
 /** model independent */
 extern gsl_rng *r;
-
-extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-
-extern int Ns;
-extern int N_superph_recorded, N_scatt;
+extern gsl_integration_workspace *w;
 
 /* HARM model globals */
 extern struct of_geom **geom;
 extern int N1, N2, N3;
 extern int n_within_horizon;
-//extern double ***p; // HARM arrays
-
-
 
 /* some coordinate parameters */
 extern double a;
 extern double R0, Rin, Rh, Rout, Rms;
 extern double hslope;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
+
+// fluid
 extern double dlE, lE0;
 extern double gam;
 extern double dMsim;
 
-extern double M_unit;
-extern double L_unit;
-extern double T_unit;
-extern double RHO_unit;
-extern double U_unit;
-extern double B_unit;
-extern double Ne_unit;
-extern double Thetae_unit;
+// units
+extern double M_unit, L_unit, T_unit;
+extern double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
 
+// related to radiative transport
+extern int N_superph_recorded, N_scatt, Ns;
 extern double max_tau_scatt, Ladv, dMact; //bias_norm;
-
+/* Tables */
+double F[N_ESAMP + 1], wgt[N_ESAMP + 1], K2[N_ESAMP + 1]; // in some parts I left F=>FF
+double lK_min, dlK; // related to tables above
+double lT_min, dlT;
 
 /*
   Subroutines and functions
