@@ -64,6 +64,7 @@ __constant__ double lT_min, dlT;
 #include "jnu_mixed.cuh"
 #include "hotcross.cuh"
 #include "radiation.cuh"
+#include "geodesics.cuh"
 
 
 

@@ -24,6 +24,7 @@
 
 /* 
   Global variable _definitions_
+  ===============================
 */
 /** model independent */
 gsl_rng *r;
@@ -58,6 +59,10 @@ double lK_min, dlK; // related to tables above
 double lT_min, dlT;
 // used in hotcross
 struct compton cross;
+
+
+
+
 
 #pragma omp threadprivate(r)
 #include <time.h>

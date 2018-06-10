@@ -92,6 +92,45 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	/* done! */
 }
 
+
+
+__device__
+void init_dKdlam(double X[], double Kcon[], double dK[])
+{
+	int k;
+	double lconn[NDIM][NDIM][NDIM];
+
+	get_connection(X, lconn);
+
+	for (k = 0; k < 4; k++) {
+
+		dK[k] =
+		    -2. * (Kcon[0] *
+			   (lconn[k][0][1] * Kcon[1] +
+			    lconn[k][0][2] * Kcon[2] +
+			    lconn[k][0][3] * Kcon[3])
+			   + Kcon[1] * (lconn[k][1][2] * Kcon[2] +
+					lconn[k][1][3] * Kcon[3])
+			   + lconn[k][2][3] * Kcon[2] * Kcon[3]
+		    );
+
+		dK[k] -=
+		    (lconn[k][0][0] * Kcon[0] * Kcon[0] +
+		     lconn[k][1][1] * Kcon[1] * Kcon[1] +
+		     lconn[k][2][2] * Kcon[2] * Kcon[2] +
+		     lconn[k][3][3] * Kcon[3] * Kcon[3]
+		    );
+	}
+
+
+	return;
+}
+
+
+
+
+
+
 /* spare photon integrator: 4th order Runge-Kutta */
 __device__
 void push_photon4(double X[], double K[], double dK[], double dl)
@@ -218,36 +257,4 @@ void push_photon4(double X[], double K[], double dK[], double dl)
 	init_dKdlam(X, K, dK);
 
 	/* done */
-}
-
-__device__
-void init_dKdlam(double X[], double Kcon[], double dK[])
-{
-	int k;
-	double lconn[NDIM][NDIM][NDIM];
-
-	get_connection(X, lconn);
-
-	for (k = 0; k < 4; k++) {
-
-		dK[k] =
-		    -2. * (Kcon[0] *
-			   (lconn[k][0][1] * Kcon[1] +
-			    lconn[k][0][2] * Kcon[2] +
-			    lconn[k][0][3] * Kcon[3])
-			   + Kcon[1] * (lconn[k][1][2] * Kcon[2] +
-					lconn[k][1][3] * Kcon[3])
-			   + lconn[k][2][3] * Kcon[2] * Kcon[3]
-		    );
-
-		dK[k] -=
-		    (lconn[k][0][0] * Kcon[0] * Kcon[0] +
-		     lconn[k][1][1] * Kcon[1] * Kcon[1] +
-		     lconn[k][2][2] * Kcon[2] * Kcon[2] +
-		     lconn[k][3][3] * Kcon[3] * Kcon[3]
-		    );
-	}
-
-
-	return;
 }
