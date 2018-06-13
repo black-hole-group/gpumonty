@@ -21,10 +21,10 @@
 #define BREMSSTRAHLUNG (0)
 
 // Two temperature ratios (disk and jet)
-#define BERNOULLI (0)
 #define BETAPRESCRIPTION (1)
 #define TPTE_DISK (20.)
 #define TPTE_JET  (1.)
+#define BERNOULLI (0)
 #define THETAE_JET (20.)
 
 /* Range of initial superphoton frequencies */

@@ -99,11 +99,11 @@ double bias_func(double Te, double w)
 	bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
 	#if (BETAPRESCRIPTION)
-//	if (bias < tpte)
-//		bias = tpte;
+	if (bias < tpte)
+		bias = tpte;
 	if (bias > max)
 		bias = max;	
-	return bias;// / tpte;
+	return bias / tpte;
 	#else
 	if (bias < TP_OVER_TE)
 		bias = TP_OVER_TE;
@@ -259,16 +259,16 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	#if BETAPRESCRIPTION
 	// use plasma beta to calculate electron temperature
-    pg = (gam - 1.) * uu;
+	pg = (gam - 1.) * uu;
 	bsq = Bcon[0] * Bcov[0] +
 			Bcon[1] * Bcov[1] +
 			Bcon[2] * Bcov[2] +
 			Bcon[3] * Bcov[3];
-    beta_plasma = 2.*pg/bsq;
+	beta_plasma = 2.*pg/bsq;
 	bplsq = pow(beta_plasma, 2.);
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-	*Thetae = uu / rho * Thetae_unit;
+	*Thetae = (uu / rho) * Thetae_unit;
 
 	#else
 	// Single-temperature ratio everywhere
@@ -856,8 +856,7 @@ void report_spectrum(int N_superph_made)
 		max_tau_scatt);
 
 	fprintf(stderr, "\n");
-//	double Mdot = dMact * M_unit / T_unit;
-//	fprintf(stderr, "Mdot = %g\n", Mdot);
+
 
 	fprintf(stderr, "\n");
 	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);
