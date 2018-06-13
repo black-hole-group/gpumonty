@@ -10,8 +10,9 @@
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_integration.h>
-#include <omp.h>
+#include <openacc.h>
 #include "constants.h"
+
 
 #define NDIM	4
 #define NPRIM	8
@@ -20,7 +21,7 @@
 #define NUMIN 1.e9
 #define NUMAX 1.e20
 
-#define THETAE_MAX	1000.	
+#define THETAE_MAX	1000.
 #define THETAE_MIN	0.3
 #define TP_OVER_TE	(3.)
 #define WEIGHT_MIN	(1.e28)
@@ -123,6 +124,10 @@ extern double B_unit;
 extern double Ne_unit;
 extern double Thetae_unit;
 
+extern gsl_rng *rng;
+
+extern struct of_spectrum spect[N_THBINS][N_EBINS];
+
 extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 /* some useful macros */
@@ -138,9 +143,6 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
-
-/* OpenMP specific functions */
-void omp_reduce_spect(void);
 
 /* MC/RT utilities */
 void init_monty_rand(int seed);
@@ -228,3 +230,62 @@ int record_criterion(struct of_photon *ph);
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
+
+
+/* openacc device routines pragmas */
+#pragma acc routine(time)
+#pragma acc routine(total_compton_cross_num)
+// #pragma acc routine(init_monty_rand)
+#pragma acc routine(sample_y_distr)
+#pragma acc routine(sample_beta_distr)
+#pragma acc routine(isinf)
+#pragma acc routine(fabs)
+#pragma acc routine(get_fluid_nu)
+#pragma acc routine(monty_rand)
+#pragma acc routine(make_tetrad)
+#pragma acc routine(GSL_MIN)
+#pragma acc routine(scatter_super_photon)
+#pragma acc routine(gsl_rng_uniform)
+#pragma acc routine(record_super_photon)
+#pragma acc routine(pow)
+#pragma acc routine(track_super_photon)
+#pragma acc routine(gsl_ran_dir_3d)
+#pragma acc routine(gcon_func)
+#pragma acc routine(exp)
+#pragma acc routine(Xtoij)
+#pragma acc routine(total_compton_cross_lkup)
+#pragma acc routine(init_dKdlam)
+#pragma acc routine(acos)
+#pragma acc routine(boost)
+#pragma acc routine(sample_klein_nishina)
+#pragma acc routine(get_bk_angle)
+#pragma acc routine(tetrad_to_coordinate)
+#pragma acc routine(stepsize)
+#pragma acc routine(klein_nishina)
+#pragma acc routine(cos)
+#pragma acc routine(Bnu_inv)
+#pragma acc routine(get_connection)
+#pragma acc routine(sin)
+#pragma acc routine(coordinate_to_tetrad)
+#pragma acc routine(get_fluid_params)
+#pragma acc routine(isnan)
+#pragma acc routine(alpha_inv_abs)
+#pragma acc routine(gsl_ran_chisq)
+#pragma acc routine(sample_thomson)
+#pragma acc routine(delta)
+#pragma acc routine(kappa_es)
+#pragma acc routine(gcov_func)
+#pragma acc routine(bl_coord)
+#pragma acc routine(jnu_synch)
+#pragma acc routine(record_criterion)
+#pragma acc routine(stop_criterion)
+#pragma acc routine(lower)
+#pragma acc routine(alpha_inv_scatt)
+#pragma acc routine(sqrt)
+#pragma acc routine(jnu_inv)
+#pragma acc routine(sample_electron_distr_p)
+#pragma acc routine(sample_mu_distr)
+#pragma acc routine(bias_func)
+#pragma acc routine(FAST_CPY)
+#pragma acc routine(push_photon)
+#pragma acc routine(log10)

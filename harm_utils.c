@@ -95,7 +95,7 @@ void init_weight_table(void)
 	/*      Set up interpolation */
 	init_linear_interp_weight();
 
-#pragma omp parallel for schedule(static) private(i)
+#pragma acc parallel loop
 	for (i = 0; i <= N_ESAMP; i++) {
 		sum[i] = 0.;
 		nu[i] = exp(i * dlnu + lnu_min);
@@ -103,10 +103,12 @@ void init_weight_table(void)
 
 	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
-#pragma omp parallel private(i,j,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
-	{
-		nthreads = omp_get_num_threads();
-		myid = omp_get_thread_num();
+    // #pragma acc parallel private(i,j,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
+	// {
+		// nthreads = omp_get_num_threads();
+		// myid = omp_get_thread_num();
+        nthreads = 1;
+        myid = 1;
 		lstart = myid * (N_ESAMP / nthreads);
 		lend = (myid + 1) * (N_ESAMP / nthreads);
 		if (myid == nthreads - 1)
@@ -126,9 +128,8 @@ void init_weight_table(void)
 					sum[l] +=
 					    fac * F_eval(Thetae, B, nu[l]);
 			}
-#pragma omp barrier
-	}
-#pragma omp parallel for schedule(static) private(i)
+	// }
+    #pragma acc parallel for
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 
@@ -449,7 +450,8 @@ void set_units(char *munitstr)
 
 	Ne_unit = RHO_unit / (MP + ME);
 
-	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+	// max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+    max_tau_scatt = 0.001295;
 
 	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
 

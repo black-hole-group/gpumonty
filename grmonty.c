@@ -60,15 +60,8 @@ int main(int argc, char *argv[]) {
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 
-	/* initialize random number generator */
-	#pragma omp parallel private(myid)
-	{
-		if (seed > 0) init_monty_rand(seed);
-		else {
-			myid = omp_get_thread_num();
-			init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
-		}
-	}
+	if (seed > 0) init_monty_rand(seed);
+	else init_monty_rand(139 + time(NULL));	/* Arbitrarily picked initial seed */
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
@@ -105,7 +98,7 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma omp parallel for
+	#pragma acc parallel for private(rng)
 	for (int i = 0; i < ph_count; i++) {
 		/* push ph around */
 
@@ -126,12 +119,6 @@ int main(int argc, char *argv[]) {
 		(double) (currtime - starttime),
 		N_superph_made / (currtime - starttime));
 
-	#ifdef _OPENMP
-	#pragma omp parallel
-	{
-		omp_reduce_spect();
-	}
-	#endif
 	report_spectrum((int) N_superph_made);
 
 	/* done! */

@@ -2,7 +2,6 @@
 #include "decs.h"
 
 gsl_rng *rng;
-#pragma omp threadprivate(rng)
 
 /*
 
@@ -148,20 +147,20 @@ void boost(double v[4], double u[4], double vp[4])
 	gm1 = g - 1.;
 
 	/* general Lorentz boost into frame u from lab frame */
-	vp[0] = u[0]*v[0] - 
-		u[1]*v[1] - 
-		u[2]*v[2] - 
+	vp[0] = u[0]*v[0] -
+		u[1]*v[1] -
+		u[2]*v[2] -
 		u[3]*v[3];
-	vp[1] = -u[1] * v[0] + 
+	vp[1] = -u[1] * v[0] +
 		(1. + n1 * n1 * gm1) * v[1] +
-	    	n1 * n2 * gm1 * v[2] + 
+	    	n1 * n2 * gm1 * v[2] +
 		n1 * n3 * gm1 * v[3];
-	vp[2] = -u[2] * v[0] + 
-		n2 * n1 * gm1 * v[1] + 
+	vp[2] = -u[2] * v[0] +
+		n2 * n1 * gm1 * v[1] +
 		(1. + n2 * n2 * gm1) * v[2] +
 	    	n2 * n3 * gm1 * v[3];
-	vp[3] = -u[3] * v[0] + 
-		n3 * n1 * gm1 * v[1] + 
+	vp[3] = -u[3] * v[0] +
+		n3 * n1 * gm1 * v[1] +
 		n3 * n2 * gm1 * v[2] +
 	    	(1. + n3 * n3 * gm1) * v[3];
 

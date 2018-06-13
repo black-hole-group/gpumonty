@@ -1,8 +1,8 @@
 #
 # requires an openmp-enabled version of gcc
 #
-CC = gcc
-CCFLAGS  = -Wall -O2 -fopenmp
+CC = pgcc
+CCFLAGS  = -fast -acc -ta=tesla,cc60 -Minfo=accel -O2  -Minform=warn
 LDFLAGS = -lm -lgsl -lgslcblas
 
 CC_COMPILE = $(CC) $(CCFLAGS) -c

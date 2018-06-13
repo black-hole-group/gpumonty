@@ -11,8 +11,6 @@
 
 struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
-#pragma omp threadprivate(spect)
-
 /*
 
 	encapsulates all initialization routines
@@ -597,11 +595,12 @@ void record_super_photon(struct of_photon *ph)
 		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
-#pragma omp critical (MAXTAU)
-	{
-		if (ph->tau_scatt > max_tau_scatt)
-			max_tau_scatt = ph->tau_scatt;
-	}
+// #pragma omp critical (MAXTAU)
+// 	{
+// 		if (ph->tau_scatt > max_tau_scatt)
+// 			max_tau_scatt = ph->tau_scatt;
+// 	}
+	// atomicMax(&max_tau_scatt, d2i(ph->tau_scatt));
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
@@ -623,93 +622,23 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-#pragma omp atomic
-	N_superph_recorded++;
-#pragma omp atomic
-	N_scatt += ph->nscatt;
+	atomicAdd(&N_superph_recorded, 1)
+	atomicAdd(&N_scatt, ph->nscatt);
 
 	/* sum in photon */
-	spect[ix2][iE].dNdlE += ph->w;
-	spect[ix2][iE].dEdlE += ph->w * ph->E;
-	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
-	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
-	spect[ix2][iE].X1iav += ph->w * ph->X1i;
-	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
-	spect[ix2][iE].b0 += ph->w * (ph->b0);
-	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-	spect[ix2][iE].nscatt += ph->w * ph->nscatt;
-	spect[ix2][iE].nph += 1.;
+	atomicAdd(&spect[ix2][iE].dNdlE,  ph->w);
+	atomicAdd(&spect[ix2][iE].dEdlE,  ph->w * ph->E);
+	atomicAdd(&spect[ix2][iE].tau_abs,  ph->w * ph->tau_abs);
+	atomicAdd(&spect[ix2][iE].tau_scatt,  ph->w * ph->tau_scatt);
+	atomicAdd(&spect[ix2][iE].X1iav,  ph->w * ph->X1i);
+	atomicAdd(&spect[ix2][iE].X2isq,  ph->w * (ph->X2i * ph->X2i));
+	atomicAdd(&spect[ix2][iE].X3fsq,  ph->w * (ph->X[3] * ph->X[3]));
+	atomicAdd(&spect[ix2][iE].ne0,  ph->w * (ph->ne0));
+	atomicAdd(&spect[ix2][iE].b0,  ph->w * (ph->b0));
+	atomicAdd(&spect[ix2][iE].thetae0,  ph->w * (ph->thetae0));
+	atomicAdd(&spect[ix2][iE].nscatt,  ph->w * ph->nscatt);
+	atomicAdd(&spect[ix2][iE].nph,  1.);
 
-}
-
-struct of_spectrum shared_spect[N_THBINS][N_EBINS] = { };
-
-void omp_reduce_spect()
-{
-/* Combine partial spectra from each OpenMP process		*
- * Inefficient, but only called once so doesn't matter	*/
-
-	int i, j;
-
-#pragma omp critical (UPDATE_SPECT)
-	{
-		for (i = 0; i < N_THBINS; i++) {
-			for (j = 0; j < N_EBINS; j++) {
-				shared_spect[i][j].dNdlE +=
-				    spect[i][j].dNdlE;
-				shared_spect[i][j].dEdlE +=
-				    spect[i][j].dEdlE;
-				shared_spect[i][j].tau_abs +=
-				    spect[i][j].tau_abs;
-				shared_spect[i][j].tau_scatt +=
-				    spect[i][j].tau_scatt;
-				shared_spect[i][j].X1iav +=
-				    spect[i][j].X1iav;
-				shared_spect[i][j].X2isq +=
-				    spect[i][j].X2isq;
-				shared_spect[i][j].X3fsq +=
-				    spect[i][j].X3fsq;
-				shared_spect[i][j].ne0 += spect[i][j].ne0;
-				shared_spect[i][j].b0 += spect[i][j].b0;
-				shared_spect[i][j].thetae0 +=
-				    spect[i][j].thetae0;
-				shared_spect[i][j].nscatt +=
-				    spect[i][j].nscatt;
-				shared_spect[i][j].nph += spect[i][j].nph;
-			}
-		}
-	}
-#pragma omp barrier
-#pragma omp master
-	{
-		for (i = 0; i < N_THBINS; i++) {
-			for (j = 0; j < N_EBINS; j++) {
-				spect[i][j].dNdlE =
-				    shared_spect[i][j].dNdlE;
-				spect[i][j].dEdlE =
-				    shared_spect[i][j].dEdlE;
-				spect[i][j].tau_abs =
-				    shared_spect[i][j].tau_abs;
-				spect[i][j].tau_scatt =
-				    shared_spect[i][j].tau_scatt;
-				spect[i][j].X1iav =
-				    shared_spect[i][j].X1iav;
-				spect[i][j].X2isq =
-				    shared_spect[i][j].X2isq;
-				spect[i][j].X3fsq =
-				    shared_spect[i][j].X3fsq;
-				spect[i][j].ne0 = shared_spect[i][j].ne0;
-				spect[i][j].b0 = shared_spect[i][j].b0;
-				spect[i][j].thetae0 =
-				    shared_spect[i][j].thetae0;
-				spect[i][j].nscatt =
-				    shared_spect[i][j].nscatt;
-				spect[i][j].nph = shared_spect[i][j].nph;
-			}
-		}
-	}
 }
 
 /*

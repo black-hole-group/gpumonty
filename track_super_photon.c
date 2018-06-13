@@ -209,7 +209,7 @@ void track_super_photon(struct of_photon *ph)
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					track_super_photon(&php);
+					// track_super_photon(&php);
 				}
 
 				theta =
