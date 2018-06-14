@@ -85,9 +85,13 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
+	#pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
+		 lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
+		 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 
-	#pragma acc parallel loop private(rng) present(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
+	#pragma acc parallel loop private(rng) present(rng, startx, stopx, B_unit, dlT, lT_min, K2,\
+		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
+		 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 	for (int i = 0; i < ph_count; i++) {
 		/* push ph around */
 

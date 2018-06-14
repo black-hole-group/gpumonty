@@ -124,7 +124,8 @@ double B_unit;
 double Ne_unit;
 double Thetae_unit;
 
-#pragma acc declare create(startx, stopx, dx, B_unit, L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dlE, N_superph_recorded, N_scatt, N1, N2, N3, n_within_horizon)
+#pragma acc declare create(startx, stopx, dx, B_unit, L_unit, max_tau_scatt, Ne_unit,\
+	Thetae_unit, lE0, dlE, N_superph_recorded, N_scatt, N1, N2, N3, n_within_horizon)
 
 //From hotcross.c
 #define NW	220
@@ -234,17 +235,17 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 
 /* openacc device routines pragmas */
-#pragma acc routine(time)
+#pragma acc routine(isinf)
+#pragma acc routine(__isinf)
+#pragma acc routine(isnan)
+#pragma acc routine(__isnan)
 #pragma acc routine(total_compton_cross_num)
 #pragma acc routine(sample_y_distr)
 #pragma acc routine(sample_beta_distr)
-#pragma acc routine(isinf)
-#pragma acc routine(__isinf)
 #pragma acc routine(fabs)
 #pragma acc routine(get_fluid_nu)
 #pragma acc routine(monty_rand)
 #pragma acc routine(make_tetrad)
-#pragma acc routine(GSL_MIN)
 #pragma acc routine(scatter_super_photon)
 #pragma acc routine(gsl_rng_uniform)
 #pragma acc routine(record_super_photon)
@@ -269,8 +270,6 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(sin)
 #pragma acc routine(coordinate_to_tetrad)
 #pragma acc routine(get_fluid_params)
-#pragma acc routine(isnan)
-#pragma acc routine(__isnan)
 #pragma acc routine(alpha_inv_abs)
 #pragma acc routine(gsl_ran_chisq)
 #pragma acc routine(sample_thomson)
@@ -288,7 +287,6 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(sample_electron_distr_p)
 #pragma acc routine(sample_mu_distr)
 #pragma acc routine(bias_func)
-#pragma acc routine(FAST_CPY)
 #pragma acc routine(push_photon)
 #pragma acc routine(log10)
 #pragma acc routine(K2_eval)
