@@ -1,3 +1,6 @@
+#ifndef _DECS_H
+#define _DECS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -12,7 +15,6 @@
 #include <gsl/gsl_integration.h>
 #include <openacc.h>
 #include "constants.h"
-
 
 #define NDIM	4
 #define NPRIM	8
@@ -98,41 +100,42 @@ struct of_grid {
 /** global variables **/
 /** model independent */
 
-extern int Ns;
-extern int N_superph_recorded, N_scatt;
+int Ns;
+int N_superph_recorded, N_scatt;
 
 /* HARM model globals */
-extern struct of_geom **geom;
-extern int N1, N2, N3;
-extern int n_within_horizon;
+struct of_geom **geom;
+int N1, N2, N3;
+int n_within_horizon;
+
+double max_tau_scatt, Ladv, dMact, bias_norm;
 
 /* some coordinate parameters */
-extern double a;
-extern double R0, Rin, Rh, Rout, Rms;
-extern double hslope;
-extern double startx[NDIM], stopx[NDIM], dx[NDIM];
-extern double dlE, lE0;
-extern double gam;
-extern double dMsim;
+double startx[NDIM], stopx[NDIM], dx[NDIM];
+double dlE, lE0;
+double gam;
+double dMsim;
+double M_unit;
+double L_unit;
+double T_unit;
+double RHO_unit;
+double U_unit;
+double B_unit;
+double Ne_unit;
+double Thetae_unit;
 
-extern double M_unit;
-extern double L_unit;
-extern double T_unit;
-extern double RHO_unit;
-extern double U_unit;
-extern double B_unit;
-extern double Ne_unit;
-extern double Thetae_unit;
+#pragma acc declare create(startx, stopx, dx, B_unit, L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dlE, N_superph_recorded, N_scatt, N1, N2, N3, n_within_horizon)
 
-extern gsl_rng *rng;
+//From hotcross.c
+#define NW	220
+#define NT	80
 
-extern struct of_spectrum spect[N_THBINS][N_EBINS];
-
-extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
+
+void destroy_spect();
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
@@ -172,8 +175,6 @@ void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM]);
 double delta(int i, int j);
-void normalize(double Ucon[NDIM], double Gcov[NDIM][NDIM]);
-void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM]);
 void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM]);
@@ -235,10 +236,10 @@ void gcon_func(double *X, double gcon[][NDIM]);
 /* openacc device routines pragmas */
 #pragma acc routine(time)
 #pragma acc routine(total_compton_cross_num)
-// #pragma acc routine(init_monty_rand)
 #pragma acc routine(sample_y_distr)
 #pragma acc routine(sample_beta_distr)
 #pragma acc routine(isinf)
+#pragma acc routine(__isinf)
 #pragma acc routine(fabs)
 #pragma acc routine(get_fluid_nu)
 #pragma acc routine(monty_rand)
@@ -269,6 +270,7 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(coordinate_to_tetrad)
 #pragma acc routine(get_fluid_params)
 #pragma acc routine(isnan)
+#pragma acc routine(__isnan)
 #pragma acc routine(alpha_inv_abs)
 #pragma acc routine(gsl_ran_chisq)
 #pragma acc routine(sample_thomson)
@@ -289,3 +291,10 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(FAST_CPY)
 #pragma acc routine(push_photon)
 #pragma acc routine(log10)
+#pragma acc routine(K2_eval)
+#pragma acc routine(linear_interp_K2)
+#pragma acc routine(gsl_sf_bessel_Kn)
+#pragma acc routine(sample_scattered_photon)
+#pragma acc routine(interp_scalar)
+
+#endif

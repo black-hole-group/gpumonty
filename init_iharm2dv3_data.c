@@ -6,7 +6,7 @@
 get HARM simulation data from fname
 
 checks for consistency of coordinates in data file with
-values of coordinate parameters 
+values of coordinate parameters
 
 Uses standard HARM data file format
 
@@ -64,11 +64,11 @@ void init_harm_data(char *fname)
   while ( (i=fgetc(fp)) != '\n' ) ;
 
   /* not set automatically */
-  a = 0.9375;
-  Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
-  Rout = 40.;
-  hslope = 0.3;
-  R0 = 0.0;
+  // a = 0.9375;
+  double Rin = 0.98 * (1. + sqrt(1. - a*a)) ;
+  double Rout = 40.;
+  // hslope = 0.3;
+  // R0 = 0.0;
   fprintf(stderr,"coordinate parameters: Rin,Rout,hslope,R0,dx[1],dx[2]: %g %g %g %g %g %g\n",
           Rin,Rout,hslope,R0,dx[1],dx[2]) ;
 

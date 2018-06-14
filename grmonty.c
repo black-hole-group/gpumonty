@@ -21,26 +21,13 @@
 #include "decs.h"
 #include <time.h>
 
-/* defining declarations for global variables */
-struct of_geom **geom;
-int N1, N2, N3, n_within_horizon;
-int Ns, N_superph_recorded, N_scatt;
-
-/* some coordinate parameters */
-double a;
-double R0, Rin, Rh, Rout, Rms;
-double hslope;
-double startx[NDIM], stopx[NDIM], dx[NDIM];
-
-double dlE, lE0;
-double gam;
-double dMsim;
-double M_unit, L_unit, T_unit;
-double RHO_unit, U_unit, B_unit, Ne_unit, Thetae_unit;
-double max_tau_scatt, Ladv, dMact, bias_norm;
-
+extern gsl_rng *rng;
+extern double dlT, lT_min, lminw, dlw, lmint, Rh, dlE;
+extern double table[NW + 1][NT + 1];
+extern double K2[N_ESAMP + 1];
+extern double ***p;
+extern struct of_spectrum **spect;
 gsl_integration_workspace *w;
-
 
 int main(int argc, char *argv[]) {
 	double Ntot, N_superph_made;
@@ -98,7 +85,9 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma acc parallel for private(rng)
+	#pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
+
+	#pragma acc parallel loop private(rng) present(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 	for (int i = 0; i < ph_count; i++) {
 		/* push ph around */
 
@@ -120,6 +109,7 @@ int main(int argc, char *argv[]) {
 		N_superph_made / (currtime - starttime));
 
 	report_spectrum((int) N_superph_made);
+	destroy_spect();
 
 	/* done! */
 	return (0);

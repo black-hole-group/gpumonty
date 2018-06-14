@@ -37,11 +37,11 @@ void track_super_photon(struct of_photon *ph)
 	    isnan(ph->K[0]) ||
 	    isnan(ph->K[1]) ||
 	    isnan(ph->K[2]) || isnan(ph->K[3]) ) {
-		fprintf(stderr, "track_super_photon: bad input photon.\n");
-		fprintf(stderr,
-			"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
-			ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0],
-			ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
+		// fprintf(stderr, "track_super_photon: bad input photon.\n");
+		// fprintf(stderr,
+		// 	"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
+		// 	ph->X[0], ph->X[1], ph->X[2], ph->X[3], ph->K[0],
+		// 	ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
 		return;
 	}
 
@@ -102,20 +102,20 @@ void track_super_photon(struct of_photon *ph)
 						 B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
 				if (isnan(nu)) {
-					fprintf(stderr,
-						"isnan nu: track_super_photon dl,E0 %g %g\n",
-						dl, E0);
-					fprintf(stderr,
-						"Xi, %g %g %g %g\n", Xi[0],
-						Xi[1], Xi[2], Xi[3]);
-					fprintf(stderr,
-						"Ki, %g %g %g %g\n", Ki[0],
-						Ki[1], Ki[2], Ki[3]);
-					fprintf(stderr,
-						"dKi, %g %g %g %g\n",
-						dKi[0], dKi[1], dKi[2],
-						dKi[3]);
-					exit(1);
+					// fprintf(stderr,
+					// 	"isnan nu: track_super_photon dl,E0 %g %g\n",
+					// 	dl, E0);
+					// fprintf(stderr,
+					// 	"Xi, %g %g %g %g\n", Xi[0],
+					// 	Xi[1], Xi[2], Xi[3]);
+					// fprintf(stderr,
+					// 	"Ki, %g %g %g %g\n", Ki[0],
+					// 	Ki[1], Ki[2], Ki[3]);
+					// fprintf(stderr,
+					// 	"dKi, %g %g %g %g\n",
+					// 	dKi[0], dKi[1], dKi[2],
+					// 	dKi[3]);
+					// exit(1);
 				}
 			}
 
@@ -153,9 +153,9 @@ void track_super_photon(struct of_photon *ph)
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
-					fprintf(stderr,
-						"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
-						Ne, bias, ph->w, php.w);
+					// fprintf(stderr,
+					// 	"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
+					// 	Ne, bias, ph->w, php.w);
 				}
 
 				frac = x1 / (bias * dtau_scatt);
@@ -254,10 +254,10 @@ void track_super_photon(struct of_photon *ph)
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			fprintf(stderr,
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
+			// fprintf(stderr,
+			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+			// 	bias);
 			break;
 		}
 

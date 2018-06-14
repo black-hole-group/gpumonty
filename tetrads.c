@@ -6,6 +6,12 @@ all functions related to creation and manipulation of tetrads
 
 #include "decs.h"
 
+#pragma acc routine(normalize)
+#pragma acc routine(project_out)
+
+static void normalize(double *vcon, double Gcov[4][4]);
+static void project_out(double *vcona, double *vconb, double Gcov[4][4]);
+
 
 /* input and vectors are contravariant (index up) */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
@@ -38,7 +44,7 @@ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 
 #define SMALL_VECTOR	1.e-30
 
-/* make orthonormal basis 
+/* make orthonormal basis
    first basis vector || U
    second basis vector || B
 */
@@ -48,19 +54,17 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 {
 	int k, l;
 	double norm;
-	void normalize(double *vcon, double Gcov[4][4]);
-	void project_out(double *vcona, double *vconb, double Gcov[4][4]);
 
 	/* econ/ecov index explanation:
 	   Econ[k][l]
 	   k: index attached to tetrad basis
 	   index down
-	   l: index attached to coordinate basis 
+	   l: index attached to coordinate basis
 	   index up
 	   Ecov[k][l]
 	   k: index attached to tetrad basis
 	   index up
-	   l: index attached to coordinate basis 
+	   l: index attached to coordinate basis
 	   index down
 	 */
 
@@ -181,7 +185,8 @@ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 	return;
 }
 
-void normalize(double *vcon, double Gcov[NDIM][NDIM])
+#pragma acc routine
+static void normalize(double *vcon, double Gcov[NDIM][NDIM])
 {
 	int k, l;
 	double norm;
@@ -198,7 +203,8 @@ void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	return;
 }
 
-void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
+#pragma acc routine
+static void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 {
 
 	double adotb, vconb_sq;
@@ -219,4 +225,3 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 
 	return;
 }
-

@@ -1,19 +1,27 @@
 /* Global variables and function prototypes for harm(2d) models */
 
-#ifndef global
-#define global extern
-#endif
+#ifndef _HARM_MODEL_H
+#define _HARM_MODEL_H
 
-global double ****econ;
-global double ****ecov;
-global double ***bcon;
-global double ***bcov;
-global double ***ucon;
-global double ***ucov;
-global double ***p;
-global double **ne;
-global double **thetae;
-global double **b;
+double ****econ;
+double ****ecov;
+double ***bcon;
+double ***bcov;
+double ***ucon;
+double ***ucov;
+double ***p;
+double **ne;
+double **thetae;
+double **b;
+// double a;
+// double R0;
+// double hslope;
+
+#define R0 0.0
+#define a  0.9375
+#define hslope 0.3
+
+#pragma acc declare create(p)
 
 /* HARM model internal utilities */
 void init_weight_table(void);
@@ -34,3 +42,4 @@ void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
 
+#endif

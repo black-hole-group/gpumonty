@@ -1,12 +1,12 @@
 /*
-	main scattering subroutine 
+	main scattering subroutine
 
 */
 
 #include "decs.h"
 
-/* 
-	scatter photon ph into photon php at same position 
+/*
+	scatter photon ph into photon php at same position
 */
 
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
@@ -21,18 +21,18 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 	/* quality control */
 
 	if (isnan(ph->K[1])) {
-		fprintf(stderr, "scatter: bad input photon\n");
-		exit(0);
+		// fprintf(stderr, "scatter: bad input photon\n");
+		// exit(0);
 	}
 
 	/* quality control */
 	if (ph->K[0] > 1.e5 || ph->K[0] < 0. || isnan(ph->K[1])
 	    || isnan(ph->K[0]) || isnan(ph->K[3])) {
-		fprintf(stderr,
-			"normalization problem, killing superphoton: %g \n",
-			ph->K[0]);
+		// fprintf(stderr,
+		// 	"normalization problem, killing superphoton: %g \n",
+		// 	ph->K[0]);
 		ph->K[0] = fabs(ph->K[0]);
-		fprintf(stderr, "X1,X2: %g %g\n", ph->X[1], ph->X[2]);
+		// fprintf(stderr, "X1,X2: %g %g\n", ph->X[1], ph->X[2]);
 		ph->w = 0.;
 		return;
 	}
@@ -56,9 +56,9 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 
 	/* quality control */
 	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
-		fprintf(stderr,
-			"conversion to tetrad frame problem: %g %g\n",
-			ph->K[0], K_tetrad[0]);
+		// fprintf(stderr,
+		// 	"conversion to tetrad frame problem: %g %g\n",
+		// 	ph->K[0], K_tetrad[0]);
 /*		fprintf(stderr,"%g %g %g\n",ph->K[1], ph->K[2], ph->K[3]);
 		fprintf(stderr,"%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
 		fprintf(stderr,"%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
@@ -89,25 +89,25 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 
 	/* quality control */
 	if (isnan(php->K[1])) {
-		fprintf(stderr,
-			"problem with conversion to coordinate frame\n");
-		fprintf(stderr, "%g %g %g %g\n", Econ[0][0], Econ[0][1],
-			Econ[0][2], Econ[0][3]);
-		fprintf(stderr, "%g %g %g %g\n", Econ[1][0], Econ[1][1],
-			Econ[1][2], Econ[1][3]);
-		fprintf(stderr, "%g %g %g %g\n", Econ[2][0], Econ[2][1],
-			Econ[2][2], Econ[2][3]);
-		fprintf(stderr, "%g %g %g %g\n", Econ[3][0], Econ[3][1],
-			Econ[3][2], Econ[3][3]);
-		fprintf(stderr, "%g %g %g %g\n", K_tetrad_p[0],
-			K_tetrad_p[1], K_tetrad_p[2], K_tetrad_p[3]);
+		// fprintf(stderr,
+		// 	"problem with conversion to coordinate frame\n");
+		// fprintf(stderr, "%g %g %g %g\n", Econ[0][0], Econ[0][1],
+		// 	Econ[0][2], Econ[0][3]);
+		// fprintf(stderr, "%g %g %g %g\n", Econ[1][0], Econ[1][1],
+		// 	Econ[1][2], Econ[1][3]);
+		// fprintf(stderr, "%g %g %g %g\n", Econ[2][0], Econ[2][1],
+		// 	Econ[2][2], Econ[2][3]);
+		// fprintf(stderr, "%g %g %g %g\n", Econ[3][0], Econ[3][1],
+		// 	Econ[3][2], Econ[3][3]);
+		// fprintf(stderr, "%g %g %g %g\n", K_tetrad_p[0],
+		// 	K_tetrad_p[1], K_tetrad_p[2], K_tetrad_p[3]);
 		php->w = 0;
 		return;
 	}
 
 	if (php->K[0] < 0) {
-		fprintf(stderr, "K0, K0p, Kp, P[0]: %g %g %g %g\n",
-			K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
+		// fprintf(stderr, "K0, K0p, Kp, P[0]: %g %g %g %g\n",
+		// 	K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
 		php->w = 0.;
 		return;
 	}

@@ -20,13 +20,22 @@
 #define MAXW	1.e6
 #define MINT	0.0001
 #define MAXT	1.e4
-#define NW	220
-#define NT	80
 
 #define HOTCROSS	"hotcross.dat"
 
 double table[NW + 1][NT + 1];
 double dlw, dlT, lminw, lmint;
+
+#pragma acc declare create(lminw, dlw, lmint, dlT, table)
+
+#pragma acc routine(hc_klein_nishina)
+#pragma acc routine(dNdgammae)
+#pragma acc routine(boostcross)
+
+static double hc_klein_nishina(double we);
+double dNdgammae(double thetae, double gammae);
+static double boostcross(double w, double mue, double gammae);
+
 
 void init_hotcross(void)
 {
@@ -54,8 +63,8 @@ void init_hotcross(void)
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
 				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
-					exit(0);
+					// fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
+					// exit(0);
 				}
 			}
 		fprintf(stderr, "done.\n\n");
@@ -102,7 +111,6 @@ double total_compton_cross_lkup(double w, double thetae)
 	int i, j;
 	double lw, lT, di, dj, lcross;
 	double total_compton_cross_num(double w, double thetae);
-	double hc_klein_nishina(double we);
 
 	/* cold/low-energy: just use thomson cross section */
 	if (w * thetae < 1.e-6)
@@ -129,14 +137,14 @@ double total_compton_cross_lkup(double w, double thetae)
 		    di * dj * table[i + 1][j + 1];
 
 		if (isnan(lcross)) {
-			fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
-				j, di, dj);
+			// fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
+				// j, di, dj);
 		}
 
 		return (pow(10., lcross));
 	}
 
-	fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
+	// fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
 	return (total_compton_cross_num(w, thetae));
 
 }
@@ -148,12 +156,9 @@ double total_compton_cross_lkup(double w, double thetae)
 double total_compton_cross_num(double w, double thetae)
 {
 	double dmue, dgammae, mue, gammae, f, cross;
-	double dNdgammae(double thetae, double gammae);
-	double boostcross(double w, double mue, double gammae);
-	double hc_klein_nishina(double we);
 
 	if (isnan(w)) {
-		fprintf(stderr, "compton cross isnan: %g %g\n", w, thetae);
+		// fprintf(stderr, "compton cross isnan: %g %g\n", w, thetae);
 		return (0.);
 	}
 
@@ -181,10 +186,10 @@ double total_compton_cross_num(double w, double thetae)
 							gammae) * f;
 
 			if (isnan(cross)) {
-				fprintf(stderr, "%g %g %g %g %g %g\n", w,
-					thetae, mue, gammae,
-					dNdgammae(thetae, gammae),
-					boostcross(w, mue, gammae));
+				// fprintf(stderr, "%g %g %g %g %g %g\n", w,
+				// 	thetae, mue, gammae,
+				// 	dNdgammae(thetae, gammae),
+				// 	boostcross(w, mue, gammae));
 			}
 		}
 
@@ -194,7 +199,7 @@ double total_compton_cross_num(double w, double thetae)
 
 /* normalized (per unit proper electron number density)
    electron distribution */
-double dNdgammae(double thetae, double gammae)
+static double dNdgammae(double thetae, double gammae)
 {
 	double K2f;
 
@@ -208,10 +213,9 @@ double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
-double boostcross(double w, double mue, double gammae)
+static double boostcross(double w, double mue, double gammae)
 {
 	double we, boostcross, v;
-	double hc_klein_nishina(double we);
 
 	/* energy in electron rest frame */
 	v = sqrt(gammae * gammae - 1.) / gammae;
@@ -220,22 +224,22 @@ double boostcross(double w, double mue, double gammae)
 	boostcross = hc_klein_nishina(we) * (1. - mue * v);
 
 	if (boostcross > 2) {
-		fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
-			gammae);
-		fprintf(stderr, "v,we, boostcross: %g %g %g\n", v, we,
-			boostcross);
-		fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
+		// fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
+		// 	gammae);
+		// fprintf(stderr, "v,we, boostcross: %g %g %g\n", v, we,
+		// 	boostcross);
+		// fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
 	}
 
 	if (isnan(boostcross)) {
-		fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
-		exit(0);
+		// fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
+		// exit(0);
 	}
 
 	return (boostcross);
 }
 
-double hc_klein_nishina(double we)
+static double hc_klein_nishina(double we)
 {
 	double sigma;
 

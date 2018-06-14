@@ -3,13 +3,13 @@
 	HARM model specification routines
 
 */
-
 #include "decs.h"
-#define global
 #include "harm_model.h"
-#undef global
 
-struct of_spectrum spect[N_THBINS][N_EBINS] = { };
+double Rh;
+struct of_spectrum **spect;
+
+#pragma acc declare create(Rh, spect)
 
 /*
 
@@ -17,10 +17,38 @@ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
 */
 
+void destroy_spect() {
+	for (int i = 0; i < N_THBINS; i++) free(spect[i]);
+	free(spect);
+}
+
+void init_spect () {
+	spect = malloc(N_THBINS * sizeof(struct of_photon *));
+	for (int i = 0; i < N_THBINS; i++) {
+		spect[i] = malloc(N_EBINS * sizeof(struct of_photon));
+		for (int j = 0; j < N_EBINS; j++) {
+			spect[i][j].dNdlE = 0.0;
+			spect[i][j].dEdlE = 0.0;
+			spect[i][j].nph = 0.0;
+			spect[i][j].nscatt = 0.0;
+			spect[i][j].X1iav = 0.0;
+			spect[i][j].X2isq = 0.0;
+			spect[i][j].X3fsq = 0.0;
+			spect[i][j].tau_abs = 0.0;
+			spect[i][j].tau_scatt = 0.0;
+			spect[i][j].ne0 = 0.0;
+			spect[i][j].thetae0 = 0.0;
+			spect[i][j].b0 = 0.0;
+			spect[i][j].E0 = 0.0;
+		}
+	}
+}
+
 void init_model(char *args[])
 {
 	/* find dimensional quantities from black hole
 	   mass and its accretion rate */
+   	init_spect();
 	set_units(args[3]);
 
 	fprintf(stderr, "getting simulation data...\n");
@@ -174,7 +202,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[4];
-	double interp_scalar(double **var, int i, int j, double del[4]);
 	double sig ;
 
 	if (X[1] < startx[1] ||
@@ -255,6 +282,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double r, th;
 	double hfac;
 	/* required by broken math.h */
+	#pragma acc routine
 	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
@@ -290,6 +318,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 	double r, th;
 	double tfac, rfac, hfac, pfac;
 	/* required by broken math.h */
+	#pragma acc routine
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
@@ -349,6 +378,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
 	/* required by broken math.h */
+	#pragma acc routine
 	void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
@@ -592,7 +622,7 @@ void record_super_photon(struct of_photon *ph)
 	int iE, ix2;
 
 	if (isnan(ph->w) || isnan(ph->E)) {
-		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
+		// fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
 // #pragma omp critical (MAXTAU)
@@ -622,22 +652,36 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-	atomicAdd(&N_superph_recorded, 1)
-	atomicAdd(&N_scatt, ph->nscatt);
+	// #pragma acc atomic
+	// N_superph_recorded += 1;
+	// #pragma acc atomic
+	// N_scatt += ph->nscatt;
 
 	/* sum in photon */
-	atomicAdd(&spect[ix2][iE].dNdlE,  ph->w);
-	atomicAdd(&spect[ix2][iE].dEdlE,  ph->w * ph->E);
-	atomicAdd(&spect[ix2][iE].tau_abs,  ph->w * ph->tau_abs);
-	atomicAdd(&spect[ix2][iE].tau_scatt,  ph->w * ph->tau_scatt);
-	atomicAdd(&spect[ix2][iE].X1iav,  ph->w * ph->X1i);
-	atomicAdd(&spect[ix2][iE].X2isq,  ph->w * (ph->X2i * ph->X2i));
-	atomicAdd(&spect[ix2][iE].X3fsq,  ph->w * (ph->X[3] * ph->X[3]));
-	atomicAdd(&spect[ix2][iE].ne0,  ph->w * (ph->ne0));
-	atomicAdd(&spect[ix2][iE].b0,  ph->w * (ph->b0));
-	atomicAdd(&spect[ix2][iE].thetae0,  ph->w * (ph->thetae0));
-	atomicAdd(&spect[ix2][iE].nscatt,  ph->w * ph->nscatt);
-	atomicAdd(&spect[ix2][iE].nph,  1.);
+	#pragma acc atomic
+	spect[ix2][iE].dNdlE +=  ph->w;
+	#pragma acc atomic
+	spect[ix2][iE].dEdlE +=  ph->w * ph->E;
+	#pragma acc atomic
+	spect[ix2][iE].tau_abs +=  ph->w * ph->tau_abs;
+	#pragma acc atomic
+	spect[ix2][iE].tau_scatt +=  ph->w * ph->tau_scatt;
+	#pragma acc atomic
+	spect[ix2][iE].X1iav +=  ph->w * ph->X1i;
+	#pragma acc atomic
+	spect[ix2][iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
+	#pragma acc atomic
+	spect[ix2][iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
+	#pragma acc atomic
+	spect[ix2][iE].ne0 +=  ph->w * (ph->ne0);
+	#pragma acc atomic
+	spect[ix2][iE].b0 +=  ph->w * (ph->b0);
+	#pragma acc atomic
+	spect[ix2][iE].thetae0 +=  ph->w * (ph->thetae0);
+	#pragma acc atomic
+	spect[ix2][iE].nscatt +=  ph->w * ph->nscatt;
+	#pragma acc atomic
+	spect[ix2][iE].nph +=  1.;
 
 }
 

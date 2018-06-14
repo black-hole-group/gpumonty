@@ -1,24 +1,9 @@
 #include "decs.h"
+#include "harm_model.h"
 
 /* Harm globals */
-extern double ****econ;
-extern double ****ecov;
-extern double ***bcon;
-extern double ***bcov;
-extern double ***ucon;
-extern double ***ucov;
-extern double ***p;
-extern struct of_geom **geom;
-extern double **ne;
-extern double **thetae;
-extern double **b;
 
- double wgt[N_ESAMP + 1];
-
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
-void coord(int i, int j, double *X);
-void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
-		    double Ucon[NDIM], double Bcon[NDIM]);
+static double wgt[N_ESAMP + 1];
 
 /** HARM utilities **/
 
@@ -210,10 +195,10 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 		return;
 	} else if (l >= NINT) {
 
-		fprintf(stderr,
-			"warning: outside of nint table range %g...change in harm_utils.c\n",
-			Bmag * Thetae * Thetae);
-		fprintf(stderr,"%g %g %g %g\n",Bmag,Thetae,lbth,(lbth - lb_min)/dlb) ;
+		// fprintf(stderr,
+		// 	"warning: outside of nint table range %g...change in harm_utils.c\n",
+		// 	Bmag * Thetae * Thetae);
+		// fprintf(stderr,"%g %g %g %g\n",Bmag,Thetae,lbth,(lbth - lb_min)/dlb) ;
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (l = 0; l <= N_ESAMP; l++) {
@@ -249,9 +234,9 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 
 	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	if (*nz > Ns * log(NUMAX / NUMIN)) {
-		fprintf(stderr,
-			"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
-			i, j, Bmag, Thetae, K2, ninterp);
+		// fprintf(stderr,
+		// 	"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
+		// 	i, j, Bmag, Thetae, K2, ninterp);
 		*nz = 0.;
 		*dnmax = 0.;
 	}
@@ -505,7 +490,7 @@ static void *malloc_rank1(int n1, int size)
 	void *A;
 
 	if ((A = (void *) malloc(n1 * size)) == NULL) {
-		fprintf(stderr, "malloc failure in malloc_rank1\n");
+		// fprintf(stderr, "malloc failure in malloc_rank1\n");
 		exit(123);
 	}
 
@@ -520,7 +505,7 @@ static void **malloc_rank2(int n1, int n2, int size)
 	int i;
 
 	if ((A = (void **) malloc(n1 * sizeof(void *))) == NULL) {
-		fprintf(stderr, "malloc failure in malloc_rank2\n");
+		// fprintf(stderr, "malloc failure in malloc_rank2\n");
 		exit(124);
 	}
 

@@ -88,6 +88,9 @@ double F[N_ESAMP + 1], K2[N_ESAMP + 1];
 double lK_min, dlK;
 double lT_min, dlT;
 
+#pragma acc declare create(dlT, lT_min, K2)
+
+
 #define EPSABS 0.
 #define EPSREL 1.e-6
 #define KMIN (0.002)
