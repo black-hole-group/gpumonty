@@ -7,7 +7,7 @@
 #include "harm_model.h"
 
 double Rh;
-struct of_spectrum **spect;
+struct of_spectrum spect[N_THBINS][N_EBINS];
 
 #pragma acc declare create(Rh, spect)
 
@@ -17,38 +17,10 @@ struct of_spectrum **spect;
 
 */
 
-void destroy_spect() {
-	for (int i = 0; i < N_THBINS; i++) free(spect[i]);
-	free(spect);
-}
-
-void init_spect () {
-	spect = malloc(N_THBINS * sizeof(struct of_photon *));
-	for (int i = 0; i < N_THBINS; i++) {
-		spect[i] = malloc(N_EBINS * sizeof(struct of_photon));
-		for (int j = 0; j < N_EBINS; j++) {
-			spect[i][j].dNdlE = 0.0;
-			spect[i][j].dEdlE = 0.0;
-			spect[i][j].nph = 0.0;
-			spect[i][j].nscatt = 0.0;
-			spect[i][j].X1iav = 0.0;
-			spect[i][j].X2isq = 0.0;
-			spect[i][j].X3fsq = 0.0;
-			spect[i][j].tau_abs = 0.0;
-			spect[i][j].tau_scatt = 0.0;
-			spect[i][j].ne0 = 0.0;
-			spect[i][j].thetae0 = 0.0;
-			spect[i][j].b0 = 0.0;
-			spect[i][j].E0 = 0.0;
-		}
-	}
-}
-
 void init_model(char *args[])
 {
 	/* find dimensional quantities from black hole
 	   mass and its accretion rate */
-   	init_spect();
 	set_units(args[3]);
 
 	fprintf(stderr, "getting simulation data...\n");

@@ -136,7 +136,6 @@ double Thetae_unit;
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
 
-void destroy_spect();
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */

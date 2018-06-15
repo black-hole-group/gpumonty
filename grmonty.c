@@ -26,7 +26,7 @@ extern double dlT, lT_min, lminw, dlw, lmint, Rh, dlE;
 extern double table[NW + 1][NT + 1];
 extern double K2[N_ESAMP + 1];
 extern double ***p;
-extern struct of_spectrum **spect;
+extern struct of_spectrum spect[N_THBINS][N_EBINS];
 gsl_integration_workspace *w;
 
 int main(int argc, char *argv[]) {
@@ -85,13 +85,14 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
-		 lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
-		 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
+	// #pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
+	// 	 lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
+	// 	 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 
-	#pragma acc parallel loop private(rng) present(rng, startx, stopx, B_unit, dlT, lT_min, K2,\
-		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
-		 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
+	#pragma acc parallel loop copyin(startx, stopx, B_unit, dlT, lT_min, K2,\
+		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, p[:NPRIM][:N1][:N1*N2],\
+		 Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2,\
+		  N3, n_within_horizon)
 	for (int i = 0; i < ph_count; i++) {
 		/* push ph around */
 
@@ -113,7 +114,6 @@ int main(int argc, char *argv[]) {
 		N_superph_made / (currtime - starttime));
 
 	report_spectrum((int) N_superph_made);
-	destroy_spect();
 
 	/* done! */
 	return (0);
