@@ -1,9 +1,10 @@
 
 
 #include "decs.h"
+#include "gmath.h"
 /*
 
-this is the main photon orbit integrator 
+this is the main photon orbit integrator
 
 */
 
@@ -11,6 +12,9 @@ this is the main photon orbit integrator
 
 #define ETOL 1.e-3
 #define MAX_ITER 2
+
+
+
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n)
 {
@@ -78,7 +82,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	errE = fabs((E1 - (*E0)) / (*E0));
 
 	if (n < 7
-	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
+	    && (errE > 1.e-4 || err > ETOL || isnan_gd(err) || isinf_gd(err))) {
 		FAST_CPY(Xcpy, X);
 		FAST_CPY(Kcpy, Kcon);
 		FAST_CPY(dKcpy, dKcon);

@@ -234,8 +234,7 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 
 /* openacc device routines pragmas */
-#pragma acc routine(isinf)
-#pragma acc routine(__isinf)
+#pragma acc routine(isinf_gd)
 #pragma acc routine(isnan)
 #pragma acc routine(__isnan)
 #pragma acc routine(total_compton_cross_num)
