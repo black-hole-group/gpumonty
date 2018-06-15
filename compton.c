@@ -45,9 +45,6 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	double n0x, n0y, n0z, n0dotv0, v0x, v0y, v0z, v1x, v1y, v1z, v2x,
 	    v2y, v2z, v1, dir1, dir2, dir3;
 	double cth, sth, phi, cphi, sphi;
-	#pragma acc routine
-	void sincos(double x, double *sin, double *cos);
-
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
 
@@ -93,7 +90,8 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 
 	/* find phi for new photon */
 	phi = 2. * M_PI * monty_rand();
-	sincos(phi, &sphi, &cphi);
+	sphi = sin(phi);
+	cphi = cos(phi);
 
 	p[1] *= -1.;
 	p[2] *= -1.;
@@ -252,8 +250,6 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	double v1x, v1y, v1z;
 	double v2x, v2y, v2z;
 	int sample_cnt = 0;
-	#pragma acc routine
-	void sincos(double x, double *sin, double *cos);
 
 	do {
 		sample_beta_distr(Thetae, &gamma_e, &beta_e);
@@ -334,7 +330,9 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	/* now resolve new momentum vector along unit vectors
 	   and create a four-vector $p$ */
 	phi = monty_rand() * 2. * M_PI;	/* orient uniformly */
-	sincos(phi, &sphi, &cphi);
+	sphi = sin(phi);
+	cphi = cos(phi);
+
 	cth = mu;
 	sth = sqrt(1. - mu * mu);
 

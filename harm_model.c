@@ -254,15 +254,13 @@ void gcon_func(double *X, double gcon[][NDIM])
 	double sth, cth, irho2;
 	double r, th;
 	double hfac;
-	/* required by broken math.h */
-	#pragma acc routine
-	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
 	bl_coord(X, &r, &th);
 
-	sincos(th, &sth, &cth);
+	sth =sin(th);
+	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
@@ -290,15 +288,13 @@ void gcov_func(double *X, double gcov[][NDIM])
 	double sth, cth, s2, rho2;
 	double r, th;
 	double tfac, rfac, hfac, pfac;
-	/* required by broken math.h */
-	#pragma acc routine
-	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
 
 	bl_coord(X, &r, &th);
 
-	sincos(th, &sth, &cth);
+	sth = sin(th);
+	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
 	rho2 = r * r + a * a * cth * cth;
@@ -350,16 +346,15 @@ void get_connection(double X[4], double lconn[4][4][4])
 	    irho23_dthdx2;
 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
 	    a4cth4;
-	/* required by broken math.h */
-	#pragma acc routine
-	void sincos(double th, double *sth, double *cth);
 
 	r1 = exp(X[1]);
 	r2 = r1 * r1;
 	r3 = r2 * r1;
 	r4 = r3 * r1;
 
-	sincos(2. * M_PI * X[2], &sx, &cx);
+	double angle_x  = 2. * M_PI * X[2];
+	sx = sin(angle_x);
+	cx = cos(angle_x);
 
 	/* HARM-2D MKS */
 	th = M_PI * X[2] + 0.5 * (1 - hslope) * sx;
@@ -368,7 +363,8 @@ void get_connection(double X[4], double lconn[4][4][4])
 
 	dthdx22 = dthdx2 * dthdx2;
 
-	sincos(th, &sth, &cth);
+	sth = sin(th);
+	cth = cos(th);
 	sth2 = sth * sth;
 	r1sth2 = r1 * sth2;
 	sth4 = sth2 * sth2;
