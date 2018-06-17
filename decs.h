@@ -234,63 +234,61 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 
 /* openacc device routines pragmas */
-#pragma acc routine(isinf_gd)
-#pragma acc routine(isnan)
-#pragma acc routine(__isnan)
-#pragma acc routine(total_compton_cross_num)
-#pragma acc routine(sample_y_distr)
-#pragma acc routine(sample_beta_distr)
-#pragma acc routine(fabs)
-#pragma acc routine(get_fluid_nu)
-#pragma acc routine(monty_rand)
-#pragma acc routine(make_tetrad)
-#pragma acc routine(scatter_super_photon)
-#pragma acc routine(gsl_rng_uniform)
-#pragma acc routine(record_super_photon)
-#pragma acc routine(pow)
-#pragma acc routine(track_super_photon)
-#pragma acc routine(gsl_ran_dir_3d)
-#pragma acc routine(gcon_func)
-#pragma acc routine(exp)
-#pragma acc routine(Xtoij)
-#pragma acc routine(total_compton_cross_lkup)
-#pragma acc routine(init_dKdlam)
-#pragma acc routine(acos)
-#pragma acc routine(boost)
-#pragma acc routine(sample_klein_nishina)
-#pragma acc routine(get_bk_angle)
-#pragma acc routine(tetrad_to_coordinate)
-#pragma acc routine(stepsize)
-#pragma acc routine(klein_nishina)
-#pragma acc routine(cos)
-#pragma acc routine(Bnu_inv)
-#pragma acc routine(get_connection)
-#pragma acc routine(sin)
-#pragma acc routine(coordinate_to_tetrad)
-#pragma acc routine(get_fluid_params)
-#pragma acc routine(alpha_inv_abs)
-#pragma acc routine(gsl_ran_chisq)
-#pragma acc routine(sample_thomson)
-#pragma acc routine(delta)
-#pragma acc routine(kappa_es)
-#pragma acc routine(gcov_func)
-#pragma acc routine(bl_coord)
-#pragma acc routine(jnu_synch)
-#pragma acc routine(record_criterion)
-#pragma acc routine(stop_criterion)
-#pragma acc routine(lower)
-#pragma acc routine(alpha_inv_scatt)
-#pragma acc routine(sqrt)
-#pragma acc routine(jnu_inv)
-#pragma acc routine(sample_electron_distr_p)
-#pragma acc routine(sample_mu_distr)
-#pragma acc routine(bias_func)
-#pragma acc routine(push_photon)
-#pragma acc routine(log10)
-#pragma acc routine(K2_eval)
-#pragma acc routine(linear_interp_K2)
-#pragma acc routine(gsl_sf_bessel_Kn)
-#pragma acc routine(sample_scattered_photon)
-#pragma acc routine(interp_scalar)
 
+// GPU-Only Routines
+#pragma acc routine(alpha_inv_scatt) nohost
+#pragma acc routine(track_super_photon) nohost
+#pragma acc routine(total_compton_cross_lkup) nohost
+#pragma acc routine(boost) nohost
+#pragma acc routine(interp_scalar) nohost
+#pragma acc routine(bias_func) nohost
+#pragma acc routine(coordinate_to_tetrad) nohost
+#pragma acc routine(linear_interp_K2) nohost
+#pragma acc routine(record_criterion) nohost
+#pragma acc routine(init_dKdlam) nohost
+#pragma acc routine(sample_thomson) nohost
+#pragma acc routine(total_compton_cross_num) nohost
+#pragma acc routine(get_fluid_params) nohost
+#pragma acc routine(Bnu_inv) nohost
+#pragma acc routine(sample_klein_nishina) nohost
+#pragma acc routine(sample_mu_distr) nohost
+#pragma acc routine(dNdgammae) nohost
+#pragma acc routine(Xtoij) nohost
+#pragma acc routine(kappa_es) nohost
+#pragma acc routine(stepsize) nohost
+#pragma acc routine(boostcross) nohost
+#pragma acc routine(sample_beta_distr) nohost
+#pragma acc routine(gsl_ran_dir_3d) nohost
+#pragma acc routine(sample_scattered_photon) nohost
+#pragma acc routine(push_photon) nohost
+#pragma acc routine(klein_nishina) nohost
+#pragma acc routine(get_bk_angle) nohost
+#pragma acc routine(get_fluid_nu) nohost
+#pragma acc routine(sample_y_distr) nohost
+#pragma acc routine(sample_electron_distr_p) nohost
+#pragma acc routine(get_connection) nohost
+#pragma acc routine(stop_criterion) nohost
+#pragma acc routine(scatter_super_photon) nohost
+#pragma acc routine(alpha_inv_abs) nohost
+#pragma acc routine(gsl_ran_chisq) nohost
+#pragma acc routine(hc_klein_nishina) nohost
+#pragma acc routine(jnu_inv) nohost
+#pragma acc routine(record_super_photon) nohost
+// Also: isinf_gd, isnan_gd
+
+// Routines called in CPU and GPU
+#pragma acc routine (make_tetrad)
+#pragma acc routine (lower)
+#pragma acc routine (gcon_func)
+#pragma acc routine (project_out)
+#pragma acc routine (normalize)
+#pragma acc routine (gcov_func)
+#pragma acc routine (gsl_sf_bessel_Kn)
+#pragma acc routine (delta)
+#pragma acc routine (monty_rand)
+#pragma acc routine (tetrad_to_coordinate)
+#pragma acc routine (K2_eval)
+#pragma acc routine (gsl_rng_uniform)
+#pragma acc routine (jnu_synch)
+#pragma acc routine (bl_coord)
 #endif

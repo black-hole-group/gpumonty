@@ -29,11 +29,8 @@ double dlw, h_dlT, lminw, lmint;
 #pragma acc declare create(lminw, dlw, lmint, h_dlT, table)
 
 
-#pragma acc routine
 static double hc_klein_nishina(double we);
-#pragma acc routine
 double dNdgammae(double thetae, double gammae);
-#pragma acc routine
 static double boostcross(double w, double mue, double gammae);
 
 

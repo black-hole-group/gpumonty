@@ -6,8 +6,6 @@ all functions related to creation and manipulation of tetrads
 
 #include "decs.h"
 
-#pragma acc routine(normalize)
-#pragma acc routine(project_out)
 
 static void normalize(double *vcon, double Gcov[4][4]);
 static void project_out(double *vcona, double *vconb, double Gcov[4][4]);
@@ -185,7 +183,6 @@ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 	return;
 }
 
-#pragma acc routine
 static void normalize(double *vcon, double Gcov[NDIM][NDIM])
 {
 	int k, l;
@@ -203,7 +200,6 @@ static void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	return;
 }
 
-#pragma acc routine
 static void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 {
 
