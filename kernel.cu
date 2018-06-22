@@ -290,12 +290,13 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 						 &B, Ucon, Ucov, Bcon, Bcov);
 
 				if (Ne > 0.) {
-					scatter_super_photon(ph, &php, Ne, Thetae, B,
-							     Ucon, Bcon, Gcov);
+					scatter_super_photon(&ph, &php, Ne, Thetae, B,
+							     Ucon, Bcon, Gcov, &localState);
 					if (ph.w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					track_super_photon(&php);
+					// SERIOUS: ENABLE THIS BACK AFTER FIXING KERNEL FOR RECURSIVENESS
+					// track_super_photon(&php); // recursive kernel call
 				}
 
 	// 			theta =

@@ -88,6 +88,7 @@ __constant__ double lT_min, dlT;
 #include "hotcross.cuh"
 #include "radiation.cuh"
 #include "geodesics.cuh"
+#include "scatter_super_photon.cuh"
 
 
 
