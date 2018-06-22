@@ -484,7 +484,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 /* K not referenced intentionally */
 
 __device__
-int stop_criterion(struct of_photon *ph, curandState *state)
+int stop_criterion(struct of_photon ph, curandState *state)
 {
 	double wmin, X1min, X1max;
 
@@ -495,24 +495,24 @@ int stop_criterion(struct of_photon *ph, curandState *state)
 	X1max = log(RMAX);	/* this is coordinate and simulation
 				   specific: stop at large distance */
 
-	if (ph->X[1] < X1min)
+	if (ph.X[1] < X1min)
 		return 1;
 
-	if (ph->X[1] > X1max) {
-		if (ph->w < wmin) {
+	if (ph.X[1] > X1max) {
+		if (ph.w < wmin) {
 			if (d_monty_rand(state) <= 1. / ROULETTE) {
-				ph->w *= ROULETTE;
+				ph.w *= ROULETTE;
 			} else
-				ph->w = 0.;
+				ph.w = 0.;
 		}
 		return 1;
 	}
 
-	if (ph->w < wmin) {
+	if (ph.w < wmin) {
 		if (d_monty_rand(state) <= 1. / ROULETTE) {
-			ph->w *= ROULETTE;
+			ph.w *= ROULETTE;
 		} else {
-			ph->w = 0.;
+			ph.w = 0.;
 			return 1;
 		}
 	}

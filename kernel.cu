@@ -150,107 +150,103 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
-	// /* Initialize opacities */
-	// d_gcov_func(ph.X, Gcov);
-	// get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-	// 		 Bcov);
+	/* Initialize opacities */
+	d_gcov_func(ph.X, Gcov);
+	get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+			 Bcov);
 
-	// theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
-	// nu = get_fluid_nu(ph.X, ph.K, Ucov);
-	// alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
-	// alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	// bi = bias_func(Thetae, ph.w);
+	theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
+	nu = get_fluid_nu(ph.X, ph.K, Ucov);
+	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
+	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+	bi = bias_func(Thetae, ph.w);
 
-	// /* Initialize dK/dlam */
-	// init_dKdlam(ph.X, ph.K, ph.dKdlam);
+	/* Initialize dK/dlam */
+	init_dKdlam(ph.X, ph.K, ph.dKdlam);
 
-	// /* This loop solves radiative transfer equation along a geodesic */
-	// while (!stop_criterion(ph)) {
+	/* This loop solves radiative transfer equation along a geodesic */
+	while (!stop_criterion(ph, &localState)) {
 
-	// 	/* Save initial position/wave vector */
-	// 	Xi[0] = ph->X[0];
-	// 	Xi[1] = ph->X[1];
-	// 	Xi[2] = ph->X[2];
-	// 	Xi[3] = ph->X[3];
-	// 	Ki[0] = ph->K[0];
-	// 	Ki[1] = ph->K[1];
-	// 	Ki[2] = ph->K[2];
-	// 	Ki[3] = ph->K[3];
-	// 	dKi[0] = ph->dKdlam[0];
-	// 	dKi[1] = ph->dKdlam[1];
-	// 	dKi[2] = ph->dKdlam[2];
-	// 	dKi[3] = ph->dKdlam[3];
-	// 	E0 = ph->E0s;
+		/* Save initial position/wave vector */
+		Xi[0] = ph.X[0];
+		Xi[1] = ph.X[1];
+		Xi[2] = ph.X[2];
+		Xi[3] = ph.X[3];
+		Ki[0] = ph.K[0];
+		Ki[1] = ph.K[1];
+		Ki[2] = ph.K[2];
+		Ki[3] = ph.K[3];
+		dKi[0] = ph.dKdlam[0];
+		dKi[1] = ph.dKdlam[1];
+		dKi[2] = ph.dKdlam[2];
+		dKi[3] = ph.dKdlam[3];
+		E0 = ph.E0s;
 
-	// 	/* evaluate stepsize */
-	// 	dl = stepsize(ph->X, ph->K);
+		/* evaluate stepsize */
+		dl = stepsize(ph.X, ph.K);
 
-	// 	/* step the geodesic */
-	// 	push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
-	// 	if (stop_criterion(ph))
-	// 		break;
+		/* step the geodesic */
+		push_photon(ph.X, ph.K, ph.dKdlam, dl, &(ph.E0s), 0);
+		if (stop_criterion(ph, &localState))
+			break;
 
-	// 	/* allow photon to interact with matter, */
-	// 	gcov_func(ph->X, Gcov);
-	// 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-	// 			 Bcon, Bcov);
-	// 	if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
+		/* allow photon to interact with matter, */
+		d_gcov_func(ph.X, Gcov);
+		get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
+				 Bcon, Bcov);
+		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
-	// 		bound_flag = 0;
-	// 		if (Ne == 0.)
-	// 			bound_flag = 1;
-	// 		if (!bound_flag) {
-	// 			theta =
-	// 			    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-	// 					 B);
-	// 			nu = get_fluid_nu(ph->X, ph->K, Ucov);
-	// 			if (isnan(nu)) {
-	// 				fprintf(stderr,
-	// 					"isnan nu: track_super_photon dl,E0 %g %g\n",
-	// 					dl, E0);
-	// 				fprintf(stderr,
-	// 					"Xi, %g %g %g %g\n", Xi[0],
-	// 					Xi[1], Xi[2], Xi[3]);
-	// 				fprintf(stderr,
-	// 					"Ki, %g %g %g %g\n", Ki[0],
-	// 					Ki[1], Ki[2], Ki[3]);
-	// 				fprintf(stderr,
-	// 					"dKi, %g %g %g %g\n",
-	// 					dKi[0], dKi[1], dKi[2],
-	// 					dKi[3]);
-	// 				exit(1);
-	// 			}
-	// 		}
+			bound_flag = 0;
+			if (Ne == 0.)
+				bound_flag = 1;
+			if (!bound_flag) {
+				theta =
+				    get_bk_angle(ph.X, ph.K, Ucov, Bcov,
+						 B);
+				nu = get_fluid_nu(ph.X, ph.K, Ucov);
+				if (isnan(nu)) {
+					printf("isnan nu: track_super_photon dl,E0 %g %g\n",
+						dl, E0);
+					printf("Xi, %g %g %g %g\n", Xi[0],
+						Xi[1], Xi[2], Xi[3]);
+					printf("Ki, %g %g %g %g\n", Ki[0],
+						Ki[1], Ki[2], Ki[3]);
+					printf("dKi, %g %g %g %g\n",
+						dKi[0], dKi[1], dKi[2], dKi[3]);
+					printf("ERROR: near line 216, kernel.cu\n");
+					return; //exit(1);
+				}
+			}
 
-	// 		/* scattering optical depth along step */
-	// 		if (bound_flag || nu < 0.) {
-	// 			dtau_scatt =
-	// 			    0.5 * alpha_scatti * dtauK * dl;
-	// 			dtau_abs = 0.5 * alpha_absi * dtauK * dl;
-	// 			alpha_scatti = alpha_absi = 0.;
-	// 			bias = 0.;
-	// 			bi = 0.;
-	// 		} else {
-	// 			alpha_scattf =
-	// 			    alpha_inv_scatt(nu, Thetae, Ne);
-	// 			dtau_scatt =
-	// 			    0.5 * (alpha_scatti +
-	// 				   alpha_scattf) * dtauK * dl;
-	// 			alpha_scatti = alpha_scattf;
+			/* scattering optical depth along step */
+			if (bound_flag || nu < 0.) {
+				dtau_scatt =
+				    0.5 * alpha_scatti * dtauK * dl;
+				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
+				alpha_scatti = alpha_absi = 0.;
+				bias = 0.;
+				bi = 0.;
+			} else {
+				alpha_scattf =
+				    alpha_inv_scatt(nu, Thetae, Ne, d_cross);
+				dtau_scatt =
+				    0.5 * (alpha_scatti +
+					   alpha_scattf) * dtauK * dl;
+				alpha_scatti = alpha_scattf;
 
-	// 			/* absorption optical depth along step */
-	// 			alpha_absf =
-	// 			    alpha_inv_abs(nu, Thetae, Ne, B,
-	// 					  theta);
-	// 			dtau_abs =
-	// 			    0.5 * (alpha_absi +
-	// 				   alpha_absf) * dtauK * dl;
-	// 			alpha_absi = alpha_absf;
+				/* absorption optical depth along step */
+				alpha_absf =
+				    alpha_inv_abs(nu, Thetae, Ne, B,
+						  theta);
+				dtau_abs =
+				    0.5 * (alpha_absi +
+					   alpha_absf) * dtauK * dl;
+				alpha_absi = alpha_absf;
 
-	// 			bf = bias_func(Thetae, ph->w);
-	// 			bias = 0.5 * (bi + bf);
-	// 			bi = bf;
-	// 		}
+				bf = bias_func(Thetae, ph->w);
+				bias = 0.5 * (bi + bf);
+				bi = bf;
+			}
 
 	// 		x1 = -log(d_monty_rand(&localState));
 	// 		php.w = ph->w / bias;
@@ -351,7 +347,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 			else
 	// 				ph->w *= exp(-dtau);
 	// 		}
-	// 	}
+		}
 
 	// 	nstep++;
 
@@ -364,7 +360,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 		break;
 	// 	}
 
-	// }
+	}
 
 	/*
 	  accumulate result in spectrum on escape 
@@ -381,14 +377,6 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 
 
 
-// __global__
-// void test()
-// {
-// 	//const int i = blockIdx.x*blockDim.x + threadIdx.x;
-
-// 	//if (i >= nph) return;
-// 	printf("%d\n", N1);
-// }
 
 
 
