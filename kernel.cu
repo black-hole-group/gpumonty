@@ -299,24 +299,20 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 					// track_super_photon(&php); // recursive kernel call
 				}
 
-	// 			theta =
-	// 			    get_bk_angle(ph.X, ph.K, Ucov, Bcov,
-	// 					 B);
-	// 			nu = get_fluid_nu(ph.X, ph.K, Ucov);
-	// 			if (nu < 0.) {
-	// 				alpha_scatti = alpha_absi = 0.;
-	// 			} else {
-	// 				alpha_scatti =
-	// 				    alpha_inv_scatt(nu, Thetae,
-	// 						    Ne);
-	// 				alpha_absi =
-	// 				    alpha_inv_abs(nu, Thetae, Ne,
-	// 						  B, theta);
-	// 			}
-	// 			bi = bias_func(Thetae, ph.w);
+				theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
+				nu = get_fluid_nu(ph.X, ph.K, Ucov);
+				if (nu < 0.) {
+					alpha_scatti = alpha_absi = 0.;
+				} else {
+					alpha_scatti =
+					    alpha_inv_scatt(nu, Thetae, Ne, d_cross);
+					alpha_absi =
+					    alpha_inv_abs(nu, Thetae, Ne, B, theta);
+				}
+				bi = bias_func(Thetae, ph.w);
 
-	// 			ph.tau_abs += dtau_abs;
-	// 			ph.tau_scatt += dtau_scatt;
+				ph.tau_abs += dtau_abs;
+				ph.tau_scatt += dtau_scatt;
 
 			} else {
 				if (dtau_abs > 100)
@@ -325,28 +321,22 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 				ph.tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau < 1.e-3)
-					ph.w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph.w *= (1. - dtau / 24. * (24. - dtau * (12. -
+								   dtau * (4. - dtau))));
 				else
 					ph.w *= exp(-dtau);
 			}
 		}
 
-	// 	nstep++;
+		nstep++;
 
-	// 	/* signs that something's wrong w/ the integration */
-	// 	if (nstep > MAXNSTEP) {
-	// 		fprintf(stderr,
-	// 			"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-	// 			ph.X[1], ph.X[2], ph.K[1], ph.K[2],
-	// 			bias);
-	// 		break;
-	// 	}
+		/* signs that something's wrong w/ the integration */
+		if (nstep > MAXNSTEP) {
+			printf("X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+				ph.X[1], ph.X[2], ph.K[1], ph.K[2],
+				bias);
+			break;
+		}
 
 	}
 
