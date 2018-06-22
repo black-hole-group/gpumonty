@@ -227,17 +227,14 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 				bias = 0.;
 				bi = 0.;
 			} else {
-				alpha_scattf =
-				    alpha_inv_scatt(nu, Thetae, Ne, d_cross);
+				alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
 				dtau_scatt =
 				    0.5 * (alpha_scatti +
 					   alpha_scattf) * dtauK * dl;
 				alpha_scatti = alpha_scattf;
 
 				/* absorption optical depth along step */
-				alpha_absf =
-				    alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
+				alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 				dtau_abs =
 				    0.5 * (alpha_absi +
 					   alpha_absf) * dtauK * dl;
@@ -248,10 +245,10 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 				bi = bf;
 			}
 
-	// 		x1 = -log(d_monty_rand(&localState));
-	// 		php.w = ph.w / bias;
-	// 		if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-	// 			if (isnan(php.w) || isinf(php.w)) {
+			x1 = -log(d_monty_rand(&localState));
+			php.w = ph.w / bias;
+			// if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+				// if (isnan(php.w) || isinf(php.w)) {
 	// 				fprintf(stderr,
 	// 					"w isnan in track_super_photon: Ne, bias, ph.w, php.w  %g, %g, %g, %g\n",
 	// 					Ne, bias, ph.w, php.w);
