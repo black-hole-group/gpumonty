@@ -247,66 +247,56 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 
 			x1 = -log(d_monty_rand(&localState));
 			php.w = ph.w / bias;
-			// if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-				// if (isnan(php.w) || isinf(php.w)) {
-	// 				fprintf(stderr,
-	// 					"w isnan in track_super_photon: Ne, bias, ph.w, php.w  %g, %g, %g, %g\n",
-	// 					Ne, bias, ph.w, php.w);
-	// 			}
+			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+				if (isnan(php.w) || isinf(php.w)) {
+					printf("w isnan in track_super_photon: Ne, bias, ph.w, php.w  %g, %g, %g, %g\n",
+						Ne, bias, ph.w, php.w);
+				}
 
-	// 			frac = x1 / (bias * dtau_scatt);
+				frac = x1 / (bias * dtau_scatt);
 
-	// 			/* Apply absorption until scattering event */
-	// 			dtau_abs *= frac;
-	// 			if (dtau_abs > 100)
-	// 				return;	/* This photon has been absorbed before scattering */
+				/* Apply absorption until scattering event */
+				dtau_abs *= frac;
+				if (dtau_abs > 100)
+					return;	/* This photon has been absorbed before scattering */
 
-	// 			dtau_scatt *= frac;
-	// 			dtau = dtau_abs + dtau_scatt;
-	// 			if (dtau_abs < 1.e-3)
-	// 				ph.w *=
-	// 				    (1. -
-	// 				     dtau / 24. * (24. -
-	// 						   dtau * (12. -
-	// 							   dtau *
-	// 							   (4. -
-	// 							    dtau))));
-	// 			else
-	// 				ph.w *= exp(-dtau);
+				dtau_scatt *= frac;
+				dtau = dtau_abs + dtau_scatt;
+				if (dtau_abs < 1.e-3)
+					ph.w *= (1. - dtau / 24. * (24. - dtau * (12. -
+							dtau * (4. - dtau))));
+				else
+					ph.w *= exp(-dtau);
 
-	// 			/* Interpolate position and wave vector to scattering event */
-	// 			push_photon(Xi, Ki, dKi, dl * frac, &E0,
-	// 				    0);
-	// 			ph.X[0] = Xi[0];
-	// 			ph.X[1] = Xi[1];
-	// 			ph.X[2] = Xi[2];
-	// 			ph.X[3] = Xi[3];
-	// 			ph.K[0] = Ki[0];
-	// 			ph.K[1] = Ki[1];
-	// 			ph.K[2] = Ki[2];
-	// 			ph.K[3] = Ki[3];
-	// 			ph.dKdlam[0] = dKi[0];
-	// 			ph.dKdlam[1] = dKi[1];
-	// 			ph.dKdlam[2] = dKi[2];
-	// 			ph.dKdlam[3] = dKi[3];
-	// 			ph.E0s = E0;
+				/* Interpolate position and wave vector to scattering event */
+				push_photon(Xi, Ki, dKi, dl * frac, &E0, 0);
+				ph.X[0] = Xi[0];
+				ph.X[1] = Xi[1];
+				ph.X[2] = Xi[2];
+				ph.X[3] = Xi[3];
+				ph.K[0] = Ki[0];
+				ph.K[1] = Ki[1];
+				ph.K[2] = Ki[2];
+				ph.K[3] = Ki[3];
+				ph.dKdlam[0] = dKi[0];
+				ph.dKdlam[1] = dKi[1];
+				ph.dKdlam[2] = dKi[2];
+				ph.dKdlam[3] = dKi[3];
+				ph.E0s = E0;
 
-	// 			/* Get plasma parameters at new position */
-	// 			gcov_func(ph.X, Gcov);
-	// 			get_fluid_params(ph.X, Gcov, &Ne, &Thetae,
-	// 					 &B, Ucon, Ucov, Bcon,
-	// 					 Bcov);
+				/* Get plasma parameters at new position */
+				d_gcov_func(ph.X, Gcov);
+				get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae,
+						 &B, Ucon, Ucov, Bcon, Bcov);
 
-	// 			if (Ne > 0.) {
-	// 				scatter_super_photon(ph, &php, Ne,
-	// 						     Thetae, B,
-	// 						     Ucon, Bcon,
-	// 						     Gcov);
-	// 				if (ph.w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
-	// 					return;
-	// 				}
-	// 				track_super_photon(&php);
-	// 			}
+				if (Ne > 0.) {
+					scatter_super_photon(ph, &php, Ne, Thetae, B,
+							     Ucon, Bcon, Gcov);
+					if (ph.w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+						return;
+					}
+					track_super_photon(&php);
+				}
 
 	// 			theta =
 	// 			    get_bk_angle(ph.X, ph.K, Ucov, Bcov,
@@ -327,23 +317,23 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 			ph.tau_abs += dtau_abs;
 	// 			ph.tau_scatt += dtau_scatt;
 
-	// 		} else {
-	// 			if (dtau_abs > 100)
-	// 				return;	/* This photon has been absorbed */
-	// 			ph.tau_abs += dtau_abs;
-	// 			ph.tau_scatt += dtau_scatt;
-	// 			dtau = dtau_abs + dtau_scatt;
-	// 			if (dtau < 1.e-3)
-	// 				ph.w *=
-	// 				    (1. -
-	// 				     dtau / 24. * (24. -
-	// 						   dtau * (12. -
-	// 							   dtau *
-	// 							   (4. -
-	// 							    dtau))));
-	// 			else
-	// 				ph.w *= exp(-dtau);
-	// 		}
+			} else {
+				if (dtau_abs > 100)
+					return;	/* This photon has been absorbed */
+				ph.tau_abs += dtau_abs;
+				ph.tau_scatt += dtau_scatt;
+				dtau = dtau_abs + dtau_scatt;
+				if (dtau < 1.e-3)
+					ph.w *=
+					    (1. -
+					     dtau / 24. * (24. -
+							   dtau * (12. -
+								   dtau *
+								   (4. -
+								    dtau))));
+				else
+					ph.w *= exp(-dtau);
+			}
 		}
 
 	// 	nstep++;
