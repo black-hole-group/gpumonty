@@ -243,18 +243,18 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 					   alpha_absf) * dtauK * dl;
 				alpha_absi = alpha_absf;
 
-				bf = bias_func(Thetae, ph->w);
+				bf = bias_func(Thetae, ph.w);
 				bias = 0.5 * (bi + bf);
 				bi = bf;
 			}
 
 	// 		x1 = -log(d_monty_rand(&localState));
-	// 		php.w = ph->w / bias;
+	// 		php.w = ph.w / bias;
 	// 		if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 	// 			if (isnan(php.w) || isinf(php.w)) {
 	// 				fprintf(stderr,
-	// 					"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
-	// 					Ne, bias, ph->w, php.w);
+	// 					"w isnan in track_super_photon: Ne, bias, ph.w, php.w  %g, %g, %g, %g\n",
+	// 					Ne, bias, ph.w, php.w);
 	// 			}
 
 	// 			frac = x1 / (bias * dtau_scatt);
@@ -267,7 +267,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 			dtau_scatt *= frac;
 	// 			dtau = dtau_abs + dtau_scatt;
 	// 			if (dtau_abs < 1.e-3)
-	// 				ph->w *=
+	// 				ph.w *=
 	// 				    (1. -
 	// 				     dtau / 24. * (24. -
 	// 						   dtau * (12. -
@@ -275,28 +275,28 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 							   (4. -
 	// 							    dtau))));
 	// 			else
-	// 				ph->w *= exp(-dtau);
+	// 				ph.w *= exp(-dtau);
 
 	// 			/* Interpolate position and wave vector to scattering event */
 	// 			push_photon(Xi, Ki, dKi, dl * frac, &E0,
 	// 				    0);
-	// 			ph->X[0] = Xi[0];
-	// 			ph->X[1] = Xi[1];
-	// 			ph->X[2] = Xi[2];
-	// 			ph->X[3] = Xi[3];
-	// 			ph->K[0] = Ki[0];
-	// 			ph->K[1] = Ki[1];
-	// 			ph->K[2] = Ki[2];
-	// 			ph->K[3] = Ki[3];
-	// 			ph->dKdlam[0] = dKi[0];
-	// 			ph->dKdlam[1] = dKi[1];
-	// 			ph->dKdlam[2] = dKi[2];
-	// 			ph->dKdlam[3] = dKi[3];
-	// 			ph->E0s = E0;
+	// 			ph.X[0] = Xi[0];
+	// 			ph.X[1] = Xi[1];
+	// 			ph.X[2] = Xi[2];
+	// 			ph.X[3] = Xi[3];
+	// 			ph.K[0] = Ki[0];
+	// 			ph.K[1] = Ki[1];
+	// 			ph.K[2] = Ki[2];
+	// 			ph.K[3] = Ki[3];
+	// 			ph.dKdlam[0] = dKi[0];
+	// 			ph.dKdlam[1] = dKi[1];
+	// 			ph.dKdlam[2] = dKi[2];
+	// 			ph.dKdlam[3] = dKi[3];
+	// 			ph.E0s = E0;
 
 	// 			/* Get plasma parameters at new position */
-	// 			gcov_func(ph->X, Gcov);
-	// 			get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
+	// 			gcov_func(ph.X, Gcov);
+	// 			get_fluid_params(ph.X, Gcov, &Ne, &Thetae,
 	// 					 &B, Ucon, Ucov, Bcon,
 	// 					 Bcov);
 
@@ -305,16 +305,16 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 						     Thetae, B,
 	// 						     Ucon, Bcon,
 	// 						     Gcov);
-	// 				if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+	// 				if (ph.w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 	// 					return;
 	// 				}
 	// 				track_super_photon(&php);
 	// 			}
 
 	// 			theta =
-	// 			    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
+	// 			    get_bk_angle(ph.X, ph.K, Ucov, Bcov,
 	// 					 B);
-	// 			nu = get_fluid_nu(ph->X, ph->K, Ucov);
+	// 			nu = get_fluid_nu(ph.X, ph.K, Ucov);
 	// 			if (nu < 0.) {
 	// 				alpha_scatti = alpha_absi = 0.;
 	// 			} else {
@@ -325,19 +325,19 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 				    alpha_inv_abs(nu, Thetae, Ne,
 	// 						  B, theta);
 	// 			}
-	// 			bi = bias_func(Thetae, ph->w);
+	// 			bi = bias_func(Thetae, ph.w);
 
-	// 			ph->tau_abs += dtau_abs;
-	// 			ph->tau_scatt += dtau_scatt;
+	// 			ph.tau_abs += dtau_abs;
+	// 			ph.tau_scatt += dtau_scatt;
 
 	// 		} else {
 	// 			if (dtau_abs > 100)
 	// 				return;	/* This photon has been absorbed */
-	// 			ph->tau_abs += dtau_abs;
-	// 			ph->tau_scatt += dtau_scatt;
+	// 			ph.tau_abs += dtau_abs;
+	// 			ph.tau_scatt += dtau_scatt;
 	// 			dtau = dtau_abs + dtau_scatt;
 	// 			if (dtau < 1.e-3)
-	// 				ph->w *=
+	// 				ph.w *=
 	// 				    (1. -
 	// 				     dtau / 24. * (24. -
 	// 						   dtau * (12. -
@@ -345,7 +345,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 							   (4. -
 	// 							    dtau))));
 	// 			else
-	// 				ph->w *= exp(-dtau);
+	// 				ph.w *= exp(-dtau);
 	// 		}
 		}
 
@@ -355,7 +355,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 	if (nstep > MAXNSTEP) {
 	// 		fprintf(stderr,
 	// 			"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-	// 			ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+	// 			ph.X[1], ph.X[2], ph.K[1], ph.K[2],
 	// 			bias);
 	// 		break;
 	// 	}
