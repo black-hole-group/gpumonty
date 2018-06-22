@@ -56,6 +56,32 @@ struct of_photon arr2struct(int i, double *pharr)
 
 
 
+/* 
+  Kernel used to initialize RNG 
+  ==============================
+
+  • Each thread gets same seed (1234), a different sequence number, 
+  no offset. 
+  • To get different numbers every time, replace the seed with the 
+  current time 
+  • Why put curand_init in a different kernel call? To maximize
+  performance. cf. https://docs.nvidia.com/cuda/curand/device-api-overview.html#performance-notes
+*/
+__global__ void initRNG(curandState_t* d_rng, int nph) 
+{
+	const int id = blockIdx.x*blockDim.x + threadIdx.x;
+	if (id >= nph) return;
+
+	curand_init(1234, id, 0, &d_rng[id]);
+}
+
+
+
+
+
+
+
+
 /*
 	main transport subroutine for tracking, absorbing,
 	and scattering superphotons
@@ -65,9 +91,9 @@ struct of_photon arr2struct(int i, double *pharr)
 __global__
 void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compton *d_cross, int nph)
 {
-	const int i = blockIdx.x*blockDim.x + threadIdx.x;
+	const int id = blockIdx.x*blockDim.x + threadIdx.x;
 
-	if (i >= nph) return;
+	if (id >= nph) return;
 
 	// how to grab each photon:
 	// printf("photon[%d]=%lf\n", i,d_pharr[i*nphvars+var]);
@@ -77,7 +103,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	   Notice that I might be using unnecessary device memory here.
 	   Should investigate using a struct pointing to d_pharr instead.
 	*/
-	struct of_photon ph=arr2struct(i, d_pharr);
+	struct of_photon ph=arr2struct(id, d_pharr);
 
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -94,20 +120,10 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	    Bcov[NDIM];
 	int nstep = 0;
 
-	/* Initializes random number generator
-	   ====================================
-	   Each thread gets same seed, a different sequence number, 
-	   no offset. To get different numbers every time, associate the
-	   seed with the current time 
-
-	   ATTENTION (SERIOUS): it might be faster to do the RNG initialization 
-	   in a different kernel call, see https://docs.nvidia.com/cuda/curand/device-api-overview.html#performance-notes
-	*/
-	curand_init(1234, i, 0, &d_rng[i]);
 	/* Copy RNG state to local memory for efficiency 
 	`localState` should now be passed to d_monty_rand for correct
 	RNG. */ 
-	curandState localState = d_rng[i];			
+	curandState localState = d_rng[id];			
 
 	/* quality control 
 	   here, previously we had statements ph->X[0] which were
@@ -134,221 +150,221 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 
 	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
-	/* Initialize opacities */
-	d_gcov_func(ph.X, Gcov);
-	get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov);
+	// /* Initialize opacities */
+	// d_gcov_func(ph.X, Gcov);
+	// get_fluid_params(d_p, ph.X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+	// 		 Bcov);
 
-	theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
-	nu = get_fluid_nu(ph.X, ph.K, Ucov);
-	alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
-	alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	bi = bias_func(Thetae, ph.w);
+	// theta = get_bk_angle(ph.X, ph.K, Ucov, Bcov, B);
+	// nu = get_fluid_nu(ph.X, ph.K, Ucov);
+	// alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_cross);
+	// alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+	// bi = bias_func(Thetae, ph.w);
 
-	/* Initialize dK/dlam */
-	init_dKdlam(ph.X, ph.K, ph.dKdlam);
+	// /* Initialize dK/dlam */
+	// init_dKdlam(ph.X, ph.K, ph.dKdlam);
 
-	/* This loop solves radiative transfer equation along a geodesic */
-	while (!stop_criterion(ph)) {
+	// /* This loop solves radiative transfer equation along a geodesic */
+	// while (!stop_criterion(ph)) {
 
-		/* Save initial position/wave vector */
-		Xi[0] = ph->X[0];
-		Xi[1] = ph->X[1];
-		Xi[2] = ph->X[2];
-		Xi[3] = ph->X[3];
-		Ki[0] = ph->K[0];
-		Ki[1] = ph->K[1];
-		Ki[2] = ph->K[2];
-		Ki[3] = ph->K[3];
-		dKi[0] = ph->dKdlam[0];
-		dKi[1] = ph->dKdlam[1];
-		dKi[2] = ph->dKdlam[2];
-		dKi[3] = ph->dKdlam[3];
-		E0 = ph->E0s;
+	// 	/* Save initial position/wave vector */
+	// 	Xi[0] = ph->X[0];
+	// 	Xi[1] = ph->X[1];
+	// 	Xi[2] = ph->X[2];
+	// 	Xi[3] = ph->X[3];
+	// 	Ki[0] = ph->K[0];
+	// 	Ki[1] = ph->K[1];
+	// 	Ki[2] = ph->K[2];
+	// 	Ki[3] = ph->K[3];
+	// 	dKi[0] = ph->dKdlam[0];
+	// 	dKi[1] = ph->dKdlam[1];
+	// 	dKi[2] = ph->dKdlam[2];
+	// 	dKi[3] = ph->dKdlam[3];
+	// 	E0 = ph->E0s;
 
-		/* evaluate stepsize */
-		dl = stepsize(ph->X, ph->K);
+	// 	/* evaluate stepsize */
+	// 	dl = stepsize(ph->X, ph->K);
 
-		/* step the geodesic */
-		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
-		if (stop_criterion(ph))
-			break;
+	// 	/* step the geodesic */
+	// 	push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
+	// 	if (stop_criterion(ph))
+	// 		break;
 
-		/* allow photon to interact with matter, */
-		gcov_func(ph->X, Gcov);
-		get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-				 Bcon, Bcov);
-		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
+	// 	/* allow photon to interact with matter, */
+	// 	gcov_func(ph->X, Gcov);
+	// 	get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
+	// 			 Bcon, Bcov);
+	// 	if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
-			bound_flag = 0;
-			if (Ne == 0.)
-				bound_flag = 1;
-			if (!bound_flag) {
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
-				nu = get_fluid_nu(ph->X, ph->K, Ucov);
-				if (isnan(nu)) {
-					fprintf(stderr,
-						"isnan nu: track_super_photon dl,E0 %g %g\n",
-						dl, E0);
-					fprintf(stderr,
-						"Xi, %g %g %g %g\n", Xi[0],
-						Xi[1], Xi[2], Xi[3]);
-					fprintf(stderr,
-						"Ki, %g %g %g %g\n", Ki[0],
-						Ki[1], Ki[2], Ki[3]);
-					fprintf(stderr,
-						"dKi, %g %g %g %g\n",
-						dKi[0], dKi[1], dKi[2],
-						dKi[3]);
-					exit(1);
-				}
-			}
+	// 		bound_flag = 0;
+	// 		if (Ne == 0.)
+	// 			bound_flag = 1;
+	// 		if (!bound_flag) {
+	// 			theta =
+	// 			    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
+	// 					 B);
+	// 			nu = get_fluid_nu(ph->X, ph->K, Ucov);
+	// 			if (isnan(nu)) {
+	// 				fprintf(stderr,
+	// 					"isnan nu: track_super_photon dl,E0 %g %g\n",
+	// 					dl, E0);
+	// 				fprintf(stderr,
+	// 					"Xi, %g %g %g %g\n", Xi[0],
+	// 					Xi[1], Xi[2], Xi[3]);
+	// 				fprintf(stderr,
+	// 					"Ki, %g %g %g %g\n", Ki[0],
+	// 					Ki[1], Ki[2], Ki[3]);
+	// 				fprintf(stderr,
+	// 					"dKi, %g %g %g %g\n",
+	// 					dKi[0], dKi[1], dKi[2],
+	// 					dKi[3]);
+	// 				exit(1);
+	// 			}
+	// 		}
 
-			/* scattering optical depth along step */
-			if (bound_flag || nu < 0.) {
-				dtau_scatt =
-				    0.5 * alpha_scatti * dtauK * dl;
-				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
-				alpha_scatti = alpha_absi = 0.;
-				bias = 0.;
-				bi = 0.;
-			} else {
-				alpha_scattf =
-				    alpha_inv_scatt(nu, Thetae, Ne);
-				dtau_scatt =
-				    0.5 * (alpha_scatti +
-					   alpha_scattf) * dtauK * dl;
-				alpha_scatti = alpha_scattf;
+	// 		/* scattering optical depth along step */
+	// 		if (bound_flag || nu < 0.) {
+	// 			dtau_scatt =
+	// 			    0.5 * alpha_scatti * dtauK * dl;
+	// 			dtau_abs = 0.5 * alpha_absi * dtauK * dl;
+	// 			alpha_scatti = alpha_absi = 0.;
+	// 			bias = 0.;
+	// 			bi = 0.;
+	// 		} else {
+	// 			alpha_scattf =
+	// 			    alpha_inv_scatt(nu, Thetae, Ne);
+	// 			dtau_scatt =
+	// 			    0.5 * (alpha_scatti +
+	// 				   alpha_scattf) * dtauK * dl;
+	// 			alpha_scatti = alpha_scattf;
 
-				/* absorption optical depth along step */
-				alpha_absf =
-				    alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
-				dtau_abs =
-				    0.5 * (alpha_absi +
-					   alpha_absf) * dtauK * dl;
-				alpha_absi = alpha_absf;
+	// 			/* absorption optical depth along step */
+	// 			alpha_absf =
+	// 			    alpha_inv_abs(nu, Thetae, Ne, B,
+	// 					  theta);
+	// 			dtau_abs =
+	// 			    0.5 * (alpha_absi +
+	// 				   alpha_absf) * dtauK * dl;
+	// 			alpha_absi = alpha_absf;
 
-				bf = bias_func(Thetae, ph->w);
-				bias = 0.5 * (bi + bf);
-				bi = bf;
-			}
+	// 			bf = bias_func(Thetae, ph->w);
+	// 			bias = 0.5 * (bi + bf);
+	// 			bi = bf;
+	// 		}
 
-			x1 = -log(d_monty_rand(&localState));
-			php.w = ph->w / bias;
-			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-				if (isnan(php.w) || isinf(php.w)) {
-					fprintf(stderr,
-						"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
-						Ne, bias, ph->w, php.w);
-				}
+	// 		x1 = -log(d_monty_rand(&localState));
+	// 		php.w = ph->w / bias;
+	// 		if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+	// 			if (isnan(php.w) || isinf(php.w)) {
+	// 				fprintf(stderr,
+	// 					"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
+	// 					Ne, bias, ph->w, php.w);
+	// 			}
 
-				frac = x1 / (bias * dtau_scatt);
+	// 			frac = x1 / (bias * dtau_scatt);
 
-				/* Apply absorption until scattering event */
-				dtau_abs *= frac;
-				if (dtau_abs > 100)
-					return;	/* This photon has been absorbed before scattering */
+	// 			/* Apply absorption until scattering event */
+	// 			dtau_abs *= frac;
+	// 			if (dtau_abs > 100)
+	// 				return;	/* This photon has been absorbed before scattering */
 
-				dtau_scatt *= frac;
-				dtau = dtau_abs + dtau_scatt;
-				if (dtau_abs < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
-				else
-					ph->w *= exp(-dtau);
+	// 			dtau_scatt *= frac;
+	// 			dtau = dtau_abs + dtau_scatt;
+	// 			if (dtau_abs < 1.e-3)
+	// 				ph->w *=
+	// 				    (1. -
+	// 				     dtau / 24. * (24. -
+	// 						   dtau * (12. -
+	// 							   dtau *
+	// 							   (4. -
+	// 							    dtau))));
+	// 			else
+	// 				ph->w *= exp(-dtau);
 
-				/* Interpolate position and wave vector to scattering event */
-				push_photon(Xi, Ki, dKi, dl * frac, &E0,
-					    0);
-				ph->X[0] = Xi[0];
-				ph->X[1] = Xi[1];
-				ph->X[2] = Xi[2];
-				ph->X[3] = Xi[3];
-				ph->K[0] = Ki[0];
-				ph->K[1] = Ki[1];
-				ph->K[2] = Ki[2];
-				ph->K[3] = Ki[3];
-				ph->dKdlam[0] = dKi[0];
-				ph->dKdlam[1] = dKi[1];
-				ph->dKdlam[2] = dKi[2];
-				ph->dKdlam[3] = dKi[3];
-				ph->E0s = E0;
+	// 			/* Interpolate position and wave vector to scattering event */
+	// 			push_photon(Xi, Ki, dKi, dl * frac, &E0,
+	// 				    0);
+	// 			ph->X[0] = Xi[0];
+	// 			ph->X[1] = Xi[1];
+	// 			ph->X[2] = Xi[2];
+	// 			ph->X[3] = Xi[3];
+	// 			ph->K[0] = Ki[0];
+	// 			ph->K[1] = Ki[1];
+	// 			ph->K[2] = Ki[2];
+	// 			ph->K[3] = Ki[3];
+	// 			ph->dKdlam[0] = dKi[0];
+	// 			ph->dKdlam[1] = dKi[1];
+	// 			ph->dKdlam[2] = dKi[2];
+	// 			ph->dKdlam[3] = dKi[3];
+	// 			ph->E0s = E0;
 
-				/* Get plasma parameters at new position */
-				gcov_func(ph->X, Gcov);
-				get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
-						 &B, Ucon, Ucov, Bcon,
-						 Bcov);
+	// 			/* Get plasma parameters at new position */
+	// 			gcov_func(ph->X, Gcov);
+	// 			get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
+	// 					 &B, Ucon, Ucov, Bcon,
+	// 					 Bcov);
 
-				if (Ne > 0.) {
-					scatter_super_photon(ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov);
-					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
-						return;
-					}
-					track_super_photon(&php);
-				}
+	// 			if (Ne > 0.) {
+	// 				scatter_super_photon(ph, &php, Ne,
+	// 						     Thetae, B,
+	// 						     Ucon, Bcon,
+	// 						     Gcov);
+	// 				if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+	// 					return;
+	// 				}
+	// 				track_super_photon(&php);
+	// 			}
 
-				theta =
-				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
-						 B);
-				nu = get_fluid_nu(ph->X, ph->K, Ucov);
-				if (nu < 0.) {
-					alpha_scatti = alpha_absi = 0.;
-				} else {
-					alpha_scatti =
-					    alpha_inv_scatt(nu, Thetae,
-							    Ne);
-					alpha_absi =
-					    alpha_inv_abs(nu, Thetae, Ne,
-							  B, theta);
-				}
-				bi = bias_func(Thetae, ph->w);
+	// 			theta =
+	// 			    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
+	// 					 B);
+	// 			nu = get_fluid_nu(ph->X, ph->K, Ucov);
+	// 			if (nu < 0.) {
+	// 				alpha_scatti = alpha_absi = 0.;
+	// 			} else {
+	// 				alpha_scatti =
+	// 				    alpha_inv_scatt(nu, Thetae,
+	// 						    Ne);
+	// 				alpha_absi =
+	// 				    alpha_inv_abs(nu, Thetae, Ne,
+	// 						  B, theta);
+	// 			}
+	// 			bi = bias_func(Thetae, ph->w);
 
-				ph->tau_abs += dtau_abs;
-				ph->tau_scatt += dtau_scatt;
+	// 			ph->tau_abs += dtau_abs;
+	// 			ph->tau_scatt += dtau_scatt;
 
-			} else {
-				if (dtau_abs > 100)
-					return;	/* This photon has been absorbed */
-				ph->tau_abs += dtau_abs;
-				ph->tau_scatt += dtau_scatt;
-				dtau = dtau_abs + dtau_scatt;
-				if (dtau < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
-				else
-					ph->w *= exp(-dtau);
-			}
-		}
+	// 		} else {
+	// 			if (dtau_abs > 100)
+	// 				return;	/* This photon has been absorbed */
+	// 			ph->tau_abs += dtau_abs;
+	// 			ph->tau_scatt += dtau_scatt;
+	// 			dtau = dtau_abs + dtau_scatt;
+	// 			if (dtau < 1.e-3)
+	// 				ph->w *=
+	// 				    (1. -
+	// 				     dtau / 24. * (24. -
+	// 						   dtau * (12. -
+	// 							   dtau *
+	// 							   (4. -
+	// 							    dtau))));
+	// 			else
+	// 				ph->w *= exp(-dtau);
+	// 		}
+	// 	}
 
-		nstep++;
+	// 	nstep++;
 
-		/* signs that something's wrong w/ the integration */
-		if (nstep > MAXNSTEP) {
-			fprintf(stderr,
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
-			break;
-		}
+	// 	/* signs that something's wrong w/ the integration */
+	// 	if (nstep > MAXNSTEP) {
+	// 		fprintf(stderr,
+	// 			"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+	// 			ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+	// 			bias);
+	// 		break;
+	// 	}
 
-	}
+	// }
 
 	/*
 	  accumulate result in spectrum on escape 
@@ -358,7 +374,7 @@ void track_super_photon(double *d_p, double *d_pharr, curandState *d_rng, compto
 	// 	record_super_photon(ph);
 
 	/* Copy RNG state back to global memory */ 
-	d_rng[i] = localState;
+	d_rng[id] = localState;
 
 	/* done! */
 }
@@ -440,6 +456,10 @@ void launchKernel(double *p, simvars sim, allunits units, settings setup, compto
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
 
+    // kernel for RNG initialization
+	initRNG<<<(nph+TPB-1)/TPB, TPB>>>(d_rng, nph);
+
+    // main kernel for photon propagation
 	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, d_rng, d_cross, nph);
 	//test<<<1, 1>>>();
 
