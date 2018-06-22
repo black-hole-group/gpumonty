@@ -6,7 +6,7 @@
 get HARM simulation data from fname
 
 checks for consistency of coordinates in data file with
-values of coordinate parameters 
+values of coordinate parameters
 
 Uses standard HARM data file format
 
@@ -14,6 +14,12 @@ CFG 1 Sept 07
 
 */
 
+void check_scan_error(int scan_output, int number_of_arguments ) {
+	if(scan_output == EOF)fprintf(stderr, "error reading HARM header\n");
+	else if(scan_output != number_of_arguments){
+		fprintf(stderr, "Not all HARM data could be set\n");
+	}
+}
 
 void init_harm_data(char *fname)
 {
@@ -39,25 +45,25 @@ void init_harm_data(char *fname)
 	}
 
 	/* get standard HARM header */
-	fscanf(fp, "%lf ", &t);
-	fscanf(fp, "%d ", &N1);
-	fscanf(fp, "%d ", &N2);
-	fscanf(fp, "%lf ", &startx[1]);
-	fscanf(fp, "%lf ", &startx[2]);
-	fscanf(fp, "%lf ", &dx[1]);
-	fscanf(fp, "%lf ", &dx[2]);
-	fscanf(fp, "%lf ", &tf);
-	fscanf(fp, "%d ", &nstep);
-	fscanf(fp, "%lf ", &gam);
-	fscanf(fp, "%lf ", &cour);
-	fscanf(fp, "%lf ", &DTd);
-	fscanf(fp, "%lf ", &DTl);
-	fscanf(fp, "%lf ", &DTi);
-	fscanf(fp, "%d ", &DTr);
-	fscanf(fp, "%d ", &dump_cnt);
-	fscanf(fp, "%d ", &image_cnt);
-	fscanf(fp, "%d ", &rdump_cnt);
-	fscanf(fp, "%lf ", &dt);
+	check_scan_error(fscanf(fp, "%lf ", &t), 1);
+	check_scan_error(fscanf(fp, "%d ", &N1), 1);
+	check_scan_error(fscanf(fp, "%d ", &N2), 1);
+	check_scan_error(fscanf(fp, "%lf ", &startx[1]), 1);
+	check_scan_error(fscanf(fp, "%lf ", &startx[2]), 1);
+	check_scan_error(fscanf(fp, "%lf ", &dx[1]), 1);
+	check_scan_error(fscanf(fp, "%lf ", &dx[2]), 1);
+	check_scan_error(fscanf(fp, "%lf ", &tf), 1);
+	check_scan_error(fscanf(fp, "%d ", &nstep), 1);
+	check_scan_error(fscanf(fp, "%lf ", &gam), 1);
+	check_scan_error(fscanf(fp, "%lf ", &cour), 1);
+	check_scan_error(fscanf(fp, "%lf ", &DTd), 1);
+	check_scan_error(fscanf(fp, "%lf ", &DTl), 1);
+	check_scan_error(fscanf(fp, "%lf ", &DTi), 1);
+	check_scan_error(fscanf(fp, "%d ", &DTr), 1);
+	check_scan_error(fscanf(fp, "%d ", &dump_cnt), 1);
+	check_scan_error(fscanf(fp, "%d ", &image_cnt), 1);
+	check_scan_error(fscanf(fp, "%d ", &rdump_cnt), 1);
+	check_scan_error(fscanf(fp, "%lf ", &dt), 1);
 
   /* finish reading out the line */
   fseek(fp, 0, SEEK_SET);
@@ -103,42 +109,42 @@ void init_harm_data(char *fname)
 	for (k = 0; k < N1 * N2; k++) {
 		j = k % N2;
 		i = (k - j) / N2;
-		fscanf(fp, "%lf %lf", &x[1], &x[2]);
+		check_scan_error(fscanf(fp, "%lf %lf", &x[1], &x[2]), 2);
 
-		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
+		check_scan_error(fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
 		       &p[KRHO][i][j],
 		       &p[UU][i][j],
 		       &p[U1][i][j], &p[U2][i][j], &p[U3][i][j],
-		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
+		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]), 8);
 
 
-		fscanf(fp, "%lf", &divb);
+		check_scan_error(fscanf(fp, "%lf", &divb), 1);
 
-		fscanf(fp, "%lf %lf %lf %lf",
-		       &Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Ucov[0],
-		       &Ucov[1], &Ucov[2], &Ucov[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcon[0],
-		       &Bcon[1], &Bcon[2], &Bcon[3]);
-		fscanf(fp, "%lf %lf %lf %lf", &Bcov[0],
-		       &Bcov[1], &Bcov[2], &Bcov[3]);
+		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
+			&Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]), 4);
+		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
+			&Ucov[0], &Ucov[1], &Ucov[2], &Ucov[3]), 4);
+		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
+			&Bcon[0], &Bcon[1], &Bcon[2], &Bcon[3]), 4);
+		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
+			&Bcov[0], &Bcov[1], &Bcov[2], &Bcov[3]), 4);
 
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &vmin);
-		fscanf(fp, "%lf ", &vmax);
-		fscanf(fp, "%lf ", &gdet);
+		check_scan_error(fscanf(fp, "%lf ", &vmin), 1);
+		check_scan_error(fscanf(fp, "%lf ", &vmax), 1);
+		check_scan_error(fscanf(fp, "%lf ", &vmin), 1);
+		check_scan_error(fscanf(fp, "%lf ", &vmax), 1);
+		check_scan_error(fscanf(fp, "%lf ", &gdet), 1);
 
 	        /* additional stuff: current */
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
 
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf ", &J) ;
-		fscanf(fp, "%lf\n", &J) ;
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf ", &J), 1);
+		check_scan_error(fscanf(fp, "%lf\n", &J), 1);
 
 		bias_norm +=
 		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
@@ -150,7 +156,6 @@ void init_harm_data(char *fname)
 			dMact += gdet * p[KRHO][i][j] * Ucon[1];
 		if (i >= 20 && i < 40)
 			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
-
 	}
 
 	bias_norm /= V;
@@ -160,7 +165,5 @@ void init_harm_data(char *fname)
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
 
-
 	/* done! */
-
 }
