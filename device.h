@@ -43,6 +43,29 @@ __constant__ double lT_min, dlT;
 
 
 
+
+
+
+/*
+  Definitions 
+  ============
+*/
+// geodesics
+#define ETOL 1.e-3
+#define MAX_ITER 2
+
+
+
+
+/*
+  Macros
+  ======
+*/
+#define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
+
+
+
+
 /* 
   Device functions
   =================
@@ -65,28 +88,6 @@ __constant__ double lT_min, dlT;
 #include "hotcross.cuh"
 #include "radiation.cuh"
 #include "geodesics.cuh"
-
-
-
-
-
-/*
-  Definitions 
-  ============
-*/
-// geodesics
-#define ETOL 1.e-3
-#define MAX_ITER 2
-
-
-
-
-/*
-  Macros
-  ======
-*/
-#define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
-
 
 
 
