@@ -5,10 +5,6 @@ this is the main photon orbit integrator
 
 */
 
-#define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
-
-#define ETOL 1.e-3
-#define MAX_ITER 2
 
 __device__
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],

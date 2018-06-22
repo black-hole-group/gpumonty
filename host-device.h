@@ -51,8 +51,8 @@
 #define ROULETTE	1.e4
 
 /*
-  # Definitions moved from subroutines
-    ==================================
+  Definitions moved from subroutines
+  ==================================
   
   The definitions below were previously scattered in subroutines,
   and grouped together here.
@@ -79,6 +79,8 @@
 #define MAXGAMMA	12.
 #define DMUE		0.05
 #define DGAMMAE		0.05
+
+
 
 
 
@@ -241,5 +243,7 @@ struct compton {
 			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
 			cx = _yp*(0.225*fabs(_yp)+0.775);			\
 			}
+
+
 
 #endif
