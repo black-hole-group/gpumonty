@@ -176,7 +176,7 @@ double total_compton_cross_lkup(double w, double thetae, compton *d_cross)
 		return (pow(10., lcross));
 	}
 
-	printf("out of bounds: %g %g\n", w, thetae);
+	printf("Issue Compton cross, out of bounds: w=%g Thetae=%g\n", w, thetae);
 	return (d_total_compton_cross_num(w, thetae));
 
 }

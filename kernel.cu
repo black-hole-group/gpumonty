@@ -368,6 +368,8 @@ void launchKernel(double *p, simvars sim, allunits units, settings setup, compto
 	curandState *d_rng; // for RNG
     compton *d_cross; // hot cross sections info
 
+    printf("Sending data to GPU... ");
+
 	// allocate space for RNG states on device 
     cudaMalloc((void **)&d_rng, nph*sizeof(curandState));	
 
@@ -421,13 +423,18 @@ void launchKernel(double *p, simvars sim, allunits units, settings setup, compto
     // send photon initial conditions to device
     cudaMalloc(&d_pharr, NPHVARS*nph*sizeof(double));
     cudaMemcpy(d_pharr, pharr, NPHVARS*nph*sizeof(double), cudaMemcpyHostToDevice);
+    printf("done\n");
 
     // kernel for RNG initialization
+    printf("Initialing RNG... ");
 	initRNG<<<(nph+TPB-1)/TPB, TPB>>>(d_rng, nph);
+	printf("done\n");
 
     // main kernel for photon propagation
+    printf("Propagating photons... ");
 	track_super_photon<<<(nph+TPB-1)/TPB, TPB>>>(d_p, d_pharr, d_rng, d_cross, nph);
 	//test<<<1, 1>>>();
+	printf("done\n");
 
 	// frees device memory
 	cudaFree(d_rng);

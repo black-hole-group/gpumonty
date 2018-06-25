@@ -17,8 +17,7 @@ void genPhotons(double *pharr, int nmaxgpu) {
 	//quit_flag = 0;
 	struct of_photon ph;
 
-	fprintf(stderr, "Photon generation...\n");
-	fflush(stderr);
+	printf("Generating photons... ");
 
 	// index i goes through each photon
 	for (int i=0; i<nmaxgpu; i++) {
@@ -56,6 +55,7 @@ void genPhotons(double *pharr, int nmaxgpu) {
 		N_superph_made += 1;
 	}
 
+	printf("done\n");
 	printf("Nph = %d\n", N_superph_made);
 
 }
