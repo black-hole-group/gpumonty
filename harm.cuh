@@ -4,11 +4,13 @@
 **************************************************************
 */
 
-/* 
- * New version for the row-major 1D array for GPU code.
- * - n=variable-selector index
- * - i=x1 index
- * - j=x2 index
+/*
+  Finds interpolated value of var at location given by i,j.
+
+  New version for the row-major 1D array for GPU code.
+  - n=variable-selector index
+  - i=x1 index
+  - j=x2 index
  */
 __device__
 double interp_scalar(double *var, int n, int i, int j, double coeff[4])
@@ -25,6 +27,10 @@ double interp_scalar(double *var, int n, int i, int j, double coeff[4])
 	return interp;
 }
 
+/*
+  Given values of X of superphoton, finds corresponding i,j position in 
+  the HARM grid
+*/
 __device__
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 {
@@ -83,7 +89,10 @@ void d_bl_coord(double *X, double *r, double *th)
 */
 
 
-
+/*
+  produces a bias (> 1) for probability of Compton scattering
+  as a function of local temperature 
+*/
 __device__
 double bias_func(double Te, double w)
 {
@@ -107,6 +116,10 @@ double bias_func(double Te, double w)
 
 
 
+/* 
+   Current metric: modified Kerr-Schild, squashed in theta
+   to give higher resolution at the equator 
+*/
 
 // also host
 __device__
@@ -191,7 +204,9 @@ void d_gcov_func(double *X, double gcov[][NDIM])
 
 
 
-
+/* 
+ * Returns the fluid variables at the location indicated by X
+ */
 __device__
 void get_fluid_params(double *d_p, double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
