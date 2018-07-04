@@ -21,11 +21,9 @@
 #define BREMSSTRAHLUNG (0)
 
 // Two temperature ratios (disk and jet)
-#define BETAPRESCRIPTION (1)
-#define TPTE_DISK (20.)
+#define BETAPRESCRIPTION (0)
+#define TPTE_DISK (100.)
 #define TPTE_JET  (1.)
-#define BERNOULLI (0)
-#define THETAE_JET (20.)
 
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
@@ -127,6 +125,8 @@ extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 extern double dlE, lE0;
 extern double gam;
 extern double dMsim;
+
+extern double MBH;
 
 extern double M_unit;
 extern double L_unit;

@@ -95,8 +95,8 @@ double bias_func(double Te, double w)
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-//	bias = Te*Te/(5. * max_tau_scatt) ;
-	bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+	bias = Te*Te/(5. * max_tau_scatt);
+//	bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
 	#if (BETAPRESCRIPTION)
 	if (bias < tpte)
@@ -177,15 +177,16 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-	
+
+//	Alternative calculation
+//	double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+//	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+
 	#else
 	// Single-temperature ratio everywhere
-	Thetae_unit = (gam - 1.) * (MP / ME) / TP_OVER_TE;
+	// Thetae_unit already calculated in initialization
 	*Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
-	#if BERNOULLI
-	if (Be > 1.02)
-		*Thetae = THETAE_JET;
-	#endif
 	#endif
 
 	if(*Thetae > THETAE_MAX)
@@ -270,14 +271,15 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = (uu / rho) * Thetae_unit;
 
+//	Alternative calculation
+//	double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+//	*Thetae = (uu / rho) * Thetae_unit;
+
 	#else
 	// Single-temperature ratio everywhere
-	Thetae_unit = (gam - 1.) * (MP / ME) / TP_OVER_TE;
-	*Thetae = uu / rho * Thetae_unit;
-	#if BERNOULLI
-	if (Be > 1.02)
-		*Thetae = THETAE_JET;
-	#endif
+	// Thetae_unit already calculated in initialization
+	*Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
 	#endif
 
 	if(*Thetae > THETAE_MAX)
@@ -777,7 +779,8 @@ void report_spectrum(int N_superph_made)
 	FILE *fp;
 
 	double nu0,nu1,nu,fnu ;
-	double dsource = 8000*PC ;
+	//double dsource = 8500.*PC ; // Sgr A*
+	double dsource = 16.7*10.e6*PC ; // M87
 
 	fp = fopen(SPECTRUM_FILE_NAME, "w");
 	if (fp == NULL) {
@@ -857,6 +860,17 @@ void report_spectrum(int N_superph_made)
 
 	fprintf(stderr, "\n");
 
+	fprintf(stderr,"Ladv: %g [code]\n",Ladv) ;
+
+	fprintf(stderr, "\n");
+
+	fprintf(stderr,"dMact: %g [code]\n",dMact) ;
+	fprintf(stderr,"Mdot: %g [g/s] \n",-dMact*M_unit/T_unit) ;
+	fprintf(stderr,"Mdot: %g [MSUN/YR] \n",-dMact*M_unit/T_unit/(MSUN / YEAR)) ;
+	double Mdotedd=4.*M_PI*GNEWT*MBH*MP/CL/0.1/SIGMA_THOMSON;
+	fprintf(stderr,"Mdot: %g [Mdotedd]\n",-dMact*M_unit/T_unit/Mdotedd) ;
+	fprintf(stderr,"Mdotedd: %g [g/s]\n",Mdotedd) ;
+	fprintf(stderr,"Mdotedd: %g [MSUN/YR]\n",Mdotedd/(MSUN/YEAR)) ;
 
 	fprintf(stderr, "\n");
 	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);

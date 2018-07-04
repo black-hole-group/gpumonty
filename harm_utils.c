@@ -435,27 +435,30 @@ void coord(int i, int j, double *X)
 }
 
 
+double MBH;
 void set_units(char *munitstr)
 {
-	double MBH;
-
 	sscanf(munitstr, "%lf", &M_unit);
 
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
-	MBH = 4.5e6 * MSUN ; // Sgr A*
-	//MBH = 6.2e9 * MSUN; // M87
+	//MBH = 4.6e6 * MSUN ; // Sgr A*
+	MBH = 6.2e9 * MSUN; // M87
+	//MBH = 5.e9 * MSUN;
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 
-	fprintf(stderr, "\nUNITS\n");
-	fprintf(stderr, "L,T,M: %g %g %g\n", L_unit, T_unit, M_unit);
+	fprintf(stderr, "\nUNITS:\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "L,T,M: %g [cm] %g [s] %g [g]\n", L_unit, T_unit, M_unit);
 
 	RHO_unit = M_unit / pow(L_unit, 3);
 	U_unit = RHO_unit * CL * CL;
 	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
 
-	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
+	fprintf(stderr, "rho,u,B: %g [g cm^-3] %g [g cm^-1 s^-2] %g [G]\n", RHO_unit, U_unit, B_unit);
+
+	fprintf(stderr, "\n");
 
 	Ne_unit = RHO_unit / (MP + ME);
 
@@ -463,6 +466,7 @@ void set_units(char *munitstr)
 
 	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
 
+	fprintf(stderr, "\n");
 }
 
 /* set up all grid functions */
