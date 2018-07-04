@@ -95,8 +95,8 @@ double bias_func(double Te, double w)
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	bias = Te*Te/(5. * max_tau_scatt);
-//	bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+	bias = Te*Te/(5. * max_tau_scatt) ;
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
 	#if (BETAPRESCRIPTION)
 	if (bias < tpte)
@@ -162,10 +162,11 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 	*Ne = p[KRHO][i][j] * Ne_unit;
 
-	// calculate Bernoulli
+	// Calculate Bernoulli
 	Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
 
-	#if BETAPRESCRIPTION
+	// Calculate electron temperature
+	#if (BETAPRESCRIPTION)
 	// use plasma beta to calculate electron temperature
 	pg = (gam - 1.) * p[UU][i][j];
 	bsq = Bcon[0] * Bcov[0] +
@@ -175,25 +176,27 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	beta_plasma = 2.*pg/bsq;
 	bplsq = pow(beta_plasma, 2.);
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
+
 	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
 
-//	Alternative calculation
-//	double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
-//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
-//	*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+	// Alternative calculation (still using plasma beta)
+	//double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+	//Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+	//*Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
 
 	#else
-	// Single-temperature ratio everywhere
-	// Thetae_unit already calculated in initialization
-	*Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
+	// Single-temperature ratio everywhere (original way)
+	Thetae_unit = (gam - 1.) * (MP/ME) * 1./TP_OVER_TE;
+	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
 	#endif
+	// End of calculation of electron temperature
 
 	if(*Thetae > THETAE_MAX)
 		*Thetae = THETAE_MAX;
-	sig = pow(*B/B_unit, 2.) / (*Ne/Ne_unit);
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit);
 	if(sig > 1.)
-		*Ne = 1.e-10*Ne_unit ;
+		*Ne = 1.e-10*Ne_unit;
 }
 
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -255,36 +258,39 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	*Ne = rho * Ne_unit;
 
-	// calculate Bernoulli
+	// Calculate Bernoulli
 	Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
 
-	#if BETAPRESCRIPTION
+	// Calculate electron temperature
+	#if (BETAPRESCRIPTION)
 	// use plasma beta to calculate electron temperature
-	pg = (gam - 1.) * uu;
+    pg = (gam - 1.) * uu;
 	bsq = Bcon[0] * Bcov[0] +
 			Bcon[1] * Bcov[1] +
 			Bcon[2] * Bcov[2] +
 			Bcon[3] * Bcov[3];
-	beta_plasma = 2.*pg/bsq;
+    beta_plasma = 2.*pg/bsq;
 	bplsq = pow(beta_plasma, 2.);
 	tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
-	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
-	*Thetae = (uu / rho) * Thetae_unit;
 
-//	Alternative calculation
-//	double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
-//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
-//	*Thetae = (uu / rho) * Thetae_unit;
+	Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
+	*Thetae = uu / rho * Thetae_unit;
+
+	// Alternative calculation (still using beta prescription)
+	//double two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+	//Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+	//*Thetae = (uu / rho) * Thetae_unit;
 
 	#else
-	// Single-temperature ratio everywhere
-	// Thetae_unit already calculated in initialization
-	*Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
+	// Single-temperature ratio everywhere (original way)
+	Thetae_unit = (gam - 1.) * (MP/ME) * 1./TP_OVER_TE;
+	*Thetae = uu / rho * Thetae_unit;
 	#endif
+	// End of calculation of electron temperature
 
 	if(*Thetae > THETAE_MAX)
 		*Thetae = THETAE_MAX;
-	sig = pow(*B/B_unit, 2.)/(*Ne/Ne_unit);
+	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit);
 	if(sig > 1.)
 		*Ne = 1.e-10*Ne_unit;
 }
@@ -779,7 +785,7 @@ void report_spectrum(int N_superph_made)
 	FILE *fp;
 
 	double nu0,nu1,nu,fnu ;
-	//double dsource = 8500.*PC ; // Sgr A*
+	//double dsource = 8500.*PC; // Sgr A*
 	double dsource = 16.7*10.e6*PC ; // M87
 
 	fp = fopen(SPECTRUM_FILE_NAME, "w");

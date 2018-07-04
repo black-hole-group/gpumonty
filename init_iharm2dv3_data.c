@@ -92,9 +92,9 @@ void init_harm_data(char *fname)
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
 
-	two_temp_gam =
-	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
-	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+//	two_temp_gam =
+//	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
+//	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -144,7 +144,8 @@ void init_harm_data(char *fname)
 		// calculate Bernoulli parameter
 		Be = -(1. + p[UU][i][j] / p[KRHO][i][j] * gam) * Ucov[0];
 
-		#if BETAPRESCRIPTION
+		// Calculate electron temperature
+		#if (BETAPRESCRIPTION)
 		// use plasma beta to calculate electron temperature
 		pg = (gam - 1.) * p[UU][i][j];
 		bsq = Bcon[0] * Bcov[0] +
@@ -155,17 +156,20 @@ void init_harm_data(char *fname)
 		bplsq = pow(beta_plasma, 2.);
 		tpte = TPTE_DISK * bplsq/(1. + bplsq) + TPTE_JET * 1./(1. + bplsq);
 
-//		two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
-//		Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
-//		Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
-
 		Thetae_unit = (gam - 1.) * (MP/ME) * 1./tpte;
 		Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
 
+		// Alternative calculation (still using beta prescription)
+		//two_temp_gam = 0.5 * ((1. + 2. / 3. * (tpte + 1.) / (tpte + 2.)) + gam);
+		//Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + tpte);
+		//Thetae = (p[UU][i][j]/p[KRHO][i][j])*Thetae_unit;
+
 		#else
-		// Single-temperature ratio everywhere
+		// Single-temperature ratio everywhere (original way)	
+		Thetae_unit = (gam - 1.) * (MP/ME) * 1./TP_OVER_TE;
 		Thetae = p[UU][i][j] / p[KRHO][i][j] * Thetae_unit;
 		#endif
+		// End of calculation of electron temperature
 
 		bias_norm += dV * gdet * pow(Thetae, 2.);
 		V += dV * gdet;

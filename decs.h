@@ -21,7 +21,7 @@
 #define BREMSSTRAHLUNG (0)
 
 // Two temperature ratios (disk and jet)
-#define BETAPRESCRIPTION (0)
+#define BETAPRESCRIPTION (1)
 #define TPTE_DISK (100.)
 #define TPTE_JET  (1.)
 
@@ -127,7 +127,6 @@ extern double gam;
 extern double dMsim;
 
 extern double MBH;
-
 extern double M_unit;
 extern double L_unit;
 extern double T_unit;
@@ -251,5 +250,4 @@ int record_criterion(struct of_photon *ph);
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
-
 

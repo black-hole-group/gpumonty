@@ -9,10 +9,6 @@ import matplotlib.pyplot as plt
 #
 # open spectrum file
 data = np.loadtxt("spectrum.dat")
-#data = np.loadtxt("m87_100million_rmax24_tptedisk20.dat")
-#data = np.loadtxt("m87_100million_rmax12_tptedisk100.dat")
-#data = np.loadtxt("m87_100million_rmax24_tptedisk100.dat")
-#data = np.loadtxt("10million_m87_999_newtemp.dat")
 
 tdata = np.transpose( data )
 #
@@ -39,10 +35,10 @@ lw = lw + np.log10(me*c*c/h)   # convert to Hz from electron rest-mass energy
 Lsol = 3.83e33  
 nLn = nLn + np.log10(Lsol)  # convert to erg/s from Lsol
 #
-plt.plot(lw, nLn[0], label = '$0^{\circ} - 15^{\circ}$', color = "red")
-plt.plot(lw, nLn[1], label = '$15^{\circ} - 30^{\circ}$', color = "orange")
-plt.plot(lw, nLn[2], label = '$30^{\circ} - 45^{\circ}$', color = "yellow")
-plt.plot(lw, nLn[3], label = '$45^{\circ} - 60^{\circ}$', color = "green")
+#plt.plot(lw, nLn[0], label = '$0^{\circ} - 15^{\circ}$', color = "red")
+#plt.plot(lw, nLn[1], label = '$15^{\circ} - 30^{\circ}$', color = "orange")
+#plt.plot(lw, nLn[2], label = '$30^{\circ} - 45^{\circ}$', color = "yellow")
+#plt.plot(lw, nLn[3], label = '$45^{\circ} - 60^{\circ}$', color = "green")
 plt.plot(lw, nLn[4], label = '$60^{\circ} - 75^{\circ}$', color = "blue")
 plt.plot(lw, nLn[5], label = '$75^{\circ} - 90^{\circ}$', color = "black")
 #
@@ -78,14 +74,14 @@ plotenergy(c/0.1, '1 mm')
 
 #
 plt.xlim((minlognu, maxlognu))
-#plt.ylim((33.5+7.5, 33.5+14.5))
-plt.ylim((33.5+3.5, 33.5+12.5))
+#plt.ylim((28, 38))
+plt.ylim((40, 48)) # L_peak vs nupeak
 #
 
 #
 # choose model
 sgra = 0
-m87 = 1
+m87 = 0
 #
 
 # plotting the measured data at lambda = 1.3mm ~ 230Ghz
