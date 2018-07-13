@@ -337,7 +337,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 	/*
 	if(E > 1.e-4) fprintf(stdout,"HOT: %d %d %g %g %g %g %g\n",
 		i,j,E/(0.22*(EE*Bmag/(2.*M_PI*ME*CL))*(HPL/(ME*CL*CL))*Thetae*Thetae),
-		ph->X[1],ph->X[2], Thetae,Bmag) ; 
+		ph->X[1],ph->X[2], Thetae,Bmag) ;
 	*/
 
 	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
@@ -447,7 +447,8 @@ void set_units(char *munitstr)
 
 	Ne_unit = RHO_unit / (MP + ME);
 
-	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+	// max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+	max_tau_scatt = 0.0024;
 
 	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
 

@@ -1,6 +1,6 @@
 /*
 
-	HARM model specification routines 
+	HARM model specification routines
 
 */
 
@@ -15,8 +15,8 @@ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
 /*
 
-	encapsulates all initialization routines 
-	
+	encapsulates all initialization routines
+
 */
 
 void init_model(char *args[])
@@ -52,7 +52,7 @@ void init_model(char *args[])
 }
 
 /*
-	make super photon 
+	make super photon
 */
 
 int n2gen = -1;
@@ -84,7 +84,7 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 /*
 
 produces a bias (> 1) for probability of Compton scattering
-as a function of local temperature 
+as a function of local temperature
 
 */
 
@@ -105,7 +105,7 @@ double bias_func(double Te, double w)
 	return bias / TP_OVER_TE;
 }
 
-/* 
+/*
 
 	these supply basic model data to grmonty
 
@@ -163,7 +163,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
-/* 
+/*
  * Returns the fluid variables at the location indicated by X
  */
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -238,9 +238,9 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
 }
 
-/* 
+/*
    Current metric: modified Kerr-Schild, squashed in theta
-   to give higher resolution at the equator 
+   to give higher resolution at the equator
 */
 
 /* mnemonics for dimensional indices */
@@ -268,7 +268,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	irho2 = 1. / (r * r + a * a * cth * cth);
 
-	// transformation for Kerr-Schild -> modified Kerr-Schild 
+	// transformation for Kerr-Schild -> modified Kerr-Schild
 	hfac = M_PI + (1. - hslope) * M_PI * cos(2. * M_PI * X[2]);
 
 	gcon[TT][TT] = -1. - 2. * r * irho2;
@@ -330,10 +330,10 @@ void gcov_func(double *X, double gcov[][NDIM])
 #undef TH
 #undef PH
 
-/* 
+/*
 
    connection calculated analytically for modified Kerr-Schild
-   	coordinates 
+   	coordinates
 
 
    this gives the connection coefficient
@@ -581,7 +581,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	return (dl);
 }
 
-/* 
+/*
 	record contribution of super photon to spectrum.
 
 	This routine should make minimal assumptions about the
@@ -597,11 +597,11 @@ void record_super_photon(struct of_photon *ph)
 		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
-#pragma omp critical (MAXTAU)
-	{
-		if (ph->tau_scatt > max_tau_scatt)
-			max_tau_scatt = ph->tau_scatt;
-	}
+// #pragma omp critical (MAXTAU)
+// 	{
+// 		if (ph->tau_scatt > max_tau_scatt)
+// 			max_tau_scatt = ph->tau_scatt;
+// 	}
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
@@ -712,9 +712,9 @@ void omp_reduce_spect()
 	}
 }
 
-/* 
+/*
 
-	output spectrum to file 
+	output spectrum to file
 
 */
 
@@ -745,7 +745,7 @@ void report_spectrum(int N_superph_made)
 
 		for (j = 0; j < N_THBINS; j++) {
 
-			/* convert accumulated photon number in each bin 
+			/* convert accumulated photon number in each bin
 			   to \nu L_\nu, in units of Lsun */
 			dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
 
