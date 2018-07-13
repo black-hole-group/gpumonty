@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	struct of_photon *phs;
 	long int seed;
 	time_t currtime, starttime;
-	double N_superph_tracked = 0;
+	double N_superph_tracked = 0; // Does not include scatters
 
 	if (argc != 4 && argc != 5) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1\n");
@@ -128,14 +128,15 @@ int main(int argc, char *argv[])
 		/* give interim reports on rates */
 		if (((int) (N_superph_tracked)) % 100000 == 0 && N_superph_tracked > 0) {
 			currtime = time(NULL);
-			fprintf(stderr, "time %g, rate %g ph/s\n",
+			fprintf(stderr, "%03.2f%%: time %gs, rate %g ph/s\n",
+				(N_superph_tracked / N_superph_made)*100,
 				(double) (currtime - starttime),
 				N_superph_tracked / (currtime -
 						  starttime));
 		}
 	}
 	currtime = time(NULL);
-	fprintf(stderr, "Final time %g, rate %g ph/s\n",
+	fprintf(stderr, "Final time %gs, rate %g ph/s\n",
 		(double) (currtime - starttime),
 		N_superph_tracked / (currtime - starttime));
 

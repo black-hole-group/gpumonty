@@ -23,14 +23,14 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump1000 4.e19 [seed]
+    ./grmonty 5000000 dump1000 4.e19 20
 
 Arguments are:
 
 - estimate of photon number (actual number is probabilistic due to scattering)
 - harm dump file for model
 - mass unit (few x 10^19 is appropriate for Sgr A*)
-- (optional) A seed for the random number generator. Must be an long int gte to 1. If not given, time will be used as seed.
+- (optional) A seed for the random number generator. Must be an long int >= 1. If not given, time will be used as seed.
 
 This will output spectrum to `grmonty.spec`  which should be identical to `grmonty_spec_verify`.
 

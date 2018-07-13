@@ -718,7 +718,7 @@ void omp_reduce_spect()
 
 */
 
-#define SPECTRUM_FILE_NAME	"spectrum.dat"
+#define SPECTRUM_FILE_NAME	"grmonty.spec"
 
 void report_spectrum(int N_superph_made)
 {
