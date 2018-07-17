@@ -11,7 +11,7 @@
 #pragma acc routine(gpu_rng_ran_gamma) nohost
 #pragma acc routine(gpu_rng_ran_chisq) nohost
 
-void gpu_rng_init (curandState_t *curandst, unsigned long int seed);
+void gpu_rng_init (curandState_t *curandst, long int seed);
 double gpu_rng_uniform (curandState_t *curandst);
 void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z);
 double gpu_rng_ran_gamma(curandState_t *curandst, const double a, const double b);

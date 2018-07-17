@@ -1,7 +1,7 @@
 #include "gpu_rng.h"
 #include <math.h>
 
-void gpu_rng_init (curandState_t *curandst, unsigned long int seed) {
+void gpu_rng_init (curandState_t *curandst, long int seed) {
     // unsigned long int id =__pgi_gangidx();
     // int id = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
     curand_init (seed, __pgi_gangidx(), 0, curandst);

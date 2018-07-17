@@ -38,11 +38,15 @@ int main(int argc, char *argv[]) {
 	time_t currtime, starttime;
 
 	if (argc < 4) {
-		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed > 0\n");
+		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1\n");
 		exit(0);
 	}
 	if (argc > 4) {
 		sscanf(argv[4], "%lu", &seed);
+		if (seed < 1) {
+			fprintf(stderr, "error: seed must be >= 1\nusage: grmonty Ns infilename M_unit [seed]\n");
+			exit(0);
+		}
 	}
 	else seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
 	sscanf(argv[1], "%lf", &Ntot);
