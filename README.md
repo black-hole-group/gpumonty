@@ -9,7 +9,14 @@ GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). Th
 
 # Quick start
 
-Compile (requires OpenMP enabled `gcc`):
+Requirements:
+
+- pgcc, version >= 18.4
+- gcc, version < 7.0 (preferably 5.4.1)
+- cuda toolkit 9.2
+- cuda drivers
+
+Compile:
 
     make
 

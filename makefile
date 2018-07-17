@@ -1,5 +1,9 @@
 #
-# requires pgcc and nvcc
+# Requirements:
+# - pgcc, version >= 18.4
+# - gcc, version < 7.0 (preferably 5.4.1)
+# - cuda toolkit 9.2
+# - cuda drivers
 #
 CC=pgcc
 CCFLAGS=-fast -acc -ta=tesla,cc60,nollvm,rdc -Minfo=all -O2 -Minform=warn
