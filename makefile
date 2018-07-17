@@ -1,35 +1,32 @@
 #
-# requires an openmp-enabled version of gcc
+# requires pgcc and nvcc
 #
-CC = pgcc
-CCFLAGS  = -fast -acc -ta=tesla,cc60 -Minfo=all -O2 -Minform=warn
-LDFLAGS = -lm -lgsl -lgslcblas
+CC=pgcc
+CCFLAGS=-fast -acc -ta=tesla,cc60,nollvm,rdc -Minfo=all -O2 -Minform=warn
+LDFLAGS=-Mcuda -lgsl -lgslcblas -Mcudalib=curand
+# CUDAC=nvcc
+# CUDAFLAGS=
 
-CC_COMPILE = $(CC) $(CCFLAGS) -c
-CC_LOAD = $(CC) $(CCFLAGS)
+INCS=decs.h constants.h harm_model.h gmath.h gpu_rng.h
+EXE=grmonty
 
-.c.o:
-	$(CC_COMPILE) $*.c
-
-EXE = grmonty
 all: $(EXE)
 
-SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
-radiation.c jnu_mixed.c hotcross.c track_super_photon.c \
-scatter_super_photon.c harm_model.c harm_utils.c init_iharm2dv3_data.c\
-gmath.c
+%.o: %.c makefile $(INCS)
+	$(CC) $(CCFLAGS) -c $< $(LDFLAGS)
+
+# %.o: %.cu makefile $(INCS)
+# 	$(CUDAC) $(CUDAFLAGS) -c $<
+
 
 OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
 radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
 scatter_super_photon.o harm_model.o harm_utils.o init_iharm2dv3_data.o\
-gmath.o
-
-INCS = decs.h constants.h harm_model.h gmath.h
-
-$(OBJS) : $(INCS) makefile
+cpu_rng.o gpu_rng.o gmath.o
 
 $(EXE) : $(OBJS) $(INCS) makefile
-	$(CC_LOAD) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(EXE)
+	$(CC) $(CCFLAGS) $(OBJS) -o $(EXE) $(LDFLAGS)
 
+.PHONY: clean
 clean:
 	/bin/rm -f *.o grmonty

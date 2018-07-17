@@ -12,7 +12,7 @@
 
 #define MAXNSTEP	1280000
 
-void track_super_photon(struct of_photon *ph)
+void track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -63,7 +63,7 @@ void track_super_photon(struct of_photon *ph)
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
 	/* This loop solves radiative transfer equation along a geodesic */
-	while (!stop_criterion(ph)) {
+	while (!stop_criterion(curandstate, ph)) {
 
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -85,7 +85,7 @@ void track_super_photon(struct of_photon *ph)
 
 		/* step the geodesic */
 		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
-		if (stop_criterion(ph))
+		if (stop_criterion(curandstate, ph))
 			break;
 
 		/* allow photon to interact with matter, */
@@ -150,7 +150,7 @@ void track_super_photon(struct of_photon *ph)
 				bi = bf;
 			}
 
-			x1 = -log(monty_rand());
+			x1 = -log(gpu_rng_uniform(curandstate));
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan_gd(php.w) || isinf_gd(php.w)) {
@@ -203,7 +203,7 @@ void track_super_photon(struct of_photon *ph)
 						 Bcov);
 
 				if (Ne > 0.) {
-					scatter_super_photon(ph, &php, Ne,
+					scatter_super_photon(curandstate, ph, &php, Ne,
 							     Thetae, B,
 							     Ucon, Bcon,
 							     Gcov);

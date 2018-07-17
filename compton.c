@@ -2,131 +2,15 @@
 #include "decs.h"
 #include "gmath.h"
 
-gsl_rng *rng;
-#pragma acc declare create(rng)
-
 /*
 
 Routines for treating Compton scattering via Monte Carlo.
-
-Uses a Gnu Scientific Library (GSL) random number generator.
-The choice of generator can be changed in init_monty_rand;
-now set to Mersenne twister.
 
 Sampling procedures for electron distribution is based on
 Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 
 */
 
-void init_monty_rand(int seed)
-{
-	rng = gsl_rng_alloc(gsl_rng_mt19937);	/* use Mersenne twister */
-	gsl_rng_set(rng, seed);
-}
-
-/* return pseudo-random value between 0 and 1 */
-double monty_rand()
-{
-	return (gsl_rng_uniform(rng));
-}
-
-
-/*
-   given photon w/ wavevector $k$ colliding w/ electron with
-   momentum $p$, ($p$ is actually the four-velocity)
-   find new wavevector $kp$
-
-*/
-
-void sample_scattered_photon(double k[4], double p[4], double kp[4])
-{
-	double ke[4], kpe[4];
-	double k0p;
-	double n0x, n0y, n0z, n0dotv0, v0x, v0y, v0z, v1x, v1y, v1z, v2x,
-	    v2y, v2z, v1, dir1, dir2, dir3;
-	double cth, sth, phi, cphi, sphi;
-	/* boost into the electron frame
-	   ke == photon momentum in elecron frame */
-
-	boost(k, p, ke);
-	if (ke[0] > 1.e-4) {
-		k0p = sample_klein_nishina(ke[0]);
-		cth = 1. - 1 / k0p + 1. / ke[0];
-	} else {
-		k0p = ke[0];
-		cth = sample_thomson();
-	}
-	sth = sqrt(fabs(1. - cth * cth));
-
-	/* unit vector 1 for scattering coordinate system is
-	   oriented along initial photon wavevector */
-	v0x = ke[1] / ke[0];
-	v0y = ke[2] / ke[0];
-	v0z = ke[3] / ke[0];
-
-	/* randomly pick zero-angle for scattering coordinate system.
-	   There's undoubtedly a better way to do this. */
-	gsl_ran_dir_3d(rng, &n0x, &n0y, &n0z);
-	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
-
-	/* unit vector 2 */
-	v1x = n0x - (n0dotv0) * v0x;
-	v1y = n0y - (n0dotv0) * v0y;
-	v1z = n0z - (n0dotv0) * v0z;
-	v1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
-	v1x /= v1;
-	v1y /= v1;
-	v1z /= v1;
-
-	/* find one more unit vector using cross product;
-	   this guy is automatically normalized */
-	v2x = v0y * v1z - v0z * v1y;
-	v2y = v0z * v1x - v0x * v1z;
-	v2z = v0x * v1y - v0y * v1x;
-
-	/* now resolve new momentum vector along unit vectors */
-	/* create a four-vector $p$ */
-	/* solve for orientation of scattered photon */
-
-	/* find phi for new photon */
-	phi = 2. * M_PI * monty_rand();
-	sphi = sin(phi);
-	cphi = cos(phi);
-
-	p[1] *= -1.;
-	p[2] *= -1.;
-	p[3] *= -1.;
-
-	dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
-	dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
-	dir3 = cth * v0z + sth * (cphi * v1z + sphi * v2z);
-
-	kpe[0] = k0p;
-	kpe[1] = k0p * dir1;
-	kpe[2] = k0p * dir2;
-	kpe[3] = k0p * dir3;
-
-	/* transform k back to lab frame */
-	boost(kpe, p, kp);
-
-	/* quality control */
-	if (kp[0] < 0 || isnan_gd(kp[0])) {
-		// fprintf(stderr, "in sample_scattered_photon:\n");
-		// fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
-		// fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
-		// 	kpe[2], kpe[3]);
-		// fprintf(stderr, "k:  %g %g %g %g\n", k[0], k[1], k[2],
-		// 	k[3]);
-		// fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
-		// 	ke[3]);
-		// fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
-		// 	p[3]);
-		// fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
-		// 	kp[3]);
-	}
-
-	/* done! */
-}
 
 /*
 
@@ -167,55 +51,6 @@ void boost(double v[4], double u[4], double vp[4])
 
 }
 
-/* return a cos(theta) consistent w/ Thomson
-   differential cross section */
-
-/* uses simple rejection scheme */
-
-double sample_thomson()
-{
-	double x1, x2;
-
-	do {
-
-		x1 = 2. * monty_rand() - 1.;
-		x2 = (3. / 4.) * monty_rand();
-
-	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
-
-	return (x1);
-}
-
-/*
-
-sample Klein-Nishina differential cross section.
-
-This routine is inefficient; it needs improvement.
-
-*/
-
-double sample_klein_nishina(double k0)
-{
-	double k0pmin, k0pmax, k0p_tent, x1;
-	/* a low efficiency sampling algorithm, particularly for large k0;
-	   limiting efficiency is log(2 k0)/(2 k0) */
-	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
-	k0pmax = k0;			/* at theta = 0 */
-	do {
-
-		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * monty_rand();
-
-		/* rejection sample in box of height = kn(kmin) */
-		x1 = 2. * (1. + 2. * k0 +
-			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= monty_rand();
-
-	} while (x1 >= klein_nishina(k0, k0p_tent));
-
-	return (k0p_tent);
-}
-
 /*
 
    differential cross section for scattering from
@@ -234,6 +69,157 @@ double klein_nishina(double a, double ap)
 	return (kn);
 }
 
+/****************************************************************************
+											GPU curand-dependent functions
+****************************************************************************/
+
+/*
+   given photon w/ wavevector $k$ colliding w/ electron with
+   momentum $p$, ($p$ is actually the four-velocity)
+   find new wavevector $kp$
+
+*/
+
+void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4], double kp[4])
+{
+	double ke[4], kpe[4];
+	double k0p;
+	double n0x, n0y, n0z, n0dotv0, v0x, v0y, v0z, v1x, v1y, v1z, v2x,
+	    v2y, v2z, v1, dir1, dir2, dir3;
+	double cth, sth, phi, cphi, sphi;
+	/* boost into the electron frame
+	   ke == photon momentum in elecron frame */
+
+	boost(k, p, ke);
+	if (ke[0] > 1.e-4) {
+		k0p = sample_klein_nishina(curandstate, ke[0]);
+		cth = 1. - 1 / k0p + 1. / ke[0];
+	} else {
+		k0p = ke[0];
+		cth = sample_thomson(curandstate);
+	}
+	sth = sqrt(fabs(1. - cth * cth));
+
+	/* unit vector 1 for scattering coordinate system is
+	   oriented along initial photon wavevector */
+	v0x = ke[1] / ke[0];
+	v0y = ke[2] / ke[0];
+	v0z = ke[3] / ke[0];
+
+	/* randomly pick zero-angle for scattering coordinate system.
+	   There's undoubtedly a better way to do this. */
+	gpu_rng_ran_dir_3d(curandstate, &n0x, &n0y, &n0z);
+	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
+
+	/* unit vector 2 */
+	v1x = n0x - (n0dotv0) * v0x;
+	v1y = n0y - (n0dotv0) * v0y;
+	v1z = n0z - (n0dotv0) * v0z;
+	v1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+	v1x /= v1;
+	v1y /= v1;
+	v1z /= v1;
+
+	/* find one more unit vector using cross product;
+	   this guy is automatically normalized */
+	v2x = v0y * v1z - v0z * v1y;
+	v2y = v0z * v1x - v0x * v1z;
+	v2z = v0x * v1y - v0y * v1x;
+
+	/* now resolve new momentum vector along unit vectors */
+	/* create a four-vector $p$ */
+	/* solve for orientation of scattered photon */
+
+	/* find phi for new photon */
+	phi = 2. * M_PI * gpu_rng_uniform(curandstate);
+	sphi = sin(phi);
+	cphi = cos(phi);
+
+	p[1] *= -1.;
+	p[2] *= -1.;
+	p[3] *= -1.;
+
+	dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
+	dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
+	dir3 = cth * v0z + sth * (cphi * v1z + sphi * v2z);
+
+	kpe[0] = k0p;
+	kpe[1] = k0p * dir1;
+	kpe[2] = k0p * dir2;
+	kpe[3] = k0p * dir3;
+
+	/* transform k back to lab frame */
+	boost(kpe, p, kp);
+
+	/* quality control */
+	if (kp[0] < 0 || isnan_gd(kp[0])) {
+		// fprintf(stderr, "in sample_scattered_photon:\n");
+		// fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
+		// fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
+		// 	kpe[2], kpe[3]);
+		// fprintf(stderr, "k:  %g %g %g %g\n", k[0], k[1], k[2],
+		// 	k[3]);
+		// fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
+		// 	ke[3]);
+		// fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
+		// 	p[3]);
+		// fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
+		// 	kp[3]);
+	}
+
+	/* done! */
+}
+
+
+/* return a cos(theta) consistent w/ Thomson
+   differential cross section */
+
+/* uses simple rejection scheme */
+
+double sample_thomson(curandState_t *curandstate)
+{
+	double x1, x2;
+
+	do {
+
+		x1 = 2. * gpu_rng_uniform(curandstate) - 1.;
+		x2 = (3. / 4.) * gpu_rng_uniform(curandstate);
+
+	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
+
+	return (x1);
+}
+
+/*
+
+sample Klein-Nishina differential cross section.
+
+This routine is inefficient; it needs improvement.
+
+*/
+
+double sample_klein_nishina(curandState_t *curandstate, double k0)
+{
+	double k0pmin, k0pmax, k0p_tent, x1;
+	/* a low efficiency sampling algorithm, particularly for large k0;
+	   limiting efficiency is log(2 k0)/(2 k0) */
+	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
+	k0pmax = k0;			/* at theta = 0 */
+	do {
+
+		/* tentative value */
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * gpu_rng_uniform(curandstate);
+
+		/* rejection sample in box of height = kn(kmin) */
+		x1 = 2. * (1. + 2. * k0 +
+			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
+		x1 *= gpu_rng_uniform(curandstate);
+
+	} while (x1 >= klein_nishina(k0, k0p_tent));
+
+	return (k0p_tent);
+}
+
 /*
 
 	sample electron distribution to find which electron was
@@ -241,7 +227,7 @@ double klein_nishina(double a, double ap)
 
 */
 
-void sample_electron_distr_p(double k[4], double p[4], double Thetae)
+void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4], double Thetae)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -252,8 +238,8 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	int sample_cnt = 0;
 
 	do {
-		sample_beta_distr(Thetae, &gamma_e, &beta_e);
-		mu = sample_mu_distr(beta_e);
+		sample_beta_distr(curandstate, Thetae, &gamma_e, &beta_e);
+		mu = sample_mu_distr(curandstate, beta_e);
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -282,7 +268,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 						   log(1. + 2. * K));
 		}
 
-		x1 = monty_rand();
+		x1 = gpu_rng_uniform(curandstate);
 
 		sample_cnt++;
 
@@ -307,7 +293,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 	v0z /= v0;
 
 	/* pick zero-angle for coordinate system */
-	gsl_ran_dir_3d(rng, &n0x, &n0y, &n0z);
+	gpu_rng_ran_dir_3d(curandstate, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */
@@ -329,7 +315,7 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 
 	/* now resolve new momentum vector along unit vectors
 	   and create a four-vector $p$ */
-	phi = monty_rand() * 2. * M_PI;	/* orient uniformly */
+	phi = gpu_rng_uniform(curandstate) * 2. * M_PI;	/* orient uniformly */
 	sphi = sin(phi);
 	cphi = cos(phi);
 
@@ -360,12 +346,12 @@ void sample_electron_distr_p(double k[4], double p[4], double Thetae)
 
 */
 
-void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
+void sample_beta_distr(curandState_t *curandstate, double Thetae, double *gamma_e, double *beta_e)
 {
 	double y;
 
 	/* checked */
-	y = sample_y_distr(Thetae);
+	y = sample_y_distr(curandstate, Thetae);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -384,7 +370,7 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 
 */
 
-double sample_y_distr(double Thetae)
+double sample_y_distr(curandState_t *curandstate, double Thetae)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -403,23 +389,23 @@ double sample_y_distr(double Thetae)
 	pi_6 /= S_3;
 
 	do {
-		x1 = monty_rand();
+		x1 = gpu_rng_uniform(curandstate);
 
 		if (x1 < pi_3) {
-			x = gsl_ran_chisq(rng, 3);
+			x = gpu_rng_ran_chisq(curandstate, 3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = gsl_ran_chisq(rng, 4);
+			x = gpu_rng_ran_chisq(curandstate, 4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = gsl_ran_chisq(rng, 5);
+			x = gpu_rng_ran_chisq(curandstate, 5);
 		} else {
-			x = gsl_ran_chisq(rng, 6);
+			x = gpu_rng_ran_chisq(curandstate, 6);
 		}
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = monty_rand();
+		x2 = gpu_rng_uniform(curandstate);
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
@@ -430,11 +416,11 @@ double sample_y_distr(double Thetae)
 	return (y);
 }
 
-double sample_mu_distr(double beta_e)
+double sample_mu_distr(curandState_t *curandstate, double beta_e)
 {
 	double mu, x1, det;
 
-	x1 = monty_rand();
+	x1 = gpu_rng_uniform(curandstate);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	if (det < 0.)
 		// fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);

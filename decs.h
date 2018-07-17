@@ -4,17 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_math.h>
+// #include <gsl/gsl_rng.h>
+// #include <gsl/gsl_randist.h>
+// #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_bessel.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_permutation.h>
+// #include <gsl/gsl_matrix.h>
+// #include <gsl/gsl_vector.h>
+// #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_integration.h>
 #include <openacc.h>
 #include "constants.h"
+#include "gpu_rng.h"
 
 #define NDIM	4
 #define NPRIM	8
@@ -135,21 +136,22 @@ double Thetae_unit;
 /* some useful macros */
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
+#define MIN(elem1,elem2) ((elem1) < (elem2) ? (elem1) : (elem2))
 
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(struct of_photon *ph);
+void track_super_photon(curandState_t *curandstate, struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(int N_superph_made);
-void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
+void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
 
-/* MC/RT utilities */
-void init_monty_rand(int seed);
-double monty_rand(void);
+/* CPU RNG routines */
+void cpu_rng_init(unsigned long int seed);
+double cpu_rng_uniforme(void);
 
 /* geodesic integration */
 void init_dKdlam(double X[], double Kcon[], double dK[]);
@@ -204,13 +206,13 @@ void init_hotcross(void);
 double total_compton_cross_lkup(double nu, double theta);
 double klein_nishina(double a, double ap);
 double kappa_es(double nu, double theta);
-void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);
-void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
-double sample_klein_nishina(double k0);
-double sample_thomson(void);
-double sample_mu_distr(double beta_e);
-double sample_y_distr(double theta);
-void sample_scattered_photon(double k[NDIM], double p[NDIM],
+void sample_electron_distr_p(curandState_t *curandstate, double k[NDIM], double p[NDIM], double theta);
+void sample_beta_distr(curandState_t *curandstate, double theta, double *gamma_e, double *beta_e);
+double sample_klein_nishina(curandState_t *curandstate, double k0);
+double sample_thomson(curandState_t *curandstate);
+double sample_mu_distr(curandState_t *curandstate, double beta_e);
+double sample_y_distr(curandState_t *curandstate, double theta);
+void sample_scattered_photon(curandState_t *curandstate, double k[NDIM], double p[NDIM],
 			     double kp[NDIM]);
 
 /** model dependent functions required by code: these
@@ -224,7 +226,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
-int stop_criterion(struct of_photon *ph);
+int stop_criterion(curandState_t *curandstate, struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
@@ -285,7 +287,6 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine (gcov_func)
 #pragma acc routine (gsl_sf_bessel_Kn)
 #pragma acc routine (delta)
-#pragma acc routine (monty_rand)
 #pragma acc routine (tetrad_to_coordinate)
 #pragma acc routine (K2_eval)
 #pragma acc routine (gsl_rng_uniform)

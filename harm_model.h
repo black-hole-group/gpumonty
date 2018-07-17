@@ -13,8 +13,8 @@ double ***p;
 double **ne;
 double **thetae;
 double **b;
-// double a;
 // double R0;
+// double a;
 // double hslope;
 
 #define R0 0.0

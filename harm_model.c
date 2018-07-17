@@ -8,7 +8,7 @@
 #include "gmath.h"
 
 double Rh;
-struct of_spectrum spect[N_THBINS][N_EBINS];
+struct of_spectrum spect[N_THBINS * N_EBINS];
 
 #pragma acc declare create(Rh, spect)
 
@@ -501,7 +501,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 
 #define RMAX	100.
 #define ROULETTE	1.e4
-int stop_criterion(struct of_photon *ph)
+int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
 
@@ -517,7 +517,7 @@ int stop_criterion(struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (monty_rand() <= 1. / ROULETTE) {
+			if (gpu_rng_uniform(curandstate) <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -526,7 +526,7 @@ int stop_criterion(struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (monty_rand() <= 1. / ROULETTE) {
+		if (gpu_rng_uniform(curandstate) <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;
@@ -566,7 +566,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	double idlx1, idlx2, idlx3;
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * GSL_MIN(X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+	dlx2 = EPS * MIN (X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -628,29 +628,29 @@ void record_super_photon(struct of_photon *ph)
 
 	/* sum in photon */
 	#pragma acc atomic
-	spect[ix2][iE].dNdlE +=  ph->w;
+	spect[ix2*N_THBINS + iE].dNdlE +=  ph->w;
 	#pragma acc atomic
-	spect[ix2][iE].dEdlE +=  ph->w * ph->E;
+	spect[ix2*N_THBINS + iE].dEdlE +=  ph->w * ph->E;
 	#pragma acc atomic
-	spect[ix2][iE].tau_abs +=  ph->w * ph->tau_abs;
+	spect[ix2*N_THBINS + iE].tau_abs +=  ph->w * ph->tau_abs;
 	#pragma acc atomic
-	spect[ix2][iE].tau_scatt +=  ph->w * ph->tau_scatt;
+	spect[ix2*N_THBINS + iE].tau_scatt +=  ph->w * ph->tau_scatt;
 	#pragma acc atomic
-	spect[ix2][iE].X1iav +=  ph->w * ph->X1i;
+	spect[ix2*N_THBINS + iE].X1iav +=  ph->w * ph->X1i;
 	#pragma acc atomic
-	spect[ix2][iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
+	spect[ix2*N_THBINS + iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
 	#pragma acc atomic
-	spect[ix2][iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
+	spect[ix2*N_THBINS + iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
 	#pragma acc atomic
-	spect[ix2][iE].ne0 +=  ph->w * (ph->ne0);
+	spect[ix2*N_THBINS + iE].ne0 +=  ph->w * (ph->ne0);
 	#pragma acc atomic
-	spect[ix2][iE].b0 +=  ph->w * (ph->b0);
+	spect[ix2*N_THBINS + iE].b0 +=  ph->w * (ph->b0);
 	#pragma acc atomic
-	spect[ix2][iE].thetae0 +=  ph->w * (ph->thetae0);
+	spect[ix2*N_THBINS + iE].thetae0 +=  ph->w * (ph->thetae0);
 	#pragma acc atomic
-	spect[ix2][iE].nscatt +=  ph->w * ph->nscatt;
+	spect[ix2*N_THBINS + iE].nscatt +=  ph->w * ph->nscatt;
 	#pragma acc atomic
-	spect[ix2][iE].nph +=  1.;
+	spect[ix2*N_THBINS + iE].nph +=  1.;
 
 }
 
@@ -698,25 +698,25 @@ void report_spectrum(int N_superph_made)
 			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
 								     dlE);
 
-			nuLnu *= spect[j][i].dEdlE;
+			nuLnu *= spect[j*N_THBINS + i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
+			    spect[j*N_THBINS + i].tau_scatt / (spect[j*N_THBINS + i].dNdlE +
 						     SMALL);
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,
-				spect[j][i].tau_abs / (spect[j][i].dNdlE +
+				spect[j*N_THBINS + i].tau_abs / (spect[j*N_THBINS + i].dNdlE +
 						       SMALL), tau_scatt,
-				spect[j][i].X1iav / (spect[j][i].dNdlE +
+				spect[j*N_THBINS + i].X1iav / (spect[j*N_THBINS + i].dNdlE +
 						     SMALL),
 				sqrt(fabs
-				     (spect[j][i].X2isq /
-				      (spect[j][i].dNdlE + SMALL))),
+				     (spect[j*N_THBINS + i].X2isq /
+				      (spect[j*N_THBINS + i].dNdlE + SMALL))),
 				sqrt(fabs
-				     (spect[j][i].X3fsq /
-				      (spect[j][i].dNdlE + SMALL)))
+				     (spect[j*N_THBINS + i].X3fsq /
+				      (spect[j*N_THBINS + i].dNdlE + SMALL)))
 			    );
 
 
@@ -730,8 +730,8 @@ void report_spectrum(int N_superph_made)
 			}
 
 			/* added to give average # scatterings */
-			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (
-				spect[j][i].dNdlE + SMALL)) ;
+			fprintf(fp,"%10.5g ",spect[j*N_THBINS + i].nscatt/ (
+				spect[j*N_THBINS + i].dNdlE + SMALL)) ;
 
 			if (tau_scatt > max_tau_scatt)
 				max_tau_scatt = tau_scatt;

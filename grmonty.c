@@ -21,12 +21,13 @@
 #include "decs.h"
 #include <time.h>
 
-extern gsl_rng *rng;
+// External global variables to be send to GPU (used in other .c's)
 extern double h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE;
-extern double table[NW + 1][NT + 1];
+extern double table[(NW + 1)*(NT + 1)];
 extern double K2[N_ESAMP + 1];
 extern double ***p;
-extern struct of_spectrum spect[N_THBINS][N_EBINS];
+extern struct of_spectrum spect[N_THBINS*N_EBINS];
+
 gsl_integration_workspace *w;
 
 int main(int argc, char *argv[]) {
@@ -43,12 +44,11 @@ int main(int argc, char *argv[]) {
 	if (argc > 4) {
 		sscanf(argv[4], "%lu", &seed);
 	}
-	else seed = -1;
+	else seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 
-	if (seed > 0) init_monty_rand(seed);
-	else init_monty_rand(139 + time(NULL));	/* Arbitrarily picked initial seed */
+	cpu_rng_init(seed);
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
@@ -85,28 +85,35 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	// #pragma acc enter data copyin(rng, startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
+	curandState_t curandstate;
+
+	// #pragma acc enter data copyin(startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
 	// 	 lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
 	// 	 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
-
-	#pragma acc parallel loop copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
+	#pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
 		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, p[:NPRIM][:N1][:N1*N2],\
-		 Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect, dx, N1, N2,\
-		  N3, n_within_horizon)
-	for (int i = 0; i < ph_count; i++) {
-		/* push ph around */
+		 Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect[:N_THBINS][:N_EBINS], dx, N1, N2,\
+		  N3, n_within_horizon) copyout(spect[:N_THBINS*N_EBINS]) private(curandstate)
+	{
 
-		track_super_photon(&phs[i]);
+		gpu_rng_init (&curandstate, seed);
 
-		// /* give interim reports on rates */
-		// if (((int) (N_superph_made)) % 100000 == 0
-		//     && N_superph_made > 0) {
-		// 	currtime = time(NULL);
-		// 	fprintf(stderr, "time %g, rate %g ph/s\n",
-		// 		(double) (currtime - starttime),
-		// 		N_superph_made / (currtime -
-		// 				  starttime));
-		// }
+		#pragma acc loop
+		for (int i = 0; i < ph_count; i++) {
+			/* push ph around */
+
+			track_super_photon(&curandstate, &phs[i]);
+
+			// /* give interim reports on rates */
+			// if (((int) (N_superph_made)) % 100000 == 0
+			//     && N_superph_made > 0) {
+			// 	currtime = time(NULL);
+			// 	fprintf(stderr, "time %g, rate %g ph/s\n",
+			// 		(double) (currtime - starttime),
+			// 		N_superph_made / (currtime -
+			// 				  starttime));
+			// }
+		}
 	}
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
