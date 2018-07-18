@@ -101,9 +101,7 @@ struct of_grid {
 /** global variables **/
 /** model independent */
 
-int Ns;
-int N_superph_recorded, N_scatt;
-
+// unsigned long long N_scatt;
 /* HARM model globals */
 struct of_geom **geom;
 int N1, N2, N3;
@@ -126,7 +124,7 @@ double Ne_unit;
 double Thetae_unit;
 
 #pragma acc declare create(startx, stopx, dx, B_unit, L_unit, max_tau_scatt, Ne_unit,\
-	Thetae_unit, lE0, dlE, N_superph_recorded, N_scatt, N1, N2, N3, n_within_horizon)
+	Thetae_unit, lE0, dlE, N1, N2, N3, n_within_horizon)
 
 //From hotcross.c
 #define NW	220
@@ -141,9 +139,9 @@ double Thetae_unit;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(curandState_t *curandstate, struct of_photon *ph);
-void record_super_photon(struct of_photon *ph);
-void report_spectrum(int N_superph_made);
+void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded);
+void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded);
+void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded);
 void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
@@ -220,7 +218,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[NDIM], double 
 
 /* physics related */
 void init_model(char *args[]);
-void make_super_photon(struct of_photon *ph, int *quit_flag);
+void make_super_photon(struct of_photon *ph, int *quit_flag, unsigned long long Ns);
 double bias_func(double Te, double w);
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],

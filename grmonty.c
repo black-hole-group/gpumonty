@@ -31,7 +31,7 @@ extern struct of_spectrum spect[N_THBINS*N_EBINS];
 gsl_integration_workspace *w;
 
 int main(int argc, char *argv[]) {
-	double Ntot, N_superph_made;
+	unsigned long long Ns, N_superph_made, N_superph_recorded;
 	int quit_flag, myid;
 	struct of_photon *phs;
 	unsigned long int seed;
@@ -49,8 +49,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	else seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
-	sscanf(argv[1], "%lf", &Ntot);
-	Ns = (int) Ntot;
+	sscanf(argv[1], "%llu", &Ns);
 
 	cpu_rng_init(seed);
 
@@ -64,22 +63,22 @@ int main(int argc, char *argv[]) {
 	/** main loop **/
 	N_superph_made = 0;
 	N_superph_recorded = 0;
-	N_scatt = 0;
+	// N_scatt = 0;
 	starttime = time(NULL);
 	quit_flag = 0;
 
 	fprintf(stderr, "Generating photons...\n");
 	fflush(stderr);
 
-	int phs_max = Ns;
-	int ph_count = 0;
+	unsigned long long phs_max = Ns;
+	unsigned long long ph_count = 0;
 	phs = malloc(phs_max * sizeof(struct of_photon));
 	while (!quit_flag) {
 		if (ph_count == phs_max) {
 			phs_max = 2*phs_max;
 			phs = realloc(phs, phs_max*sizeof(struct of_photon));
 		}
-		make_super_photon(&phs[ph_count], &quit_flag);
+		make_super_photon(&phs[ph_count], &quit_flag, Ns);
 		ph_count++;
 	}
 	ph_count--;
@@ -96,17 +95,17 @@ int main(int argc, char *argv[]) {
 	// 	 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 	#pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
 		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, p[:NPRIM][:N1][:N1*N2],\
-		 Ne_unit, Thetae_unit, lE0, Rh, dlE, N_superph_recorded, N_scatt, spect[:N_THBINS][:N_EBINS], dx, N1, N2,\
-		  N3, n_within_horizon) copyout(spect[:N_THBINS*N_EBINS]) private(curandstate)
+		 Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
+		 copy(spect[:N_THBINS*N_EBINS], N_superph_recorded) private(curandstate)
 	{
 
 		gpu_rng_init (&curandstate, seed);
 
 		#pragma acc loop
-		for (int i = 0; i < ph_count; i++) {
+		for (unsigned long long i = 0; i < ph_count; i++) {
 			/* push ph around */
 
-			track_super_photon(&curandstate, &phs[i]);
+			track_super_photon(&curandstate, &phs[i], &N_superph_recorded);
 
 			// /* give interim reports on rates */
 			// if (((int) (N_superph_made)) % 100000 == 0
@@ -122,9 +121,9 @@ int main(int argc, char *argv[]) {
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
 		(double) (currtime - starttime),
-		N_superph_made / (currtime - starttime));
+		(double) N_superph_made / (currtime - starttime));
 
-	report_spectrum((int) N_superph_made);
+	report_spectrum(N_superph_made, N_superph_recorded);
 
 	/* done! */
 	return (0);

@@ -24,7 +24,7 @@ double **b;
 #pragma acc declare create(p)
 
 /* HARM model internal utilities */
-void init_weight_table(void);
+void init_weight_table(unsigned long long Ns);
 void bl_coord(double *X, double *r, double *th);
 void make_zone_centered_tetrads(void);
 void set_units(char *munitstr);
@@ -36,7 +36,7 @@ double dOmega_func(double x2i, double x2f);
 
 void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph);
 double interp_scalar(double **var, int i, int j, double coeff[4]);
-int get_zone(int *i, int *j, double *dnamx);
+int get_zone(int *i, int *j, double *dnamx, unsigned long long Ns);
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,

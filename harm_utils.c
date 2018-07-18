@@ -65,7 +65,7 @@ static double linear_interp_weight(double nu)
 
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-void init_weight_table(void)
+void init_weight_table(unsigned long long Ns)
 {
 
 	int i, j, l, lstart, lend, myid, nthreads;
@@ -168,7 +168,7 @@ void init_nint_table(void)
 	return;
 }
 
-static void init_zone(int i, int j, double *nz, double *dnmax)
+static void init_zone(int i, int j, double *nz, double *dnmax, unsigned long long Ns)
 {
 
 	int l;
@@ -245,7 +245,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 }
 
 int zone_flag;
-int get_zone(int *i, int *j, double *dnmax)
+int get_zone(int *i, int *j, double *dnmax, unsigned long long Ns)
 {
 /* Return the next zone and the number of superphotons that need to be		*
  * generated in it.								*/
@@ -266,7 +266,7 @@ int get_zone(int *i, int *j, double *dnmax)
 			return 1;
 		}
 	}
-	init_zone(zi, zj, &n2gen, dnmax);
+	init_zone(zi, zj, &n2gen, dnmax, Ns);
 	if (fmod(n2gen, 1.) > cpu_rng_uniforme()) {
 		in2gen = (int) n2gen + 1;
 	} else {

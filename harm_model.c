@@ -43,7 +43,9 @@ void init_model(char *args[])
 	init_emiss_tables();
 
 	/* make table for superphoton weights */
-	init_weight_table();
+	unsigned long long Ns;
+	sscanf(args[1], "%llu", &Ns);
+	init_weight_table(Ns);
 
 	/* make table for quick evaluation of ns_zone */
 	init_nint_table();
@@ -58,11 +60,11 @@ int n2gen = -1;
 double dnmax;
 int zone_i, zone_j;
 
-void make_super_photon(struct of_photon *ph, int *quit_flag)
+void make_super_photon(struct of_photon *ph, int *quit_flag, unsigned long long Ns)
 {
 
 	while (n2gen <= 0) {
-		n2gen = get_zone(&zone_i, &zone_j, &dnmax);
+		n2gen = get_zone(&zone_i, &zone_j, &dnmax, Ns);
 	}
 
 	n2gen--;
@@ -585,7 +587,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	coordinate system.
 
 */
-void record_super_photon(struct of_photon *ph)
+void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded)
 {
 	double lE, dx2;
 	int iE, ix2;
@@ -621,8 +623,8 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-	// #pragma acc atomic
-	// N_superph_recorded += 1;
+	#pragma acc atomic
+	(*N_superph_recorded) += 1;
 	// #pragma acc atomic
 	// N_scatt += ph->nscatt;
 
@@ -662,7 +664,7 @@ void record_super_photon(struct of_photon *ph)
 
 #define SPECTRUM_FILE_NAME	"grmonty.spec"
 
-void report_spectrum(int N_superph_made)
+void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded)
 {
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;
@@ -747,8 +749,8 @@ void report_spectrum(int N_superph_made)
 		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
 		max_tau_scatt);
 	fprintf(stderr, "\n");
-	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);
-	fprintf(stderr, "N_superph_recorded: %d\n", N_superph_recorded);
+	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
+	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);
 
 	fclose(fp);
 
