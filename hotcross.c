@@ -57,7 +57,7 @@ void init_hotcross(void)
 				table[i*(NW+1) + j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i*(NW+1) + j])) {
+				if (isnan_gd(table[i*(NW+1) + j])) {
 					// fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					// exit(0);
 				}

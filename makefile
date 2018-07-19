@@ -6,7 +6,8 @@
 # - cuda drivers
 #
 CC=pgcc
-CCFLAGS=-fast -acc -ta=tesla,cc60,nollvm,rdc -Minfo=all -O2 -Minform=warn
+CCFLAGS=-fast -acc -ta=tesla,cc60,rdc -Minfo=all -O2 -Minform=warn
+CCFLAGS_FORCUDALIBS=-fast -acc -ta=tesla,cc60,nollvm,rdc -Minfo=all -O2 -Minform=warn
 LDFLAGS=-Mcuda -lgsl -lgslcblas -Mcudalib=curand
 
 EXE=grmonty
@@ -17,6 +18,9 @@ scatter_super_photon.o harm_model.o harm_utils.o init_iharm2dv3_data.o\
 cpu_rng.o gpu_rng.o gmath.o
 
 all: $(EXE)
+
+gpu_rng.o: gpu_rng.c makefile $(INCS)
+	$(CC) $(CCFLAGS_FORCUDALIBS) -c $<
 
 %.o: %.c makefile $(INCS)
 	$(CC) $(CCFLAGS) -c $<
