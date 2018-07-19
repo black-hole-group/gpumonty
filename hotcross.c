@@ -57,7 +57,7 @@ void init_hotcross(void)
 				table[i*(NW+1) + j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
-				if (isnan_gd(table[i*(NW+1) + j])) {
+				if (isnan(table[i*(NW+1) + j])) {
 					// fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					// exit(0);
 				}
@@ -84,7 +84,7 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				nread = fscanf(fp, "%d %d %lf %lf %lf\n",
 					&idum, &jdum, &lw, &lT, &table[i*(NW+1) + j]);
-				if (isnan_gd(table[i*(NW+1) + j]) || nread != 5) {
+				if (isnan(table[i*(NW+1) + j]) || nread != 5) {
 					fprintf(stderr,
 						"error on table read: %d %d\n",
 						i, j);
