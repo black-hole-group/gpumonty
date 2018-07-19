@@ -8,7 +8,7 @@
 #include "gmath.h"
 
 double Rh;
-struct of_spectrum spect[N_THBINS * N_EBINS];
+struct of_spectrum spect[N_THBINS][N_EBINS];
 
 #pragma acc declare create(Rh, spect)
 
@@ -630,29 +630,29 @@ void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_rec
 
 	/* sum in photon */
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].dNdlE +=  ph->w;
+	spect[ix2][iE].dNdlE +=  ph->w;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].dEdlE +=  ph->w * ph->E;
+	spect[ix2][iE].dEdlE +=  ph->w * ph->E;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].tau_abs +=  ph->w * ph->tau_abs;
+	spect[ix2][iE].tau_abs +=  ph->w * ph->tau_abs;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].tau_scatt +=  ph->w * ph->tau_scatt;
+	spect[ix2][iE].tau_scatt +=  ph->w * ph->tau_scatt;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].X1iav +=  ph->w * ph->X1i;
+	spect[ix2][iE].X1iav +=  ph->w * ph->X1i;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
+	spect[ix2][iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
+	spect[ix2][iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].ne0 +=  ph->w * (ph->ne0);
+	spect[ix2][iE].ne0 +=  ph->w * (ph->ne0);
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].b0 +=  ph->w * (ph->b0);
+	spect[ix2][iE].b0 +=  ph->w * (ph->b0);
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].thetae0 +=  ph->w * (ph->thetae0);
+	spect[ix2][iE].thetae0 +=  ph->w * (ph->thetae0);
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].nscatt +=  ph->w * ph->nscatt;
+	spect[ix2][iE].nscatt +=  ph->w * ph->nscatt;
 	#pragma acc atomic
-	spect[ix2*N_THBINS + iE].nph +=  1.;
+	spect[ix2][iE].nph +=  1.;
 
 }
 
@@ -700,25 +700,25 @@ void report_spectrum(unsigned long long N_superph_made, unsigned long long N_sup
 			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
 								     dlE);
 
-			nuLnu *= spect[j*N_THBINS + i].dEdlE;
+			nuLnu *= spect[j][i].dEdlE;
 			nuLnu /= LSUN;
 
 			tau_scatt =
-			    spect[j*N_THBINS + i].tau_scatt / (spect[j*N_THBINS + i].dNdlE +
+			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
 						     SMALL);
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,
-				spect[j*N_THBINS + i].tau_abs / (spect[j*N_THBINS + i].dNdlE +
+				spect[j][i].tau_abs / (spect[j][i].dNdlE +
 						       SMALL), tau_scatt,
-				spect[j*N_THBINS + i].X1iav / (spect[j*N_THBINS + i].dNdlE +
+				spect[j][i].X1iav / (spect[j][i].dNdlE +
 						     SMALL),
 				sqrt(fabs
-				     (spect[j*N_THBINS + i].X2isq /
-				      (spect[j*N_THBINS + i].dNdlE + SMALL))),
+				     (spect[j][i].X2isq /
+				      (spect[j][i].dNdlE + SMALL))),
 				sqrt(fabs
-				     (spect[j*N_THBINS + i].X3fsq /
-				      (spect[j*N_THBINS + i].dNdlE + SMALL)))
+				     (spect[j][i].X3fsq /
+				      (spect[j][i].dNdlE + SMALL)))
 			    );
 
 
@@ -732,8 +732,8 @@ void report_spectrum(unsigned long long N_superph_made, unsigned long long N_sup
 			}
 
 			/* added to give average # scatterings */
-			fprintf(fp,"%10.5g ",spect[j*N_THBINS + i].nscatt/ (
-				spect[j*N_THBINS + i].dNdlE + SMALL)) ;
+			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (
+				spect[j][i].dNdlE + SMALL)) ;
 
 			if (tau_scatt > max_tau_scatt)
 				max_tau_scatt = tau_scatt;

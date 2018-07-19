@@ -23,7 +23,7 @@
 
 #define HOTCROSS	"hotcross.dat"
 
-double table[(NW + 1)*(NT + 1)];
+double table[NW + 1][NT + 1];
 double dlw, h_dlT, lminw, lmint;
 
 #pragma acc declare create(lminw, dlw, lmint, h_dlT, table)
@@ -54,10 +54,10 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * h_dlT;
-				table[i*(NW+1) + j] =
+				table[i][j] =
 				    log10(total_compton_cross_num
 					  (pow(10., lw), pow(10., lT)));
-				if (isnan_gd(table[i*(NW+1) + j])) {
+				if (isnan_gd(table[i][j])) {
 					// fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					// exit(0);
 				}
@@ -73,7 +73,7 @@ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * h_dlT;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j, lw, lT, table[i*(NW+1) + j]);
+				fprintf(fp, "%d %d %g %g %15.10g\n", i, j, lw, lT, table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
 	} else {
@@ -83,8 +83,8 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				nread = fscanf(fp, "%d %d %lf %lf %lf\n",
-					&idum, &jdum, &lw, &lT, &table[i*(NW+1) + j]);
-				if (isnan(table[i*(NW+1) + j]) || nread != 5) {
+					&idum, &jdum, &lw, &lT, &table[i][j]);
+				if (isnan(table[i][j]) || nread != 5) {
 					fprintf(stderr,
 						"error on table read: %d %d\n",
 						i, j);
@@ -125,10 +125,10 @@ double total_compton_cross_lkup(double w, double thetae)
 		dj = (lT - lmint) / h_dlT - j;
 
 		lcross =
-		    (1. - di) * (1. - dj) * table[i*(NW+1) + j] + di * (1. -
+		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
 								dj) *
-		    table[(i + 1)*(NW+1) + j]  + (1. - di) * dj * table[i*(NW+1) + j + 1]  +
-		    di * dj *table[(i + 1)*(NW+1) + j + 1] ;
+		    table[i + 1][j]  + (1. - di) * dj * table[i][j + 1]  +
+		    di * dj *table[i + 1][j + 1] ;
 
 		if (isnan_gd(lcross)) {
 			// fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
