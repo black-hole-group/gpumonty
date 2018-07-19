@@ -1,5 +1,6 @@
 #include "decs.h"
 #include "gmath.h"
+#include "gbessel.h"
 /*
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -29,9 +30,14 @@ double dlw, h_dlT, lminw, lmint;
 #pragma acc declare create(lminw, dlw, lmint, h_dlT, table)
 
 static double hc_klein_nishina(double we);
-double dNdgammae(double thetae, double gammae);
+static double dNdgammae(double thetae, double gammae);
 static double boostcross(double w, double mue, double gammae);
 double total_compton_cross_num(double w, double thetae);
+
+#pragma acc routine (total_compton_cross_num) nohost
+#pragma acc routine (dNdgammae) nohost
+
+
 
 void init_hotcross(void)
 {
@@ -198,7 +204,7 @@ static double dNdgammae(double thetae, double gammae)
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
+		K2f = gpu_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
 	} else {
 		K2f = sqrt(M_PI * thetae / 2.);
 	}

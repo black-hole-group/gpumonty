@@ -232,6 +232,10 @@ void get_connection(double *X, double lconn[][NDIM][NDIM]);
 void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
 
+// hotcross.c gpu functions
+double gpu_dNdgammae(double thetae, double gammae);
+double gpu_total_compton_cross_num(double w, double thetae);
+
 
 /* openacc device routines pragmas */
 
@@ -250,7 +254,6 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(Bnu_inv) nohost
 #pragma acc routine(bias_func) nohost
 #pragma acc routine(init_dKdlam) nohost
-#pragma acc routine(get_connection) nohost
 #pragma acc routine(stop_criterion) nohost
 #pragma acc routine(stepsize) nohost
 #pragma acc routine(push_photon) nohost
@@ -267,19 +270,17 @@ void gcon_func(double *X, double gcon[][NDIM]);
 #pragma acc routine(sample_thomson) nohost
 #pragma acc routine(record_criterion) nohost
 #pragma acc routine(record_super_photon) nohost
-// Also: isinf_gd, isnan_gd, and gpu_rng_*
+// Also: isinf_gd, isnan_gd, and gpu_rng_* and gpu_sf_bessel_Kn and hotcross.c static functions
 
 // Routines called in CPU and GPU
+#pragma acc routine(get_connection)
 #pragma acc routine (boostcross)
 #pragma acc routine (normalize)
-#pragma acc routine (dNdgammae)
 #pragma acc routine (tetrad_to_coordinate)
 #pragma acc routine (delta)
 #pragma acc routine (make_tetrad)
 #pragma acc routine (project_out)
 #pragma acc routine (jnu_synch)
-#pragma acc routine (total_compton_cross_num)
-#pragma acc routine (gsl_sf_bessel_Kn)
 #pragma acc routine (gcon_func)
 #pragma acc routine (gcov_func)
 #pragma acc routine (bl_coord)
