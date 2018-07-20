@@ -88,32 +88,21 @@ void init_weight_table(unsigned long long Ns)
 
 	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
-    // #pragma acc parallel private(i,j,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
-	// {
-		// nthreads = omp_get_num_threads();
-		// myid = omp_get_thread_num();
-        nthreads = 1;
-        myid = 1;
-		lstart = myid * (N_ESAMP / nthreads);
-		lend = (myid + 1) * (N_ESAMP / nthreads);
-		if (myid == nthreads - 1)
-			lend = N_ESAMP + 1;
-
-		for (i = 0; i < N1; i++)
-			for (j = 0; j < N2; j++) {
-				get_fluid_zone(i, j, &Ne, &Thetae, &B,
-					       Ucon, Bcon);
-				if (Ne == 0. || Thetae < THETAE_MIN)
-					continue;
-				K2 = K2_eval(Thetae);
-				fac =
-				    (JCST * Ne * B * Thetae * Thetae /
-				     K2) * sfac * geom[i][j].g;
-				for (l = lstart; l < lend; l++)
-					sum[l] +=
-					    fac * F_eval(Thetae, B, nu[l]);
-			}
-	// }
+	// This part use to be parallel. It was made sequential for simplicity. Can be parallelized again
+	// later.
+	for (i = 0; i < N1; i++)
+		for (j = 0; j < N2; j++) {
+			get_fluid_zone(i, j, &Ne, &Thetae, &B,
+				       Ucon, Bcon);
+			if (Ne == 0. || Thetae < THETAE_MIN)
+				continue;
+			K2 = K2_eval(Thetae);
+			fac =
+			    (JCST * Ne * B * Thetae * Thetae /
+			     K2) * sfac * geom[i][j].g;
+			for (l = 0; l < N_ESAMP+1; l++)
+				sum[l] += fac * F_eval(Thetae, B, nu[l]);
+		}
     #pragma acc parallel for
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
