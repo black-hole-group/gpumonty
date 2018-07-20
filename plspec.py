@@ -75,7 +75,8 @@ plotenergy(c/0.1, '1 mm')
 #
 plt.xlim((minlognu, maxlognu))
 #plt.ylim((28, 38))
-plt.ylim((40, 48)) # L_peak vs nupeak
+plt.ylim((40, 52)) # L_peak vs nupeak
+#plt.ylim((38, 44))
 #
 
 #

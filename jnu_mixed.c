@@ -63,6 +63,9 @@ double jnu_brems(double nu, double Ne, double Thetae)
 	// 		see equation 2.1.31 of Novikov+Thorne 1973
 	//		or equation 5.25 of RL1979
 
+	if (Thetae < THETAE_MIN)
+		return 0.;
+
 	double Te = ME*CL*CL*Thetae/KBOL;
 	double relfac = 1. + 4.4e-10*Te;
 	double Gff = 1.2;
@@ -79,6 +82,9 @@ double jnu_brems(double nu, double Ne, double Thetae)
 
 double int_jnu_brems(double Ne, double Thetae, double nu)
 {
+	if (Thetae < THETAE_MIN)
+		return 0.;
+
 	return 4.*M_PI*jnu_brems(nu, Ne, Thetae);
 }
 

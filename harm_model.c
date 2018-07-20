@@ -194,9 +194,13 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 	if(*Thetae > THETAE_MAX)
 		*Thetae = THETAE_MAX;
+
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit);
-	if(sig > 1.)
-		*Ne = 1.e-10*Ne_unit;
+	if(sig > 1.){
+		*Ne = 0.0;//1.e-10*Ne_unit;
+		*Thetae = 0.0;
+	}
+
 }
 
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
@@ -290,9 +294,13 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 
 	if(*Thetae > THETAE_MAX)
 		*Thetae = THETAE_MAX;
+	
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit);
-	if(sig > 1.)
-		*Ne = 1.e-10*Ne_unit;
+	if(sig > 1.){
+		*Ne = 0.0;//1.e-10*Ne_unit;
+		*Thetae = 0.0;
+	}
+
 }
 
 
@@ -668,7 +676,7 @@ void record_super_photon(struct of_photon *ph)
 		ix2 = (int) (ph->X[2] / dx2);
 	else
 		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
-
+//	printf("%g, %d\n", ph->X[2], ix2);
 	/* check limits */
 	if (ix2 < 0 || ix2 >= N_THBINS)
 		return;
