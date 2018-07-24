@@ -443,25 +443,38 @@ void set_units(char *munitstr)
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
 	//MBH = 4.6e6 * MSUN ; // Sgr A*
-	MBH = 6.2e9 * MSUN; // M87
-	//MBH = 5.e9 * MSUN;
+	//MBH = 6.2e9 * MSUN; // M87
+	MBH = 5.e9 * MSUN;
 
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 
-	fprintf(stderr, "\nUNITS:\n");
-	fprintf(stderr, "\n");
-	fprintf(stderr, "L,T,M: %g [cm] %g [s] %g [g]\n", L_unit, T_unit, M_unit);
-
 	RHO_unit = M_unit / pow(L_unit, 3);
 	U_unit = RHO_unit * CL * CL;
 	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
+	Ne_unit = RHO_unit / (MP + ME);
 
-	fprintf(stderr, "rho,u,B: %g [g cm^-3] %g [g cm^-1 s^-2] %g [G]\n", RHO_unit, U_unit, B_unit);
+	fprintf(stderr, "\nBlack Hole mass:\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "MBH: %g [g]\n", MBH);
+	fprintf(stderr, "MBH: %g [MSOL]\n", MBH/MSUN);
 
 	fprintf(stderr, "\n");
 
-	Ne_unit = RHO_unit / (MP + ME);
+	fprintf(stderr, "UNITS:\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "M_unit: %g [g]\n", M_unit);
+	fprintf(stderr, "L_unit: %g [cm]\n", L_unit);
+	fprintf(stderr, "T_unit: %g [s]\n", T_unit);
+
+	fprintf(stderr, "\n");
+
+	fprintf(stderr, "RHO_unit: %g [g cm^-3]\n", RHO_unit);
+	fprintf(stderr, "Ne_unit: %g [cm^-3]\n", Ne_unit);
+	fprintf(stderr, "U_unit: %g [g cm^-1 s^-2]\n", U_unit);
+	fprintf(stderr, "B_unit: %g [G]\n", B_unit);
+
+	fprintf(stderr, "\n");
 
 	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
 

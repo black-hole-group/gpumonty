@@ -148,7 +148,7 @@ void track_super_photon(struct of_photon *ph)
 				bias = 0.5 * (bi + bf);
 				bi = bf;
 			}
-
+			// compton starts here
 			x1 = -log(monty_rand());
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
@@ -160,10 +160,10 @@ void track_super_photon(struct of_photon *ph)
 
 				frac = x1 / (bias * dtau_scatt);
 
-				/* Apply absorption until scattering event */
+				// Apply absorption until scattering event
 				dtau_abs *= frac;
 				if (dtau_abs > 100)
-					return;	/* This photon has been absorbed before scattering */
+					return;	// This photon has been absorbed before scattering
 
 				dtau_scatt *= frac;
 				dtau = dtau_abs + dtau_scatt;
@@ -178,7 +178,7 @@ void track_super_photon(struct of_photon *ph)
 				else
 					ph->w *= exp(-dtau);
 
-				/* Interpolate position and wave vector to scattering event */
+				// Interpolate position and wave vector to scattering event
 				push_photon(Xi, Ki, dKi, dl * frac, &E0,
 					    0);
 				ph->X[0] = Xi[0];
@@ -195,7 +195,7 @@ void track_super_photon(struct of_photon *ph)
 				ph->dKdlam[3] = dKi[3];
 				ph->E0s = E0;
 
-				/* Get plasma parameters at new position */
+				// Get plasma parameters at new position
 				gcov_func(ph->X, Gcov);
 				get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
 						 &B, Ucon, Ucov, Bcon,
@@ -206,7 +206,7 @@ void track_super_photon(struct of_photon *ph)
 							     Thetae, B,
 							     Ucon, Bcon,
 							     Gcov);
-					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+					if (ph->w < 1.e-100) {	// must have been a problem popping k back onto light cone
 						return;
 					}
 					track_super_photon(&php);
@@ -233,7 +233,7 @@ void track_super_photon(struct of_photon *ph)
 
 			} else {
 				if (dtau_abs > 100)
-					return;	/* This photon has been absorbed */
+					return;	// This photon has been absorbed
 				ph->tau_abs += dtau_abs;
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
@@ -247,7 +247,7 @@ void track_super_photon(struct of_photon *ph)
 								    dtau))));
 				else
 					ph->w *= exp(-dtau);
-			}
+			}//compton ends here
 		}
 
 		nstep++;

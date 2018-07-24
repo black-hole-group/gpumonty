@@ -35,10 +35,10 @@ lw = lw + np.log10(me*c*c/h)   # convert to Hz from electron rest-mass energy
 Lsol = 3.83e33  
 nLn = nLn + np.log10(Lsol)  # convert to erg/s from Lsol
 #
-#plt.plot(lw, nLn[0], label = '$0^{\circ} - 15^{\circ}$', color = "red")
-#plt.plot(lw, nLn[1], label = '$15^{\circ} - 30^{\circ}$', color = "orange")
-#plt.plot(lw, nLn[2], label = '$30^{\circ} - 45^{\circ}$', color = "yellow")
-#plt.plot(lw, nLn[3], label = '$45^{\circ} - 60^{\circ}$', color = "green")
+plt.plot(lw, nLn[0], label = '$0^{\circ} - 15^{\circ}$', color = "red")
+plt.plot(lw, nLn[1], label = '$15^{\circ} - 30^{\circ}$', color = "orange")
+plt.plot(lw, nLn[2], label = '$30^{\circ} - 45^{\circ}$', color = "yellow")
+plt.plot(lw, nLn[3], label = '$45^{\circ} - 60^{\circ}$', color = "green")
 plt.plot(lw, nLn[4], label = '$60^{\circ} - 75^{\circ}$', color = "blue")
 plt.plot(lw, nLn[5], label = '$75^{\circ} - 90^{\circ}$', color = "black")
 #
@@ -127,7 +127,7 @@ elif m87:
 	plt.plot(xnorm, ynorm, marker = 'o', markersize = 8, color="magenta")
 
 #
-plt.legend(loc='upper right')#, bbox_to_anchor=(0.5, 0.5))
+plt.legend(loc='lower right')#, bbox_to_anchor=(0.5, 0.5))
 # plot on screen, where you can save to file after viewing plot
 plt.show()
 # or, uncomment to save directly...
