@@ -52,7 +52,7 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    Code adapted from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/gamma.c
 */
 
-double gpu_rng_ran_gamma(curandState_t *curandst, const double a, const double b){
+double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
     /* assume a > 0 */
     double pow_multiplier = 1.0;
     while (a < 1) {

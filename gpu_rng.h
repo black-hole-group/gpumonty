@@ -14,7 +14,7 @@
 void gpu_rng_init (curandState_t *curandst, long int seed);
 double gpu_rng_uniform (curandState_t *curandst);
 void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z);
-double gpu_rng_ran_gamma(curandState_t *curandst, const double a, const double b);
+double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b);
 double gpu_rng_ran_chisq(curandState_t *curandst, const double nu);
 
 #endif
