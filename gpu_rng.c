@@ -54,33 +54,31 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
 
 double gpu_rng_ran_gamma(curandState_t *curandst, const double a, const double b){
     /* assume a > 0 */
-    if (a < 1){
-        double u = curand_uniform_double(curandst);
-        return gpu_rng_ran_gamma(curandst, 1.0 + a, b) * pow (u, 1.0 / a);
+    double pow_multiplier = 1.0;
+    while (a < 1) {
+        pow_multiplier *= pow (curand_uniform_double(curandst), 1.0 / a);
+        a += 1.0;
     }
+    double x, v, u;
+    double d = a - 1.0 / 3.0;
+    double c = (1.0 / 3.0) / sqrt (d);
 
-    {
-        double x, v, u;
-        double d = a - 1.0 / 3.0;
-        double c = (1.0 / 3.0) / sqrt (d);
+    while (1){
+        do{
+            x = curand_normal_double(curandst);
+            v = 1.0 + c * x;
+        } while (v <= 0);
 
-        while (1){
-            do{
-                x = curand_normal_double(curandst);
-                v = 1.0 + c * x;
-            } while (v <= 0);
+        v = v * v * v;
+        u = curand_uniform_double(curandst);
 
-            v = v * v * v;
-            u = curand_uniform_double(curandst);
+        if (u < 1 - 0.0331 * x * x * x * x)
+            break;
 
-            if (u < 1 - 0.0331 * x * x * x * x)
-                break;
-
-            if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
-                break;
-        }
-        return b * d * v;
+        if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+            break;
     }
+    return b * d * v * pow_multiplier;
 }
 
 /* The chisq distribution has the form
