@@ -1,6 +1,7 @@
 
 
 #include "decs.h"
+#include "bessel.h"
 /*
 
 "mixed" emissivity formula
@@ -131,7 +132,7 @@ void init_emiss_tables(void)
 	/*  build table for quick evaluation of the bessel function K2 for emissivity */
 	for (k = 0; k <= N_ESAMP; k++) {
 		T = exp(k * dlT + lT_min);
-		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T));
+		K2[k] = log(bessk(2, 1. / T));
 
 	}
 

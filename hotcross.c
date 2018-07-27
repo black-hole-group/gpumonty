@@ -1,6 +1,6 @@
 #include "decs.h"
 #include "gmath.h"
-#include "gbessel.h"
+#include "bessel.h"
 /*
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -204,7 +204,7 @@ static double dNdgammae(double thetae, double gammae)
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		K2f = gpu_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
+		K2f = bessk(2, 1. / thetae) * exp(1. / thetae);
 	} else {
 		K2f = sqrt(M_PI * thetae / 2.);
 	}
