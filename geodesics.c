@@ -25,71 +25,71 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	double dl_2, err, errE;
 	int i, k, iter;
 
-	if (X[1] < startx[1])
-		return;
-
-	FAST_CPY(X, Xcpy);
-	FAST_CPY(Kcon, Kcpy);
-	FAST_CPY(dKcon, dKcpy);
-
-	dl_2 = 0.5 * dl;
-	/* Step the position and estimate new wave vector */
-	for (i = 0; i < NDIM; i++) {
-		dK = dKcon[i] * dl_2;
-		Kcon[i] += dK;
-		K[i] = Kcon[i] + dK;
-		X[i] += Kcon[i] * dl;
-	}
-
-	get_connection(X, lconn);
-
-	/* We're in a coordinate basis so take advantage of symmetry in the connection */
-	iter = 0;
 	do {
-		iter++;
-		FAST_CPY(K, Kcont);
+		if (X[1] >= startx[1]) {
+			FAST_CPY(X, Xcpy);
+			FAST_CPY(Kcon, Kcpy);
+			FAST_CPY(dKcon, dKcpy);
 
-		err = 0.;
-		for (k = 0; k < 4; k++) {
-			dKcon[k] =
-			    -2. * (Kcont[0] *
-				   (lconn[k][0][1] * Kcont[1] +
-				    lconn[k][0][2] * Kcont[2] +
-				    lconn[k][0][3] * Kcont[3])
-				   +
-				   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
-					       lconn[k][1][3] * Kcont[3])
-				   + lconn[k][2][3] * Kcont[2] * Kcont[3]
-			    );
+			dl_2 = 0.5 * dl;
+			/* Step the position and estimate new wave vector */
+			for (i = 0; i < NDIM; i++) {
+				dK = dKcon[i] * dl_2;
+				Kcon[i] += dK;
+				K[i] = Kcon[i] + dK;
+				X[i] += Kcon[i] * dl;
+			}
 
-			dKcon[k] -=
-			    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
-			     lconn[k][1][1] * Kcont[1] * Kcont[1] +
-			     lconn[k][2][2] * Kcont[2] * Kcont[2] +
-			     lconn[k][3][3] * Kcont[3] * Kcont[3]
-			    );
+			get_connection(X, lconn);
 
-			K[k] = Kcon[k] + dl_2 * dKcon[k];
-			err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+			/* We're in a coordinate basis so take advantage of symmetry in the connection */
+			iter = 0;
+			do {
+				iter++;
+				FAST_CPY(K, Kcont);
+
+				err = 0.;
+				for (k = 0; k < 4; k++) {
+					dKcon[k] =
+					    -2. * (Kcont[0] *
+						   (lconn[k][0][1] * Kcont[1] +
+						    lconn[k][0][2] * Kcont[2] +
+						    lconn[k][0][3] * Kcont[3])
+						   +
+						   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
+							       lconn[k][1][3] * Kcont[3])
+						   + lconn[k][2][3] * Kcont[2] * Kcont[3]
+					    );
+
+					dKcon[k] -=
+					    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
+					     lconn[k][1][1] * Kcont[1] * Kcont[1] +
+					     lconn[k][2][2] * Kcont[2] * Kcont[2] +
+					     lconn[k][3][3] * Kcont[3] * Kcont[3]
+					    );
+
+					K[k] = Kcon[k] + dl_2 * dKcon[k];
+					err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+				}
+			} while (err > ETOL && iter < MAX_ITER);
+
+			FAST_CPY(K, Kcon);
+
+			gcov_func(X, Gcov);
+			E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
+			       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
+			errE = fabs((E1 - (*E0)) / (*E0));
+
+			if (n < 7  && (errE > 1.e-4 || err > ETOL || isnan_gd(err) || isinf_gd(err))) {
+				FAST_CPY(Xcpy, X);
+				FAST_CPY(Kcpy, Kcon);
+				FAST_CPY(dKcpy, dKcon);
+				n++;
+				dl *= 0.5;
+			}
+			else break;
 		}
-	} while (err > ETOL && iter < MAX_ITER);
-
-	FAST_CPY(K, Kcon);
-
-	gcov_func(X, Gcov);
-	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
-	errE = fabs((E1 - (*E0)) / (*E0));
-
-	if (n < 7
-	    && (errE > 1.e-4 || err > ETOL || isnan_gd(err) || isinf_gd(err))) {
-		FAST_CPY(Xcpy, X);
-		FAST_CPY(Kcpy, Kcon);
-		FAST_CPY(dKcpy, dKcon);
-		push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
-		push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
-		E1 = *E0;
-	}
+	} while (1);
 
 	*E0 = E1;
 
