@@ -16,6 +16,7 @@
 #include <openacc.h>
 #include "constants.h"
 #include "gpu_rng.h"
+#include "acc_print.h"
 
 #define NDIM	4
 #define NPRIM	8
@@ -270,7 +271,8 @@ double gpu_total_compton_cross_num(double w, double thetae);
 #pragma acc routine(sample_thomson) nohost
 #pragma acc routine(record_criterion) nohost
 #pragma acc routine(record_super_photon) nohost
-// Also: isinf_gd, isnan_gd, and gpu_rng_* and gpu_sf_bessel_Kn and hotcross.c static functions
+// Also: isinf_gd, isnan_gd, and gpu_rng_* and gpu_sf_bessel_Kn and hotcross.c static functions and
+// acc_print*
 
 // Routines called in CPU and GPU
 #pragma acc routine(get_connection)

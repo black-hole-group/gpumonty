@@ -88,7 +88,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 				dl *= 0.5;
 			}
 			else break;
-		}
+		} else break;
 	} while (1);
 
 	*E0 = E1;
