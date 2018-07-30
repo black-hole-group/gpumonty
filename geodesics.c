@@ -24,6 +24,8 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 	double Gcov[NDIM][NDIM], E1;
 	double dl_2, err, errE;
 	int i, k, iter;
+    
+    if (X[1] < startx[1]) return;
 
 	do {
 		if (X[1] >= startx[1]) {
