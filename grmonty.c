@@ -95,9 +95,8 @@ int main(int argc, char *argv[]) {
 	// 	 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
 	#pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
 		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, phs[:ph_count], p[:NPRIM][:N1][:N2],\
-		 Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon, \
-		 spect[:N_THBINS][N_EBINS], N_superph_recorded) \
-		 copyout(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
+		 Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
+		 copy(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
 	{
 
 		gpu_rng_init (&curandstate, seed);
