@@ -84,7 +84,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 		dl = stepsize(ph->X, ph->K);
 
 		/* step the geodesic */
-		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
+		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s));
 		if (stop_criterion(curandstate, ph))
 			break;
 
@@ -180,8 +180,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 					ph->w *= exp(-dtau);
 
 				/* Interpolate position and wave vector to scattering event */
-				push_photon(Xi, Ki, dKi, dl * frac, &E0,
-					    0);
+				push_photon(Xi, Ki, dKi, dl * frac, &E0);
 				ph->X[0] = Xi[0];
 				ph->X[1] = Xi[1];
 				ph->X[2] = Xi[2];

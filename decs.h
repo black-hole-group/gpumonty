@@ -155,8 +155,8 @@ double cpu_rng_uniforme(void);
 /* geodesic integration */
 void init_dKdlam(double X[], double Kcon[], double dK[]);
 void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
-void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-		 double dl, double *E0, int n);
+void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], double dl,
+	double *E0);
 void push_photon4(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		  double dl);
 void push_photon_cart(double X[NDIM], double Kcon[NDIM],
