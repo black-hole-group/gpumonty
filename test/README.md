@@ -30,7 +30,7 @@ The reference code output (used by `tester.py` to validate the testing code) is 
 [ ] Fix spectrum difference plot (plotted upon test failure)
 [ ] Make options at command line (settings and option to save stderr and/or spectrum)
 [ ] Make temporary dir to compile and run
-[ ] Check when tester.py and extract_reference.py are called inside ./test and make them still work.
+[X] Check when tester.py and extract_reference.py are called inside ./test and make them still work.
 [x] Read default reference values from separate file
 [x] Perform more then one round for each test and take mean
 [x] Allow higher limit for some values (especially max_tau_scatt)

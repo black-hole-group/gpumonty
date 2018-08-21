@@ -9,17 +9,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ntpath
 
+script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 
 #################################################################
-#                    Extractor Settings
+#                    Tester Settings
 #                  (Change them as you will)
 #################################################################
 dumps = ["./data/dump1000"]
 sizes = [(50000, 5)]
 M_unit = 4.e19
 num_threads = 8
-make_path = "./"
-exec_path = "./bin/"
+make_path = script_basedir + "../"
+exec_path = script_basedir + "../bin/"
 exec_name = "grmonty"
 spec_file = "spectrum.dat"
 att_diff_limit = 1.0 # percentage
@@ -267,7 +268,6 @@ def test_succeeded(terminate=False):
 def make ():
     print("[TESTER]--------------- Making")
     try:
-        print(run(["ls"]))
         print(run(["make", "-C", make_path]).stdout)
     except subprocess.CalledProcessError as exception:
         tester_error("[TESTER] Make failed:\n" + exception.stderr, exception.returncode)
