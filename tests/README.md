@@ -10,13 +10,13 @@
 - N_superph_recorded
 
 # Quick start
-To run the tester:
+To run the tester (running from tests/..):
 
-    ./tester.py
+    ./tests/tester.py
 
-To run the reference extractor:
+To run the reference extractor (running from tests/..):
 
-    ./extract_reference.py
+    ./tests/extract_reference.py
 
 The extractor updates tester's references. It will run grmonty with the desired parameters (see Settings for instructions on how to change these parameters), and rewrite `references.py` with the outputs extracted from these new executions.
 
