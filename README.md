@@ -23,7 +23,7 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump1000 4.e19
+    ./bin/grmonty 5000000 dump1000 4.e19
 
 Arguments are:
 
@@ -31,7 +31,7 @@ Arguments are:
 - harm dump file for model
 - mass unit (few x 10^19 is appropriate for Sgr A*)
 
-This will output spectrum to `grmonty.spec`  which should be identical to `grmonty_spec_verify`.
+This will output spectrum to `spectrum.dat`.
 
 # Plotting
 

@@ -24,7 +24,7 @@ make_path = "./"
 exec_name = "grmonty"
 spec_file = "spectrum.dat"
 exec_timeout = 300 # seconds (timeout for each round execution)
-output_file = "references.py"
+output_file = "./test/references.py"
 ##################################################################
 
 
