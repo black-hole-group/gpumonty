@@ -11,7 +11,7 @@ BUILDDIR = build
 TARGET = bin/$(EXE)
 
 EXCLUDE=init_harm_data.c
-SRCS = $(shell find $(SRCDIR) -type f -name *.c | $(EXCLUDE))
+SRCS = $(shell find $(SRCDIR) -type f -name *.c | grep -v $(EXCLUDE))
 OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.c=.o))
 INCS = $(shell find $(SRCDIR) -type f -name *.h)
 
