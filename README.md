@@ -44,9 +44,10 @@ plots.plot('grmonty.spec')
 
 # Running Tests
 
-    ./tests/tester.py
+    ./test/tester.py
 
-See./ tests/README.md for details upon tests.    
+See ./test/README.md for details upon tests.
+NOTE: tester.py and extract_reference.py were made to be called from project's root directory not inside /test.
 
 
 # Calculate spectra from other sources
