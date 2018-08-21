@@ -8,27 +8,21 @@ LDFLAGS = -lm -lgsl -lgslcblas
 EXE = grmonty
 SRCDIR = src
 BUILDDIR = build
-BINDIR = bin
+TARGET = bin/$(EXE)
+
+EXCLUDE=init_harm_data.c
+SRCS = $(shell find $(SRCDIR) -type f -name *.c | $(EXCLUDE))
+OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.c=.o))
+INCS = $(shell find $(SRCDIR) -type f -name *.h)
 
 
-SRCS = grmonty.c compton.c init_geometry.c tetrads.c geodesics.c \
-radiation.c jnu_mixed.c hotcross.c track_super_photon.c \
-scatter_super_photon.c harm_model.c harm_utils.c init_iharm2dv3_data.c
-
-OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
-radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
-scatter_super_photon.o harm_model.o harm_utils.o init_iharm2dv3_data.o
-
-INCS = decs.h constants.h harm_model.h
-
-
-$(BINDIR)/$(EXE): $(BUILDDIR)/$(OBJS) $(INCS) makefile
-	$(CC) $(CFLAGS) $(BUILDDIR)/$(OBJS) -o $(BINDIR)/$(EXE) $(LDFLAGS)
+$(TARGET): $(OBJS) $(INCS) makefile
+	$(CC) $(CCFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c $(INCS) makefile
 	@mkdir -p $(BUILDDIR)
-	$(CC) $(CCFLAGS) -c $@ $<
+	$(CC) $(CCFLAGS) -c  $< -o $@
 
 .PHONY: clean
 clean:
-	/bin/rm *.o $(EXE)
+	/bin/rm -f $(TARGET); /bin/rm -rf ./build
