@@ -1,0 +1,5 @@
+*.o
+__pycache__
+grmonty
+spectrum.dat
+grmonty.spec
