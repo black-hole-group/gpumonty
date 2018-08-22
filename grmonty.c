@@ -28,11 +28,9 @@ extern double K2[N_ESAMP + 1];
 extern double ***p;
 extern struct of_spectrum spect[N_THBINS*N_EBINS];
 
-gsl_integration_workspace *w;
-
 int main(int argc, char *argv[]) {
 	unsigned long long Ns, N_superph_made, N_superph_recorded;
-	int quit_flag, myid;
+	int quit_flag;
 	struct of_photon *phs;
 	unsigned long int seed;
 	time_t currtime, starttime;
@@ -90,13 +88,12 @@ int main(int argc, char *argv[]) {
 
 	curandState_t curandstate;
 
-	// #pragma acc enter data copyin(startx, stopx, B_unit, dlT, lT_min, K2, lminw, dlw,\
-	// 	 lmint, table, L_unit, max_tau_scatt, p, Ne_unit, Thetae_unit, lE0, Rh, dlE,\
-	// 	 N_superph_recorded, N_scatt, spect, dx, N1, N2, N3, n_within_horizon)
-	#pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
-		 lminw, dlw, lmint, table, L_unit, max_tau_scatt, phs[:ph_count], p[:NPRIM][:N1][:N2],\
-		 Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
-		 copy(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
+	// #pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
+	//     lminw, dlw, lmint, table, L_unit, max_tau_scatt, phs[:ph_count], p[:NPRIM][:N1][:N2],\
+	//     Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
+	//     copy(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
+	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
+	#pragma acc parallel copyin (phs[:ph_count]) private(curandstate) copy(spect[:N_THBINS][N_EBINS], N_superph_recorded)
 	{
 
 		gpu_rng_init (&curandstate, seed);
@@ -118,6 +115,7 @@ int main(int argc, char *argv[]) {
 			// }
 		}
 	}
+
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
 		(double) (currtime - starttime),

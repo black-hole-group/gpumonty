@@ -534,6 +534,6 @@ void init_storage(void)
 	geom =
 	    (struct of_geom **) malloc_rank2(N1, N2,
 					     sizeof(struct of_geom));
-
+	#pragma acc enter data create (p[:NPRIM][:N1][:N2])
 	return;
 }
