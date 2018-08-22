@@ -257,6 +257,8 @@ def plot_spec_diff(test_spect, dump, size, plot_filename):
     plt.plot(ref_spec[dump][size][0], ref_spec[dump][size][1], "g", label="reference spectrum")
     plt.title("Reference and Testing Spectrums")
     plt.legend()
+    plt.figtext(0.75, 0.33, "Sum of Squared Error: ")
+    plt.figtext(0.75, 0.31, "%.2f " % compare_to_reference_spectrum(test_spect, dump, size))
     plt.savefig(plot_filename, format="png", dpi=150)
 
 
