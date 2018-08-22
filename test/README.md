@@ -27,9 +27,9 @@ The reference code output (used by `tester.py` to validate the testing code) is 
 
 # TODO
 
-[ ] Fix spectrum difference plot (plotted upon test failure)
 [ ] Make options at command line (settings and option to save stderr and/or spectrum)
 [ ] Make temporary dir to compile and run
+[X] Fix spectrum difference plot (plotted upon test failure)
 [X] Check when tester.py and extract_reference.py are called inside ./test and make them still work.
 [x] Read default reference values from separate file
 [x] Perform more then one round for each test and take mean

@@ -247,10 +247,17 @@ def plot_spec_diff(test_spect, dump, size, plot_filename):
         y1 = get_y_in_spec(ref_spec[dump][size], x)
         y2 = get_y_in_spec(test_spect, x)
         y_axis.append(((y1 - y2) * 100) / y2)
+    plt.figure(figsize=(12,12))
+    plt.subplot(2, 1, 1)
     plt.plot(x_axis, y_axis, label="Percentual difference of testing over reference")
     plt.title("Spectrum Difference Over Reference: " + dump + " size=" + str(size))
     plt.legend()
-    plt.savefig(plot_filename, format="png")
+    plt.subplot(2, 1, 2)
+    plt.plot(test_spect[0], test_spect[1], "b", label="testing spectrum")
+    plt.plot(ref_spec[dump][size][0], ref_spec[dump][size][1], "g", label="reference spectrum")
+    plt.title("Reference and Testing Spectrums")
+    plt.legend()
+    plt.savefig(plot_filename, format="png", dpi=150)
 
 
 #################################################################
