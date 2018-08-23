@@ -8,6 +8,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import ntpath
+import math
 
 script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 
@@ -27,6 +28,8 @@ att_diff_limit = 1.0 # percentage
 special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0}
 spec_diff_limit = 200
 exec_timeout = 300 # seconds (timeout for each round execution)
+always_print_tests_info = False # Print tests info even if they succeed
+print_individual_test_info = True # Print info for every test round (True) or just the mean (False)
 ##################################################################
 
 
@@ -162,7 +165,11 @@ def extract_infos(stderr):
 def calc_diffs_from_ref(infos, dump, size):
     diffs = {}
     for att, val in infos.items():
-         diffs[att] = ((ref[dump][size][att] - val) * 100) / val
+        if val == 0.0:
+            if ref[dump][size][att] == 0.0: diffs[att] = 0.0
+            elif ref[dump][size][att] > 0: diffs[att] = float("inf")
+            else: diffs[att] = -float("inf")
+        else: diffs[att] = ((ref[dump][size][att] - val) * 100) / val
     return diffs
 
 def mean_arr_of_dicts(arr):
@@ -222,7 +229,8 @@ def load_spectrum():
     Lsol = 3.83e33
     nbins = 6
     #
-    data = np.loadtxt(spec_file)
+    try: data = np.loadtxt(spec_file)
+    except Exception as e: tester_error ("Failed to load spectrum from '" + spec_file + "': " + (str(e) if e and str(e) else ""))
     tdata = np.transpose(data)
     lw = tdata[0,:]	# log of photon energy in electron rest-mass units
     i = np.arange(0,nbins,1)
@@ -281,27 +289,49 @@ def make ():
     except subprocess.CalledProcessError as exception:
         tester_error("[TESTER] Make failed:\n" + exception.stderr, exception.returncode)
 
+def mk_infos_failed_msg (att, diff, limit, reference, infos_mean, diffs, infos):
+    msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (bigger than limit=" + str(limit) +
+    "%)\n" + "Reference: " + str(reference) + "\nGot:       " + str(infos_mean) + "\nDiffs:     " +
+    dict2str_float_formater(diffs, "%.3f%%"))
+    if print_individual_test_info:
+        msg += "\n\nInfos from each execution:\n"
+        for info in infos:
+            msg += str(info)
+    return msg
+
 def validate_infos_outputs(dump, size, infos):
-    diffs = calc_diffs_from_ref(infos, dump, size)
+    infos_mean = mean_arr_of_dicts (infos)
+    diffs = calc_diffs_from_ref(infos_mean, dump, size)
     for att, diff in diffs.items():
         limit = special_att_diff_limit[att] if att in special_att_diff_limit else att_diff_limit
-        if abs(diff) > abs(limit):
-            test_failed("Output infos test", "Difference for " + att + " is " + "%.3f" % diff +
-            "% (bigger than limit=" + str(limit) + "%)\n" + "Reference: "
-            + str(ref[dump][size]) + "\nGot:       " + str(infos) + "\nDiffs:     " +
-            dict2str_float_formater(diffs, "%.3f%%"), terminate=False)
+        if math.isnan(diff) or math.isinf(diff) or abs(diff) > abs(limit):
+            test_failed("Output infos test", mk_infos_failed_msg (att, diff, limit, ref[dump][size],
+                                infos_mean, diffs, infos), terminate=False)
             return False
+    if always_print_tests_info:
+        info_str = ("[TESTER] Output infos test\nReference: " + str(ref[dump][size]) +
+        "\nGot:       " + str(infos_mean) + "\nDiffs:     " + dict2str_float_formater(diffs, "%.3f%%"))
+        if print_individual_test_info:
+            info_str += "\n\nInfos from each execution:\n"
+            for info in infos:
+                info_str += str(info)
+        print(info_str)
     return True
 
 def validate_spectrum_output(dump, size, spects):
     test_spec = mean_spec(spects)
     spec_diff = compare_to_reference_spectrum(test_spec, dump, size)
+    plot_filename = "diff_spect_" + dump + "_" + str(size) + ".png"
     if spec_diff > spec_diff_limit:
-        plot_filename = "diff_spect_" + dump + "_" + str(size) + ".png"
         plot_spec_diff(test_spec, dump, size, plot_filename)
         test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (bigger than limit="
-        + str(spec_diff_limit) + ")\nSaved testing spectrum difference over reference spectrum in '" + plot_filename + "'", terminate=False)
+                            + str(spec_diff_limit) + ")\nSaved testing spectrum difference over reference spectrum in '" +
+                            plot_filename + "'", terminate=False)
         return False
+    if always_print_tests_info:
+        plot_spec_diff(test_spec, dump, size, plot_filename)
+        print("[TESTER] Spectrum test\nDifference in spectrum is " + "%.3f" % spec_diff +
+        "\nSaved testing spectrum difference over reference spectrum in '" + plot_filename + "'")
     return True
 
 def validate_test_outputs(dump, size, infos, spects):
@@ -325,7 +355,6 @@ def run_tests():
                     spects.append (load_spectrum())
                 except subprocess.CalledProcessError as exception:
                     tester_error("[TESTER] Error executing grmonty:\n" + exception.stderr, exception.returncode)
-            infos = mean_arr_of_dicts (infos)
             validate_test_outputs(ntpath.basename(dump), size, infos, spects)
     test_succeeded()
 
