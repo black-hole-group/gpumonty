@@ -445,6 +445,7 @@ void set_units(char *munitstr)
 	//MBH = 4.6e6 * MSUN ; // Sgr A*
 	//MBH = 6.2e9 * MSUN; // M87
 	MBH = 5.e9 * MSUN;
+	//MBH = 10. * MSUN;
 
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
