@@ -322,7 +322,7 @@ def validate_spectrum_output(dump, size, spects):
     test_spec = mean_spec(spects)
     spec_diff = compare_to_reference_spectrum(test_spec, dump, size)
     plot_filename = "diff_spect_" + dump + "_" + str(size) + ".png"
-    if spec_diff > spec_diff_limit:
+    if math.isnan(spec_diff) or math.isinf(spec_diff) or spec_diff > spec_diff_limit:
         plot_spec_diff(test_spec, dump, size, plot_filename)
         test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (bigger than limit="
                             + str(spec_diff_limit) + ")\nSaved testing spectrum difference over reference spectrum in '" +
