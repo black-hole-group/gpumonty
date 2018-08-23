@@ -28,7 +28,7 @@ att_diff_limit = 1.0 # percentage
 special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0}
 spec_diff_limit = 200
 exec_timeout = 300 # seconds (timeout for each round execution)
-always_print_tests_info = False # Print tests info even if they succeed
+always_print_tests_info = True # Print tests info even if they succeed
 print_individual_test_info = True # Print info for every test round (True) or just the mean (False)
 ##################################################################
 
@@ -296,7 +296,7 @@ def mk_infos_failed_msg (att, diff, limit, reference, infos_mean, diffs, infos):
     if print_individual_test_info:
         msg += "\n\nInfos from each execution:\n"
         for info in infos:
-            msg += str(info)
+            msg += str(info) + "\n"
     return msg
 
 def validate_infos_outputs(dump, size, infos):
@@ -314,7 +314,7 @@ def validate_infos_outputs(dump, size, infos):
         if print_individual_test_info:
             info_str += "\n\nInfos from each execution:\n"
             for info in infos:
-                info_str += str(info)
+                info_str += str(info) + "\n"
         print(info_str)
     return True
 
