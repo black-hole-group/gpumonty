@@ -102,22 +102,22 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
 						 B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
-				if (isnan_gd(nu)) {
-					// fprintf(stderr,
-					// 	"isnan nu: track_super_photon dl,E0 %g %g\n",
-					// 	dl, E0);
-					// fprintf(stderr,
-					// 	"Xi, %g %g %g %g\n", Xi[0],
-					// 	Xi[1], Xi[2], Xi[3]);
-					// fprintf(stderr,
-					// 	"Ki, %g %g %g %g\n", Ki[0],
-					// 	Ki[1], Ki[2], Ki[3]);
-					// fprintf(stderr,
-					// 	"dKi, %g %g %g %g\n",
-					// 	dKi[0], dKi[1], dKi[2],
-					// 	dKi[3]);
-					// exit(1);
-				}
+				// if (isnan_gd(nu)) {
+				// 	fprintf(stderr,
+				// 		"isnan nu: track_super_photon dl,E0 %g %g\n",
+				// 		dl, E0);
+				// 	fprintf(stderr,
+				// 		"Xi, %g %g %g %g\n", Xi[0],
+				// 		Xi[1], Xi[2], Xi[3]);
+				// 	fprintf(stderr,
+				// 		"Ki, %g %g %g %g\n", Ki[0],
+				// 		Ki[1], Ki[2], Ki[3]);
+				// 	fprintf(stderr,
+				// 		"dKi, %g %g %g %g\n",
+				// 		dKi[0], dKi[1], dKi[2],
+				// 		dKi[3]);
+				// 	exit(1);
+				// }
 			}
 
 			/* scattering optical depth along step */
@@ -153,11 +153,11 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 			x1 = -log(gpu_rng_uniform(curandstate));
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-				if (isnan_gd(php.w) || isinf_gd(php.w)) {
-					// fprintf(stderr,
-					// 	"w isnan_gd in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
-					// 	Ne, bias, ph->w, php.w);
-				}
+				// if (isnan_gd(php.w) || isinf_gd(php.w)) {
+				// 	fprintf(stderr,
+				// 		"w isnan_gd in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
+				// 		Ne, bias, ph->w, php.w);
+				// }
 
 				frac = x1 / (bias * dtau_scatt);
 

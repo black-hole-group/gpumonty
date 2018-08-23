@@ -21,10 +21,10 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 
 	/* quality control */
 
-	if (isnan_gd(ph->K[1])) {
-		// fprintf(stderr, "scatter: bad input photon\n");
-		// exit(0);
-	}
+	// if (isnan_gd(ph->K[1])) {
+	// 	fprintf(stderr, "scatter: bad input photon\n");
+	// 	exit(0);
+	// }
 
 	/* quality control */
 	if (ph->K[0] > 1.e5 || ph->K[0] < 0. || isnan_gd(ph->K[1])

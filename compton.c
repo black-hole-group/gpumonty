@@ -152,20 +152,20 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	boost(kpe, p, kp);
 
 	/* quality control */
-	if (kp[0] < 0 || isnan_gd(kp[0])) {
-		// fprintf(stderr, "in sample_scattered_photon:\n");
-		// fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
-		// fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
-		// 	kpe[2], kpe[3]);
-		// fprintf(stderr, "k:  %g %g %g %g\n", k[0], k[1], k[2],
-		// 	k[3]);
-		// fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
-		// 	ke[3]);
-		// fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
-		// 	p[3]);
-		// fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
-		// 	kp[3]);
-	}
+	// if (kp[0] < 0 || isnan_gd(kp[0])) {
+	// 	fprintf(stderr, "in sample_scattered_photon:\n");
+	// 	fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
+	// 	fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
+	// 		kpe[2], kpe[3]);
+	// 	fprintf(stderr, "k:  %g %g %g %g\n", k[0], k[1], k[2],
+	// 		k[3]);
+	// 	fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
+	// 		ke[3]);
+	// 	fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
+	// 		p[3]);
+	// 	fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
+	// 		kp[3]);
+	// }
 
 	/* done! */
 }
@@ -330,10 +330,10 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4
 	p[3] = gamma_e * beta_e * (cth * v0z +
 				sth * (cphi * v1z + sphi * v2z));
 
-	if (beta_e < 0) {
-		// fprintf(stderr, "betae error: %g %g %g %g\n",
-		// 	p[0], p[1], p[2], p[3]);
-	}
+	// if (beta_e < 0) {
+	// 	fprintf(stderr, "betae error: %g %g %g %g\n",
+	// 		p[0], p[1], p[2], p[3]);
+	// }
 
 	return;
 }
@@ -422,8 +422,8 @@ double sample_mu_distr(curandState_t *curandstate, double beta_e)
 
 	x1 = gpu_rng_uniform(curandstate);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
-	if (det < 0.)
-		// fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
+	// if (det < 0.)
+	// 	fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);
 	mu = (1. - sqrt(det)) / beta_e;
 	return (mu);
 }

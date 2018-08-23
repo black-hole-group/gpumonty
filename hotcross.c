@@ -34,7 +34,7 @@ static double dNdgammae(double thetae, double gammae);
 static double boostcross(double w, double mue, double gammae);
 double total_compton_cross_num(double w, double thetae);
 
-#pragma acc routine (total_compton_cross_num) nohost
+#pragma acc routine (total_compton_cross_num)
 #pragma acc routine (dNdgammae) nohost
 
 
@@ -55,17 +55,16 @@ void init_hotcross(void)
 		fprintf(stderr, "file %s not found.\n", HOTCROSS);
 		fprintf(stderr,
 			"making lookup table for compton cross section...\n");
-		#pragma acc parallel loop collapse(2) private(lw,lT)
+		// The following section was made sequential for simplicity. It can be changed later...
+		// #pragma acc parallel loop collapse(2) private(lw,lT)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * h_dlT;
-				table[i][j] =
-				    log10(total_compton_cross_num
-					  (pow(10., lw), pow(10., lT)));
-				if (isnan_gd(table[i][j])) {
-					// fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
-					// exit(0);
+				table[i][j] = log10(total_compton_cross_num (pow(10., lw), pow(10., lT)));
+				if (isnan(table[i][j])) {
+					fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
+					exit(0);
 				}
 			}
 		fprintf(stderr, "done.\n\n");
@@ -136,10 +135,7 @@ double total_compton_cross_lkup(double w, double thetae)
 		    table[i + 1][j]  + (1. - di) * dj * table[i][j + 1]  +
 		    di * dj *table[i + 1][j + 1] ;
 
-		if (isnan_gd(lcross)) {
-			// fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i,
-				// j, di, dj);
-		}
+		// if (isnan_gd(lcross)) fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);
 
 		return (pow(10., lcross));
 	}
@@ -185,12 +181,12 @@ double total_compton_cross_num(double w, double thetae)
 			    dmue * dgammae * boostcross(w, mue,
 							gammae) * f;
 
-			if (isnan_gd(cross)) {
-				// fprintf(stderr, "%g %g %g %g %g %g\n", w,
-				// 	thetae, mue, gammae,
-				// 	dNdgammae(thetae, gammae),
-				// 	boostcross(w, mue, gammae));
-			}
+			// if (isnan_gd(cross)) {
+			// 	fprintf(stderr, "%g %g %g %g %g %g\n", w,
+			// 		thetae, mue, gammae,
+			// 		dNdgammae(thetae, gammae),
+			// 		boostcross(w, mue, gammae));
+			// }
 		}
 
 
@@ -223,18 +219,18 @@ static double boostcross(double w, double mue, double gammae)
 
 	boostcross = hc_klein_nishina(we) * (1. - mue * v);
 
-	if (boostcross > 2) {
-		// fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
-		// 	gammae);
-		// fprintf(stderr, "v,we, boostcross: %g %g %g\n", v, we,
-		// 	boostcross);
-		// fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
-	}
+	// if (boostcross > 2) {
+	// 	fprintf(stderr, "w,mue,gammae: %g %g %g\n", w, mue,
+	// 		gammae);
+	// 	fprintf(stderr, "v,we, boostcross: %g %g %g\n", v, we,
+	// 		boostcross);
+	// 	fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
+	// }
 
-	if (isnan_gd(boostcross)) {
-		// fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
-		// exit(0);
-	}
+	// if (isnan_gd(boostcross)) {
+	// 	fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
+	// 	exit(0);
+	// }
 
 	return (boostcross);
 }
