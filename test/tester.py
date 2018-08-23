@@ -169,7 +169,7 @@ def calc_diffs_from_ref(infos, dump, size):
             if ref[dump][size][att] == 0.0: diffs[att] = 0.0
             elif ref[dump][size][att] > 0: diffs[att] = float("inf")
             else: diffs[att] = -float("inf")
-        else: diffs[att] = ((ref[dump][size][att] - val) * 100) / val
+        else: diffs[att] = ((val - ref[dump][size][att]) * 100) / val
     return diffs
 
 def mean_arr_of_dicts(arr):
@@ -254,7 +254,7 @@ def plot_spec_diff(test_spect, dump, size, plot_filename):
     for x in x_axis:
         y1 = get_y_in_spec(ref_spec[dump][size], x)
         y2 = get_y_in_spec(test_spect, x)
-        y_axis.append(((y1 - y2) * 100) / y2)
+        y_axis.append(((y2 - y1) * 100) / y2)
     plt.figure(figsize=(12,12))
     plt.subplot(2, 1, 1)
     plt.plot(x_axis, y_axis, label="Percentual difference of testing over reference")
@@ -290,7 +290,7 @@ def make ():
         tester_error("[TESTER] Make failed:\n" + exception.stderr, exception.returncode)
 
 def mk_infos_failed_msg (att, diff, limit, reference, infos_mean, diffs, infos):
-    msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (bigger than limit=" + str(limit) +
+    msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (greater, in absolute value, than limit=" + str(limit) +
     "%)\n" + "Reference: " + str(reference) + "\nGot:       " + str(infos_mean) + "\nDiffs:     " +
     dict2str_float_formater(diffs, "%.3f%%"))
     if print_individual_test_info:
@@ -324,7 +324,7 @@ def validate_spectrum_output(dump, size, spects):
     plot_filename = "diff_spect_" + dump + "_" + str(size) + ".png"
     if math.isnan(spec_diff) or math.isinf(spec_diff) or spec_diff > spec_diff_limit:
         plot_spec_diff(test_spec, dump, size, plot_filename)
-        test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (bigger than limit="
+        test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (greater, in absolute value, than limit="
                             + str(spec_diff_limit) + ")\nSaved testing spectrum difference over reference spectrum in '" +
                             plot_filename + "'", terminate=False)
         return False
