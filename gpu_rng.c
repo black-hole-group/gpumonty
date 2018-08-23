@@ -9,7 +9,7 @@ void gpu_rng_init (curandState_t *curandst, long int seed) {
 
 
 double gpu_rng_uniform (curandState_t *curandst) {
-    return curand_uniform(curandst);
+    return curand_uniform_double(curandst);
 }
 
 /* Taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/sphere.c
@@ -29,8 +29,8 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    */
   do
     {
-      *x = -1 + 2 * curand_uniform(curandst);
-      *y = -1 + 2 * curand_uniform(curandst);
+      *x = -1 + 2 * curand_uniform_double(curandst);
+      *y = -1 + 2 * curand_uniform_double(curandst);
       s = (*x) * (*x) + (*y) * (*y);
     }
   while (s > 1.0);
