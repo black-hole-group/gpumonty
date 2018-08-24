@@ -4,9 +4,9 @@
 # you must edit the file to change which variable is plotted!
 #
 # import
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 #
 # open spectrum file
 if len(sys.argv) == 2:
@@ -38,13 +38,16 @@ lw = lw + np.log10(me*c*c/h)   # convert to Hz from electron rest-mass energy
 Lsol = 3.83e33  
 nLn = nLn + np.log10(Lsol)  # convert to erg/s from Lsol
 #
-plt.step(lw, nLn[0])
-plt.step(lw, nLn[1])
-plt.step(lw, nLn[2])
-plt.step(lw, nLn[3])
-plt.step(lw, nLn[4])
-plt.step(lw, nLn[5])
+#plt.step(lw, nLn[0])
+#plt.step(lw, nLn[1])
+#plt.step(lw, nLn[2])
+#plt.step(lw, nLn[3])
+#plt.step(lw, nLn[4])
+#plt.step(lw, nLn[5])
 #
+# in case I want the mean of the th_bins
+nLn_mean = np.mean(nLn, axis = 0)
+plt.step(lw, nLn_mean, label = 'mean')
 # labels
 plt.rc('text', usetex=False) 
 plt.rc('font', size = 16)
@@ -53,7 +56,7 @@ plt.xlabel('$\\nu [{\\rm Hz}]$', weight='bold', fontsize=20)
 plt.ylabel('$\\nu L_\\nu [{\\rm erg\\,\\,s}^{-1}]$', weight='bold', fontsize=20)
 #
 minlognu = 9
-maxlognu = 23
+maxlognu = 22
 #
 eV = 1.602e-12
 mum = 1.e-4 # 1 micron
@@ -72,8 +75,9 @@ plotenergy(c/(10.*mum), '10 $\\mu$m')
 plotenergy(c/0.1, '1 mm')
 #
 plt.xlim((minlognu, maxlognu))
-plt.ylim((20, 40))
+plt.ylim((33.5-5, 33.5+2))
 #
+plt.legend()
 # plot on screen, where you can save to file after viewing plot
 plt.show()
 # or, uncomment to save directly...
