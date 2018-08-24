@@ -140,9 +140,9 @@ double Thetae_unit;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
-void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded);
-void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded);
-void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded);
+void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect);
+void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect);
+void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded, struct of_spectrum **spect);
 void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
@@ -254,7 +254,6 @@ double gpu_total_compton_cross_num(double w, double thetae);
 #pragma acc routine(jnu_inv) nohost
 #pragma acc routine(Bnu_inv) nohost
 #pragma acc routine(bias_func) nohost
-#pragma acc routine(init_dKdlam) nohost
 #pragma acc routine(stop_criterion) nohost
 #pragma acc routine(stepsize) nohost
 #pragma acc routine(push_photon) nohost
@@ -283,10 +282,12 @@ double gpu_total_compton_cross_num(double w, double thetae);
 #pragma acc routine (make_tetrad)
 #pragma acc routine (project_out)
 #pragma acc routine (jnu_synch)
+#pragma acc routine (K2_eval)
 #pragma acc routine (gcon_func)
 #pragma acc routine (gcov_func)
 #pragma acc routine (bl_coord)
 #pragma acc routine (lower)
 #pragma acc routine (hc_klein_nishina)
+#pragma acc routine(init_dKdlam)
 
 #endif

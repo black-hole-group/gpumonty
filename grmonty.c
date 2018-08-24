@@ -26,9 +26,10 @@ extern double h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE;
 extern double table[(NW + 1)*(NT + 1)];
 extern double K2[N_ESAMP + 1];
 extern double ***p;
-extern struct of_spectrum spect[N_THBINS*N_EBINS];
+
 
 int main(int argc, char *argv[]) {
+	struct of_spectrum **spect;
 	unsigned long long Ns, N_superph_made, N_superph_recorded;
 	int quit_flag;
 	struct of_photon *phs;
@@ -50,6 +51,26 @@ int main(int argc, char *argv[]) {
 	sscanf(argv[1], "%llu", &Ns);
 
 	cpu_rng_init(seed);
+
+	spect = malloc(N_THBINS * sizeof(struct of_spectrum *));
+	for (int ik = 0; ik < N_THBINS; ik++) {
+		spect[ik] = malloc(N_EBINS * sizeof(struct of_spectrum));
+		for (int jk = 0; jk < N_EBINS; jk++) {
+			spect[ik][jk].dNdlE = 0.0;
+			spect[ik][jk].dEdlE = 0.0;
+			spect[ik][jk].nph = 0.0;
+			spect[ik][jk].nscatt = 0.0;
+			spect[ik][jk].X1iav = 0.0;
+			spect[ik][jk].X2isq = 0.0;
+			spect[ik][jk].X3fsq = 0.0;
+			spect[ik][jk].tau_abs = 0.0;
+			spect[ik][jk].tau_scatt = 0.0;
+			spect[ik][jk].ne0 = 0.0;
+			spect[ik][jk].thetae0 = 0.0;
+			spect[ik][jk].b0 = 0.0;
+			spect[ik][jk].E0 = 0.0;;
+		}
+	}
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
@@ -93,7 +114,7 @@ int main(int argc, char *argv[]) {
 	//     Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
 	//     copy(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
 	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
-	#pragma acc parallel copyin (phs[:ph_count]) private(curandstate) copy(spect[:N_THBINS][N_EBINS], N_superph_recorded)
+	#pragma acc parallel copyin (phs[:ph_count]) private(curandstate) copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
 	{
 
 		gpu_rng_init (&curandstate, seed);
@@ -102,7 +123,7 @@ int main(int argc, char *argv[]) {
 		for (unsigned long long i = 0; i < ph_count; i++) {
 			/* push ph around */
 
-			track_super_photon(&curandstate, &phs[i], &N_superph_recorded);
+			track_super_photon(&curandstate, &phs[i], &N_superph_recorded, spect);
 
 			// /* give interim reports on rates */
 			// if (((int) (N_superph_made)) % 100000 == 0
@@ -121,7 +142,10 @@ int main(int argc, char *argv[]) {
 		(double) (currtime - starttime),
 		(double) N_superph_made / (currtime - starttime));
 
-	report_spectrum(N_superph_made, N_superph_recorded);
+	report_spectrum(N_superph_made, N_superph_recorded, spect);
+
+	for (int ik = 0; ik < N_THBINS; ik++) free(spect[ik]);
+	free(spect);
 
 	/* done! */
 	return (0);

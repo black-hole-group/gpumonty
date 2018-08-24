@@ -8,9 +8,8 @@
 #include "gmath.h"
 
 double Rh;
-struct of_spectrum spect[N_THBINS][N_EBINS];
 
-#pragma acc declare create(Rh, spect)
+#pragma acc declare create(Rh)
 
 /*
 
@@ -587,7 +586,7 @@ double stepsize(double X[NDIM], double K[NDIM])
 	coordinate system.
 
 */
-void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded)
+void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect)
 {
 	double lE, dx2;
 	int iE, ix2;
@@ -664,7 +663,7 @@ void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_rec
 
 #define SPECTRUM_FILE_NAME	"grmonty.spec"
 
-void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded)
+void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded, struct of_spectrum **spect)
 {
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;

@@ -16,6 +16,12 @@ extern "C" __device__ void acc_printd(double d)
     printf("[GPU-THREAD %d]: %lf\n", id, d);
 }
 
+extern "C" __device__ void acc_print2d(double d, double d2)
+{
+    int id = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
+    printf("[GPU-THREAD %d]: %lf %lf\n", id, d, d2);
+}
+
 extern "C" __device__ void acc_printf(float f)
 {
     int id = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;

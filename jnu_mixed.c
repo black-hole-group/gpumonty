@@ -13,12 +13,17 @@ good for Thetae > 1
 
 */
 
+static double linear_interp_F(double K);
+#pragma acc routine
+static double linear_interp_K2(double Thetae);
+
+
+
 #define CST 1.88774862536	/* 2^{11/12} */
 double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
-	double K2_eval(double Thetae);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -49,9 +54,6 @@ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
  * frequency nu in cgs										*/
 
 	double j_fac, K2;
-	double F_eval(double Thetae, double B, double nu);
-	double K2_eval(double Thetae);
-
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -149,9 +151,6 @@ void init_emiss_tables(void)
 
 double K2_eval(double Thetae)
 {
-
-	double linear_interp_K2(double);
-
 	if (Thetae < THETAE_MIN)
 		return 0.;
 	if (Thetae > TMAX)
@@ -165,7 +164,6 @@ double F_eval(double Thetae, double Bmag, double nu)
 {
 
 	double K, x;
-	double linear_interp_F(double);
 
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
 

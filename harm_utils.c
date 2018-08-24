@@ -103,7 +103,7 @@ void init_weight_table(unsigned long long Ns)
 			for (l = 0; l < N_ESAMP+1; l++)
 				sum[l] += fac * F_eval(Thetae, B, nu[l]);
 		}
-    #pragma acc parallel for
+    #pragma acc parallel loop
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 

@@ -35,7 +35,7 @@ static double boostcross(double w, double mue, double gammae);
 double total_compton_cross_num(double w, double thetae);
 
 #pragma acc routine (total_compton_cross_num)
-#pragma acc routine (dNdgammae) nohost
+#pragma acc routine (dNdgammae)
 
 
 

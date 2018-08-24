@@ -137,6 +137,22 @@ extern double bessk( int, double );
 #define BIGNO 1.0e10
 #define BIGNI 1.0e-10
 
+#pragma acc routine
+static double bessj0( double x );
+#pragma acc routine
+static double bessj1( double x );
+#pragma acc routine
+static double bessy0( double x );
+#pragma acc routine
+static double bessy1( double x );
+#pragma acc routine
+static double bessi0( double x );
+#pragma acc routine
+static double bessi1( double x);
+#pragma acc routine
+static double bessk0( double x );
+#pragma acc routine
+static double bessk1( double x );
 
 
 static double bessj0( double x )

@@ -12,7 +12,7 @@
 
 #define MAXNSTEP	1280000
 
-void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded)
+void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -265,7 +265,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
-		record_super_photon(ph, N_superph_recorded);
+		record_super_photon(ph, N_superph_recorded, spect);
 
 	/* done! */
 	return;

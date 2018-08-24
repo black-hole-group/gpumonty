@@ -10,6 +10,8 @@ void acc_printi (int i);
 #pragma acc routine nohost
 void acc_printd (double d);
 #pragma acc routine nohost
+void acc_print2d (double d, double d2);
+#pragma acc routine nohost
 void acc_printf (float f);
 
 #endif
