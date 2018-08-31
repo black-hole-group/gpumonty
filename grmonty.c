@@ -28,110 +28,107 @@ extern double K2[N_ESAMP + 1];
 extern double ***p;
 
 
-int main(int argc, char *argv[]) {
-	struct of_spectrum **spect;
-	unsigned long long Ns, N_superph_made, N_superph_recorded;
-	int quit_flag;
-	struct of_photon *phs;
-	unsigned long int seed;
-	time_t currtime, starttime;
+void malloc_spect (struct of_spectrum ***spect) {
+	*spect = malloc(N_THBINS * sizeof(struct of_spectrum *));
+	for (int i = 0; i < N_THBINS; i++) {
+		(*spect)[i] = malloc(N_EBINS * sizeof(struct of_spectrum));
+		for (int j = 0; j < N_EBINS; j++) {
+			(*spect)[i][j].dNdlE = 0.0;
+			(*spect)[i][j].dEdlE = 0.0;
+			(*spect)[i][j].nph = 0.0;
+			(*spect)[i][j].nscatt = 0.0;
+			(*spect)[i][j].X1iav = 0.0;
+			(*spect)[i][j].X2isq = 0.0;
+			(*spect)[i][j].X3fsq = 0.0;
+			(*spect)[i][j].tau_abs = 0.0;
+			(*spect)[i][j].tau_scatt = 0.0;
+			(*spect)[i][j].ne0 = 0.0;
+			(*spect)[i][j].thetae0 = 0.0;
+			(*spect)[i][j].b0 = 0.0;
+			(*spect)[i][j].E0 = 0.0;;
+		}
+	}
+}
 
-	if (argc < 4) {
+unsigned long long generate_photons (unsigned long long Ns, struct of_photon **phs) {
+	int quit_flag = 0;
+	unsigned long long phs_max = Ns;
+	unsigned long long ph_count = 0;
+	*phs = malloc(phs_max * sizeof(struct of_photon));
+	while (!quit_flag) {
+		if (ph_count == phs_max) {
+			phs_max = 2*phs_max;
+			*phs = realloc(*phs, phs_max*sizeof(struct of_photon));
+		}
+		make_super_photon(&((*phs)[ph_count]), &quit_flag, Ns);
+		ph_count++;
+	}
+	ph_count--;
+	*phs = realloc(*phs, ph_count*sizeof(struct of_photon)); //trim excedent memory
+	return ph_count;
+}
+
+
+void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long long *seed) {
+	if (argc < 4 || argc > 5) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1\n");
 		exit(0);
 	}
-	if (argc > 4) {
-		sscanf(argv[4], "%lu", &seed);
-		if (seed < 1) {
+	if (argc == 5) {
+		sscanf(argv[4], "%lu", seed);
+		if (*seed < 1) {
 			fprintf(stderr, "error: seed must be >= 1\nusage: grmonty Ns infilename M_unit [seed]\n");
 			exit(0);
 		}
 	}
-	else seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
-	sscanf(argv[1], "%llu", &Ns);
+	else *seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
+	sscanf(argv[1], "%llu", Ns);
+}
 
+int main(int argc, char *argv[]) {
+	struct of_spectrum **spect;
+	unsigned long long Ns, N_superph_made, N_superph_recorded;
+	struct of_photon *phs;
+	unsigned long int seed;
+	time_t currtime, starttime;
+	curandState_t curandstate;
+
+	check_args(argc, argv, &Ns, &seed);
 	cpu_rng_init(seed);
-
-	spect = malloc(N_THBINS * sizeof(struct of_spectrum *));
-	for (int ik = 0; ik < N_THBINS; ik++) {
-		spect[ik] = malloc(N_EBINS * sizeof(struct of_spectrum));
-		for (int jk = 0; jk < N_EBINS; jk++) {
-			spect[ik][jk].dNdlE = 0.0;
-			spect[ik][jk].dEdlE = 0.0;
-			spect[ik][jk].nph = 0.0;
-			spect[ik][jk].nscatt = 0.0;
-			spect[ik][jk].X1iav = 0.0;
-			spect[ik][jk].X2isq = 0.0;
-			spect[ik][jk].X3fsq = 0.0;
-			spect[ik][jk].tau_abs = 0.0;
-			spect[ik][jk].tau_scatt = 0.0;
-			spect[ik][jk].ne0 = 0.0;
-			spect[ik][jk].thetae0 = 0.0;
-			spect[ik][jk].b0 = 0.0;
-			spect[ik][jk].E0 = 0.0;;
-		}
-	}
+	malloc_spect(&spect);
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
 	lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
-
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
-
-	/** main loop **/
-	N_superph_made = 0;
 	N_superph_recorded = 0;
-	// N_scatt = 0;
 	starttime = time(NULL);
-	quit_flag = 0;
+	//N_scatt = 0;
 
 	fprintf(stderr, "Generating photons...\n");
 	fflush(stderr);
-
-	unsigned long long phs_max = Ns;
-	unsigned long long ph_count = 0;
-	phs = malloc(phs_max * sizeof(struct of_photon));
-	while (!quit_flag) {
-		if (ph_count == phs_max) {
-			phs_max = 2*phs_max;
-			phs = realloc(phs, phs_max*sizeof(struct of_photon));
-		}
-		make_super_photon(&phs[ph_count], &quit_flag, Ns);
-		ph_count++;
-	}
-	ph_count--;
-	phs = realloc(phs, ph_count*sizeof(struct of_photon)); //trim excedent memory
-	N_superph_made = ph_count;
+	N_superph_made = generate_photons(Ns, &phs);
 
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	curandState_t curandstate;
-
-	// #pragma acc parallel copyin(startx, stopx, B_unit, dlT, h_dlT, lT_min, K2,\
-	//     lminw, dlw, lmint, table, L_unit, max_tau_scatt, phs[:ph_count], p[:NPRIM][:N1][:N2],\
-	//     Ne_unit, Thetae_unit, lE0, Rh, dlE, dx, N1, N2, N3, n_within_horizon) \
-	//     copy(spect[:N_THBINS][N_EBINS], N_superph_recorded) private(curandstate)
 	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
-	#pragma acc parallel copyin (phs[:ph_count]) private(curandstate) copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
+	#pragma acc parallel copyin (phs[:N_superph_made]) private(curandstate) copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
 	{
 
 		gpu_rng_init (&curandstate, seed);
 
 		#pragma acc loop
-		for (unsigned long long i = 0; i < ph_count; i++) {
+		for (unsigned long long i = 0; i < N_superph_made; i++) {
 			/* push ph around */
 
 			track_super_photon(&curandstate, &phs[i], &N_superph_recorded, spect);
 
 			// /* give interim reports on rates */
-			// if (((int) (N_superph_made)) % 100000 == 0
-			//     && N_superph_made > 0) {
+			// if (((int) (N_superph_made)) % 100000 == 0  && N_superph_made > 0) {
 			// 	currtime = time(NULL);
-			// 	fprintf(stderr, "time %g, rate %g ph/s\n",
-			// 		(double) (currtime - starttime),
-			// 		N_superph_made / (currtime -
+			// 	fprintf(stderr, "time %g, rate %g ph/s\n",	(double) (currtime - starttime), N_superph_made / (currtime -
 			// 				  starttime));
 			// }
 		}
@@ -144,8 +141,9 @@ int main(int argc, char *argv[]) {
 
 	report_spectrum(N_superph_made, N_superph_recorded, spect);
 
-	for (int ik = 0; ik < N_THBINS; ik++) free(spect[ik]);
+	for (int i = 0; i < N_THBINS; i++) free(spect[i]);
 	free(spect);
+	free(phs);
 
 	/* done! */
 	return (0);
