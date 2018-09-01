@@ -219,7 +219,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[NDIM], double 
 
 /* physics related */
 void init_model(char *args[]);
-void make_super_photon(struct of_photon *ph, int *quit_flag, unsigned long long Ns);
+void init_zone(int i, int j, unsigned long long*nz, double *dnmax, unsigned long long Ns);
 double bias_func(double Te, double w);
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],

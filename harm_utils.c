@@ -157,7 +157,7 @@ void init_nint_table(void)
 	return;
 }
 
-static void init_zone(int i, int j, double *nz, double *dnmax, unsigned long long Ns)
+void init_zone(int i, int j, unsigned long long*nz, double *dnmax, unsigned long long Ns)
 {
 
 	int l;
@@ -168,7 +168,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax, unsigned long lon
 	get_fluid_zone(i, j, &Ne, &Thetae, &Bmag, Ucon, Bcon);
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
-		*nz = 0.;
+		*nz = 0;
 		*dnmax = 0.;
 		return;
 	}
@@ -180,7 +180,7 @@ static void init_zone(int i, int j, double *nz, double *dnmax, unsigned long lon
 	dl = dl - l;
 	if (l < 0) {
 		*dnmax = 0.;
-		*nz = 0.;
+		*nz = 0;
 		return;
 	} else if (l >= NINT) {
 
@@ -216,59 +216,29 @@ static void init_zone(int i, int j, double *nz, double *dnmax, unsigned long lon
 
 	K2 = K2_eval(Thetae);
 	if (K2 == 0.) {
-		*nz = 0.;
+		*nz = 0;
 		*dnmax = 0.;
 		return;
 	}
 
-	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
-	if (*nz > Ns * log(NUMAX / NUMIN)) {
+	double dnz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+
+	if (dnz > Ns * log(NUMAX / NUMIN)) {
 		// fprintf(stderr,
 		// 	"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
 		// 	i, j, Bmag, Thetae, K2, ninterp);
-		*nz = 0.;
+		*nz = 0;
 		*dnmax = 0.;
+	} else {
+		// Randomly round decimal up or down
+		if (fmod(dnz, 1.) > cpu_rng_uniforme()) *nz = (int) dnz + 1;
+		else *nz = (int) dnz;
 	}
 
 	return;
 }
 
-int zone_flag;
-int get_zone(int *i, int *j, double *dnmax, unsigned long long Ns)
-{
-/* Return the next zone and the number of superphotons that need to be		*
- * generated in it.								*/
-
-	int in2gen;
-	double n2gen;
-	static int zi = 0;
-	static int zj = -1;
-
-	zone_flag = 1;
-	zj++;
-	if (zj >= N2) {
-		zj = 0;
-		zi++;
-		if (zi >= N1) {
-			in2gen = 1;
-			*i = N1;
-			return 1;
-		}
-	}
-	init_zone(zi, zj, &n2gen, dnmax, Ns);
-	if (fmod(n2gen, 1.) > cpu_rng_uniforme()) {
-		in2gen = (int) n2gen + 1;
-	} else {
-		in2gen = (int) n2gen;
-	}
-
-	*i = zi;
-	*j = zj;
-
-	return in2gen;
-}
-
-void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
+void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int first_zone_photon)
 {
 /* Set all initial superphoton attributes */
 
@@ -317,7 +287,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 		ph->X[1],ph->X[2], Thetae,Bmag) ;
 	*/
 
-	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
+	if (first_zone_photon) {	/* first photon created in this zone, so make the tetrad */
 		if (Bmag > 0.) {
 			for (l = 0; l < NDIM; l++)
 				bhat[l] = Bcon[l] * B_unit / Bmag;
@@ -327,7 +297,6 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph)
 			bhat[1] = 1.;
 		}
 		make_tetrad(Ucon, bhat, geom[i][j].gcov, Econ, Ecov);
-		zone_flag = 0;
 	}
 
 	tetrad_to_coordinate(Econ, K_tetrad, ph->K);

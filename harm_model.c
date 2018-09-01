@@ -51,35 +51,6 @@ void init_model(char *args[])
 
 }
 
-/*
-	make super photon
-*/
-
-int n2gen = -1;
-double dnmax;
-int zone_i, zone_j;
-
-void make_super_photon(struct of_photon *ph, int *quit_flag, unsigned long long Ns)
-{
-
-	while (n2gen <= 0) {
-		n2gen = get_zone(&zone_i, &zone_j, &dnmax, Ns);
-	}
-
-	n2gen--;
-
-	if (zone_i == N1)
-		*quit_flag = 1;
-	else
-		*quit_flag = 0;
-
-	if (*quit_flag != 1) {
-		/* Initialize the superphoton energy, direction, weight, etc. */
-		sample_zone_photon(zone_i, zone_j, dnmax, ph);
-	}
-
-	return;
-}
 
 /*
 

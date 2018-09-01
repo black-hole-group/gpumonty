@@ -34,9 +34,8 @@ void init_nint_table(void);
 void init_storage(void);
 double dOmega_func(double x2i, double x2f);
 
-void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph);
+void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int first_zone_photon);
 double interp_scalar(double **var, int i, int j, double coeff[4]);
-int get_zone(int *i, int *j, double *dnamx, unsigned long long Ns);
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,

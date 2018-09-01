@@ -51,19 +51,27 @@ void malloc_spect (struct of_spectrum ***spect) {
 }
 
 unsigned long long generate_photons (unsigned long long Ns, struct of_photon **phs) {
-	int quit_flag = 0;
 	unsigned long long phs_max = Ns;
 	unsigned long long ph_count = 0;
+	unsigned long long n2gen;
+	double dnmax;
+
 	*phs = malloc(phs_max * sizeof(struct of_photon));
-	while (!quit_flag) {
-		if (ph_count == phs_max) {
-			phs_max = 2*phs_max;
-			*phs = realloc(*phs, phs_max*sizeof(struct of_photon));
+
+	for (int zi = 0; zi < N1; zi++) {
+		for (int zj = 0; zj < N2; zj++) {
+			init_zone(zi, zj, &n2gen, &dnmax, Ns);
+			if (ph_count + n2gen >= phs_max) {
+				phs_max = 2*(ph_count + n2gen);
+				*phs = realloc(*phs, phs_max*sizeof(struct of_photon));
+			}
+			for (unsigned long long gen = 0; gen < n2gen; gen++) {
+				sample_zone_photon(zi, zj, dnmax, &((*phs)[ph_count]), !gen);
+				// !gen is a small trick to say if this is the first photon of this zone. !gen equals (gen == 0 ? 1 : 0)
+				ph_count++;
+			}
 		}
-		make_super_photon(&((*phs)[ph_count]), &quit_flag, Ns);
-		ph_count++;
 	}
-	ph_count--;
 	*phs = realloc(*phs, ph_count*sizeof(struct of_photon)); //trim excedent memory
 	return ph_count;
 }
