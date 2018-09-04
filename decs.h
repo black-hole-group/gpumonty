@@ -21,7 +21,7 @@
 #define BREMSSTRAHLUNG (0)
 
 // Two temperature ratios (disk and jet)
-#define BETAPRESCRIPTION (0)
+#define BETAPRESCRIPTION (1)
 #define TPTE_DISK (20.)
 #define TPTE_JET  (1.)
 

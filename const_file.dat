@@ -1,0 +1,17 @@
+/* Constants and other parameters to be read by notebook dealing with both HARM and grmonty data.
+/* All physical constants (ME to YEAR) are in cgs units.
+/* ME, MP, CL, GNEWT, KBOL, SIGMA_THOMSON, MSUN, LSUN, YEAR, TPTE_DISK, TPTE_JET, THETAE_MAX, M_unit */
+
+9.10938e-28
+1.67262e-24
+2.99792e+10
+6.6742e-08
+1.38065e-16
+6.65246e-25
+1.989e+33
+3.827e+33
+3.1536e+07
+20
+1
+1000
+4e+19

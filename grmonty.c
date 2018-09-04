@@ -150,6 +150,30 @@ int main(int argc, char *argv[])
 #endif
 	report_spectrum((int) N_superph_made);
 
+	// print into a file called const_file.dat all constants and other parameters
+	// that will be read by a notebook dealing with both HARM and grmonty data
+	FILE *fp;
+	fp = fopen("const_file.dat", "w");
+
+	fprintf(fp, "/* Constants and other parameters to be read by notebook dealing with both HARM and grmonty data.\n");	
+	fprintf(fp, "/* All physical constants (ME to YEAR) are in cgs units.\n");	
+	fprintf(fp, "/* ME, MP, CL, GNEWT, KBOL, SIGMA_THOMSON, MSUN, LSUN, YEAR, TPTE_DISK, TPTE_JET, THETAE_MAX, M_unit */\n\n");
+	fprintf(fp, "%g\n", ME);
+	fprintf(fp, "%g\n", MP);
+	fprintf(fp, "%g\n", CL);
+	fprintf(fp, "%g\n", GNEWT);
+	fprintf(fp, "%g\n", KBOL);
+	fprintf(fp, "%g\n", SIGMA_THOMSON);
+	fprintf(fp, "%g\n", MSUN);
+	fprintf(fp, "%g\n", LSUN);
+	fprintf(fp, "%g\n", YEAR);
+	fprintf(fp, "%g\n", TPTE_DISK);
+	fprintf(fp, "%g\n", TPTE_JET);
+	fprintf(fp, "%g\n", THETAE_MAX);
+	fprintf(fp, "%g", M_unit);
+
+	fclose(fp);
+
 	/* done! */
 	return (0);
 
