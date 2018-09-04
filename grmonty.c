@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 
 	fprintf(fp, "/* Constants and other parameters to be read by notebook dealing with both HARM and grmonty data.\n");	
 	fprintf(fp, "/* All physical constants (ME to YEAR) are in cgs units.\n");	
-	fprintf(fp, "/* ME, MP, CL, GNEWT, KBOL, SIGMA_THOMSON, MSUN, LSUN, YEAR, TPTE_DISK, TPTE_JET, THETAE_MAX, M_unit */\n\n");
+	fprintf(fp, "/* ME, MP, CL, GNEWT, KBOL, SIGMA_THOMSON, MSUN, LSUN, YEAR, TPTE_DISK, TPTE_JET, THETAE_MAX, M_unit */\n");
 	fprintf(fp, "%g\n", ME);
 	fprintf(fp, "%g\n", MP);
 	fprintf(fp, "%g\n", CL);
