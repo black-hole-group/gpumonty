@@ -21,12 +21,20 @@
 #include "decs.h"
 #include <time.h>
 
+#define NPHOTONS_BIAS 23 // Expected photons to be produces equals NPHOTONS_BIAS * Ns
+#define MIN2(a, b) ((a) <= (b) ? (a) : (b))
+
 // External global variables to be send to GPU (used in other .c's)
 extern double h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE;
 extern double table[(NW + 1)*(NT + 1)];
 extern double K2[N_ESAMP + 1];
 extern double ***p;
 
+
+void terminate (char *msg, int code) {
+	fprintf(stderr, "%s\n", msg);
+	exit(code);
+}
 
 void malloc_spect (struct of_spectrum ***spect) {
 	*spect = malloc(N_THBINS * sizeof(struct of_spectrum *));
@@ -50,8 +58,9 @@ void malloc_spect (struct of_spectrum ***spect) {
 	}
 }
 
+
 unsigned long long generate_photons (unsigned long long Ns, struct of_photon **phs) {
-	unsigned long long phs_max = Ns;
+	unsigned long long phs_max = Ns * NPHOTONS_BIAS;
 	unsigned long long ph_count = 0;
 	unsigned long long n2gen;
 	double dnmax;
@@ -62,12 +71,11 @@ unsigned long long generate_photons (unsigned long long Ns, struct of_photon **p
 		for (int zj = 0; zj < N2; zj++) {
 			init_zone(zi, zj, &n2gen, &dnmax, Ns);
 			if (ph_count + n2gen >= phs_max) {
-				phs_max = 2*(ph_count + n2gen);
+				phs_max = MIN2(ph_count + n2gen * (N1 - zi) * (N2 - zj), 2*(ph_count + n2gen));
 				*phs = realloc(*phs, phs_max*sizeof(struct of_photon));
 			}
 			for (unsigned long long gen = 0; gen < n2gen; gen++) {
-				sample_zone_photon(zi, zj, dnmax, &((*phs)[ph_count]), !gen);
-				// !gen is a small trick to say if this is the first photon of this zone. !gen equals (gen == 0 ? 1 : 0)
+				sample_zone_photon(zi, zj, dnmax, &((*phs)[ph_count]), !gen); //small trick: !gen equals (gen == 0 ? 1 : 0)
 				ph_count++;
 			}
 		}
@@ -77,17 +85,11 @@ unsigned long long generate_photons (unsigned long long Ns, struct of_photon **p
 }
 
 
-void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long long *seed) {
-	if (argc < 4 || argc > 5) {
-		fprintf(stderr, "usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1\n");
-		exit(0);
-	}
+void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *seed) {
+	if (argc < 4 || argc > 5) terminate("usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1", 0);
 	if (argc == 5) {
 		sscanf(argv[4], "%lu", seed);
-		if (*seed < 1) {
-			fprintf(stderr, "error: seed must be >= 1\nusage: grmonty Ns infilename M_unit [seed]\n");
-			exit(0);
-		}
+		if (*seed < 1) terminate("error: seed must be >= 1\nusage: grmonty Ns infilename M_unit [seed]", 0);
 	}
 	else *seed = 139 + time(NULL); /* Arbitrarily picked initial seed */
 	sscanf(argv[1], "%llu", Ns);
@@ -97,7 +99,7 @@ int main(int argc, char *argv[]) {
 	struct of_spectrum **spect;
 	unsigned long long Ns, N_superph_made, N_superph_recorded;
 	struct of_photon *phs;
-	unsigned long int seed;
+	unsigned long seed;
 	time_t currtime, starttime;
 	curandState_t curandstate;
 
@@ -121,8 +123,11 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
-	#pragma acc parallel copyin (phs[:N_superph_made]) private(curandstate) copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
+	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, \
+		 Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, \
+		 dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
+	#pragma acc parallel copyin (phs[:N_superph_made]) private(curandstate) \
+		copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
 	{
 
 		gpu_rng_init (&curandstate, seed);
