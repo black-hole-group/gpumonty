@@ -5,9 +5,12 @@
 # - cuda toolkit 9.2
 # - cuda drivers
 #
+
+#The GPU Compute Capability (change this according to your GPU)
+GPU_CC=cc60
 CC=pgcc
-CCFLAGS=-fast -acc -ta=tesla,cc60,rdc -Minfo=all -O2 -Minform=warn
-CCFLAGS_FORCUDALIBS=-fast -acc -ta=tesla,cc60,nollvm,rdc -Minfo=all -O2 -Minform=warn
+CCFLAGS=-fast -acc -ta=tesla:$(GPU_CC),rdc -Minfo=all -O2 -Minform=warn
+CCFLAGS_FORCUDALIBS=-fast -acc -ta=tesla:$(GPU_CC),nollvm,rdc -Minfo=all -O2 -Minform=warn
 LDFLAGS=-Mcuda=rdc -lgsl -lgslcblas -Mcudalib=curand
 NVCC =nvcc
 NVCCFLAGS = -rdc=true
@@ -24,13 +27,13 @@ all: $(EXE)
 acc_print.o: acc_print.cu
 	$(NVCC) $(NVCCFLAGS) -c $<
 
-gpu_rng.o: gpu_rng.c makefile $(INCS)
+gpu_rng.o: gpu_rng.c Makefile $(INCS)
 	$(CC) $(CCFLAGS_FORCUDALIBS) -c $<
 
-%.o: %.c makefile $(INCS)
+%.o: %.c Makefile $(INCS)
 	$(CC) $(CCFLAGS) -c $<
 
-$(EXE) : $(OBJS) $(INCS) makefile
+$(EXE) : $(OBJS) $(INCS) Makefile
 	$(CC) $(CCFLAGS) $(OBJS) -o $(EXE) $(LDFLAGS)
 
 .PHONY: clean

@@ -1,3 +1,4 @@
 *.o
 grmonty
 *.spec
+pgilinux*.tar.gz
