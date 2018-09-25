@@ -10,6 +10,7 @@ This version of GRMONTY is parallelized in GPU using [OpenACC](https://www.opena
 
 # Dependencies:
 To compile and run on your system:
+
 - [PGI](https://www.pgroup.com/products/community.htm), version >= 18.4
 - [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) v9.2
 - NVIDIA drivers
@@ -17,6 +18,7 @@ To compile and run on your system:
 - gcc, version < 7.0 (preferably 5.4.1)
 
 To compile and run on a Docker container:
+
 - NVIDIA drivers
 - [Docker](https://www.docker.com/)
 - [Nvidia-Docker](https://github.com/NVIDIA/nvidia-docker)
@@ -27,28 +29,28 @@ You can compile and run grmonty either directly on your system or in a [Docker](
 
 ### To compile on your system:
 
-> You have to install all dependecies listed respectively, and then compile
-
+You have to install all dependecies listed, and then compile
 
     make
 
 ### To compile on a Docker container:
 
-> Start the Docker service (if not already started)
+ Start the Docker service (if not already started)
 
     sudo systemctl start docker
 
-> Donwload [PGI's tarball](https://www.pgroup.com/products/community.htm) 18.04-x86-64 at grmonty's directory (You can delete it after image is built)
-> Build the image (this will take some time)
+Donwload [PGI's tarball](https://www.pgroup.com/products/community.htm) 18.04-x86-64 at grmonty's directory (You can delete it after image is built)
+
+Build the image (this will take some time)
 
     docker build -t bhgroup/grmonty .
 
-> Compile
+Compile
 
     nvidia-docker run -v "$PWD:/grmonty"  bhgroup/grmonty make
     # Don't forget the 'optirun' prefix if you're using optimus drivers
 
-> After compiling, you can run the container with:
+After compiling, you can run the container with:
 
     nvidia-docker run -itv "$PWD:/grmonty"  bhgroup/grmonty
     # This will invoke bash inside the container, where you can invoke grmonty
@@ -68,7 +70,8 @@ Arguments are:
 - the integer C, if provided, will be the seed of the random number generator
 
 This will output spectrum to `grmonty.spec`.
->NOTE: Code compiled directly on your system does not necessarily runs in the container vice-versa. So, always run in the platform you have compiled in.
+
+NOTE: Code compiled directly on your system does not necessarily runs in the container vice-versa. So, always run in the platform you have compiled in.
 
 # Plotting
 
