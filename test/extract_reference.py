@@ -15,7 +15,7 @@ script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 #                    Extractor Settings
 #                  (Change them as you will)
 #################################################################
-dumps = ["./data/dump1000", "./data/dump900"]
+dumps = [script_basedir + "../data/dump1000", script_basedir + "../data/dump900"]
 sizes = [(50000, 5)]
 M_unit = 4.e19
 num_threads = 8
@@ -24,7 +24,7 @@ make_path = script_basedir + "../"
 exec_name = "grmonty"
 spec_file = "spectrum.dat"
 exec_timeout = 300 # seconds (timeout for each round execution)
-output_file = "./test/references.py"
+output_file = script_basedir + "references.py"
 ##################################################################
 
 

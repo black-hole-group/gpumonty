@@ -16,7 +16,7 @@ script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 #                    Tester Settings
 #                  (Change them as you will)
 #################################################################
-dumps = ["./data/dump1000"]
+dumps = [script_basedir + "../data/dump1000"]
 sizes = [(50000, 5)]
 M_unit = 4.e19
 num_threads = 8
