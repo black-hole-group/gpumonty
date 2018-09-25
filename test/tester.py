@@ -38,6 +38,9 @@ print_individual_test_info = True # Print info for every test round (True) or ju
 #           Path settings
 #     (you can change then, but be carefull! Some rm commands are runned upon then! )
 ##################################################################
+persist_tests_build_dir = False # important! Set True if you wish to persist the test's build dir. If
+# you are building in the same dir of your project files, you MUST set this to True, otherwise, your
+# project's directory WILL BE LOST)
 tests_build_dir = ".tests_build" # Name for the temp dir tester.py creates to build and run grmonty
 build_path = script_basedir + tests_build_dir # Complete path for the dir described above
 make_path = script_basedir + "../" # Path were the makefile is
@@ -139,8 +142,8 @@ def remove_tests_build_dir(force=True):
 
 def create_tests_build_dir():
     try:
-        run(["mkdir", build_path])
-        run(["mkdir", build_path + "/bin"])
+        run(["mkdir", "-p", build_path])
+        run(["mkdir", "-p", build_path + "/bin"])
     except subprocess.CalledProcessError as exception:
         tester_error("Failed to create tests build dir:\n" + exception.stderr, exception.returncode)
 
@@ -150,12 +153,12 @@ def start_tester():
     def sigint_handler(sig, frame):
             finish_tester(1)
     signal.signal(signal.SIGINT, sigint_handler)
-    remove_tests_build_dir()
+    if not persist_tests_build_dir: remove_tests_build_dir()
 
 def finish_tester(code=0):
     end_time = time.time()
     tester_print("Elapsed time: " + "%.3f" % (end_time - start_time) + " seconds", sep=True)
-    remove_tests_build_dir()
+    if not persist_tests_build_dir: remove_tests_build_dir()
     sys.exit(code)
 
 
@@ -368,7 +371,7 @@ def build ():
     try:
         create_tests_build_dir()
         os.environ["GRMONTY_BASEBUILD"] = build_path
-        print(run(["make", "-C", make_path]).stdout)
+        print(run(["make", "-B", "-C", make_path]).stdout)
     except subprocess.CalledProcessError as exception:
         tester_error("Make failed:\n" + exception.stderr, exception.returncode)
 
