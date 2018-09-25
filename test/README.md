@@ -12,30 +12,27 @@ spectrum and the following values (here referenced as 'output info'):
 - N_superph_recorded
 
 # Quick start
-To run the tester:
+To test the repo's code:
 
     ./tester.py
 
-To run the reference extractor:
+To extract output from the repo's code, in order to use as refererence for future tests:
 
-    ./extract_reference.py
-
-The extractor updates tester's references. It will run grmonty with the desired parameters
-(see Settings for instructions on how to change these parameters), and overwrite
-`references.py` with the outputs extracted from these new executions.
+    ./tester.py --extract
 
 # Settings
-`tester.py` and `extract_references.py` are quite configurable.  To adjust their parameters,
-all you have to do is to modify the global constants at the top of each program's code.
+`tester.py` is quite configurable.  To adjust it's parameters, all you have to do is to
+modify the global constants at the top of the program's code. Each setting is well
+documented at their definitions.
 
 The reference code output (used by `tester.py` to validate the testing code) is stored in
 `references.py`. This file can be changed manually (to add new references or change
-current ones), but its easier to update it with the `extract_reference.py` (see Quick Start on
-how to use it).
+current ones), but its easier to update it with the `./tester.py --extract`.
 
 # TODO
 
-- [ ] Make options at command line (settings and option to save the multiple executations' stderrs and/or spectrum)
+- [ ] Make cli options for global settings
+- [ ] Make a setting to save the multiple executations' stderrs and/or spectrum (for debugging)
 - [X] Make temporary dir to compile and run
 - [X] Fix spectrum difference plot (plotted upon test failure)
 - [X] Check when tester.py and extract_reference.py are called inside ./test and make them still work.

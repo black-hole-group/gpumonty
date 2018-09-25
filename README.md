@@ -46,7 +46,7 @@ plots.plot('grmonty.spec')
 
     ./test/tester.py
 
-See ./test/README.md for details upon tests.
+See ./test/README.md for test details.
 
 
 # Calculate spectra from other sources
