@@ -18,10 +18,10 @@ OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.c=.o))
 INCS = $(shell find $(SRCDIR) -type f -name *.h)
 
 
-$(TARGET): $(OBJS) $(INCS) makefile
+$(TARGET): $(OBJS) $(INCS) Makefile
 	$(CC) $(CCFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-$(BUILDDIR)/%.o: $(SRCDIR)/%.c $(INCS) makefile
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c $(INCS) Makefile
 	@mkdir -p $(BUILDDIR)
 	$(CC) $(CCFLAGS) -c  $< -o $@
 
