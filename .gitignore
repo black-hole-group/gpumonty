@@ -7,3 +7,4 @@ hotcross.dat
 build
 bin/*
 !bin/.gitkeep
+test/diff*.png

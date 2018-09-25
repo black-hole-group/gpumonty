@@ -7,10 +7,11 @@ CC = gcc
 CCFLAGS  = -Wall -O2 -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas
 
+GRMONTY_BASEBUILD ?= "."
 EXE = grmonty
 SRCDIR = src
-BUILDDIR = build
-TARGET = bin/$(EXE)
+BUILDDIR = $(GRMONTY_BASEBUILD)/build
+TARGET = $(GRMONTY_BASEBUILD)/bin/$(EXE)
 
 EXCLUDE=init_harm_data.c
 SRCS = $(shell find $(SRCDIR) -type f -name *.c | grep -v $(EXCLUDE))
@@ -27,4 +28,4 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c $(INCS) Makefile
 
 .PHONY: clean
 clean:
-	/bin/rm -f $(TARGET); /bin/rm -rf ./build
+	/bin/rm -f $(TARGET); /bin/rm -rf $(GRMONTY_BASEBUILD)/build

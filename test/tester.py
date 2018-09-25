@@ -3,6 +3,7 @@
 import subprocess
 import re
 import sys
+import signal
 import os
 import time
 import numpy as np
@@ -10,6 +11,11 @@ import matplotlib.pyplot as plt
 import ntpath
 import math
 
+if sys.version_info[1] < 7:
+    print("Error: This script was made for python >= 3.7, and you're trying to run with python" + str(sys.version_info[0]) + "." + str(sys.version_info[1]))
+    sys.exit(1)
+
+# Defines the path of this file
 script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 
 #################################################################
@@ -20,16 +26,22 @@ dumps = [script_basedir + "../data/dump1000"]
 sizes = [(50000, 5)]
 M_unit = 4.e19
 num_threads = 8
-make_path = script_basedir + "../"
-exec_path = script_basedir + "../bin/"
-exec_name = "grmonty"
-spec_file = "spectrum.dat"
 att_diff_limit = 1.0 # percentage
 special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0}
 spec_diff_limit = 200
 exec_timeout = 300 # seconds (timeout for each round execution)
 always_print_tests_info = True # Print tests info even if they succeed
 print_individual_test_info = True # Print info for every test round (True) or just the mean (False)
+##################################################################
+#           Path settings
+#     (you can change then, but be carefull! Some rm commands are runned upon then! )
+##################################################################
+tests_build_dir = ".tests_build"
+build_path = script_basedir + tests_build_dir
+make_path = script_basedir + "../"
+exec_path = build_path + "/bin/"
+exec_name = "grmonty"
+spec_file = "spectrum.dat"
 ##################################################################
 
 
@@ -56,10 +68,10 @@ ref_spec = None
 #################################################################
 ######## Some python helpers for overall tester execution
 
-def run (command, timeout=None):
+def run (command, timeout=None, cwd=None):
     try:
         completed = subprocess.run(command, encoding="utf-8", stderr=subprocess.PIPE,
-                                                            stdout=subprocess.PIPE, timeout=timeout)
+                                                            stdout=subprocess.PIPE, timeout=timeout, cwd=cwd)
         completed.check_returncode()
         return completed
     except FileNotFoundError:
@@ -95,9 +107,35 @@ def str_range(n, padding=None):
             string += ", " + str(i)
     return string
 
+def remove_tests_build_dir(force=True):
+    try:
+        if force:
+            run(["rm", "-rf", build_path])
+        else:
+            run(["rm", "-r", "--interactive=never", build_path])
+    except subprocess.CalledProcessError as exception:
+        tester_error("[TESTER] Failed to remove tests build dir:\n" + exception.stderr, exception.returncode)
+
+def create_tests_build_dir():
+    try:
+        run(["mkdir", build_path])
+        run(["mkdir", build_path + "/bin"])
+        run(["mkdir", build_path + "/build"])
+    except subprocess.CalledProcessError as exception:
+        tester_error("[TESTER] Failed to create tests build dir:\n" + exception.stderr, exception.returncode)
+
+def start_tester():
+    global start_time
+    start_time = time.time()
+    def sigint_handler(sig, frame):
+            finish_tester(1)
+    signal.signal(signal.SIGINT, sigint_handler)
+    remove_tests_build_dir()
+
 def finish_tester(code=0):
     end_time = time.time()
     print("[TESTER]--------------- Tester elapsed time: " + "%.3f" % (end_time - start_time) + " seconds")
+    remove_tests_build_dir()
     sys.exit(code)
 
 
@@ -229,7 +267,7 @@ def load_spectrum():
     Lsol = 3.83e33
     nbins = 6
     #
-    try: data = np.loadtxt(spec_file)
+    try: data = np.loadtxt(exec_path + spec_file)
     except Exception as e: tester_error ("Failed to load spectrum from '" + spec_file + "': " + (str(e) if e and str(e) else ""))
     tdata = np.transpose(data)
     lw = tdata[0,:]	# log of photon energy in electron rest-mass units
@@ -282,9 +320,11 @@ def test_succeeded(terminate=False):
     print(CGREEN + "[TESTER] Test succeeded" + CEND)
     if terminate: finish_tester()
 
-def make ():
+def build ():
     print("[TESTER]--------------- Making")
     try:
+        create_tests_build_dir()
+        os.environ["GRMONTY_BASEBUILD"] = build_path
         print(run(["make", "-C", make_path]).stdout)
     except subprocess.CalledProcessError as exception:
         tester_error("[TESTER] Make failed:\n" + exception.stderr, exception.returncode)
@@ -321,7 +361,7 @@ def validate_infos_outputs(dump, size, infos):
 def validate_spectrum_output(dump, size, spects):
     test_spec = mean_spec(spects)
     spec_diff = compare_to_reference_spectrum(test_spec, dump, size)
-    plot_filename = "diff_spect_" + dump + "_" + str(size) + ".png"
+    plot_filename = script_basedir + "diff_spect_" + dump + "_" + str(size) + ".png"
     if math.isnan(spec_diff) or math.isinf(spec_diff) or spec_diff > spec_diff_limit:
         plot_spec_diff(test_spec, dump, size, plot_filename)
         test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (greater, in absolute value, than limit="
@@ -349,7 +389,7 @@ def run_tests():
             for round in range(rounds):
                 print("[TESTER]----------------------- Rounds: " + str_range(round, rounds))
                 try:
-                    process = run([exec_path + exec_name, str(size), dump, str(M_unit)], timeout=exec_timeout)
+                    process = run(["./" + exec_name, str(size), dump, str(M_unit)], timeout=exec_timeout, cwd=exec_path)
                     if process.stdout: print(stdout)
                     infos.append(extract_infos(process.stderr))
                     spects.append (load_spectrum())
@@ -364,11 +404,10 @@ def run_tests():
 ######## Main
 
 def main():
-    global start_time
-    start_time = time.time()
+    start_tester()
     import_references()
     check_reference()
-    make()
+    build()
     run_tests()
     finish_tester ()
 

@@ -35,8 +35,8 @@ how to use it).
 
 # TODO
 
-- [ ] Make options at command line (settings and option to save stderr and/or spectrum)
-- [ ] Make temporary dir to compile and run
+- [ ] Make options at command line (settings and option to save the multiple executations' stderrs and/or spectrum)
+- [X] Make temporary dir to compile and run
 - [X] Fix spectrum difference plot (plotted upon test failure)
 - [X] Check when tester.py and extract_reference.py are called inside ./test and make them still work.
 - [x] Read default reference values from separate file
