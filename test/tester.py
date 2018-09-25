@@ -10,9 +10,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ntpath
 import math
+from enum import Enum
 
 if sys.version_info[1] < 7:
-    print("Error: This script was made for python >= 3.7, and you're trying to run with python" + str(sys.version_info[0]) + "." + str(sys.version_info[1]))
+    print("Error: This script was made for python >= 3.7, and you're trying to run with" +
+              " python" + str(sys.version_info[0]) + "." + str(sys.version_info[1]))
     sys.exit(1)
 
 # Defines the path of this file
@@ -22,31 +24,41 @@ script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
 #                    Tester Settings
 #                  (Change them as you will)
 #################################################################
-dumps = [script_basedir + "../data/dump1000"]
-sizes = [(50000, 5)]
+dumps = [script_basedir + "../data/dump1000"] # Complete paths for the dump files
+sizes = [(50000, 5)] # No of photons and executation rounds for each No of photons
 M_unit = 4.e19
 num_threads = 8
-att_diff_limit = 1.0 # percentage
-special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0}
-spec_diff_limit = 200
+att_diff_limit = 1.0 # Percentage threshold to validate output atributes (jn absolute value)
+special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0} # Threshold for specific attributes
+spec_diff_limit = 200 # Threshold for spectrum difference from reference
 exec_timeout = 300 # seconds (timeout for each round execution)
-always_print_tests_info = True # Print tests info even if they succeed
+always_print_tests_info = False # True = Print tests info even if they succeed
 print_individual_test_info = True # Print info for every test round (True) or just the mean (False)
 ##################################################################
 #           Path settings
 #     (you can change then, but be carefull! Some rm commands are runned upon then! )
 ##################################################################
-tests_build_dir = ".tests_build"
-build_path = script_basedir + tests_build_dir
-make_path = script_basedir + "../"
-exec_path = build_path + "/bin/"
-exec_name = "grmonty"
-spec_file = "spectrum.dat"
+tests_build_dir = ".tests_build" # Name for the temp dir tester.py creates to build and run grmonty
+build_path = script_basedir + tests_build_dir # Complete path for the dir described above
+make_path = script_basedir + "../" # Path were the makefile is
+exec_path = build_path + "/bin/" # Path where, after build, the executable will be found
+exec_name = "grmonty" # Name of the executable
+spec_file = "spectrum.dat" # Name of grmonty's output spectrum file
+extractor_output_file = script_basedir + "references.py" # Name for the file where extractor will store references
 ##################################################################
 
 
 
 
+# Class to define execution mode: whether tester.py will be testing the code or extracting a
+# reference output from it
+class Mode(Enum):
+    Test = 1
+    Extract = 2
+    def __str__(self):
+        if self == Mode.Test: return "Test"
+        elif self == Mode.Extract: return "Extract"
+        return "None"
 
 # Terminal colors
 CEND      = '\33[0m'
@@ -59,6 +71,7 @@ CYELLOWBG = '\33[43m'
 
 # Some internal globals
 start_time = None
+exec_mode = Mode(Mode.Test) # Execution Mode. Do not change this manually. It will be changed by comand line
 
 # Reference code outputs (yet to be imported from references.py)
 ref = None
@@ -66,7 +79,7 @@ ref_spec = None
 
 
 #################################################################
-######## Some python helpers for overall tester execution
+######## Some helpers for overall tester execution
 
 def run (command, timeout=None, cwd=None):
     try:
@@ -91,9 +104,17 @@ def dict2str_float_formater(dict, format):
 def tail (arr, n):
     return arr[len(arr) - n:]
 
+def tester_print(msg, sep=False, color=None, prompt=False):
+    str = "[TESTER] " if exec_mode == Mode.Test else "[EXTRACTOR] "
+    if sep: str += "--------------------- "
+    str += msg
+    if color: str = color + str + CEND
+    if prompt: return input(str)
+    else: print(str)
+    return None
+
 def tester_error(msg, code=1):
-    print(CRED + "[TESTER] Tester failed to perform tests..." + CEND)
-    print(CRED + msg + CEND)
+    tester_print("Tester.py failed...\n" + msg, color=CRED)
     finish_tester (code)
 
 def str_range(n, padding=None):
@@ -114,15 +135,14 @@ def remove_tests_build_dir(force=True):
         else:
             run(["rm", "-r", "--interactive=never", build_path])
     except subprocess.CalledProcessError as exception:
-        tester_error("[TESTER] Failed to remove tests build dir:\n" + exception.stderr, exception.returncode)
+        tester_error("Failed to remove tests build dir:\n" + exception.stderr, exception.returncode)
 
 def create_tests_build_dir():
     try:
         run(["mkdir", build_path])
         run(["mkdir", build_path + "/bin"])
-        run(["mkdir", build_path + "/build"])
     except subprocess.CalledProcessError as exception:
-        tester_error("[TESTER] Failed to create tests build dir:\n" + exception.stderr, exception.returncode)
+        tester_error("Failed to create tests build dir:\n" + exception.stderr, exception.returncode)
 
 def start_tester():
     global start_time
@@ -134,13 +154,13 @@ def start_tester():
 
 def finish_tester(code=0):
     end_time = time.time()
-    print("[TESTER]--------------- Tester elapsed time: " + "%.3f" % (end_time - start_time) + " seconds")
+    tester_print("Elapsed time: " + "%.3f" % (end_time - start_time) + " seconds", sep=True)
     remove_tests_build_dir()
     sys.exit(code)
 
 
 #################################################################
-######## Importing and checking references outputs
+######## References preparation handling: Importing and checking
 
 def import_references():
     global ref, ref_spec
@@ -169,7 +189,7 @@ def import_references():
     try:
         from references import ref, ref_spec
     except (ImportError, ModuleNotFoundError):
-        tester_error("Could't import references. Do you have a valid references.py file in the same dir?")
+        tester_error("Could't import references. Do you have a valid references.py file in tester.py's dir?")
 
 def check_reference():
     try:
@@ -185,6 +205,26 @@ def check_reference():
             elif dump not in ref_spec or size not in ref_spec[dump]:
                 tester_error("No spectrum reference for " + dump + " size " + str(size))
 
+def check_extraction_settings():
+    dumpnames = {}
+    for dump in dumps:
+        dname = ntpath.basename(dump)
+        if dname in dumpnames:
+            tester_error ("Your dumps list contain dumps with the same name, e.g: \"" + dname + "\"")
+        dumpnames[dname] = True
+
+def display_ref_overwrite_warning():
+    ## From https://gist.github.com/hrouault/1358474
+    while True:
+        choice = tester_print("WARNING: You already have a references.py at tester.py's dir.\n" +
+            "This file will be overwritten. Continue? [y/N] ", color=CYELLOW, prompt=True).lower()
+        if choice == '' or choice == "n":
+            tester_print("Ok, aborting...")
+            finish_tester()
+        elif choice == "y":
+            print()
+            return
+        print()
 
 #################################################################
 ######## Functions to handle grmonty's outputs
@@ -312,22 +352,25 @@ def plot_spec_diff(test_spect, dump, size, plot_filename):
 ######## Testing functions
 
 def test_failed(test_title, msg, code=1, terminate=True):
-    print(CRED + "[TESTER] TEST FAILED: " + test_title + CEND)
-    print(CRED + msg + CEND + "\n")
+    tester_print("TEST FAILED: " + test_title + "\n" +msg + "\n", color=CRED)
     if terminate: finish_tester (code)
 
 def test_succeeded(terminate=False):
-    print(CGREEN + "[TESTER] Test succeeded" + CEND)
+    tester_print("Test succeeded", color=CGREEN)
+    if terminate: finish_tester()
+
+def extract_succeeded(terminate=False):
+    tester_print("Extraction succeeded", color=CGREEN)
     if terminate: finish_tester()
 
 def build ():
-    print("[TESTER]--------------- Making")
+    tester_print("Making", sep=True)
     try:
         create_tests_build_dir()
         os.environ["GRMONTY_BASEBUILD"] = build_path
         print(run(["make", "-C", make_path]).stdout)
     except subprocess.CalledProcessError as exception:
-        tester_error("[TESTER] Make failed:\n" + exception.stderr, exception.returncode)
+        tester_error("Make failed:\n" + exception.stderr, exception.returncode)
 
 def mk_infos_failed_msg (att, diff, limit, reference, infos_mean, diffs, infos):
     msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (greater, in absolute value, than limit=" + str(limit) +
@@ -349,13 +392,13 @@ def validate_infos_outputs(dump, size, infos):
                                 infos_mean, diffs, infos), terminate=False)
             return False
     if always_print_tests_info:
-        info_str = ("[TESTER] Output infos test\nReference: " + str(ref[dump][size]) +
+        info_str = ("Output infos test\nReference: " + str(ref[dump][size]) +
         "\nGot:       " + str(infos_mean) + "\nDiffs:     " + dict2str_float_formater(diffs, "%.3f%%"))
         if print_individual_test_info:
             info_str += "\n\nInfos from each execution:\n"
             for info in infos:
                 info_str += str(info) + "\n"
-        print(info_str)
+        tester_print(info_str)
     return True
 
 def validate_spectrum_output(dump, size, spects):
@@ -370,7 +413,7 @@ def validate_spectrum_output(dump, size, spects):
         return False
     if always_print_tests_info:
         plot_spec_diff(test_spec, dump, size, plot_filename)
-        print("[TESTER] Spectrum test\nDifference in spectrum is " + "%.3f" % spec_diff +
+        tester_print("Spectrum test\nDifference in spectrum is " + "%.3f" % spec_diff +
         "\nSaved testing spectrum difference over reference spectrum in '" + plot_filename + "'")
     return True
 
@@ -380,33 +423,83 @@ def validate_test_outputs(dump, size, infos, spects):
     if not spec_validation or not infos_validation: finish_tester(1)
 
 def run_tests():
+    e_ref, e_ref_spec = {}, {} # Used if extracting info
     os.environ["OMP_NUM_THREADS"] = str(num_threads)
     for dump in dumps:
         for size, rounds in sizes:
-            print("[TESTER]----------------------- Running " + dump + " N=" + str(size))
+            dumpname = ntpath.basename(dump)
+            if exec_mode == Mode.Extract:
+                e_ref[dumpname] = {}
+                e_ref_spec[dumpname] = {}
+            tester_print("Running " + dumpname + " N=" + str(size), sep=True)
             infos = []
             spects = []
             for round in range(rounds):
-                print("[TESTER]----------------------- Rounds: " + str_range(round, rounds))
+                tester_print("Rounds: " + str(round+1) + "/" + str(rounds), sep=True)
                 try:
                     process = run(["./" + exec_name, str(size), dump, str(M_unit)], timeout=exec_timeout, cwd=exec_path)
                     if process.stdout: print(stdout)
                     infos.append(extract_infos(process.stderr))
                     spects.append (load_spectrum())
                 except subprocess.CalledProcessError as exception:
-                    tester_error("[TESTER] Error executing grmonty:\n" + exception.stderr, exception.returncode)
-            validate_test_outputs(ntpath.basename(dump), size, infos, spects)
-    test_succeeded()
+                    tester_error("Error executing grmonty:\n" + exception.stderr, exception.returncode)
+            if exec_mode == Mode.Extract:
+                e_ref[dumpname][size] = mean_arr_of_dicts(infos)
+                e_ref_spec[dumpname][size] = mean_spec(spects)
+            else:
+                validate_test_outputs(ntpath.basename(dump), size, infos, spects)
+    if exec_mode == Mode.Extract:
+        out = open(extractor_output_file, "w+")
+        out.write("ref=")
+        out.write(str(e_ref))
+        out.write("\n")
+        out.write("ref_spec=")
+        out.write(str(e_ref_spec))
+        out.close()
+        extract_succeeded()
+    else:
+        test_succeeded()
 
 
 
 #################################################################
 ######## Main
 
+def invalid_options():
+    print(CRED + "Invalid options" + CEND)
+    print_help()
+    sys.exit(1)
+
+def print_help():
+    print("Usage: ./tester.py [-e|--extract] [-t|--test] [-h|--help]")
+    print("Example: ./tester --extract")
+    print("No options run --test by default.")
+    print()
+    print("  extract - extracts outputs from current grmonty code to use as reference for tests")
+    print("  test - tests current grmonty code against reference")
+    print("  help - displays this help message")
+
+def parse_args():
+    global exec_mode
+    if len(sys.argv) > 2: invalid_options()
+    if len(sys.argv) == 2:
+        opt = sys.argv[1]
+        if opt == "--help" or opt == "-h": print_help (); sys.exit(1)
+        elif opt == "--extract" or opt == "-e": exec_mode = Mode(Mode.Extract)
+        elif opt ==  "--test" or opt == "-t": exec_mode = Mode(Mode.Test)
+        else: invalid_options ()
+    tester_print("MODE: " + str(exec_mode), sep=True)
+
 def main():
+    parse_args()
     start_tester()
-    import_references()
-    check_reference()
+    if exec_mode == Mode.Test:
+        import_references()
+        check_reference()
+    else:
+        if os.path.exists(extractor_output_file):
+            display_ref_overwrite_warning()
+        check_extraction_settings()
     build()
     run_tests()
     finish_tester ()
