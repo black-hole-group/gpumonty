@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ntpath
 import math
+import json
 from enum import Enum
 
 if sys.version_info[1] < 7:
@@ -29,7 +30,7 @@ sizes = [(50000, 5)] # No of photons and executation rounds for each No of photo
 M_unit = 4.e19
 num_threads = 8
 att_diff_limit = 1.0 # Percentage threshold to validate output atributes (jn absolute value)
-special_att_diff_limit = {"max_tau_scatt": 8.0, "N_superph_recorded": 2.0} # Threshold for specific attributes
+special_att_diff_limit = {"max_tau_scatt": 15.0, "N_superph_recorded": 3.0} # Threshold for specific attributes
 spec_diff_limit = 200 # Threshold for spectrum difference from reference
 exec_timeout = 300 # seconds (timeout for each round execution)
 always_print_tests_info = False # True = Print tests info even if they succeed
@@ -47,7 +48,8 @@ make_path = script_basedir + "../" # Path were the makefile is
 exec_path = build_path + "/bin/" # Path where, after build, the executable will be found
 exec_name = "grmonty" # Name of the executable
 spec_file = "spectrum.dat" # Name of grmonty's output spectrum file
-extractor_output_file = script_basedir + "references.py" # Name for the file where extractor will store references
+extractor_output_file = script_basedir + "references.json" # File where extractor will store references
+input_ref_file = extractor_output_file # File where tester will load references from
 ##################################################################
 
 
@@ -76,7 +78,7 @@ CYELLOWBG = '\33[43m'
 start_time = None
 exec_mode = Mode(Mode.Test) # Execution Mode. Do not change this manually. It will be changed by comand line
 
-# Reference code outputs (yet to be imported from references.py)
+# Reference code outputs (yet to be imported from input_ref_file)
 ref = None
 ref_spec = None
 
@@ -165,48 +167,51 @@ def finish_tester(code=0):
 #################################################################
 ######## References preparation handling: Importing and checking
 
-def import_references():
-    global ref, ref_spec
-    ''' Import Reference code outputs (should be in the folowing structure)
-    ref = {
-        "dumpXXX": {
-            size1: {'luminosity': 939.741, 'dMact': -1.40148e-09, 'efficiency': -0.0452698,
-                'L/Ladv': 0.651418, 'max_tau_scatt': 0.000476014, 'N_superph_made': 105433.0,
-                'N_superph_recorded': 65778.0},
-            size2: {'luminosity': 943.2335999999999, 'dMact': -1.40148e-09, 'efficiency': -0.04543808,
-                'L/Ladv': 0.6538394, 'max_tau_scatt': 0.0003997848, 'N_superph_made': 1039350.4,
-                'N_superph_recorded': 593041.6},
-            ...
-        },
-        "dumpYYY": { ... }
-    }
-
-    ref_spec = {
-        "dumpXXX": {
-            size1: ([x1, x2, ...], [y1, y2, ...]),
-            ...
-        },
-        "dumpYYY": { ... }
-    }
+def convert_int_keys(d):
     '''
-    try:
-        from references import ref, ref_spec
-    except (ImportError, ModuleNotFoundError):
-        tester_error("Could't import references. Do you have a valid references.py file in tester.py's dir?")
+    Takes a dict d and coverts its int keys that are stored as strings to true ints
+    '''
+    conv_d = {}
+    for key, value in d.items():
+        conv_key = None
+        try:
+            conv_key = int(key)
+        except ValueError:
+            conv_key = key
+        if (isinstance(value, dict)):
+            value = convert_int_keys(value)
+        conv_d[conv_key] = value
+    return conv_d
 
-def check_reference():
+
+def load_references():
+    global ref, ref_spec
+    try:
+        ref_file = open(input_ref_file, "r")
+        ref_data = json.loads(ref_file.read())
+        ref = convert_int_keys (ref_data["ref"])
+        ref_spec = convert_int_keys (ref_data["ref_spec"])
+        ref_file.close()
+    except json.decoder.JSONDecodeError as e:
+        tester_error("Could'nt decode references. It seems that the references' file is incorrect" + ((":\n" + str(e)) if e and str(e) else "."))
+    except (FileNotFoundError):
+        tester_error("Could't load references. File \"" + input_ref_file + "\" wasn't found.")
+    except Exception as e:
+        tester_error("Unexpected error when trying to load references" + ((":\n" + str(e)) if e and str(e) else "."))
+
+def check_references():
     try:
         if ref is None or ref_spec is None:
-            tester_error("Reference variables are None. Maybe references.py wasn't imported?")
+            tester_error("Reference variables are None. Maybe references file wasn't imported?")
     except NameError:
-        tester_error("Reference variables were not loaded. Maybe references.py wasn't imported?")
+        tester_error("Reference variables were not loaded. Maybe references file wasn't imported?")
     for dump in dumps:
         dump = ntpath.basename(dump)
         for size, _ in sizes:
             if dump not in ref or size not in ref[dump]:
-                tester_error("No information reference for " + dump + " size " + str(size))
+                tester_error("Reference file has no output reference for " + dump + " size " + str(size))
             elif dump not in ref_spec or size not in ref_spec[dump]:
-                tester_error("No spectrum reference for " + dump + " size " + str(size))
+                tester_error("Reference file has no spectrum reference for " + dump + " size " + str(size))
 
 def check_extraction_settings():
     dumpnames = {}
@@ -216,18 +221,19 @@ def check_extraction_settings():
             tester_error ("Your dumps list contain dumps with the same name, e.g: \"" + dname + "\"")
         dumpnames[dname] = True
 
-def display_ref_overwrite_warning():
-    ## From https://gist.github.com/hrouault/1358474
-    while True:
-        choice = tester_print("WARNING: You already have a references.py at tester.py's dir.\n" +
-            "This file will be overwritten. Continue? [y/N] ", color=CYELLOW, prompt=True).lower()
-        if choice == '' or choice == "n":
-            tester_print("Ok, aborting...")
-            finish_tester()
-        elif choice == "y":
+def check_ref_file_overwrite():
+    if os.path.exists(input_ref_file):
+        ## From https://gist.github.com/hrouault/1358474
+        while True:
+            choice = tester_print("WARNING: File \"" + input_ref_file + "\" already exists and\n" +
+                "will be overwritten. Continue? [y/N] ", color=CYELLOW, prompt=True).lower()
+            if choice == '' or choice == "n":
+                tester_print("Ok, aborting...")
+                finish_tester()
+            elif choice == "y":
+                print()
+                return
             print()
-            return
-        print()
 
 #################################################################
 ######## Functions to handle grmonty's outputs
@@ -452,14 +458,13 @@ def run_tests():
             else:
                 validate_test_outputs(ntpath.basename(dump), size, infos, spects)
     if exec_mode == Mode.Extract:
-        out = open(extractor_output_file, "w+")
-        out.write("ref=")
-        out.write(str(e_ref))
-        out.write("\n")
-        out.write("ref_spec=")
-        out.write(str(e_ref_spec))
-        out.close()
-        extract_succeeded()
+        try:
+            out = open(extractor_output_file, "w+")
+            json.dump({"ref": e_ref, "ref_spec": e_ref_spec}, fp=out)
+            out.close()
+            extract_succeeded()
+        except Exception as e:
+            tester_error("Error saving references file" + ((":\n" + str(e)) if e and str(e) else "."))
     else:
         test_succeeded()
 
@@ -497,11 +502,10 @@ def main():
     parse_args()
     start_tester()
     if exec_mode == Mode.Test:
-        import_references()
-        check_reference()
+        load_references()
+        check_references()
     else:
-        if os.path.exists(extractor_output_file):
-            display_ref_overwrite_warning()
+        check_ref_file_overwrite()
         check_extraction_settings()
     build()
     run_tests()
