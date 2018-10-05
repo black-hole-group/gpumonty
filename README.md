@@ -23,7 +23,7 @@ If using `bash`:
 
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump1000 4.e19 
+    ./bin/grmonty 5000000 dump1000 4.e19
 
 Arguments are:
 
@@ -31,7 +31,7 @@ Arguments are:
 - harm dump file for model
 - mass unit (few x 10^19 is appropriate for Sgr A*)
 
-This will output spectrum to `grmonty.spec`  which should be identical to `grmonty_spec_verify`.
+This will output spectrum to `spectrum.dat`.
 
 # Plotting
 
@@ -42,12 +42,19 @@ from  nmmn import plots
 plots.plot('grmonty.spec')
 ```
 
+# Running Tests
+
+    ./test/tester.py
+
+See ./test/README.md for test details.
+
+
 # Calculate spectra from other sources
 
 Replace `harm_model.c` with your own source model.  Begin by modifying `harm_model.c`. You must supply
 
 ```
-init_model 
+init_model
 make_super_photon
 bias_func
 get_fluid_params
@@ -55,8 +62,8 @@ report_spectrum
 stop_criterion
 record_criterion
 
-gcon_func 
-gcov_func 
+gcon_func
+gcov_func
 get_connection
 ```
 
@@ -78,7 +85,7 @@ work in progress...
 - `cuda`, in progress: CUDA version in progress, lead by Rodrigo
 - `openacc`: OpenACC in progress, lead by Matheus
 
-## Misc. 
+## Misc.
 
 - `track_ph`: output photon world lines for visualization
 
@@ -112,7 +119,7 @@ You are morally obligated to cite the following paper in any scientific literatu
 > [Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009, Astrophysical Journal Supplement, 184, 387]((http://adsabs.harvard.edu/abs/2009ApJS..184..387D))
 
 
-# LICENSE 
+# LICENSE
 
 `grmonty` is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
