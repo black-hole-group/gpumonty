@@ -6,57 +6,70 @@ import sys
 import signal
 import os
 import time
-import numpy as np
-import matplotlib.pyplot as plt
 import ntpath
 import math
 import json
 from enum import Enum
+import matplotlib.pyplot as plt
+import numpy as np
 
 if sys.version_info[1] < 7:
-    print("Error: This script was made for python >= 3.7, and you're trying to run with" +
-              " python" + str(sys.version_info[0]) + "." + str(sys.version_info[1]))
+    print("Error: This script was made for python >= 3.7, and you're trying " +
+          "to run with python" + str(sys.version_info[0]) + "." +
+          str(sys.version_info[1]))
     sys.exit(1)
 
 # Defines the path of this file
-script_basedir = os.path.dirname(os.path.realpath(__file__)) + "/"
+SCRIPT_BASEDIR = os.path.dirname(os.path.realpath(__file__)) + "/"
 
-#################################################################
-#                    Tester Settings
-#                  (Change them as you will)
-#################################################################
-dumps = [script_basedir + "../data/dump1000"] # Complete paths for the dump files
-sizes = [(50000, 5)] # No of photons and executation rounds for each No of photons
-M_unit = 4.e19
-num_threads = 8
-att_diff_limit = 1.0 # Percentage threshold to validate output atributes (jn absolute value)
-special_att_diff_limit = {"max_tau_scatt": 15.0, "N_superph_recorded": 3.0} # Threshold for specific attributes
-spec_diff_limit = 200 # Threshold for spectrum difference from reference
-exec_timeout = 300 # seconds (timeout for each round execution)
-always_print_tests_info = False # True = Print tests info even if they succeed
-print_individual_test_info = True # Print info for every test round (True) or just the mean (False)
-##################################################################
-#           Path settings
-#     (you can change then, but be carefull! Some rm commands are runned upon then! )
-##################################################################
-persist_tests_build_dir = False # important! Set True if you wish to persist the test's build dir. If
-# you are building in the same dir of your project files, you MUST set this to True, otherwise, your
-# project's directory WILL BE LOST)
-tests_build_dir = ".tests_build" # Name for the temp dir tester.py creates to build and run grmonty
-build_path = script_basedir + tests_build_dir # Complete path for the dir described above
-make_path = script_basedir + "../" # Path were the makefile is
-exec_path = build_path + "/bin/" # Path where, after build, the executable will be found
-exec_name = "grmonty" # Name of the executable
-spec_file = "spectrum.dat" # Name of grmonty's output spectrum file
-extractor_output_file = script_basedir + "references.json" # File where extractor will store references
-input_ref_file = extractor_output_file # File where tester will load references from
-##################################################################
+################################################################################
+#                                Tester Settings
+#                           (Change them as you will)
+################################################################################
+
+DUMPS = [SCRIPT_BASEDIR + "../data/dump1000"] # Abs. paths for the dump files
+SIZES = [(50000, 5)] # No of photons, executation rounds for each No of photons
+M_UNIT = 4.e19
+NUM_THREADS = 8
+ATT_DIFF_LIMIT = 1.0 # Absolute percentage threshold to validate output atts
+SPECIAL_ATT_DIFF_LIMIT = { # Threshold for specific attributes
+    "max_tau_scatt": 15.0, # max_tau_scatt varies a lot
+    "N_superph_recorded": 3.0
+}
+SPEC_DIFF_LIMIT = 200 # Threshold for spectrum difference from reference
+EXEC_TIMEOUT = 300 # seconds (timeout for each round execution)
+ALWAYS_PRINT_TESTS_INFO = False # True = Print tests info even if they succeed
+PRINT_INDIVIDUAL_TEST_INFO = True # Print info for every test round (True) or
+# just the mean (False)
+
+################################################################################
+#                                Path settings
+# (you can change then, but be carefull! Some rm commands are runned upon then!)
+################################################################################
+
+PERSIST_TESTS_BUILD_DIR = False # IMPORTANT! Set True if you wish to persist the
+# test's build dir. If you are building in the same dir of your project files,
+# you MUST set this to True, otherwise, your project's directory WILL BE LOST)
+TESTS_BUILD_DIR = ".tests_build" # Name for the temp dir tester.py creates to
+# build and run grmonty
+BUILD_PATH = SCRIPT_BASEDIR + TESTS_BUILD_DIR # Complete path for the dir
+# described above
+MAKE_PATH = SCRIPT_BASEDIR + "../" # Path were the makefile is
+EXEC_PATH = BUILD_PATH + "/bin/" # Path where, after build, the executable will
+# be found
+EXEC_NAME = "grmonty" # Name of the executable
+SPEC_FILE = "spectrum.dat" # Name of grmonty's output spectrum file
+EXTRACTOR_OUTPUT_FILE = SCRIPT_BASEDIR + "references.json" # File where
+# extractor will store references
+INPUT_REF_FILE = EXTRACTOR_OUTPUT_FILE # File where tester will load references
+# from
+################################################################################
 
 
 
 
-# Class to define execution mode: whether tester.py will be testing the code or extracting a
-# reference output from it
+# Class to define execution mode: whether tester.py will be testing the code or
+# extracting a reference output from it
 class Mode(Enum):
     Test = 1
     Extract = 2
@@ -66,61 +79,64 @@ class Mode(Enum):
         return "None"
 
 # Terminal colors
-CEND      = '\33[0m'
-CRED    = '\33[31m'
-CGREEN  = '\33[32m'
+CEND = '\33[0m'
+CRED = '\33[31m'
+CGREEN = '\33[32m'
 CYELLOW = '\33[33m'
-CREDBG    = '\33[41m'
-CGREENBG  = '\33[42m'
+CREDBG = '\33[41m'
+CGREENBG = '\33[42m'
 CYELLOWBG = '\33[43m'
 
 # Some internal globals
 start_time = None
-exec_mode = Mode(Mode.Test) # Execution Mode. Do not change this manually. It will be changed by comand line
+exec_mode = Mode(Mode.Test) # Execution Mode. Don't change manually, just by CLI
 
-# Reference code outputs (yet to be imported from input_ref_file)
+# Reference code outputs (yet to be imported from INPUT_REF_FILE)
 ref = None
 ref_spec = None
 
 
-#################################################################
+################################################################################
 ######## Some helpers for overall tester execution
 
-def run (command, timeout=None, cwd=None):
+def run(command, timeout=None, cwd=None):
     try:
-        completed = subprocess.run(command, encoding="utf-8", stderr=subprocess.PIPE,
-                                                            stdout=subprocess.PIPE, timeout=timeout, cwd=cwd)
+        completed = subprocess.run(command, encoding="utf-8",
+                                   stderr=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   timeout=timeout, cwd=cwd)
         completed.check_returncode()
         return completed
     except FileNotFoundError:
         tester_error("Couldn't execute '" + command[0] + "'. File not found.")
     except subprocess.TimeoutExpired:
-        tester_error("Timeout executing '" + command[0] + "' (" + str(exec_timeout) + " seconds)")
+        tester_error("Timeout executing '" + command[0] + "' (" +
+                     str(timeout) + " seconds)")
 
-def dict2str_float_formater(dict, format):
+def dict2str_float_formater(dictionary, float_format):
     string = "{"
-    for k, v in dict.items():
-        string += "'" +str(k) + "': " + format % v + ", "
-    if (len(string) > 1):
+    for k, v in dictionary.items():
+        string += "'" +str(k) + "': " + float_format % v + ", "
+    if len(string) > 1:
         string = string[:-2]
     string += "}"
     return string
 
-def tail (arr, n):
+def tail(arr, n):
     return arr[len(arr) - n:]
 
 def tester_print(msg, sep=False, color=None, prompt=False):
-    str = "[TESTER] " if exec_mode == Mode.Test else "[EXTRACTOR] "
-    if sep: str += "--------------------- "
-    str += msg
-    if color: str = color + str + CEND
-    if prompt: return input(str)
-    else: print(str)
+    string = "[TESTER] " if exec_mode == Mode.Test else "[EXTRACTOR] "
+    if sep: string += "--------------------- "
+    string += msg
+    if color: string = color + string + CEND
+    if prompt: return input(string)
+    else: print(string)
     return None
 
 def tester_error(msg, code=1):
     tester_print("Tester.py failed...\n" + msg, color=CRED)
-    finish_tester (code)
+    finish_tester(code)
 
 def str_range(n, padding=None):
     if n < 0: return ""
@@ -136,40 +152,44 @@ def str_range(n, padding=None):
 def remove_tests_build_dir(force=True):
     try:
         if force:
-            run(["rm", "-rf", build_path])
+            run(["rm", "-rf", BUILD_PATH])
         else:
-            run(["rm", "-r", "--interactive=never", build_path])
+            run(["rm", "-r", "--interactive=never", BUILD_PATH])
     except subprocess.CalledProcessError as exception:
-        tester_error("Failed to remove tests build dir:\n" + exception.stderr, exception.returncode)
+        tester_error("Failed to remove tests build dir:\n" + exception.stderr,
+                     exception.returncode)
 
 def create_tests_build_dir():
     try:
-        run(["mkdir", "-p", build_path])
-        run(["mkdir", "-p", build_path + "/bin"])
+        run(["mkdir", "-p", BUILD_PATH])
+        run(["mkdir", "-p", BUILD_PATH + "/bin"])
     except subprocess.CalledProcessError as exception:
-        tester_error("Failed to create tests build dir:\n" + exception.stderr, exception.returncode)
+        tester_error("Failed to create tests build dir:\n" + exception.stderr,
+                     exception.returncode)
 
 def start_tester():
     global start_time
     start_time = time.time()
     def sigint_handler(sig, frame):
-            finish_tester(1)
+        finish_tester(1)
     signal.signal(signal.SIGINT, sigint_handler)
-    if not persist_tests_build_dir: remove_tests_build_dir()
+    if not PERSIST_TESTS_BUILD_DIR: remove_tests_build_dir()
 
 def finish_tester(code=0):
     end_time = time.time()
-    tester_print("Elapsed time: " + "%.3f" % (end_time - start_time) + " seconds", sep=True)
-    if not persist_tests_build_dir: remove_tests_build_dir()
+    tester_print("Elapsed time: " + "%.3f" % (end_time - start_time) +
+                 " seconds", sep=True)
+    if not PERSIST_TESTS_BUILD_DIR: remove_tests_build_dir()
     sys.exit(code)
 
 
-#################################################################
+################################################################################
 ######## References preparation handling: Importing and checking
 
 def convert_int_keys(d):
     '''
-    Takes a dict d and coverts its int keys that are stored as strings to true ints
+    Takes a dict d and coverts it's int keys that are stored as strings to
+    true ints.
     '''
     conv_d = {}
     for key, value in d.items():
@@ -178,7 +198,7 @@ def convert_int_keys(d):
             conv_key = int(key)
         except ValueError:
             conv_key = key
-        if (isinstance(value, dict)):
+        if isinstance(value, dict):
             value = convert_int_keys(value)
         conv_d[conv_key] = value
     return conv_d
@@ -187,47 +207,58 @@ def convert_int_keys(d):
 def load_references():
     global ref, ref_spec
     try:
-        ref_file = open(input_ref_file, "r")
+        ref_file = open(INPUT_REF_FILE, "r")
         ref_data = json.loads(ref_file.read())
-        ref = convert_int_keys (ref_data["ref"])
-        ref_spec = convert_int_keys (ref_data["ref_spec"])
+        ref = convert_int_keys(ref_data["ref"])
+        ref_spec = convert_int_keys(ref_data["ref_spec"])
         ref_file.close()
     except json.decoder.JSONDecodeError as e:
-        tester_error("Could'nt decode references. It seems that the references' file is incorrect" + ((":\n" + str(e)) if e and str(e) else "."))
-    except (FileNotFoundError):
-        tester_error("Could't load references. File \"" + input_ref_file + "\" wasn't found.")
+        tester_error("Could'nt decode references. It seems that the " +
+                     "references' file is incorrect" +
+                     ((":\n" + str(e)) if e and str(e) else "."))
+    except FileNotFoundError:
+        tester_error("Could't load references. File \"" + INPUT_REF_FILE +
+                     "\" wasn't found.")
     except Exception as e:
-        tester_error("Unexpected error when trying to load references" + ((":\n" + str(e)) if e and str(e) else "."))
+        tester_error("Unexpected error when trying to load references" +
+                     ((":\n" + str(e)) if e and str(e) else "."))
 
 def check_references():
     try:
         if ref is None or ref_spec is None:
-            tester_error("Reference variables are None. Maybe references file wasn't imported?")
+            tester_error("Reference variables are None. Maybe references file" +
+                         " wasn't imported?")
     except NameError:
-        tester_error("Reference variables were not loaded. Maybe references file wasn't imported?")
-    for dump in dumps:
+        tester_error("Reference variables were not loaded. Maybe references " +
+                     "file wasn't imported?")
+    for dump in DUMPS:
         dump = ntpath.basename(dump)
-        for size, _ in sizes:
+        for size, _ in SIZES:
             if dump not in ref or size not in ref[dump]:
-                tester_error("Reference file has no output reference for " + dump + " size " + str(size))
+                tester_error("Reference file has no output reference for " +
+                             dump + " size " + str(size))
             elif dump not in ref_spec or size not in ref_spec[dump]:
-                tester_error("Reference file has no spectrum reference for " + dump + " size " + str(size))
+                tester_error("Reference file has no spectrum reference for " +
+                             dump + " size " + str(size))
 
 def check_extraction_settings():
     dumpnames = {}
-    for dump in dumps:
+    for dump in DUMPS:
         dname = ntpath.basename(dump)
         if dname in dumpnames:
-            tester_error ("Your dumps list contain dumps with the same name, e.g: \"" + dname + "\"")
+            tester_error("Your DUMPS list contain dumps with the same name," +
+                         " e.g: \"" + dname + "\"")
         dumpnames[dname] = True
 
 def check_ref_file_overwrite():
-    if os.path.exists(input_ref_file):
+    if os.path.exists(INPUT_REF_FILE):
         ## From https://gist.github.com/hrouault/1358474
         while True:
-            choice = tester_print("WARNING: File \"" + input_ref_file + "\" already exists and\n" +
-                "will be overwritten. Continue? [y/N] ", color=CYELLOW, prompt=True).lower()
-            if choice == '' or choice == "n":
+            choice = tester_print("WARNING: File \"" + INPUT_REF_FILE +
+                                  "\" already exists and\nwill be overwritten" +
+                                  ". Continue? [y/N] ",
+                                  color=CYELLOW, prompt=True).lower()
+            if choice in ('', "n"):
                 tester_print("Ok, aborting...")
                 finish_tester()
             elif choice == "y":
@@ -235,17 +266,17 @@ def check_ref_file_overwrite():
                 return
             print()
 
-#################################################################
+################################################################################
 ######## Functions to handle grmonty's outputs
 
 def extract_infos(stderr):
     lines = tail(stderr.split("\n"), 5)
     tuples = {}
     for line in lines:
-        line = [re.sub("(^ +| +$)", "", word) for word in line.replace(":", "").split(",")]
-        for tuple in line:
-            if tuple:
-                attribute, value = re.split(" +", tuple)
+        line = [re.sub("(^ +| +$)", "", w) for w in line.replace(":", "").split(",")]
+        for key_value in line:
+            if key_value:
+                attribute, value = re.split(" +", key_value)
                 tuples[attribute] = float(value)
     return tuples
 
@@ -269,16 +300,17 @@ def mean_arr_of_dicts(arr):
                 m[att] += ele[att]
             m[att] /= len(arr)
     except KeyError as e:
-        tester_error("Attribute " + str(e) + " couldn't be captured in some execution.")
+        tester_error("Attribute " + str(e) + " couldn't be captured in some " +
+                     "execution.")
     return m
 
 
-#################################################################
+################################################################################
 ######## Functions to handle spectrums
 
 def mean_spec(specs):
     mean_y = []
-    x_axis = extract_total_x_axis (specs)
+    x_axis = extract_total_x_axis(specs)
     for x in x_axis:
         y = 0.0
         for spec in specs:
@@ -290,7 +322,7 @@ def mean_spec(specs):
 
 def extract_total_x_axis(specs):
     x_axis = []
-    for x,__ in specs:
+    for x, __ in specs:
         x_axis.extend(x)
     x_axis = list(set(x_axis))
     x_axis.sort()
@@ -303,9 +335,13 @@ def get_y_in_spec(spec, x):
         if x_axis[i] == x: return y_axis[i]
         elif x_axis[i] > x:
             if prev_i == -1: return y_axis[i]
+
             elif y_axis[prev_i] <= y_axis[i]:
-                return ((x - x_axis[prev_i]) * (y_axis[i] - y_axis[prev_i]) / (x_axis[i] - x_axis[prev_i])) + y_axis[prev_i]
-            else: return ((x - x_axis[i]) * (y_axis[prev_i] - y_axis[i]) / (x_axis[prev_i] - x_axis[i])) + y_axis[i]
+                return ((x - x_axis[prev_i]) * (y_axis[i] - y_axis[prev_i]) /
+                        (x_axis[i] - x_axis[prev_i])) + y_axis[prev_i]
+
+            else: return ((x - x_axis[i]) * (y_axis[prev_i] - y_axis[i]) /
+                          (x_axis[prev_i] - x_axis[i])) + y_axis[i]
         prev_i = i
     return y_axis[prev_i]
 
@@ -316,13 +352,15 @@ def load_spectrum():
     Lsol = 3.83e33
     nbins = 6
     #
-    try: data = np.loadtxt(exec_path + spec_file)
-    except Exception as e: tester_error ("Failed to load spectrum from '" + spec_file + "': " + (str(e) if e and str(e) else ""))
+    try: data = np.loadtxt(EXEC_PATH + SPEC_FILE)
+    except Exception as e: tester_error ("Failed to load spectrum from '" +
+                                         SPEC_FILE + "': " +
+                                         (str(e) if e and str(e) else ""))
     tdata = np.transpose(data)
     lw = tdata[0,:]	# log of photon energy in electron rest-mass units
     i = np.arange(0,nbins,1)
     nLn = np.log10(tdata[1+i*7,:] + 1.e-30)
-    lw = lw + np.log10(me*c*c/h)   # convert to Hz from electron rest-mass energy
+    lw = lw + np.log10(me*c*c/h)  # convert to Hz from electron rest-mass energy
     nLn = nLn + np.log10(Lsol)  # convert to erg/s from Lsol
     nLn_mean = np.mean(nLn, axis = 0)
     # return[(lw[j], nLn_mean[j]) for j in range(len(lw))]
@@ -332,7 +370,8 @@ def compare_to_reference_spectrum(spect, dump, size):
     x_axis = extract_total_x_axis([spect, ref_spec[dump][size]])
     diff = 0.0
     for x in x_axis:
-        diff += (get_y_in_spec(spect, x) - get_y_in_spec(ref_spec[dump][size], x)) ** 2
+        diff += (get_y_in_spec(spect, x) -
+                 get_y_in_spec(ref_spec[dump][size], x)) ** 2
     return diff
 
 def plot_spec_diff(test_spect, dump, size, plot_filename):
@@ -342,27 +381,31 @@ def plot_spec_diff(test_spect, dump, size, plot_filename):
         y1 = get_y_in_spec(ref_spec[dump][size], x)
         y2 = get_y_in_spec(test_spect, x)
         y_axis.append(((y2 - y1) * 100) / y2)
-    plt.figure(figsize=(12,12))
+    plt.figure(figsize=(12, 12))
     plt.subplot(2, 1, 1)
-    plt.plot(x_axis, y_axis, label="Percentual difference of testing over reference")
-    plt.title("Spectrum Difference Over Reference: " + dump + " size=" + str(size))
+    plt.plot(x_axis, y_axis, label="Percentual difference of testing over " +
+             "reference")
+    plt.title("Spectrum Difference Over Reference: " + dump + " size=" +
+              str(size))
     plt.legend()
     plt.subplot(2, 1, 2)
     plt.plot(test_spect[0], test_spect[1], "b", label="testing spectrum")
-    plt.plot(ref_spec[dump][size][0], ref_spec[dump][size][1], "g", label="reference spectrum")
+    plt.plot(ref_spec[dump][size][0], ref_spec[dump][size][1], "g",
+             label="reference spectrum")
     plt.title("Reference and Testing Spectrums")
     plt.legend()
     plt.figtext(0.75, 0.33, "Sum of Squared Error: ")
-    plt.figtext(0.75, 0.31, "%.2f " % compare_to_reference_spectrum(test_spect, dump, size))
+    plt.figtext(0.75, 0.31, "%.2f " % compare_to_reference_spectrum(test_spect,
+                                                                    dump, size))
     plt.savefig(plot_filename, format="png", dpi=150)
 
 
-#################################################################
+################################################################################
 ######## Testing functions
 
 def test_failed(test_title, msg, code=1, terminate=True):
     tester_print("TEST FAILED: " + test_title + "\n" +msg + "\n", color=CRED)
-    if terminate: finish_tester (code)
+    if terminate: finish_tester(code)
 
 def test_succeeded(terminate=False):
     tester_print("Test succeeded", color=CGREEN)
@@ -372,38 +415,43 @@ def extract_succeeded(terminate=False):
     tester_print("Extraction succeeded", color=CGREEN)
     if terminate: finish_tester()
 
-def build ():
+def build():
     tester_print("Making", sep=True)
     try:
         create_tests_build_dir()
-        os.environ["GRMONTY_BASEBUILD"] = build_path
-        print(run(["make", "-B", "-C", make_path]).stdout)
+        os.environ["GRMONTY_BASEBUILD"] = BUILD_PATH
+        print(run(["make", "-B", "-C", MAKE_PATH]).stdout)
     except subprocess.CalledProcessError as exception:
         tester_error("Make failed:\n" + exception.stderr, exception.returncode)
 
 def mk_infos_failed_msg (att, diff, limit, reference, infos_mean, diffs, infos):
-    msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (greater, in absolute value, than limit=" + str(limit) +
-    "%)\n" + "Reference: " + str(reference) + "\nGot:       " + str(infos_mean) + "\nDiffs:     " +
-    dict2str_float_formater(diffs, "%.3f%%"))
-    if print_individual_test_info:
+    msg = ("Difference for " + att + " is " + "%.3f" % diff + "% (greater, in" +
+           " absolute value, than limit=" + str(limit) + "%)\n" +
+           "Reference: " + str(reference) + "\nGot:       " + str(infos_mean) +
+           "\nDiffs:     " + dict2str_float_formater(diffs, "%.3f%%"))
+
+    if PRINT_INDIVIDUAL_TEST_INFO:
         msg += "\n\nInfos from each execution:\n"
         for info in infos:
             msg += str(info) + "\n"
     return msg
 
 def validate_infos_outputs(dump, size, infos):
-    infos_mean = mean_arr_of_dicts (infos)
+    infos_mean = mean_arr_of_dicts(infos)
     diffs = calc_diffs_from_ref(infos_mean, dump, size)
     for att, diff in diffs.items():
-        limit = special_att_diff_limit[att] if att in special_att_diff_limit else att_diff_limit
+        limit = SPECIAL_ATT_DIFF_LIMIT.get(att, ATT_DIFF_LIMIT)
         if math.isnan(diff) or math.isinf(diff) or abs(diff) > abs(limit):
-            test_failed("Output infos test", mk_infos_failed_msg (att, diff, limit, ref[dump][size],
-                                infos_mean, diffs, infos), terminate=False)
+            test_failed("Output infos test",
+                        mk_infos_failed_msg(att, diff, limit, ref[dump][size],
+                                            infos_mean, diffs, infos),
+                        terminate=False)
             return False
-    if always_print_tests_info:
+    if ALWAYS_PRINT_TESTS_INFO:
         info_str = ("Output infos test\nReference: " + str(ref[dump][size]) +
-        "\nGot:       " + str(infos_mean) + "\nDiffs:     " + dict2str_float_formater(diffs, "%.3f%%"))
-        if print_individual_test_info:
+                    "\nGot:       " + str(infos_mean) + "\nDiffs:     " +
+                    dict2str_float_formater(diffs, "%.3f%%"))
+        if PRINT_INDIVIDUAL_TEST_INFO:
             info_str += "\n\nInfos from each execution:\n"
             for info in infos:
                 info_str += str(info) + "\n"
@@ -413,17 +461,24 @@ def validate_infos_outputs(dump, size, infos):
 def validate_spectrum_output(dump, size, spects):
     test_spec = mean_spec(spects)
     spec_diff = compare_to_reference_spectrum(test_spec, dump, size)
-    plot_filename = script_basedir + "diff_spect_" + dump + "_" + str(size) + ".png"
-    if math.isnan(spec_diff) or math.isinf(spec_diff) or spec_diff > spec_diff_limit:
+    plot_filename = (SCRIPT_BASEDIR + "diff_spect_" + dump + "_" + str(size) +
+                     ".png")
+
+    if math.isnan(spec_diff) or math.isinf(spec_diff) or spec_diff > SPEC_DIFF_LIMIT:
+
         plot_spec_diff(test_spec, dump, size, plot_filename)
-        test_failed("Spectrum test", "Difference in spectrum is " + "%.3f" % spec_diff + " (greater, in absolute value, than limit="
-                            + str(spec_diff_limit) + ")\nSaved testing spectrum difference over reference spectrum in '" +
-                            plot_filename + "'", terminate=False)
+        test_failed("Spectrum test", "Difference in spectrum is " +
+                    "%.3f" % spec_diff + " (greater, in absolute value, than " +
+                    "limit=" + str(SPEC_DIFF_LIMIT) + ")\nSaved testing " +
+                    "spectrum difference over reference spectrum in '" +
+                    plot_filename + "'", terminate=False)
         return False
-    if always_print_tests_info:
+    if ALWAYS_PRINT_TESTS_INFO:
         plot_spec_diff(test_spec, dump, size, plot_filename)
-        tester_print("Spectrum test\nDifference in spectrum is " + "%.3f" % spec_diff +
-        "\nSaved testing spectrum difference over reference spectrum in '" + plot_filename + "'")
+        tester_print("Spectrum test\nDifference in spectrum is " +
+                     "%.3f" % spec_diff + "\nSaved testing spectrum " +
+                     "difference over reference spectrum in '" + plot_filename +
+                     "'")
     return True
 
 def validate_test_outputs(dump, size, infos, spects):
@@ -433,9 +488,9 @@ def validate_test_outputs(dump, size, infos, spects):
 
 def run_tests():
     e_ref, e_ref_spec = {}, {} # Used if extracting info
-    os.environ["OMP_NUM_THREADS"] = str(num_threads)
-    for dump in dumps:
-        for size, rounds in sizes:
+    os.environ["OMP_NUM_THREADS"] = str(NUM_THREADS)
+    for dump in DUMPS:
+        for size, rounds in SIZES:
             dumpname = ntpath.basename(dump)
             if exec_mode == Mode.Extract:
                 e_ref[dumpname] = {}
@@ -443,34 +498,40 @@ def run_tests():
             tester_print("Running " + dumpname + " N=" + str(size), sep=True)
             infos = []
             spects = []
-            for round in range(rounds):
-                tester_print("Rounds: " + str(round+1) + "/" + str(rounds), sep=True)
+            for iteration in range(rounds):
+                tester_print("Rounds: " + str(iteration+1) + "/" + str(rounds),
+                             sep=True)
                 try:
-                    process = run(["./" + exec_name, str(size), dump, str(M_unit)], timeout=exec_timeout, cwd=exec_path)
-                    if process.stdout: print(stdout)
+                    process = run(["./" + EXEC_NAME, str(size), dump,
+                                   str(M_UNIT)], timeout=EXEC_TIMEOUT,
+                                  cwd=EXEC_PATH)
+                    if process.stdout: print(process.stdout)
                     infos.append(extract_infos(process.stderr))
-                    spects.append (load_spectrum())
+                    spects.append(load_spectrum())
                 except subprocess.CalledProcessError as exception:
-                    tester_error("Error executing grmonty:\n" + exception.stderr, exception.returncode)
+                    tester_error("Error executing grmonty:\n" +
+                                 exception.stderr, exception.returncode)
             if exec_mode == Mode.Extract:
                 e_ref[dumpname][size] = mean_arr_of_dicts(infos)
                 e_ref_spec[dumpname][size] = mean_spec(spects)
             else:
-                validate_test_outputs(ntpath.basename(dump), size, infos, spects)
+                validate_test_outputs(ntpath.basename(dump), size, infos,
+                                      spects)
     if exec_mode == Mode.Extract:
         try:
-            out = open(extractor_output_file, "w+")
+            out = open(EXTRACTOR_OUTPUT_FILE, "w+")
             json.dump({"ref": e_ref, "ref_spec": e_ref_spec}, fp=out)
             out.close()
             extract_succeeded()
         except Exception as e:
-            tester_error("Error saving references file" + ((":\n" + str(e)) if e and str(e) else "."))
+            tester_error("Error saving references file" +
+                         ((":\n" + str(e)) if e and str(e) else "."))
     else:
         test_succeeded()
 
 
 
-#################################################################
+################################################################################
 ######## Main
 
 def invalid_options():
@@ -483,7 +544,8 @@ def print_help():
     print("Example: ./tester --extract")
     print("No options run --test by default.")
     print()
-    print("  extract - extracts outputs from current grmonty code to use as reference for tests")
+    print("  extract - extracts outputs from current grmonty code to use as" +
+          " reference for tests")
     print("  test - tests current grmonty code against reference")
     print("  help - displays this help message")
 
@@ -492,10 +554,10 @@ def parse_args():
     if len(sys.argv) > 2: invalid_options()
     if len(sys.argv) == 2:
         opt = sys.argv[1]
-        if opt == "--help" or opt == "-h": print_help (); sys.exit(1)
-        elif opt == "--extract" or opt == "-e": exec_mode = Mode(Mode.Extract)
-        elif opt ==  "--test" or opt == "-t": exec_mode = Mode(Mode.Test)
-        else: invalid_options ()
+        if opt in ("--help", "-h"): print_help (); sys.exit(1)
+        elif opt in ("--extract", "-e"): exec_mode = Mode(Mode.Extract)
+        elif opt in ("--test", "-t"): exec_mode = Mode(Mode.Test)
+        else: invalid_options()
     tester_print("MODE: " + str(exec_mode), sep=True)
 
 def main():
@@ -509,7 +571,7 @@ def main():
         check_extraction_settings()
     build()
     run_tests()
-    finish_tester ()
+    finish_tester()
 
 if __name__ == "__main__":
     main()
