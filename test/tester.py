@@ -83,6 +83,7 @@ CEND = '\33[0m'
 CRED = '\33[31m'
 CGREEN = '\33[32m'
 CYELLOW = '\33[33m'
+CBLUE = '\33[34m'
 CREDBG = '\33[41m'
 CGREENBG = '\33[42m'
 CYELLOWBG = '\33[43m'
@@ -125,11 +126,14 @@ def dict2str_float_formater(dictionary, float_format):
 def tail(arr, n):
     return arr[len(arr) - n:]
 
+def colored_string(string, color):
+    return color + string + CEND
+
 def tester_print(msg, sep=False, color=None, prompt=False):
     string = "[TESTER] " if exec_mode == Mode.Test else "[EXTRACTOR] "
     if sep: string += "--------------------- "
     string += msg
-    if color: string = color + string + CEND
+    if color: string = colored_string(string, color)
     if prompt: return input(string)
     else: print(string)
     return None
@@ -505,7 +509,8 @@ def run_tests():
                     process = run(["./" + EXEC_NAME, str(size), dump,
                                    str(M_UNIT)], timeout=EXEC_TIMEOUT,
                                   cwd=EXEC_PATH)
-                    if process.stdout: print(process.stdout)
+                    if process.stdout:
+                        print(colored_string(process.stdout, CBLUE))
                     infos.append(extract_infos(process.stderr))
                     spects.append(load_spectrum())
                 except subprocess.CalledProcessError as exception:
@@ -520,7 +525,8 @@ def run_tests():
     if exec_mode == Mode.Extract:
         try:
             out = open(EXTRACTOR_OUTPUT_FILE, "w+")
-            json.dump({"ref": e_ref, "ref_spec": e_ref_spec}, fp=out)
+            json.dump({"ref": e_ref, "ref_spec": e_ref_spec}, fp=out,
+                      indent="  ")
             out.close()
             extract_succeeded()
         except Exception as e:
