@@ -26,7 +26,7 @@ modify the global constants at the top of the program's code. Each setting is we
 documented at their definitions.
 
 The reference code output (used by `tester.py` to validate the testing code) is stored in
-`references.py`. This file can be changed manually (to add new references or change
+`references.json`. This file can be changed manually (to add new references or change
 current ones), but its easier to update it with the `./tester.py --extract`.
 
 # TODO
