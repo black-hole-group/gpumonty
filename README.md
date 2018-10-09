@@ -5,7 +5,8 @@ Based on [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..
 
 This version of GRMONTY is configured to use input files from the HARM code available on the same site. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
 
-This version of GRMONTY is parallelized in GPU using [OpenACC](https://www.openacc.org). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
+This version of GRMONTY is parallelized in GPU using [OpenACC](https://www.openacc.org). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/). Also, scatteting
+is still not enabled in this version.
 
 
 # Dependencies:
@@ -60,7 +61,7 @@ After compiling, you can run the container with:
 ### Running the code
 Run the code on the supplied harm output file:
 
-    ./grmonty 5000000 dump1000 4.e19 [C]
+    ./bin/grmonty 5000000 dump1000 4.e19 [C]
 
 Arguments are:
 
@@ -79,8 +80,14 @@ NOTE: Code compiled directly on your system does not necessarily runs in the con
 ./plspec.py [filename]
 ```
 
-Where filename is optional, beeing 'spectrum.dat' by default.
+Where filename is optional, beeing `grmonty.spec` by default.
 
+# Running Tests
+
+    ./test/tester.py
+
+See ./test/README.md for test details. You should use `optirun` if you're using
+the optimus drivers.
 
 # Calculate spectra from other sources
 
@@ -101,6 +108,22 @@ get_connection
 ```
 
 in the model file.
+
+# Explanation of main branches
+
+- `master`, stable: matches the original release functionality, supports only input from `HARM2D`
+- `illinois`: latest bug corrections by Gammie's group, `HARM2D`
+
+Please note that all other branches include significant amount of work which has not been made public yet.
+
+## 3D HARM support
+
+work in progress...
+
+## GPU support
+
+- `cuda`, in progress: CUDA version in progress, lead by Rodrigo
+- `openacc`: OpenACC in progress, lead by Matheus
 
 ## Misc.
 

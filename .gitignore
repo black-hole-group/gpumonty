@@ -1,4 +1,11 @@
 *.o
-grmonty
-*.spec
 pgilinux*.tar.gz
+__pycache__
+grmonty
+spectrum.dat
+grmonty.spec
+hotcross.dat
+build
+bin/*
+!bin/.gitkeep
+test/diff*.png

@@ -1,9 +1,11 @@
-#
 # Requirements:
 # - pgcc, version >= 18.4
 # - gcc, version < 7.0 (preferably 5.4.1)
 # - cuda toolkit 9.2
 # - cuda drivers
+#
+# makefile adapted from:
+# https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/
 #
 
 #The GPU Compute Capability (change this according to your GPU)
@@ -15,27 +17,32 @@ LDFLAGS=-Mcuda=rdc -lgsl -lgslcblas -Mcudalib=curand
 NVCC =nvcc
 NVCCFLAGS = -rdc=true
 
-EXE=grmonty
-INCS=decs.h constants.h harm_model.h gmath.h gpu_rng.h bessel.h
-OBJS = grmonty.o compton.o init_geometry.o tetrads.o geodesics.o \
-radiation.o jnu_mixed.o hotcross.o track_super_photon.o \
-scatter_super_photon.o harm_model.o harm_utils.o init_iharm2dv3_data.o\
-cpu_rng.o gpu_rng.o gmath.o bessel.o acc_print.o
+GRMONTY_BASEBUILD ?= .
+EXE = grmonty
+SRCDIR = src
+BUILDDIR = $(GRMONTY_BASEBUILD)/build
+TARGET = $(GRMONTY_BASEBUILD)/bin/$(EXE)
 
-all: $(EXE)
+EXCLUDE=init_harm_data.c
+SRCS = $(shell find $(SRCDIR) -type f -name *.c | grep -v $(EXCLUDE))
+OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.c=.o))
+INCS = $(shell find $(SRCDIR) -type f -name *.h)
 
-acc_print.o: acc_print.cu
-	$(NVCC) $(NVCCFLAGS) -c $<
+all: $(TARGET)
 
-gpu_rng.o: gpu_rng.c Makefile $(INCS)
-	$(CC) $(CCFLAGS_FORCUDALIBS) -c $<
+$(BUILDDIR)/acc_print.o: $(SRCDIR)/acc_print.cu $(INCS) Makefile
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-%.o: %.c Makefile $(INCS)
-	$(CC) $(CCFLAGS) -c $<
+$(BUILDDIR)/gpu_rng.o: $(SRCDIR)/gpu_rng.c $(INCS) Makefile
+	$(CC) $(CCFLAGS_FORCUDALIBS) -c $< -o $@
 
-$(EXE) : $(OBJS) $(INCS) Makefile
-	$(CC) $(CCFLAGS) $(OBJS) -o $(EXE) $(LDFLAGS)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c $(INCS) Makefile
+	@mkdir -p $(BUILDDIR)
+	$(CC) $(CCFLAGS) -c  $< -o $@
+
+$(TARGET): $(OBJS) $(INCS) Makefile
+	$(CC) $(CCFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 .PHONY: clean
 clean:
-	/bin/rm -f *.o $(EXE)
+	/bin/rm -f $(TARGET); /bin/rm -rf $(GRMONTY_BASEBUILD)/build
