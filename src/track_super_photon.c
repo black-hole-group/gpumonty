@@ -8,7 +8,6 @@
 */
 
 #include "decs.h"
-#include "gmath.h"
 
 #define MAXNSTEP	1280000
 
@@ -29,15 +28,15 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 	    Bcov[NDIM];
 	int nstep = 0;
 
-	   // isnan_gd(ph->K[2]) || isnan_gd(ph->K[3]) || ph->w == 0.) {
+	   // isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
 	/* quality control */
-	if (isnan_gd(ph->X[0]) ||
-	    isnan_gd(ph->X[1]) ||
-	    isnan_gd(ph->X[2]) ||
-	    isnan_gd(ph->X[3]) ||
-	    isnan_gd(ph->K[0]) ||
-	    isnan_gd(ph->K[1]) ||
-	    isnan_gd(ph->K[2]) || isnan_gd(ph->K[3]) ) {
+	if (isnan(ph->X[0]) ||
+	    isnan(ph->X[1]) ||
+	    isnan(ph->X[2]) ||
+	    isnan(ph->X[3]) ||
+	    isnan(ph->K[0]) ||
+	    isnan(ph->K[1]) ||
+	    isnan(ph->K[2]) || isnan(ph->K[3]) ) {
 		// fprintf(stderr, "track_super_photon: bad input photon.\n");
 		// fprintf(stderr,
 		// 	"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
@@ -102,7 +101,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 				    get_bk_angle(ph->X, ph->K, Ucov, Bcov,
 						 B);
 				nu = get_fluid_nu(ph->X, ph->K, Ucov);
-				// if (isnan_gd(nu)) {
+				// if (isnan(nu)) {
 				// 	fprintf(stderr,
 				// 		"isnan nu: track_super_photon dl,E0 %g %g\n",
 				// 		dl, E0);
@@ -153,9 +152,9 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 			x1 = -log(gpu_rng_uniform(curandstate));
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-				// if (isnan_gd(php.w) || isinf_gd(php.w)) {
+				// if (isnan(php.w) || isinf(php.w)) {
 				// 	fprintf(stderr,
-				// 		"w isnan_gd in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
+				// 		"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
 				// 		Ne, bias, ph->w, php.w);
 				// }
 

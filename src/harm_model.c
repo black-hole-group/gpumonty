@@ -5,7 +5,6 @@
 */
 #include "decs.h"
 #include "harm_model.h"
-#include "gmath.h"
 
 double Rh;
 
@@ -562,7 +561,7 @@ void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_rec
 	double lE, dx2;
 	int iE, ix2;
 
-	if (isnan_gd(ph->w) || isnan_gd(ph->E)) {
+	if (isnan(ph->w) || isnan(ph->E)) {
 		// fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}

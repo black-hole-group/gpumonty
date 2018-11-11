@@ -4,7 +4,6 @@
 */
 
 #include "decs.h"
-#include "gmath.h"
 
 /*
 	scatter photon ph into photon php at same position
@@ -21,14 +20,14 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 
 	/* quality control */
 
-	// if (isnan_gd(ph->K[1])) {
+	// if (isnan(ph->K[1])) {
 	// 	fprintf(stderr, "scatter: bad input photon\n");
 	// 	exit(0);
 	// }
 
 	/* quality control */
-	if (ph->K[0] > 1.e5 || ph->K[0] < 0. || isnan_gd(ph->K[1])
-	    || isnan_gd(ph->K[0]) || isnan_gd(ph->K[3])) {
+	if (ph->K[0] > 1.e5 || ph->K[0] < 0. || isnan(ph->K[1])
+	    || isnan(ph->K[0]) || isnan(ph->K[3])) {
 		// fprintf(stderr,
 		// 	"normalization problem, killing superphoton: %g \n",
 		// 	ph->K[0]);
@@ -56,7 +55,7 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 	coordinate_to_tetrad(Ecov, ph->K, K_tetrad);
 
 	/* quality control */
-	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan_gd(K_tetrad[1])) {
+	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
 		// fprintf(stderr,
 		// 	"conversion to tetrad frame problem: %g %g\n",
 		// 	ph->K[0], K_tetrad[0]);
@@ -89,7 +88,7 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 	tetrad_to_coordinate(Econ, K_tetrad_p, php->K);
 
 	/* quality control */
-	if (isnan_gd(php->K[1])) {
+	if (isnan(php->K[1])) {
 		// fprintf(stderr,
 		// 	"problem with conversion to coordinate frame\n");
 		// fprintf(stderr, "%g %g %g %g\n", Econ[0][0], Econ[0][1],

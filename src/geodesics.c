@@ -1,7 +1,6 @@
 
 
 #include "decs.h"
-#include "gmath.h"
 /*
 
 this is the main photon orbit integrator
@@ -64,7 +63,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double 
                         K[k] = Kcon[k] + dl_2 * dKcon[k];
                         err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
                 }
-        } while ((err > ETOL || isinf_gd(err) || isnan_gd(err)) && iter < MAX_ITER);
+        } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
 
         FAST_CPY(K, Kcon);
 

@@ -5,7 +5,6 @@ model-independent radiation-related utilities.
 */
 
 #include "decs.h"
-#include "gmath.h"
 
 double Bnu_inv(double nu, double Thetae)
 {
@@ -75,7 +74,7 @@ double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 
 	nu = ener * ME * CL * CL / HPL;
 
-	// if (isnan_gd(ener)) {
+	// if (isnan(ener)) {
 	// 	fprintf(stderr, "isnan get_fluid_nu, K: %g %g %g %g\n",
 	// 		K[0], K[1], K[2], K[3]);
 	// 	fprintf(stderr, "isnan get_fluid_nu, X: %g %g %g %g\n",

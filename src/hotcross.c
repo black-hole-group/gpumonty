@@ -1,5 +1,4 @@
 #include "decs.h"
-#include "gmath.h"
 #include "bessel.h"
 /*
 
@@ -135,7 +134,7 @@ double total_compton_cross_lkup(double w, double thetae)
 		    table[i + 1][j]  + (1. - di) * dj * table[i][j + 1]  +
 		    di * dj *table[i + 1][j + 1] ;
 
-		// if (isnan_gd(lcross)) fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);
+		// if (isnan(lcross)) fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);
 
 		return (pow(10., lcross));
 	}
@@ -153,7 +152,7 @@ double total_compton_cross_num(double w, double thetae)
 {
 	double dmue, dgammae, mue, gammae, f, cross;
 
-	if (isnan_gd(w)) {
+	if (isnan(w)) {
 		// fprintf(stderr, "compton cross isnan: %g %g\n", w, thetae);
 		return (0.);
 	}
@@ -181,7 +180,7 @@ double total_compton_cross_num(double w, double thetae)
 			    dmue * dgammae * boostcross(w, mue,
 							gammae) * f;
 
-			// if (isnan_gd(cross)) {
+			// if (isnan(cross)) {
 			// 	fprintf(stderr, "%g %g %g %g %g %g\n", w,
 			// 		thetae, mue, gammae,
 			// 		dNdgammae(thetae, gammae),
@@ -227,7 +226,7 @@ static double boostcross(double w, double mue, double gammae)
 	// 	fprintf(stderr, "kn: %g %g %g\n", v, we, boostcross);
 	// }
 
-	// if (isnan_gd(boostcross)) {
+	// if (isnan(boostcross)) {
 	// 	fprintf(stderr, "isnan: %g %g %g\n", w, mue, gammae);
 	// 	exit(0);
 	// }

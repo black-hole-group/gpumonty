@@ -1,7 +1,5 @@
 
 #include "decs.h"
-#include "gmath.h"
-
 /*
 
 Routines for treating Compton scattering via Monte Carlo.
@@ -152,7 +150,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	boost(kpe, p, kp);
 
 	/* quality control */
-	// if (kp[0] < 0 || isnan_gd(kp[0])) {
+	// if (kp[0] < 0 || isnan(kp[0])) {
 	// 	fprintf(stderr, "in sample_scattered_photon:\n");
 	// 	fprintf(stderr, "kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
 	// 	fprintf(stderr, "kpe: %g %g %g %g\n", kpe[0], kpe[1],
