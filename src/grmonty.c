@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 	curandState_t curandstate;
 
 	check_args(argc, argv, &Ns, &seed);
-	cpu_rng_init(seed);
+	harm_rng_init(seed);
 	malloc_spect(&spect);
 
 	/* spectral bin parameters */

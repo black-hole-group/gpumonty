@@ -148,10 +148,6 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
 
-/* CPU RNG routines */
-void cpu_rng_init(unsigned long int seed);
-double cpu_rng_uniforme(void);
-
 /* geodesic integration */
 void init_dKdlam(double X[], double Kcon[], double dK[]);
 void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
