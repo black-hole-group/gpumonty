@@ -28,7 +28,11 @@ SRCS = $(shell find $(SRCDIR) -type f -name *.c | grep -v $(EXCLUDE))
 OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.c=.o))
 INCS = $(shell find $(SRCDIR) -type f -name *.h)
 
-all: $(TARGET)
+# Disable compiling for now (you can still try to compile but it probably won't
+# work)
+all:
+	@echo "[In the process of converting OpenACC to CUDA]"
+	@echo "It won't be possible to compile the code for some commits..."
 
 $(BUILDDIR)/acc_print.o: $(SRCDIR)/acc_print.cu $(INCS) Makefile
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
