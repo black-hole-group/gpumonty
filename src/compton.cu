@@ -10,14 +10,20 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 */
 
 
-/*
 
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
+
+/*
 Lorentz boost vector v into frame given by four-velocity u.
 Result goes out in vp.
 Assumes all four-velocities are given in orthonormal coordinates.
 
 */
-
+__device__
 void boost(double v[4], double u[4], double vp[4])
 {
 	double g, V, n1, n2, n3, gm1;
@@ -50,13 +56,11 @@ void boost(double v[4], double u[4], double vp[4])
 }
 
 /*
-
    differential cross section for scattering from
    frequency a -> frequency ap.  Frequencies are
    in units of m_e.  Unnormalized!
-
 */
-
+__device__
 double klein_nishina(double a, double ap)
 {
 	double ch, kn;
@@ -67,18 +71,14 @@ double klein_nishina(double a, double ap)
 	return (kn);
 }
 
-/****************************************************************************
-											GPU curand-dependent functions
-****************************************************************************/
 
 /*
    given photon w/ wavevector $k$ colliding w/ electron with
-   momentum $p$, ($p$ is actually the four-velocity)
+   momentum $l_p$, ($l_p$ is actually the four-velocity)
    find new wavevector $kp$
-
 */
-
-void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4], double kp[4])
+__device__
+void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p[4], double kp[4])
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -88,7 +88,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
 
-	boost(k, p, ke);
+	boost(k, l_p, ke);
 	if (ke[0] > 1.e-4) {
 		k0p = sample_klein_nishina(curandstate, ke[0]);
 		cth = 1. - 1 / k0p + 1. / ke[0];
@@ -125,17 +125,17 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	v2z = v0x * v1y - v0y * v1x;
 
 	/* now resolve new momentum vector along unit vectors */
-	/* create a four-vector $p$ */
+	/* create a four-vector $l_p$ */
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * gpu_rng_uniform(curandstate);
+	phi = 2. * M_PI * curand_uniform_double(curandstate);
 	sphi = sin(phi);
 	cphi = cos(phi);
 
-	p[1] *= -1.;
-	p[2] *= -1.;
-	p[3] *= -1.;
+	l_p[1] *= -1.;
+	l_p[2] *= -1.;
+	l_p[3] *= -1.;
 
 	dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
 	dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
@@ -147,7 +147,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	kpe[3] = k0p * dir3;
 
 	/* transform k back to lab frame */
-	boost(kpe, p, kp);
+	boost(kpe, l_p, kp);
 
 	/* quality control */
 	// if (kp[0] < 0 || isnan(kp[0])) {
@@ -159,8 +159,8 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
 	// 		k[3]);
 	// 	fprintf(stderr, "ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
 	// 		ke[3]);
-	// 	fprintf(stderr, "p:   %g %g %g %g\n", p[0], p[1], p[2],
-	// 		p[3]);
+	// 	fprintf(stderr, "l_p:   %g %g %g %g\n", l_p[0], l_p[1], l_p[2],
+	// 		l_p[3]);
 	// 	fprintf(stderr, "kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
 	// 		kp[3]);
 	// }
@@ -173,15 +173,15 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double p[4
    differential cross section */
 
 /* uses simple rejection scheme */
-
+__device__
 double sample_thomson(curandState_t *curandstate)
 {
 	double x1, x2;
 
 	do {
 
-		x1 = 2. * gpu_rng_uniform(curandstate) - 1.;
-		x2 = (3. / 4.) * gpu_rng_uniform(curandstate);
+		x1 = 2. * curand_uniform_double(curandstate) - 1.;
+		x2 = (3. / 4.) * curand_uniform_double(curandstate);
 
 	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
 
@@ -189,13 +189,11 @@ double sample_thomson(curandState_t *curandstate)
 }
 
 /*
-
 sample Klein-Nishina differential cross section.
 
 This routine is inefficient; it needs improvement.
-
 */
-
+__device__
 double sample_klein_nishina(curandState_t *curandstate, double k0)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
@@ -206,12 +204,12 @@ double sample_klein_nishina(curandState_t *curandstate, double k0)
 	do {
 
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * gpu_rng_uniform(curandstate);
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * curand_uniform_double(curandstate);
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= gpu_rng_uniform(curandstate);
+		x1 *= curand_uniform_double(curandstate);
 
 	} while (x1 >= klein_nishina(k0, k0p_tent));
 
@@ -219,13 +217,11 @@ double sample_klein_nishina(curandState_t *curandstate, double k0)
 }
 
 /*
-
 	sample electron distribution to find which electron was
 	scattered.
-
 */
-
-void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4], double Thetae)
+__device__
+void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p[4], double Thetae)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -266,7 +262,7 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4
 						   log(1. + 2. * K));
 		}
 
-		x1 = gpu_rng_uniform(curandstate);
+		x1 = curand_uniform_double(curandstate);
 
 		sample_cnt++;
 
@@ -312,25 +308,25 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4
 	v2z = v0x * v1y - v0y * v1x;
 
 	/* now resolve new momentum vector along unit vectors
-	   and create a four-vector $p$ */
-	phi = gpu_rng_uniform(curandstate) * 2. * M_PI;	/* orient uniformly */
+	   and create a four-vector $l_p$ */
+	phi = curand_uniform_double(curandstate) * 2. * M_PI;	/* orient uniformly */
 	sphi = sin(phi);
 	cphi = cos(phi);
 
 	cth = mu;
 	sth = sqrt(1. - mu * mu);
 
-	p[0] = gamma_e;
-	p[1] = gamma_e * beta_e * (cth * v0x +
+	l_p[0] = gamma_e;
+	l_p[1] = gamma_e * beta_e * (cth * v0x +
 				sth * (cphi * v1x + sphi * v2x));
-	p[2] = gamma_e * beta_e * (cth * v0y +
+	l_p[2] = gamma_e * beta_e * (cth * v0y +
 				sth * (cphi * v1y + sphi * v2y));
-	p[3] = gamma_e * beta_e * (cth * v0z +
+	l_p[3] = gamma_e * beta_e * (cth * v0z +
 				sth * (cphi * v1z + sphi * v2z));
 
 	// if (beta_e < 0) {
 	// 	fprintf(stderr, "betae error: %g %g %g %g\n",
-	// 		p[0], p[1], p[2], p[3]);
+	// 		l_p[0], l_p[1], l_p[2], l_p[3]);
 	// }
 
 	return;
@@ -341,9 +337,8 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double p[4
    from relativistic maxwellian
 
    checked.
-
 */
-
+__device__
 void sample_beta_distr(curandState_t *curandstate, double Thetae, double *gamma_e, double *beta_e)
 {
 	double y;
@@ -360,14 +355,12 @@ void sample_beta_distr(curandState_t *curandstate, double Thetae, double *gamma_
 }
 
 /*
-
    sample y, which is the temperature-normalized
    kinetic energy.
    Uses procedure outlined in Canfield et al. 1987,
    p. 572 et seq.
-
 */
-
+__device__
 double sample_y_distr(curandState_t *curandstate, double Thetae)
 {
 
@@ -387,7 +380,7 @@ double sample_y_distr(curandState_t *curandstate, double Thetae)
 	pi_6 /= S_3;
 
 	do {
-		x1 = gpu_rng_uniform(curandstate);
+		x1 = curand_uniform_double(curandstate);
 
 		if (x1 < pi_3) {
 			x = gpu_rng_ran_chisq(curandstate, 3);
@@ -403,7 +396,7 @@ double sample_y_distr(curandState_t *curandstate, double Thetae)
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = gpu_rng_uniform(curandstate);
+		x2 = curand_uniform_double(curandstate);
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
@@ -414,11 +407,12 @@ double sample_y_distr(curandState_t *curandstate, double Thetae)
 	return (y);
 }
 
+__device__
 double sample_mu_distr(curandState_t *curandstate, double beta_e)
 {
 	double mu, x1, det;
 
-	x1 = gpu_rng_uniform(curandstate);
+	x1 = curand_uniform_double(curandstate);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	// if (det < 0.)
 	// 	fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);

@@ -6,6 +6,12 @@ model-independent radiation-related utilities.
 
 #include "decs.h"
 
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
+__device__
 double Bnu_inv(double nu, double Thetae)
 {
 
@@ -20,6 +26,7 @@ double Bnu_inv(double nu, double Thetae)
 		return ((2. * HPL / (CL * CL)) / (exp(x) - 1.));
 }
 
+__device__
 double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 {
 	double j;
@@ -30,6 +37,7 @@ double jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 }
 
 /* return Lorentz invariant scattering opacity */
+__device__
 double alpha_inv_scatt(double nu, double Thetae, double Ne)
 {
 	double kappa;
@@ -40,6 +48,7 @@ double alpha_inv_scatt(double nu, double Thetae, double Ne)
 }
 
 /* return Lorentz invariant absorption opacity */
+__device__
 double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 		     double theta)
 {
@@ -53,6 +62,7 @@ double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 
 
 /* return electron scattering opacity, in cgs */
+__device__
 double kappa_es(double nu, double Thetae)
 {
 	double Eg;
@@ -64,6 +74,7 @@ double kappa_es(double nu, double Thetae)
 }
 
 /* get frequency in fluid frame, in Hz */
+__device__
 double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 {
 	double ener, nu;
@@ -88,6 +99,7 @@ double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 }
 
 /* return angle between magnetic field and wavevector */
+__device__
 double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B)
 {
@@ -102,7 +114,7 @@ double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 
 	/* B is in cgs but Bcov is in code units */
 	mu = (K[0] * Bcov[0] + K[1] * Bcov[1] + K[2] * Bcov[2] +
-	      K[3] * Bcov[3]) / (k * B / B_unit);
+	      K[3] * Bcov[3]) / (k * B / d_B_unit);
 
 	if (fabs(mu) > 1.)
 		mu /= fabs(mu);

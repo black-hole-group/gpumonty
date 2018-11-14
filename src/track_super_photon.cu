@@ -8,10 +8,14 @@
 */
 
 #include "decs.h"
+#include "gpu_utils.h"
 
 #define MAXNSTEP	1280000
 
-void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect)
+
+__global__
+void track_super_photon(curandState_t *curandstates, struct of_photon *phs,
+						int offset)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -21,22 +25,26 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 	double dl, x1;
 	double nu, Thetae, Ne, B, theta;
 	struct of_photon php;
-	double dtauK, frac;
+	double frac;
 	double bias = 0.;
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+	double dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
+
+	int my_id = gpu_thread_id();
+	int my_ph_id = my_id + offset;
+
+	if (my_ph_id >= d_N_superph_made) return;
+	curandState_t *curandstate = &curandstates[my_id];
+	struct of_photon *ph = &phs[my_ph_id];
 
 	   // isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
 	/* quality control */
-	if (isnan(ph->X[0]) ||
-	    isnan(ph->X[1]) ||
-	    isnan(ph->X[2]) ||
-	    isnan(ph->X[3]) ||
-	    isnan(ph->K[0]) ||
-	    isnan(ph->K[1]) ||
-	    isnan(ph->K[2]) || isnan(ph->K[3]) ) {
+	if (isnan(ph->X[0]) || isnan(ph->X[1]) || isnan(ph->X[2]) ||
+		isnan(ph->X[3]) || isnan(ph->K[0]) || isnan(ph->K[1]) ||
+		isnan(ph->K[2]) || isnan(ph->K[3]) ) {
 		// fprintf(stderr, "track_super_photon: bad input photon.\n");
 		// fprintf(stderr,
 		// 	"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
@@ -44,8 +52,6 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 		// 	ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
 		return;
 	}
-
-	dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -149,7 +155,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 				bi = bf;
 			}
 
-			x1 = -log(gpu_rng_uniform(curandstate));
+			x1 = -log(curand_uniform_double(curandstate));
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				// if (isnan(php.w) || isinf(php.w)) {
@@ -264,7 +270,7 @@ void track_super_photon(curandState_t *curandstate, struct of_photon *ph, unsign
 
 	/* accumulate result in spectrum on escape */
 	if (record_criterion(ph) && nstep < MAXNSTEP)
-		record_super_photon(ph, N_superph_recorded, spect);
+		record_super_photon(ph);
 
 	/* done! */
 	return;

@@ -1,13 +1,29 @@
+#include <gsl/gsl_rng.h>
+#include <cuda.h>
 #include "decs.h"
 #include "harm_model.h"
-#include <gsl/gsl_rng.h>
+#include "gpu_utils.h"
 
+
+#define BTHSQMIN	(1.e-4)
+#define BTHSQMAX	(1.e9)
+#define	NINT		(40000)
+
+static double lb_min, dlb;
+static double nint[NINT + 1];
+static double dndlnu_max[NINT + 1];
 static double wgt[N_ESAMP + 1];
 static gsl_rng *rng; // Random number generator state
+static double lnu_min, lnu_max, dlnu;
 
 
-/** HARM utilities **/
+static void init_linear_interp_weight();
+static double linear_interp_weight(double nu);
 
+/*******************************************************************************
+* Host-only Functions
+*
+*******************************************************************************/
 
 void harm_rng_init(unsigned long int seed)
 {
@@ -15,68 +31,11 @@ void harm_rng_init(unsigned long int seed)
 	gsl_rng_set(rng, seed);
 }
 
-/********************************************************************
-
-				Interpolation routines
-
- ********************************************************************/
-
-/*
- * Finds interpolated value of var at location given by i,j.
- * What is coeff?
- */
-double interp_scalar(double **var, int i, int j, double coeff[4])
-{
-
-	double interp;
-
-	interp =
-	    var[i][j] * coeff[0] +
-	    var[i][j + 1] * coeff[1] +
-	    var[i + 1][j] * coeff[2] + var[i + 1][j + 1] * coeff[3];
-
-	return interp;
-}
-
-double lnu_min, lnu_max, dlnu;
-
-static void init_linear_interp_weight()
-{
-
-	lnu_min = log(NUMIN);
-	lnu_max = log(NUMAX);
-	dlnu = (lnu_max - lnu_min) / (N_ESAMP);
-}
-
-static double linear_interp_weight(double nu)
-{
-
-	int i;
-	double di, lnu;
-
-	lnu = log(nu);
-
-	di = (lnu - lnu_min) / dlnu;
-	i = (int) di;
-	di = di - i;
-
-	return exp((1. - di) * wgt[i] + di * wgt[i + 1]);
-
-}
-
-
-/***********************************************************************************
-
-					End interpolation routines
-
- ***********************************************************************************/
-
-
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(unsigned long long Ns)
 {
 
-	int i, j, l, lstart, lend, myid, nthreads;
+	int i, j, l;
 	double Ne, Thetae, B, K2;
 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
 	double fac, sfac;
@@ -88,7 +47,7 @@ void init_weight_table(unsigned long long Ns)
 	/*      Set up interpolation */
 	init_linear_interp_weight();
 
-#pragma acc parallel loop
+	//TODO: this section could be parallelized
 	for (i = 0; i <= N_ESAMP; i++) {
 		sum[i] = 0.;
 		nu[i] = exp(i * dlnu + lnu_min);
@@ -111,7 +70,8 @@ void init_weight_table(unsigned long long Ns)
 			for (l = 0; l < N_ESAMP+1; l++)
 				sum[l] += fac * F_eval(Thetae, B, nu[l]);
 		}
-    #pragma acc parallel loop
+
+	//TODO: this section could be parallelized
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 
@@ -120,49 +80,29 @@ void init_weight_table(unsigned long long Ns)
 
 	return;
 }
-
 #undef JCST
 
-#define BTHSQMIN	(1.e-4)
-#define BTHSQMAX	(1.e9)
-#define	NINT		(40000)
-
-double lb_min, dlb;
-double nint[NINT + 1];
-double dndlnu_max[NINT + 1];
-void init_nint_table(void)
+static void init_linear_interp_weight()
 {
 
-	int i, j;
-	double Bmag, dn;
-	static int firstc = 1;
+	lnu_min = log(NUMIN);
+	lnu_max = log(NUMAX);
+	dlnu = (lnu_max - lnu_min) / (N_ESAMP);
+}
 
-	if (firstc) {
-		lb_min = log(BTHSQMIN);
-		dlb = log(BTHSQMAX / BTHSQMIN) / NINT;
-		firstc = 0;
-	}
+static double linear_interp_weight(double nu)
+{
 
-	for (i = 0; i <= NINT; i++) {
-		nint[i] = 0.;
-		Bmag = exp(i * dlb + lb_min);
-		dndlnu_max[i] = 0.;
-		for (j = 0; j < N_ESAMP; j++) {
-			dn = F_eval(1., Bmag,
-				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[j]) + 1.e-100);
-			if (dn > dndlnu_max[i])
-				dndlnu_max[i] = dn;
-			nint[i] += dlnu * dn;
-		}
-		nint[i] *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
-		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-		    * 1. / HPL;
-		nint[i] = log(nint[i]);
-		dndlnu_max[i] = log(dndlnu_max[i]);
-	}
+	int i;
+	double di, lnu;
 
-	return;
+	lnu = log(nu);
+
+	di = (lnu - lnu_min) / dlnu;
+	i = (int) di;
+	di = di - i;
+
+	return exp((1. - di) * wgt[i] + di * wgt[i + 1]);
 }
 
 void init_zone(int i, int j, unsigned long long*nz, double *dnmax, unsigned long long Ns)
@@ -266,15 +206,13 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int fi
 	do {
 		nu = exp(gsl_rng_uniform(rng) * Nln + lnu_min);
 		weight = linear_interp_weight(nu);
-	} while (gsl_rng_uniform(rng) >
-		 (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
+	} while (gsl_rng_uniform(rng) > (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
 
 	ph->w = weight;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 	do {
 		cth = 2. * gsl_rng_uniform(rng) - 1.;
 		th = acos(cth);
-
 	} while (gsl_rng_uniform(rng) >
 		 jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
 
@@ -326,41 +264,37 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int fi
 	return;
 }
 
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+void init_nint_table(void)
 {
 
-	*i = (int) ((X[1] - startx[1]) / dx[1] - 0.5 + 1000) - 1000;
-	*j = (int) ((X[2] - startx[2]) / dx[2] - 0.5 + 1000) - 1000;
+	int i, j;
+	double Bmag, dn;
+	static int firstc = 1;
 
-	if (*i < 0) {
-		*i = 0;
-		del[1] = 0.;
-	} else if (*i > N1 - 2) {
-		*i = N1 - 2;
-		del[1] = 1.;
-	} else {
-		del[1] = (X[1] - ((*i + 0.5) * dx[1] + startx[1])) / dx[1];
+	if (firstc) {
+		lb_min = log(BTHSQMIN);
+		dlb = log(BTHSQMAX / BTHSQMIN) / NINT;
+		firstc = 0;
 	}
 
-	if (*j < 0) {
-		*j = 0;
-		del[2] = 0.;
-	} else if (*j > N2 - 2) {
-		*j = N2 - 2;
-		del[2] = 1.;
-	} else {
-		del[2] = (X[2] - ((*j + 0.5) * dx[2] + startx[2])) / dx[2];
+	for (i = 0; i <= NINT; i++) {
+		nint[i] = 0.;
+		Bmag = exp(i * dlb + lb_min);
+		dndlnu_max[i] = 0.;
+		for (j = 0; j < N_ESAMP; j++) {
+			dn = F_eval(1., Bmag,
+				    exp(j * dlnu +
+					lnu_min)) / (exp(wgt[j]) + 1.e-100);
+			if (dn > dndlnu_max[i])
+				dndlnu_max[i] = dn;
+			nint[i] += dlnu * dn;
+		}
+		nint[i] *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
+		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
+		    * 1. / HPL;
+		nint[i] = log(nint[i]);
+		dndlnu_max[i] = log(dndlnu_max[i]);
 	}
-
-	return;
-}
-
-/* return boyer-lindquist coordinate of point */
-void bl_coord(double *X, double *r, double *th)
-{
-
-	*r = exp(X[1]) + R0;
-	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
 
 	return;
 }
@@ -375,38 +309,6 @@ void coord(int i, int j, double *X)
 	X[3] = startx[3];
 
 	return;
-}
-
-
-void set_units(char *munitstr)
-{
-	double MBH;
-
-	sscanf(munitstr, "%lf", &M_unit);
-
-	/** from this, calculate units of length, time, mass,
-	    and derivative units **/
-	MBH = 4.6e6 * MSUN ;
-	L_unit = GNEWT * MBH / (CL * CL);
-	T_unit = L_unit / CL;
-
-	fprintf(stderr, "\nUNITS\n");
-	fprintf(stderr, "L,T,M: %g %g %g\n", L_unit, T_unit, M_unit);
-
-	RHO_unit = M_unit / pow(L_unit, 3);
-	U_unit = RHO_unit * CL * CL;
-	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
-
-	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
-
-	Ne_unit = RHO_unit / (MP + ME);
-
-	// max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
-    // max_tau_scatt = 0.001295;
-	max_tau_scatt = 0.0024;
-
-	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
-
 }
 
 /* set up all grid functions */
@@ -426,11 +328,40 @@ void init_geometry()
 			geom[i][j].g = gdet_func(geom[i][j].gcov);
 
 			gcon_func(X, geom[i][j].gcon);
-
 		}
 	}
 
 	/* done! */
+}
+
+void set_units(char *munitstr)
+{
+	sscanf(munitstr, "%lf", &M_unit);
+
+	/** from this, calculate units of length, time, mass,
+	    and derivative units **/
+	T_unit = L_unit / CL;
+
+	fprintf(stderr, "\nUNITS\n");
+	fprintf(stderr, "L,T,M: %g %g %g\n", L_unit, T_unit, M_unit);
+
+	RHO_unit = M_unit / pow(L_unit, 3);
+	U_unit = RHO_unit * CL * CL;
+	B_unit = CL * sqrt(4. * M_PI * RHO_unit);
+	CUDASAFE(cudaMemcpyToSymbol(d_B_unit, &B_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
+
+	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_unit, U_unit, B_unit);
+
+	Ne_unit = RHO_unit / (MP + ME);
+	CUDASAFE(cudaMemcpyToSymbol(d_Ne_unit, &Ne_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
+
+	// max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
+    // max_tau_scatt = 0.001295;
+	max_tau_scatt = 0.0024;
+	CUDASAFE(cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double), 0, cudaMemcpyHostToDevice));
+
+	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);
+
 }
 
 /*
@@ -439,7 +370,6 @@ void init_geometry()
 	and over all x3.
 
 */
-
 double dOmega_func(double x2i, double x2f)
 {
 	double dO;
@@ -452,65 +382,85 @@ double dOmega_func(double x2i, double x2f)
 	return (dO);
 }
 
-static void *malloc_rank1(int n1, int size)
-{
-	void *A;
-
-	if ((A = (void *) malloc(n1 * size)) == NULL) {
-		// fprintf(stderr, "malloc failure in malloc_rank1\n");
-		exit(123);
-	}
-
-	return A;
-}
-
-
-static void **malloc_rank2(int n1, int n2, int size)
-{
-
-	void **A;
-	int i;
-
-	if ((A = (void **) malloc(n1 * sizeof(void *))) == NULL) {
-		// fprintf(stderr, "malloc failure in malloc_rank2\n");
-		exit(124);
-	}
-
-	for (i = 0; i < n1; i++) {
-		A[i] = malloc_rank1(n2, size);
-	}
-
-	return A;
-}
-
-
-static double **malloc_rank2_cont(int n1, int n2)
-{
-
-	double **A;
-	double *space;
-	int i;
-
-	space = malloc_rank1(n1 * n2, sizeof(double));
-
-	A = malloc_rank1(n1, sizeof(double *));
-
-	for (i = 0; i < n1; i++)
-		A[i] = &(space[i * n2]);
-
-	return A;
-}
-
 void init_storage(void)
 {
-	int i;
+	harm_p = (double *) malloc(NPRIM*N1*N2*sizeof(double));
 
-	p = malloc_rank1(NPRIM, sizeof(double *));
-	for (i = 0; i < NPRIM; i++)
-		p[i] = (double **) malloc_rank2_cont(N1, N2);
-	geom =
-	    (struct of_geom **) malloc_rank2(N1, N2,
-					     sizeof(struct of_geom));
-	#pragma acc enter data create (p[:NPRIM][:N1][:N2])
+	geom = (struct of_geom **) malloc(N1*sizeof(struct of_geom *));
+	for (int i = 0; i < N1; i++)
+		geom[i] = (struct of_geom *) malloc(N2*sizeof(struct of_geom));
+}
+
+
+
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
+/*
+ * Finds interpolated value of d_p at location given by i,j.
+ * What is coeff?
+ */
+ __device__
+double interp_p_scalar(int x, int y, int z, double coeff[4])
+{
+
+	double interp;
+
+	interp =
+		D_HARM_P(x, y,  z) * coeff[0] +
+		D_HARM_P(x, y, z + 1) * coeff[1] +
+		D_HARM_P(x, y + 1, z) * coeff[2] +
+		D_HARM_P(x, y + 1, z + 1) * coeff[3];
+
+	return interp;
+}
+
+__device__
+void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
+{
+
+	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000) - 1000;
+	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000) - 1000;
+
+	if (*i < 0) {
+		*i = 0;
+		del[1] = 0.;
+	} else if (*i > d_N1 - 2) {
+		*i = d_N1 - 2;
+		del[1] = 1.;
+	} else {
+		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
+	}
+
+	if (*j < 0) {
+		*j = 0;
+		del[2] = 0.;
+	} else if (*j > d_N2 - 2) {
+		*j = d_N2 - 2;
+		del[2] = 1.;
+	} else {
+		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2];
+	}
+
+	return;
+}
+
+
+
+/*******************************************************************************
+* Host/Device Functions
+*
+*******************************************************************************/
+
+/* return boyer-lindquist coordinate of point */
+__host__ __device__
+void bl_coord(double *X, double *r, double *th)
+{
+
+	*r = exp(X[1]) + R0;
+	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
 	return;
 }

@@ -1,5 +1,8 @@
 #include "decs.h"
 #include "bessel.h"
+#include <cuda.h>
+#include "gpu_utils.h"
+
 /*
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -21,31 +24,45 @@
 #define MINT	0.0001
 #define MAXT	1.e4
 
+#define MAXGAMMA	12.
+#define DMUE		0.05
+#define DGAMMAE		0.05
+
+#define NW	220
+#define NT	80
+
 #define HOTCROSS	"hotcross.dat"
 
-double table[NW + 1][NT + 1];
-double dlw, h_dlT, lminw, lmint;
+// TODO: Maybe declare these as __constant__
+__device__ static double d_table[NW + 1][NT + 1];
+__device__ static double d_dlw, d_dlT, d_lminw, d_lmint;
 
-#pragma acc declare create(lminw, dlw, lmint, h_dlT, table)
 
+__host__ __device__
 static double hc_klein_nishina(double we);
-static double dNdgammae(double thetae, double gammae);
+__host__ __device__
 static double boostcross(double w, double mue, double gammae);
-double total_compton_cross_num(double w, double thetae);
+__host__ __device__
+static double dNdgammae(double thetae, double gammae);
+__host__ __device__
+static double total_compton_cross_num(double w, double thetae);
 
-#pragma acc routine (total_compton_cross_num)
-#pragma acc routine (dNdgammae)
-
-
+/*******************************************************************************
+* Host-only Functions
+*
+*******************************************************************************/
 
 void init_hotcross(void)
 {
+	double table[NW + 1][NT + 1];
+	double dlw, dlT, lminw, lmint;
+
 	int i, j, idum, jdum, nread;
 	double lw, lT;
 	FILE *fp;
 
 	dlw = log10(MAXW / MINW) / NW;
-	h_dlT = log10(MAXT / MINT) / NT;
+	dlT = log10(MAXT / MINT) / NT;
 	lminw = log10(MINW);
 	lmint = log10(MINT);
 
@@ -54,18 +71,20 @@ void init_hotcross(void)
 		fprintf(stderr, "file %s not found.\n", HOTCROSS);
 		fprintf(stderr,
 			"making lookup table for compton cross section...\n");
-		// The following section was made sequential for simplicity. It can be changed later...
-		// #pragma acc parallel loop collapse(2) private(lw,lT)
-		for (i = 0; i <= NW; i++)
+		// TODO: The following section was made sequential for simplicity.
+		// It can be changed later..
+		for (i = 0; i <= NW; i++) {
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * h_dlT;
+				lT = lmint + j * dlT;
 				table[i][j] = log10(total_compton_cross_num (pow(10., lw), pow(10., lT)));
 				if (isnan(table[i][j])) {
 					fprintf(stderr, "%d %d %g %g\n", i, j, lw, lT);
 					exit(0);
 				}
 			}
+		}
+
 		fprintf(stderr, "done.\n\n");
 		fprintf(stderr, "writing to file...\n");
 		fp = fopen(HOTCROSS, "w");
@@ -76,7 +95,7 @@ void init_hotcross(void)
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
-				lT = lmint + j * h_dlT;
+				lT = lmint + j * dlT;
 				fprintf(fp, "%d %d %g %g %15.10g\n", i, j, lw, lT, table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
@@ -100,11 +119,21 @@ void init_hotcross(void)
 
 	fclose(fp);
 
+	CUDASAFE(cudaMemcpyToSymbol(d_table, table, (NW+1)*(NT+1)*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_dlw, &dlw, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_dlT, &dlT, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_lminw, &lminw, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_lmint, &lmint, sizeof(double), 0, cudaMemcpyHostToDevice));
+
 	return;
 }
 
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
 
-
+__device__
 double total_compton_cross_lkup(double w, double thetae)
 {
 	int i, j;
@@ -123,16 +152,16 @@ double total_compton_cross_lkup(double w, double thetae)
 
 		lw = log10(w);
 		lT = log10(thetae);
-		i = (int) ((lw - lminw) / dlw);
-		j = (int) ((lT - lmint) / h_dlT);
-		di = (lw - lminw) / dlw - i;
-		dj = (lT - lmint) / h_dlT - j;
+		i = (int) ((lw - d_lminw) / d_dlw);
+		j = (int) ((lT - d_lmint) / d_dlT);
+		di = (lw - d_lminw) / d_dlw - i;
+		dj = (lT - d_lmint) / d_dlT - j;
 
 		lcross =
-		    (1. - di) * (1. - dj) * table[i][j] + di * (1. -
+		    (1. - di) * (1. - dj) * d_table[i][j] + di * (1. -
 								dj) *
-		    table[i + 1][j]  + (1. - di) * dj * table[i][j + 1]  +
-		    di * dj *table[i + 1][j + 1] ;
+		    d_table[i + 1][j]  + (1. - di) * dj * d_table[i][j + 1]  +
+		    di * dj *d_table[i + 1][j + 1] ;
 
 		// if (isnan(lcross)) fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);
 
@@ -144,11 +173,13 @@ double total_compton_cross_lkup(double w, double thetae)
 
 }
 
-#define MAXGAMMA	12.
-#define DMUE		0.05
-#define DGAMMAE		0.05
+/*******************************************************************************
+* Host/Device Functions
+*
+*******************************************************************************/
 
-double total_compton_cross_num(double w, double thetae)
+__host__ __device__
+static double total_compton_cross_num(double w, double thetae)
 {
 	double dmue, dgammae, mue, gammae, f, cross;
 
@@ -194,6 +225,7 @@ double total_compton_cross_num(double w, double thetae)
 
 /* normalized (per unit proper electron number density)
    electron distribution */
+__host__ __device__
 static double dNdgammae(double thetae, double gammae)
 {
 	double K2f;
@@ -208,6 +240,7 @@ static double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
+__host__ __device__
 static double boostcross(double w, double mue, double gammae)
 {
 	double we, boostcross, v;
@@ -234,6 +267,7 @@ static double boostcross(double w, double mue, double gammae)
 	return (boostcross);
 }
 
+__host__ __device__
 static double hc_klein_nishina(double we)
 {
 	double sigma;

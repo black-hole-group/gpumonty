@@ -1,21 +1,25 @@
 #include "gpu_rng.h"
-#include <math.h>
+#include "gpu_utils.h"
+// #include <math.h>
 
-void gpu_rng_init (curandState_t *curandst, long int seed) {
-    // unsigned long int id =__pgi_gangidx();
-    // int id = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
-    curand_init (seed, __pgi_gangidx(), 0, curandst);
+
+__global__
+void gpu_rng_init (curandState_t *curandstates, long int seed) {
+    int id = gpu_thread_id();
+    curand_init (seed, id, 0, &curandstates[id]);
 }
 
 
-double gpu_rng_uniform (curandState_t *curandst) {
-    return curand_uniform_double(curandst);
-}
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
 
 /* Taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/sphere.c
    Line, 65-91
 */
-
+__device__
 void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z) {
   double s, a;
 
@@ -51,7 +55,7 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    The algorithms below are from Knuth, vol 2, 2nd ed, p. 129.
    Code adapted from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/gamma.c
 */
-
+__device__
 double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
     /* assume a > 0 */
     double pow_multiplier = 1.0;
@@ -86,7 +90,7 @@ double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
    for x = 0 ... +infty
    Code taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/chisq.c
 */
-
+__device__
 double gpu_rng_ran_chisq(curandState_t *curandst, const double nu) {
   double chisq = 2 * gpu_rng_ran_gamma(curandst, nu / 2, 1.0);
   return chisq;

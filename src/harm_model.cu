@@ -6,16 +6,38 @@
 #include "decs.h"
 #include "harm_model.h"
 
-double Rh;
+/* mnemonics for dimensional indices */
+#define TT      0
+#define RR      1
+#define TH      2
+#define PH      3
 
-#pragma acc declare create(Rh)
+/* EPS really ought to be related to the number of
+   zones in the simulation. */
+#define EPS	0.04
+//#define EPS   0.01
 
-/*
+#define RMAX	100.
+#define ROULETTE	1.e4
 
-	encapsulates all initialization routines
 
-*/
+#define Rh (1. + sqrt(1. - a * a))
+// TODO:we could use this for better performance
+// but when changing 'a', we must change 'Rh'
+// #define Rh 1.3479852726768764
 
+// Declare external global variables
+double *harm_p;
+__device__ double *d_harm_p;
+
+
+/*******************************************************************************
+* Host-only Functions
+*
+*******************************************************************************/
+
+
+/* encapsulates all initialization routines */
 void init_model(char *args[])
 {
 	/* find dimensional quantities from black hole
@@ -31,8 +53,6 @@ void init_model(char *args[])
 	init_geometry();
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
-
-	Rh = 1. + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();
@@ -50,37 +70,7 @@ void init_model(char *args[])
 
 }
 
-
-/*
-
-produces a bias (> 1) for probability of Compton scattering
-as a function of local temperature
-
-*/
-
-double bias_func(double Te, double w)
-{
-	double bias, max ;
-
-	max = 0.5 * w / WEIGHT_MIN;
-
-	bias = Te*Te/(5. * max_tau_scatt) ;
-	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
-
-	if (bias < TP_OVER_TE)
-		bias = TP_OVER_TE;
-	if (bias > max)
-		bias = max;
-
-	return bias / TP_OVER_TE;
-}
-
-/*
-
-	these supply basic model data to grmonty
-
-*/
-
+/* these supply basic model data to grmonty */
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM])
 {
@@ -90,16 +80,16 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double sig ;
 
-	*Ne = p[KRHO][i][j] * Ne_unit;
-	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	*Ne = HARM_P(KRHO, i, j) * Ne_unit;
+	*Thetae = HARM_P(UU, i, j) / (*Ne) * Ne_unit * Thetae_unit;
 
-	Bp[1] = p[B1][i][j];
-	Bp[2] = p[B2][i][j];
-	Bp[3] = p[B3][i][j];
+	Bp[1] = HARM_P(B1, i, j);
+	Bp[2] = HARM_P(B2, i, j);
+	Bp[3] = HARM_P(B3, i, j);
 
-	Vcon[1] = p[U1][i][j];
-	Vcon[2] = p[U2][i][j];
-	Vcon[3] = p[U3][i][j];
+	Vcon[1] = HARM_P(U1, i, j);
+	Vcon[2] = HARM_P(U2, i, j);
+	Vcon[3] = HARM_P(U3, i, j);
 
 	/* Get Ucov */
 	VdotV = 0.;
@@ -133,91 +123,15 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
-/*
- * Returns the fluid variables at the location indicated by X
- */
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-		      double *Thetae, double *B, double Ucon[NDIM],
-		      double Ucov[NDIM], double Bcon[NDIM],
-		      double Bcov[NDIM])
-{
-	int i, j;
-	double del[NDIM];
-	double rho, uu;
-	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	double gcon[NDIM][NDIM], coeff[4];
-	double sig ;
 
-	if (X[1] < startx[1] ||
-	    X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+/******************************************************************************
+* Host/Device Functions
+*
+*******************************************************************************/
 
-		*Ne = 0.;
-
-		return;
-	}
-
-	Xtoij(X, &i, &j, del);
-
-	coeff[0] = (1. - del[1]) * (1. - del[2]);
-	coeff[1] = (1. - del[1]) * del[2];
-	coeff[2] = del[1] * (1. - del[2]);
-	coeff[3] = del[1] * del[2];
-
-	rho = interp_scalar(p[KRHO], i, j, coeff);
-	uu = interp_scalar(p[UU], i, j, coeff);
-
-	*Ne = rho * Ne_unit;
-	*Thetae = uu / rho * Thetae_unit;
-
-	Bp[1] = interp_scalar(p[B1], i, j, coeff);
-	Bp[2] = interp_scalar(p[B2], i, j, coeff);
-	Bp[3] = interp_scalar(p[B3], i, j, coeff);
-
-	Vcon[1] = interp_scalar(p[U1], i, j, coeff);
-	Vcon[2] = interp_scalar(p[U2], i, j, coeff);
-	Vcon[3] = interp_scalar(p[U3], i, j, coeff);
-
-	gcon_func(X, gcon);
-
-	/* Get Ucov */
-	VdotV = 0.;
-	for (i = 1; i < NDIM; i++)
-		for (j = 1; j < NDIM; j++)
-			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
-	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * gcon[0][0];
-	for (i = 1; i < NDIM; i++)
-		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
-	lower(Ucon, gcov, Ucov);
-
-	/* Get B and Bcov */
-	UdotBp = 0.;
-	for (i = 1; i < NDIM; i++)
-		UdotBp += Ucov[i] * Bp[i];
-	Bcon[0] = UdotBp;
-	for (i = 1; i < NDIM; i++)
-		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-	lower(Bcon, gcov, Bcov);
-
-	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_unit;
-
-	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
-	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
-	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
-}
-
-/*
-   Current metric: modified Kerr-Schild, squashed in theta
-   to give higher resolution at the equator
-*/
-
-/* mnemonics for dimensional indices */
-#define TT      0
-#define RR      1
-#define TH      2
-#define PH      3
-
+/* Current metric: modified Kerr-Schild, squashed in theta to give higher
+resolution at the equator */
+__host__ __device__
 void gcon_func(double *X, double gcon[][NDIM])
 {
 
@@ -252,7 +166,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 	gcon[3][3] = irho2 / (sth * sth);
 }
 
-
+__host__ __device__
 void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
@@ -292,22 +206,15 @@ void gcov_func(double *X, double gcov[][NDIM])
 	    s2 * (rho2 + a * a * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 
-#undef TT
-#undef RR
-#undef TH
-#undef PH
-
 /*
-
    connection calculated analytically for modified Kerr-Schild
    	coordinates
-
 
    this gives the connection coefficient
 	\Gamma^{i}_{j,k} = conn[..][i][j][k]
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
-
+__host__ __device__
 void get_connection(double X[4], double lconn[4][4][4])
 {
 	double r1, r2, r3, r4, sx, cx;
@@ -467,11 +374,15 @@ void get_connection(double X[4], double lconn[4][4][4])
 
 }
 
+
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
-
-#define RMAX	100.
-#define ROULETTE	1.e4
+__device__
 int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
@@ -488,7 +399,7 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (gpu_rng_uniform(curandstate) <= 1. / ROULETTE) {
+			if (curand_uniform_double(curandstate) <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -497,7 +408,7 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (gpu_rng_uniform(curandstate) <= 1. / ROULETTE) {
+		if (curand_uniform_double(curandstate) <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;
@@ -509,7 +420,7 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 }
 
 /* criterion for recording photon */
-
+__device__
 int record_criterion(struct of_photon *ph)
 {
 	const double X1max = log(RMAX);
@@ -525,19 +436,15 @@ int record_criterion(struct of_photon *ph)
 }
 
 
-/* EPS really ought to be related to the number of
-   zones in the simulation. */
-#define EPS	0.04
-//#define EPS   0.01
 
-
+__device__
 double stepsize(double X[NDIM], double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * MIN (X[2], stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+	dlx2 = EPS * MIN (X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -549,178 +456,101 @@ double stepsize(double X[NDIM], double K[NDIM])
 	return (dl);
 }
 
-/*
-	record contribution of super photon to spectrum.
-
-	This routine should make minimal assumptions about the
-	coordinate system.
-
-*/
-void record_super_photon(struct of_photon *ph, unsigned long long *N_superph_recorded, struct of_spectrum **spect)
+/* produces a bias (> 1) for probability of Compton scattering as a function of
+local temperature */
+__device__
+double bias_func(double Te, double w)
 {
-	double lE, dx2;
-	int iE, ix2;
+	double bias, max ;
 
-	if (isnan(ph->w) || isnan(ph->E)) {
-		// fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
-		return;
-	}
-// #pragma omp critical (MAXTAU)
-// 	{
-// 		if (ph->tau_scatt > max_tau_scatt)
-// 			max_tau_scatt = ph->tau_scatt;
-// 	}
-	// atomicMax(&max_tau_scatt, d2i(ph->tau_scatt));
-	/* currently, bin in x2 coordinate */
+	max = 0.5 * w / WEIGHT_MIN;
 
-	/* get theta bin, while folding around equator */
-	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
-	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
-		ix2 = (int) (ph->X[2] / dx2);
-	else
-		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
+	bias = Te*Te/(5. * d_max_tau_scatt) ;
+	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
-	/* check limits */
-	if (ix2 < 0 || ix2 >= N_THBINS)
-		return;
+	if (bias < TP_OVER_TE)
+		bias = TP_OVER_TE;
+	if (bias > max)
+		bias = max;
 
-	/* get energy bin */
-	lE = log(ph->E);
-	iE = (int) ((lE - lE0) / dlE + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
-
-	/* check limits */
-	if (iE < 0 || iE >= N_EBINS)
-		return;
-
-	#pragma acc atomic
-	(*N_superph_recorded) += 1;
-	// #pragma acc atomic
-	// N_scatt += ph->nscatt;
-
-	/* sum in photon */
-	#pragma acc atomic
-	spect[ix2][iE].dNdlE +=  ph->w;
-	#pragma acc atomic
-	spect[ix2][iE].dEdlE +=  ph->w * ph->E;
-	#pragma acc atomic
-	spect[ix2][iE].tau_abs +=  ph->w * ph->tau_abs;
-	#pragma acc atomic
-	spect[ix2][iE].tau_scatt +=  ph->w * ph->tau_scatt;
-	#pragma acc atomic
-	spect[ix2][iE].X1iav +=  ph->w * ph->X1i;
-	#pragma acc atomic
-	spect[ix2][iE].X2isq +=  ph->w * (ph->X2i * ph->X2i);
-	#pragma acc atomic
-	spect[ix2][iE].X3fsq +=  ph->w * (ph->X[3] * ph->X[3]);
-	#pragma acc atomic
-	spect[ix2][iE].ne0 +=  ph->w * (ph->ne0);
-	#pragma acc atomic
-	spect[ix2][iE].b0 +=  ph->w * (ph->b0);
-	#pragma acc atomic
-	spect[ix2][iE].thetae0 +=  ph->w * (ph->thetae0);
-	#pragma acc atomic
-	spect[ix2][iE].nscatt +=  ph->w * ph->nscatt;
-	#pragma acc atomic
-	spect[ix2][iE].nph +=  1.;
-
+	return bias / TP_OVER_TE;
 }
 
-/*
-
-	output spectrum to file
-
-*/
-
-#define SPECTRUM_FILE_NAME	"grmonty.spec"
-
-void report_spectrum(unsigned long long N_superph_made, unsigned long long N_superph_recorded, struct of_spectrum **spect)
+/* Returns the fluid variables at the location indicated by X */
+ __device__
+void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+		      double *Thetae, double *B, double Ucon[NDIM],
+		      double Ucov[NDIM], double Bcon[NDIM],
+		      double Bcov[NDIM])
 {
 	int i, j;
-	double dx2, dOmega, nuLnu, tau_scatt, L;
-	FILE *fp;
+	double del[NDIM];
+	double rho, uu;
+	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+	double gcon[NDIM][NDIM], coeff[4];
+	double sig ;
 
-	double nu0,nu1,nu,fnu ;
-	double dsource = 8000*PC ;
+	if (X[1] < d_startx[1] ||
+	    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
 
-	fp = fopen(SPECTRUM_FILE_NAME, "w");
-	if (fp == NULL) {
-		fprintf(stderr, "trouble opening spectrum file\n");
-		exit(0);
+		*Ne = 0.;
+
+		return;
 	}
 
-	/* output */
-	max_tau_scatt = 0.;
-	L = 0.;
-	for (i = 0; i < N_EBINS; i++) {
+	Xtoij(X, &i, &j, del);
 
-		/* output log_10(photon energy/(me c^2)) */
-		fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
+	coeff[0] = (1. - del[1]) * (1. - del[2]);
+	coeff[1] = (1. - del[1]) * del[2];
+	coeff[2] = del[1] * (1. - del[2]);
+	coeff[3] = del[1] * del[2];
 
-		for (j = 0; j < N_THBINS; j++) {
+	rho = interp_p_scalar(KRHO, i, j, coeff);
+	uu = interp_p_scalar(UU, i, j, coeff);
 
-			/* convert accumulated photon number in each bin
-			   to \nu L_\nu, in units of Lsun */
-			dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+	*Ne = rho * d_Ne_unit;
+	*Thetae = uu / rho * d_Thetae_unit;
 
-			/* factor of 2 accounts for folding around equator */
-			dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+	Bp[1] = interp_p_scalar(B1, i, j, coeff);
+	Bp[2] = interp_p_scalar(B2, i, j, coeff);
+	Bp[3] = interp_p_scalar(B3, i, j, coeff);
 
-			nuLnu =
-			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
-								     dlE);
+	Vcon[1] = interp_p_scalar(U1, i, j, coeff);
+	Vcon[2] = interp_p_scalar(U2, i, j, coeff);
+	Vcon[3] = interp_p_scalar(U3, i, j, coeff);
 
-			nuLnu *= spect[j][i].dEdlE;
-			nuLnu /= LSUN;
+	gcon_func(X, gcon);
 
-			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
-						     SMALL);
-			fprintf(fp,
-				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
-				nuLnu,
-				spect[j][i].tau_abs / (spect[j][i].dNdlE +
-						       SMALL), tau_scatt,
-				spect[j][i].X1iav / (spect[j][i].dNdlE +
-						     SMALL),
-				sqrt(fabs
-				     (spect[j][i].X2isq /
-				      (spect[j][i].dNdlE + SMALL))),
-				sqrt(fabs
-				     (spect[j][i].X3fsq /
-				      (spect[j][i].dNdlE + SMALL)))
-			    );
+	/* Get Ucov */
+	VdotV = 0.;
+	for (i = 1; i < NDIM; i++)
+		for (j = 1; j < NDIM; j++)
+			VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+	Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * gcon[0][0];
+	for (i = 1; i < NDIM; i++)
+		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
+	lower(Ucon, gcov, Ucov);
 
+	/* Get B and Bcov */
+	UdotBp = 0.;
+	for (i = 1; i < NDIM; i++)
+		UdotBp += Ucov[i] * Bp[i];
+	Bcon[0] = UdotBp;
+	for (i = 1; i < NDIM; i++)
+		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
+	lower(Bcon, gcov, Bcov);
 
-			nu0 = ME * CL * CL * exp((i - 0.5) * dlE + lE0) / HPL ;
-			nu1 = ME * CL * CL * exp((i + 0.5) * dlE + lE0) / HPL ;
+	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
 
-			if(nu0 < 230.e9 && nu1 > 230.e9) {
-				nu = ME * CL * CL * exp(i * dlE + lE0) / HPL ;
-				fnu = nuLnu*LSUN/(4.*M_PI*dsource*dsource*nu*JY) ;
-				fprintf(stderr,"fnu: %10.5g\n",fnu) ;
-			}
-
-			/* added to give average # scatterings */
-			fprintf(fp,"%10.5g ",spect[j][i].nscatt/ (
-				spect[j][i].dNdlE + SMALL)) ;
-
-			if (tau_scatt > max_tau_scatt)
-				max_tau_scatt = tau_scatt;
-
-			L += nuLnu * dOmega * dlE / (4. * M_PI);
-		}
-		fprintf(fp, "\n");
-	}
-	fprintf(stderr,
-		"luminosity %g, dMact %g, efficiency %g, L/Ladv %g, max_tau_scatt %g\n",
-		L, dMact * M_unit / T_unit / (MSUN / YEAR),
-		L * LSUN / (dMact * M_unit * CL * CL / T_unit),
-		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
-		max_tau_scatt);
-	fprintf(stderr, "\n");
-	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
-	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);
-
-	fclose(fp);
-
+	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
+	sig = pow(*B/d_B_unit,2)/(*Ne/d_Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*d_Ne_unit ;
 }
+
+
+#undef TT
+#undef RR
+#undef TH
+#undef PH

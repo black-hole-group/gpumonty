@@ -6,12 +6,21 @@ all functions related to creation and manipulation of tetrads
 
 #include "decs.h"
 
+#define SMALL_VECTOR	1.e-30
 
+__host__ __device__
 static void normalize(double *vcon, double Gcov[4][4]);
+__host__ __device__
 static void project_out(double *vcona, double *vconb, double Gcov[4][4]);
 
 
+/*******************************************************************************
+* Device-only Functions
+*
+*******************************************************************************/
+
 /* input and vectors are contravariant (index up) */
+__device__
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM])
 {
@@ -25,7 +34,14 @@ void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 	}
 }
 
+
+/*******************************************************************************
+* Host/Device Functions
+*
+*******************************************************************************/
+
 /* input and vectors are contravariant (index up) */
+__host__ __device__
 void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 			  double K[NDIM])
 {
@@ -40,12 +56,12 @@ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 	return;
 }
 
-#define SMALL_VECTOR	1.e-30
 
 /* make orthonormal basis
    first basis vector || U
    second basis vector || B
 */
+__host__ __device__
 void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM])
@@ -151,7 +167,7 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	/* done */
 
 }
-
+__host__ __device__
 double delta(int i, int j)
 {
 	if (i == j)
@@ -160,6 +176,7 @@ double delta(int i, int j)
 		return (0.);
 }
 
+__host__ __device__
 void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 {
 
@@ -183,6 +200,7 @@ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 	return;
 }
 
+__host__ __device__
 static void normalize(double *vcon, double Gcov[NDIM][NDIM])
 {
 	int k, l;
@@ -200,6 +218,7 @@ static void normalize(double *vcon, double Gcov[NDIM][NDIM])
 	return;
 }
 
+__host__ __device__
 static void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 {
 

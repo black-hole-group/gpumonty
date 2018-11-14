@@ -1,6 +1,9 @@
 
 #include "decs.h"
 #include "harm_model.h"
+#include <cuda.h>
+#include "gpu_utils.h"
+
 /*
 
 get HARM simulation data from fname
@@ -13,6 +16,11 @@ Uses standard HARM data file format
 CFG 1 Sept 07
 
 */
+
+__global__
+void init_d_harm_p(double *data) {
+	d_harm_p = data;
+}
 
 
 void init_harm_data(char *fname)
@@ -59,6 +67,9 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%d ", &rdump_cnt);
 	fscanf(fp, "%lf ", &dt);
 
+	CUDASAFE(cudaMemcpyToSymbol(d_N1, &N1, sizeof(int), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_N2, &N2, sizeof(int), 0, cudaMemcpyHostToDevice));
+
   /* finish reading out the line */
   fseek(fp, 0, SEEK_SET);
   while ( (i=fgetc(fp)) != '\n' ) ;
@@ -94,6 +105,7 @@ void init_harm_data(char *fname)
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+	CUDASAFE(cudaMemcpyToSymbol(d_Thetae_unit, &Thetae_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -106,11 +118,10 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf %lf", &x[1], &x[2]);
 
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
-		       &p[KRHO][i][j],
-		       &p[UU][i][j],
-		       &p[U1][i][j], &p[U2][i][j], &p[U3][i][j],
-		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
-
+		       &HARM_P(KRHO,i,j),
+		       &HARM_P(UU,i,j),
+		       &HARM_P(U1,i,j), &HARM_P(U2,i,j), &HARM_P(U3,i,j),
+		       &HARM_P(B1,i,j), &HARM_P(B2,i,j), &HARM_P(B3,i,j));
 
 		fscanf(fp, "%lf", &divb);
 
@@ -141,15 +152,15 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf\n", &J) ;
 
 		bias_norm +=
-		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
+		    dV * gdet * pow(HARM_P(UU,i,j) / HARM_P(KRHO,i,j) *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */
 		if (i <= 20)
-			dMact += gdet * p[KRHO][i][j] * Ucon[1];
+			dMact += gdet * HARM_P(KRHO,i,j) * Ucon[1];
 		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
+			Ladv += gdet * HARM_P(UU,i,j) * Ucon[1] * Ucov[0];
 
 	}
 
@@ -160,6 +171,14 @@ void init_harm_data(char *fname)
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
 
+	double *d_tmp;
+	CUDASAFE(cudaMalloc(&d_tmp, NPRIM*N1*N2*sizeof(double)));
+	CUDASAFE(cudaMemcpy(d_tmp, harm_p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice));
+	init_d_harm_p<<<1,1>>>(d_tmp);
+	CUDAERRCHECK();
+	CUDASAFE(cudaMemcpyToSymbol(d_startx, startx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_stopx, stopx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbol(d_dx, dx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	/* done! */
 

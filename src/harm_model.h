@@ -3,43 +3,59 @@
 #ifndef _HARM_MODEL_H
 #define _HARM_MODEL_H
 
-double ****econ;
-double ****ecov;
-double ***bcon;
-double ***bcov;
-double ***ucon;
-double ***ucov;
-double ***p;
-double **ne;
-double **thetae;
-double **b;
+// Unused variables (never set/read)
+// double ****econ;
+// double ****ecov;
+// double ***bcon;
+// double ***bcov;
+// double ***ucon;
+// double ***ucov;
+// double **ne;
+// double **thetae;
+// double **b;
+
+// Variables transformed to defines
 // double R0;
 // double a;
 // double hslope;
+
+extern double *harm_p;
+extern __device__ double *d_harm_p;
+
+#define HARM_P(x,y,z) (harm_p[(x)*N1*N2 + (y)*N2 + (z)])
+#define D_HARM_P(x,y,z) (d_harm_p[(x)*d_N1*d_N2 + (y)*d_N2 + (z)])
 
 #define R0 0.0
 #define a  0.9375
 #define hslope 0.3
 
-#pragma acc declare create(p)
 
-/* HARM model internal utilities */
-void init_weight_table(unsigned long long Ns);
-void bl_coord(double *X, double *r, double *th);
-void make_zone_centered_tetrads(void);
-void set_units(char *munitstr);
-void init_geometry(void);
+// Inexistent function
+// void make_zone_centered_tetrads(void);
+
+// init_iharm2dv3_data's functions
 void init_harm_data(char *fname);
-void init_nint_table(void);
-void init_storage(void);
-double dOmega_func(double x2i, double x2f);
 
-void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int first_zone_photon);
-double interp_scalar(double **var, int i, int j, double coeff[4]);
-void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
-void coord(int i, int j, double *X);
+// harm_model's functions
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
+
+// harm_utils's functions
 void harm_rng_init(unsigned long int seed);
+void init_storage(void);
+double dOmega_func(double x2i, double x2f);
+void init_weight_table(unsigned long long Ns);
+void init_nint_table(void);
+void coord(int i, int j, double *X);
+void set_units(char *munitstr);
+void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph,
+						int first_zone_photon);
+void init_geometry(void);
+ __device__
+double interp_p_scalar(int x, int y, int z, double coeff[4]);
+__device__
+void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
+__host__ __device__
+void bl_coord(double *X, double *r, double *th);
 
 #endif

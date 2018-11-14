@@ -19,4 +19,4 @@
 #define MSUN			(1.989e33		)	/* solar mass */
 #define LSUN                    (3.827e33               ) 	/* Luminousity of Sun */
 #define YEAR                    (31536000.              ) 	/* No. of seconds in year */
-
+#define L_unit ((GNEWT * 4.6e6 * MSUN) / (CL * CL))

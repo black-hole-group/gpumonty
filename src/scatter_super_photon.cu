@@ -9,6 +9,7 @@
 	scatter photon ph into photon php at same position
 */
 
+__device__
 void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
@@ -41,7 +42,7 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 	/* note that B is in cgs but Bcon is in code units */
 	if (B > 0.) {
 		for (k = 0; k < NDIM; k++)
-			Bhatcon[k] = Bcon[k] / (B / B_unit);
+			Bhatcon[k] = Bcon[k] / (B / d_B_unit);
 	} else {
 		for (k = 0; k < NDIM; k++)
 			Bhatcon[k] = 0.;

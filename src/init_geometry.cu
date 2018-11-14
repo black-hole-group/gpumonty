@@ -20,8 +20,9 @@
 
 */
 
-gsl_matrix *gsl_gcov, *gsl_gcon;
-gsl_permutation *perm;
+static gsl_matrix *gsl_gcov;
+// static gsl_matrix *gsl_gcon;
+static gsl_permutation *perm;
 
 /* assumes gcov has been set first; returns determinant */
 double gdet_func(double gcov[][NDIM])
@@ -31,7 +32,7 @@ double gdet_func(double gcov[][NDIM])
 
 	if (gsl_gcov == NULL) {
 		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
-		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
+		// gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
 		perm = gsl_permutation_alloc(NDIM);
 	}
 
