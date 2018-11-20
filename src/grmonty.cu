@@ -126,9 +126,9 @@ int main(int argc, char *argv[]) {
 	fflush(stderr);
 	N_superph_made = generate_photons(Ns, &phs);
 
-
-	int BLOCK_SIZE = 256;
-	int NUM_BLOCKS = 20;
+	// Default kernel config is the one found to be optimal in a GTX1080 8GB
+	int BLOCK_SIZE = 512;
+	int NUM_BLOCKS = 30;
 	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
 	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n",
 		NUM_BLOCKS, BLOCK_SIZE);
