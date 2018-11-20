@@ -142,8 +142,8 @@ extern __device__ unsigned long long d_N_superph_made;
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *ph,
-						int offset);
+void track_super_photon(curandState_t *curandstates, struct of_photon *ph);
+
 __device__
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(unsigned long long N_superph_made);

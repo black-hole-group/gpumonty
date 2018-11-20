@@ -152,12 +152,9 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n\n");
 	fflush(stderr);
 	CUDASAFE(cudaDeviceSynchronize()); // wait previous async calls
-	int batchsize = BLOCK_SIZE * NUM_BLOCKS;
-	for(int offset = 0; offset + batchsize < N_superph_made; offset += batchsize) {
-		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs, offset);
-		CUDAERRCHECK();
-		CUDASAFE(cudaDeviceSynchronize());
-	}
+	track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs);
+	CUDAERRCHECK();
+	CUDASAFE(cudaDeviceSynchronize());
 
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",

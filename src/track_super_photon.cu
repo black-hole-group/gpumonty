@@ -12,10 +12,26 @@
 
 #define MAXNSTEP	1280000
 
+__device__
+void __track_super_photon(curandState_t *curandstate, struct of_photon *ph);
 
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *phs,
-						int offset)
+void track_super_photon(curandState_t *curandstates, struct of_photon *phs)
+{
+	int batch = gridDim.x * blockDim.x;
+	int N = d_N_superph_made;
+
+	int my_id = gpu_thread_id();
+	curandState_t *curandstate = &curandstates[my_id];
+
+	for (int i = gpu_thread_id(); i < N; i += batch) {
+		struct of_photon *ph = &phs[i];
+		__track_super_photon(curandstate, ph);
+	}
+}
+
+__device__
+void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -32,13 +48,6 @@ void track_super_photon(curandState_t *curandstates, struct of_photon *phs,
 	    Bcov[NDIM];
 	int nstep = 0;
 	double dtauK = 2. * M_PI * L_unit / (ME * CL * CL / HBAR);
-
-	int my_id = gpu_thread_id();
-	int my_ph_id = my_id + offset;
-
-	if (my_ph_id >= d_N_superph_made) return;
-	curandState_t *curandstate = &curandstates[my_id];
-	struct of_photon *ph = &phs[my_ph_id];
 
 	   // isnan(ph->K[2]) || isnan(ph->K[3]) || ph->w == 0.) {
 	/* quality control */
