@@ -134,9 +134,9 @@ void init_emiss_tables(void)
 	dlK = 1. / dlK;
 	j_dlT = 1. / j_dlT;
 
-	CUDASAFE(cudaMemcpyToSymbol(d_K2, K2, (N_ESAMP+1)*sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_lT_min, &lT_min, sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_j_dlT, &j_dlT, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_K2, K2, (N_ESAMP+1)*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_lT_min, &lT_min, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_j_dlT, &j_dlT, sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	fprintf(stderr, "done.\n\n");
 

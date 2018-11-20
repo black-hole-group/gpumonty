@@ -35,7 +35,7 @@ void init_spectrum () {
 			spect[i][j].E0 = 0.0;;
 		}
 
-	CUDASAFE(cudaMemcpyToSymbol(d_spect, spect,
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_spect, spect,
 				    N_THBINS*N_EBINS*sizeof(struct of_spectrum),
 				    0, cudaMemcpyHostToDevice));
 }

@@ -67,8 +67,8 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%d ", &rdump_cnt);
 	fscanf(fp, "%lf ", &dt);
 
-	CUDASAFE(cudaMemcpyToSymbol(d_N1, &N1, sizeof(int), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_N2, &N2, sizeof(int), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_N1, &N1, sizeof(int), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_N2, &N2, sizeof(int), 0, cudaMemcpyHostToDevice));
 
   /* finish reading out the line */
   fseek(fp, 0, SEEK_SET);
@@ -105,7 +105,7 @@ void init_harm_data(char *fname)
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
-	CUDASAFE(cudaMemcpyToSymbol(d_Thetae_unit, &Thetae_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_Thetae_unit, &Thetae_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -173,12 +173,14 @@ void init_harm_data(char *fname)
 
 	double *d_tmp;
 	CUDASAFE(cudaMalloc(&d_tmp, NPRIM*N1*N2*sizeof(double)));
-	CUDASAFE(cudaMemcpy(d_tmp, harm_p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_startx, startx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_stopx, stopx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_dx, dx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
+	// WARNING: check if is valid to use async here, as it will be used in
+	// the next call.
+	CUDASAFE(cudaMemcpyAsync(d_tmp, harm_p, NPRIM*N1*N2*sizeof(double), cudaMemcpyHostToDevice));
 	init_d_harm_p<<<1,1>>>(d_tmp);
 	CUDAERRCHECK();
-	CUDASAFE(cudaMemcpyToSymbol(d_startx, startx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_stopx, stopx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_dx, dx, NDIM*sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	/* done! */
 

@@ -119,11 +119,11 @@ void init_hotcross(void)
 
 	fclose(fp);
 
-	CUDASAFE(cudaMemcpyToSymbol(d_table, table, (NW+1)*(NT+1)*sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_dlw, &dlw, sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_dlT, &dlT, sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_lminw, &lminw, sizeof(double), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbol(d_lmint, &lmint, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_table, table, (NW+1)*(NT+1)*sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_dlw, &dlw, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_dlT, &dlT, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_lminw, &lminw, sizeof(double), 0, cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_lmint, &lmint, sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	return;
 }

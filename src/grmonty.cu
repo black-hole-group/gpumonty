@@ -130,22 +130,28 @@ int main(int argc, char *argv[]) {
 	int BLOCK_SIZE = 256;
 	int NUM_BLOCKS = 20;
 	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
-	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n", NUM_BLOCKS, BLOCK_SIZE);
+	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n",
+		NUM_BLOCKS, BLOCK_SIZE);
 	fflush(stderr);
 
 	fprintf(stderr, "Copying photons to GPU and initializing RNG...\n\n");
 	fflush(stderr);
 	// Copy phs and curandstates to GPU
-	CUDASAFE(cudaMemcpyToSymbol(d_N_superph_made, &N_superph_made, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMalloc(&d_curandstates, BLOCK_SIZE * NUM_BLOCKS * sizeof(curandState_t)));
+	CUDASAFE(cudaMalloc(&d_phs, N_superph_made * sizeof(struct of_photon)));
+	CUDASAFE(cudaMemcpyAsync(d_phs, phs,
+				 N_superph_made * sizeof(struct of_photon),
+				 cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMemcpyToSymbolAsync(d_N_superph_made, &N_superph_made,
+					 sizeof(unsigned long long), 0,
+					 cudaMemcpyHostToDevice));
+	CUDASAFE(cudaMalloc(&d_curandstates,
+			    BLOCK_SIZE * NUM_BLOCKS * sizeof(curandState_t)));
 	gpu_rng_init<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, seed);
 	CUDAERRCHECK();
-	CUDASAFE(cudaMalloc(&d_phs, N_superph_made * sizeof(struct of_photon)));
-	CUDASAFE(cudaMemcpy(d_phs, phs, N_superph_made * sizeof(struct of_photon),
-						cudaMemcpyHostToDevice));
 
 	fprintf(stderr, "Entering main loop...\n\n");
 	fflush(stderr);
+	CUDASAFE(cudaDeviceSynchronize()); // wait previous async calls
 	int batchsize = BLOCK_SIZE * NUM_BLOCKS;
 	for(int offset = 0; offset + batchsize < N_superph_made; offset += batchsize) {
 		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs, offset);
