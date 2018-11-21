@@ -1,13 +1,18 @@
-#include "gpu_rng.h"
 #include <math.h>
+#include <curand_kernel.h>
 
-void gpu_rng_init (curandState_t *curandst, long int seed) {
-    // unsigned long int id =__pgi_gangidx();
-    // int id = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
-    curand_init (seed, __pgi_gangidx(), 0, curandst);
+extern "C" __device__
+int gpu_thread_id() {
+    return (blockDim.x * blockIdx.x) + threadIdx.x;
 }
 
 
+extern "C" __device__
+void gpu_rng_init (curandState_t *curandst, long int seed) {
+    curand_init (seed, gpu_thread_id(), 0, curandst);
+}
+
+extern "C" __device__
 double gpu_rng_uniform (curandState_t *curandst) {
     return curand_uniform_double(curandst);
 }
@@ -15,7 +20,7 @@ double gpu_rng_uniform (curandState_t *curandst) {
 /* Taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/sphere.c
    Line, 65-91
 */
-
+extern "C" __device__
 void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z) {
   double s, a;
 
@@ -42,7 +47,6 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
   *y *= a;
 }
 
-
 /* The Gamma distribution of order a>0 is defined by:
    p(x) dx = {1 / \Gamma(a) b^a } x^{a-1} e^{-x/b} dx
    for x>0.  If X and Y are independent gamma-distributed random
@@ -51,7 +55,7 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    The algorithms below are from Knuth, vol 2, 2nd ed, p. 129.
    Code adapted from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/gamma.c
 */
-
+extern "C" __device__
 double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
     /* assume a > 0 */
     double pow_multiplier = 1.0;
@@ -86,7 +90,7 @@ double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
    for x = 0 ... +infty
    Code taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/chisq.c
 */
-
+extern "C" __device__
 double gpu_rng_ran_chisq(curandState_t *curandst, const double nu) {
   double chisq = 2 * gpu_rng_ran_gamma(curandst, nu / 2, 1.0);
   return chisq;
