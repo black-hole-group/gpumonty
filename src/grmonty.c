@@ -19,6 +19,7 @@
  */
 
 #include "decs.h"
+#include "gpu_utils.h"
 #include <time.h>
 
 #define NPHOTONS_BIAS 23 // Expected photons to be produces equals NPHOTONS_BIAS * Ns
@@ -113,7 +114,7 @@ int main(int argc, char *argv[]) {
 	struct of_photon *phs;
 	unsigned long seed;
 	time_t currtime, starttime;
-	curandState_t curandstate;
+	curandState_t *curandstates;
 
 	check_args(argc, argv, &Ns, &seed);
 	harm_rng_init(seed);
@@ -131,9 +132,12 @@ int main(int argc, char *argv[]) {
 	int BLOCK_SIZE = 512;
 	int NUM_BLOCKS = 30;
 	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
+	int NUM_GPU_THS = NUM_BLOCKS * BLOCK_SIZE;
 	fprintf(stderr, "Kernel config: %d BLOCKS of %d THREADS.\n\n",
 		NUM_BLOCKS, BLOCK_SIZE);
 	fflush(stderr);
+
+	curandstates = acc_malloc(NUM_GPU_THS * sizeof(curandState_t));
 
 	fprintf(stderr, "Generating photons...\n");
 	fflush(stderr);
@@ -142,26 +146,25 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, \
-		 Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, \
-		 dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
+	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit, L_unit, \
+		max_tau_scatt, Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, \
+		n_within_horizon, h_dlT, dlT, lT_min, lminw, dlw, lmint, Rh, \
+		dlE, table, K2, p[:NPRIM][:N1][:N2])
 
-	#pragma acc parallel copyin (phs[:N_superph_made]) private(curandstate) \
-		copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded) \
-		num_gangs(NUM_BLOCKS) vector_length(BLOCK_SIZE)
+	#pragma acc data copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded) \
+		copyin(phs[:N_superph_made]) deviceptr(curandstates)
 	{
 
-		gpu_rng_init (&curandstate, seed);
+		#pragma acc parallel loop num_gangs(NUM_BLOCKS) \
+			vector_length(BLOCK_SIZE)
+		for (unsigned int i = 0; i < NUM_GPU_THS; ++i)
+			gpu_rng_init (&curandstates[i], seed);
 
-		#pragma acc loop gang, vector
-		for (unsigned long long i = 0; i < N_superph_made; i++) {
-			/* push ph around */
-
-			track_super_photon(&curandstate, &phs[i],
-					   &N_superph_recorded, spect);
-
-			/* Here we could try to give interim reports on rates */
-		}
+		#pragma acc parallel loop num_gangs(NUM_BLOCKS) \
+			vector_length(BLOCK_SIZE)
+		for (unsigned long long i = 0; i < N_superph_made; ++i)
+			track_super_photon(&curandstates[gpu_thread_id()],
+					   &phs[i], &N_superph_recorded, spect);
 	}
 
 	currtime = time(NULL);
