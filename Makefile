@@ -1,19 +1,30 @@
+#
+#
+# IMPORTANT:
+# - You must have the env variable CUDA_HOME set to your CUDA
+# instalation
+# - If you have a CUDA version different than cuda9.2, you must set the
+# env variable CUDA_VERSION with the respectively CUDA version of your CUDA_HOME
+# - If you have a NVIDIA GPU with compute capability different than 6.0, you
+# must set the env var COMPUTE_CAP to it. (Format: 6.0 -> 60)
+#
 # Requirements:
 # - pgcc, version >= 18.4
-# - gcc, version < 7.0 (preferably 5.4.1)
-# - cuda toolkit 9.2
-# - cuda drivers
+# - cuda toolkit
 #
 # makefile adapted from:
 # https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/
 #
 
+COMPUTE_CAP ?= 60
+CUDA_VERSION ?= cuda9.2
+
 CC=pgcc
-CCFLAGS=-fast -acc -ta=tesla:cc60,rdc -Minfo=, -O3 -Minform=warn
+CCFLAGS=-fast -acc -ta=tesla:cc$(COMPUTE_CAP),$(CUDA_VERSION),rdc -Minfo=, -O3 -Minform=warn
 LDFLAGS=-Mcuda=rdc -lgsl -lgslcblas -Mcudalib=curand
 
 NVCC=nvcc
-NVCCFLAGS=-rdc=true -O3 -arch=sm_60
+NVCCFLAGS=-rdc=true -O3 -arch=sm_$(COMPUTE_CAP)
 
 GRMONTY_BASEBUILD ?= .
 EXE = grmonty
