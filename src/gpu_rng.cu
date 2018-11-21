@@ -1,10 +1,7 @@
 #include <math.h>
 #include <curand_kernel.h>
 
-extern "C" __device__
-int gpu_thread_id() {
-    return (blockDim.x * blockIdx.x) + threadIdx.x;
-}
+extern "C" __device__ int gpu_thread_id();
 
 
 extern "C" __device__
