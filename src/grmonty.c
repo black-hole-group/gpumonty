@@ -84,6 +84,18 @@ unsigned long long generate_photons (unsigned long long Ns, struct of_photon **p
 	return ph_count;
 }
 
+void check_env_vars(int *NUM_BLOCKS, int *BLOCK_SIZE) {
+	char *num_blocks_str = getenv("NUM_BLOCKS");
+	char *block_size_str = getenv("BLOCK_SIZE");
+
+	if (num_blocks_str && (sscanf(num_blocks_str, "%d", NUM_BLOCKS) != 1))
+		terminate("Invalid argument for NUM_BLOCKS environment variable.",
+				  EINVAL);
+
+	if (block_size_str && (sscanf(block_size_str, "%d", BLOCK_SIZE) != 1))
+		terminate("Invalid argument for BLOCK_SIZE environment variable.",
+				  EINVAL);
+}
 
 void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *seed) {
 	if (argc < 4 || argc > 5) terminate("usage: grmonty Ns infilename M_unit [seed]\nWhere seed >= 1", 0);
@@ -116,6 +128,13 @@ int main(int argc, char *argv[]) {
 	starttime = time(NULL);
 	//N_scatt = 0;
 
+	int BLOCK_SIZE = 512;
+	int NUM_BLOCKS = 30;
+	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
+	fprintf(stderr, "Kernel config: %d BLOCKS of %d THREADS.\n\n",
+		NUM_BLOCKS, BLOCK_SIZE);
+	fflush(stderr);
+
 	fprintf(stderr, "Generating photons...\n");
 	fflush(stderr);
 	N_superph_made = generate_photons(Ns, &phs);
@@ -126,24 +145,22 @@ int main(int argc, char *argv[]) {
 	#pragma acc update device(startx[:NDIM], stopx[:NDIM], B_unit,  L_unit, max_tau_scatt, \
 		 Ne_unit, Thetae_unit, lE0, dx, N1, N2, N3, n_within_horizon, h_dlT, dlT, lT_min, lminw, \
 		 dlw, lmint, Rh, dlE, table, K2, p[:NPRIM][:N1][:N2])
+
 	#pragma acc parallel copyin (phs[:N_superph_made]) private(curandstate) \
-		copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded)
+		copy(spect[:N_THBINS][:N_EBINS], N_superph_recorded) \
+		num_gangs(NUM_BLOCKS) vector_length(BLOCK_SIZE)
 	{
 
 		gpu_rng_init (&curandstate, seed);
 
-		#pragma acc loop
+		#pragma acc loop gang, vector
 		for (unsigned long long i = 0; i < N_superph_made; i++) {
 			/* push ph around */
 
-			track_super_photon(&curandstate, &phs[i], &N_superph_recorded, spect);
+			track_super_photon(&curandstate, &phs[i],
+					   &N_superph_recorded, spect);
 
-			// /* give interim reports on rates */
-			// if (((int) (N_superph_made)) % 100000 == 0  && N_superph_made > 0) {
-			// 	currtime = time(NULL);
-			// 	fprintf(stderr, "time %g, rate %g ph/s\n",	(double) (currtime - starttime), N_superph_made / (currtime -
-			// 				  starttime));
-			// }
+			/* Here we could try to give interim reports on rates */
 		}
 	}
 
