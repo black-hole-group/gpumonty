@@ -7,9 +7,9 @@
 #
 
 NVCC=nvcc
-DEBUGFLAGS=-Xcompiler -rdynamic -G
-CCFLAGS=-O3 -arch=sm_61 -rdc=true
-LDFLAGS=-lgsl -lgslcblas -lcurand
+DEBUGFLAGS= -G -Xcompiler -rdynamic
+CCFLAGS=-O3 -arch=sm_61 -rdc=true -Xcompiler -fopenmp
+LDFLAGS=-lgsl -lgslcblas -lcurand -lgomp
 
 GRMONTY_BASEBUILD ?= .
 EXE = grmonty

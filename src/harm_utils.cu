@@ -35,44 +35,39 @@ void harm_rng_init(unsigned long int seed)
 void init_weight_table(unsigned long long Ns)
 {
 
-	int i, j, l;
-	double Ne, Thetae, B, K2;
-	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
-	double fac, sfac;
-	double Ucon[NDIM], Bcon[NDIM];
+	double sum[N_ESAMP + 1] = { 0 };
+	double nu[N_ESAMP + 1];
 
 	fprintf(stderr, "Building table for superphoton weights\n");
 	fflush(stderr);
 
 	/*      Set up interpolation */
 	init_linear_interp_weight();
+	double sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
-	//TODO: this section could be parallelized
-	for (i = 0; i <= N_ESAMP; i++) {
-		sum[i] = 0.;
+	#pragma omp parallel for schedule(static)
+	for (int i = 0; i <= N_ESAMP; ++i) {
 		nu[i] = exp(i * dlnu + lnu_min);
 	}
 
-	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
-
-	// This part use to be parallel. It was made sequential for simplicity. Can be parallelized again
-	// later.
-	for (i = 0; i < N1; i++)
-		for (j = 0; j < N2; j++) {
-			get_fluid_zone(i, j, &Ne, &Thetae, &B,
-				       Ucon, Bcon);
-			if (Ne == 0. || Thetae < THETAE_MIN)
-				continue;
-			K2 = K2_eval(Thetae);
-			fac =
-			    (JCST * Ne * B * Thetae * Thetae /
-			     K2) * sfac * geom[i][j].g;
-			for (l = 0; l < N_ESAMP+1; l++)
-				sum[l] += fac * F_eval(Thetae, B, nu[l]);
+	for (int i = 0; i < N1; ++i) {
+		for (int j = 0; j < N2; ++j) {
+			double Ne, Thetae, B, K2;
+			double Ucon[NDIM], Bcon[NDIM];
+			get_fluid_zone(i, j, &Ne, &Thetae, &B, Ucon, Bcon);
+			if (Ne != 0. && Thetae >= THETAE_MIN) {
+				K2 = K2_eval(Thetae);
+				for (int l = 0; l <= N_ESAMP; ++l)
+					sum[l] += (JCST * Ne * B * Thetae *
+						   Thetae / K2) * sfac *
+						   geom[i][j].g *
+						   F_eval(Thetae, B, nu[l]);
+			}
 		}
+	}
 
-	//TODO: this section could be parallelized
-	for (i = 0; i <= N_ESAMP; i++)
+	#pragma omp parallel for schedule(static)
+	for (int i = 0; i <= N_ESAMP; ++i)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 
 	fprintf(stderr, "done.\n\n");
