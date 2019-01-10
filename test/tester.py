@@ -424,7 +424,7 @@ def build():
     try:
         create_tests_build_dir()
         os.environ["GRMONTY_BASEBUILD"] = BUILD_PATH
-        print(run(["make", "-B", "-C", MAKE_PATH]).stdout)
+        print(run(["make", "-j8", "-B", "-C", MAKE_PATH]).stdout)
     except subprocess.CalledProcessError as exception:
         tester_error("Make failed:\n" + exception.stderr, exception.returncode)
 
