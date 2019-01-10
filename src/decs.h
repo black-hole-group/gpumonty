@@ -137,12 +137,12 @@ extern __device__ double d_max_tau_scatt;
 extern __device__ double d_Ne_unit;
 extern __device__ double d_Thetae_unit;
 extern __device__ int d_N1, d_N2;
-extern __device__ unsigned long long d_N_superph_made;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *ph);
+void track_super_photon(curandState_t *curandstates, struct of_photon *ph,
+						unsigned int N);
 
 __device__
 void record_super_photon(struct of_photon *ph);

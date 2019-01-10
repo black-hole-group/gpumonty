@@ -47,11 +47,10 @@ __device__ double d_max_tau_scatt;
 __device__ double d_Ne_unit;
 __device__ double d_Thetae_unit;
 __device__ int d_N1, d_N2;
-__device__ unsigned long long d_N_superph_made;
-
 
 void terminate (const char *msg, int code) {
 	fprintf(stderr, "%s\n", msg);
+	fflush(stderr);
 	exit(code);
 }
 
@@ -109,7 +108,7 @@ void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *
 
 int main(int argc, char *argv[]) {
 	unsigned long long Ns, N_superph_made;
-	struct of_photon *phs, *d_phs;
+	struct of_photon *phs;
 	curandState_t *d_curandstates;
 	unsigned long seed;
 	time_t currtime, starttime;
@@ -132,29 +131,42 @@ int main(int argc, char *argv[]) {
 	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
 	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n",
 		NUM_BLOCKS, BLOCK_SIZE);
+	int BATCH = BLOCK_SIZE * NUM_BLOCKS;
 	fflush(stderr);
 
-	fprintf(stderr, "Copying photons to GPU and initializing RNG...\n\n");
-	fflush(stderr);
-	// Copy phs and curandstates to GPU
-	CUDASAFE(cudaMalloc(&d_phs, N_superph_made * sizeof(struct of_photon)));
-	CUDASAFE(cudaMemcpyAsync(d_phs, phs,
-				 N_superph_made * sizeof(struct of_photon),
-				 cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMemcpyToSymbolAsync(d_N_superph_made, &N_superph_made,
-					 sizeof(unsigned long long), 0,
-					 cudaMemcpyHostToDevice));
-	CUDASAFE(cudaMalloc(&d_curandstates,
-			    BLOCK_SIZE * NUM_BLOCKS * sizeof(curandState_t)));
+	// Copy and initialize curandstates
+	CUDASAFE(cudaMalloc(&d_curandstates, BLOCK_SIZE * NUM_BLOCKS *
+						sizeof(curandState_t)));
 	gpu_rng_init<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, seed);
 	CUDAERRCHECK();
 
-	fprintf(stderr, "Entering main loop...\n\n");
+	if (N_superph_made == 0)
+		terminate("0 photons were generated. Aborting...", 1);
+	fprintf(stderr, "Staring photon tracking...\n\n");
 	fflush(stderr);
-	CUDASAFE(cudaDeviceSynchronize()); // wait previous async calls
-	track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs);
-	CUDAERRCHECK();
-	CUDASAFE(cudaDeviceSynchronize());
+	struct of_photon *d_phs = NULL, *d_phs_old = NULL;
+	unsigned long long offset = 0;
+	cudaStream_t batch_cpy_stream;
+	CUDASAFE(cudaStreamCreate(&batch_cpy_stream));
+	do {
+		d_phs_old = d_phs;
+		d_phs = NULL;
+		unsigned int N = (unsigned int) MIN2(BATCH, N_superph_made - offset);
+		CUDASAFE(cudaMalloc(&d_phs, N * sizeof(struct of_photon)));
+		CUDASAFE(cudaMemcpyAsync(d_phs, phs + offset, N *
+								 sizeof(struct of_photon),
+								 cudaMemcpyHostToDevice, batch_cpy_stream));
+		CUDAERRCHECK();
+		CUDASAFE(cudaDeviceSynchronize()); // wait previous kernel launch
+		if(d_phs_old) cudaFree(d_phs_old);
+
+		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs, N);
+		CUDAERRCHECK();
+
+		offset += N;
+	} while (offset < N_superph_made);
+	CUDASAFE(cudaDeviceSynchronize()); // wait last kernel launch
+	CUDASAFE(cudaStreamDestroy(batch_cpy_stream));
 
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",

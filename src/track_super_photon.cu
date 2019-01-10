@@ -16,16 +16,14 @@ __device__
 void __track_super_photon(curandState_t *curandstate, struct of_photon *ph);
 
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *phs)
+void track_super_photon(curandState_t *curandstates, struct of_photon *phs,
+						unsigned int N)
 {
-	int batch = gridDim.x * blockDim.x;
-	int N = d_N_superph_made;
-
 	int my_id = gpu_thread_id();
 	curandState_t *curandstate = &curandstates[my_id];
 
-	for (int i = gpu_thread_id(); i < N; i += batch) {
-		struct of_photon *ph = &phs[i];
+	if (my_id < N) {
+		struct of_photon *ph = &phs[my_id];
 		__track_super_photon(curandstate, ph);
 	}
 }
