@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
 	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n",
 		NUM_BLOCKS, BLOCK_SIZE);
-	int BATCH = BLOCK_SIZE * NUM_BLOCKS;
+	int BATCH_SIZE = BLOCK_SIZE * NUM_BLOCKS;
 	fflush(stderr);
 
 	// Copy and initialize curandstates
@@ -140,40 +140,91 @@ int main(int argc, char *argv[]) {
 	gpu_rng_init<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, seed);
 	CUDAERRCHECK();
 
+
+	/*------------------------------------------------------------------------*/
+	/*                             CORE                                       */
+	/*------------------------------------------------------------------------*/
+
+
 	if (N_superph_made == 0)
 		terminate("0 photons were generated. Aborting...", 1);
 	fprintf(stderr, "Staring photon tracking...\n\n");
 	fflush(stderr);
-	struct of_photon *d_phs = NULL, *d_phs_old = NULL;
-	unsigned long long offset = 0;
+
 	cudaStream_t batch_cpy_stream;
 	CUDASAFE(cudaStreamCreate(&batch_cpy_stream));
-	do {
-		d_phs_old = d_phs;
-		d_phs = NULL;
-		unsigned int N = (unsigned int) MIN2(BATCH, N_superph_made - offset);
-		CUDASAFE(cudaMalloc(&d_phs, N * sizeof(struct of_photon)));
-		CUDASAFE(cudaMemcpyAsync(d_phs, phs + offset, N *
+
+	struct of_photon *d_batch_1, *d_batch_2;
+	CUDASAFE(cudaMalloc(&d_batch_1, BATCH_SIZE * sizeof(struct of_photon)));
+	CUDASAFE(cudaMalloc(&d_batch_2, BATCH_SIZE * sizeof(struct of_photon)));
+
+	unsigned int N_1 = (unsigned int) MIN2(BATCH_SIZE, N_superph_made);
+	unsigned int N_2;
+	CUDASAFE(cudaMemcpy(d_batch_1, phs, N_1 * sizeof(struct of_photon),
+						cudaMemcpyHostToDevice));
+	track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_batch_1, N_1);
+	CUDAERRCHECK();
+
+	unsigned long long offset_1 = 0, offset_2 = N_1;
+
+	while (offset_2 < N_superph_made) {
+
+		N_2 = (unsigned int) MIN2(BATCH_SIZE, N_superph_made - offset_2);
+		CUDASAFE(cudaMemcpyAsync(d_batch_2, phs + offset_2, N_2 *
 								 sizeof(struct of_photon),
 								 cudaMemcpyHostToDevice, batch_cpy_stream));
-		CUDAERRCHECK();
-		CUDASAFE(cudaDeviceSynchronize()); // wait previous kernel launch
-		if(d_phs_old) cudaFree(d_phs_old);
+		CUDASAFE(cudaDeviceSynchronize()); // wait previous kernel launch and asyncmemcpy
 
-		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_phs, N);
-		CUDAERRCHECK();
+		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_batch_2, N_2);
 
-		offset += N;
-	} while (offset < N_superph_made);
-	CUDASAFE(cudaDeviceSynchronize()); // wait last kernel launch
-	CUDASAFE(cudaStreamDestroy(batch_cpy_stream));
+		CUDASAFE(cudaMemcpyAsync(phs + offset_1, d_batch_1, N_1 *
+								 sizeof(struct of_photon),
+								 cudaMemcpyDeviceToHost, batch_cpy_stream));
+		CUDASAFE(cudaStreamSynchronize(batch_cpy_stream));
+
+		// Add batch_1 contribution to spect
+		// #pragma omp parallel for schedule(static)
+		for (unsigned int i = 0; i < N_1; ++i) {
+			struct of_photon *ph = &phs[offset_1 + i];
+			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
+				record_criterion(ph)) record_super_photon(ph);
+		}
+
+		// Calculate remainings of batch_1
+
+		// Flip batch 1 and 2
+		struct of_photon *d_batch_aux = d_batch_1;
+		d_batch_1 = d_batch_2;
+		d_batch_2 = d_batch_aux;
+
+		offset_1 = offset_2;
+		offset_2 = offset_2 + N_2;
+
+		N_1 = N_2;
+	}
+
+	// Wait last kernel launch and bring the batch back
+	CUDASAFE(cudaMemcpy(phs + offset_1, d_batch_1, N_1 *
+						sizeof(struct of_photon), cudaMemcpyDeviceToHost));
+
+	// Add batch_1 contribution to spect
+	// #pragma omp parallel for schedule(static)
+	for (unsigned int i = 0; i < N_1; ++i) {
+		struct of_photon *ph = &phs[offset_1 + i];
+		if (record_criterion(ph)) record_super_photon(ph);
+	}
+
+	// Calculate remainings of batch_1
+
+	/*------------------------------------------------------------------------*/
+	/*                           END OF CORE                                  */
+	/*------------------------------------------------------------------------*/
 
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
 	(double) (currtime - starttime),
 	(double) N_superph_made / (currtime - starttime));
 
-	copy_spect_from_gpu();
 	report_spectrum(N_superph_made);
 
 	free(phs);

@@ -270,15 +270,12 @@ void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
 			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
 			// 	bias);
-			break;
+			return;
 		}
 
 	}
 
-	/* accumulate result in spectrum on escape */
-	if (record_criterion(ph) && nstep < MAXNSTEP)
-		record_super_photon(ph);
-
 	/* done! */
+	ph->tracking_status = TRACKING_STATUS_COMPLETE;
 	return;
 }

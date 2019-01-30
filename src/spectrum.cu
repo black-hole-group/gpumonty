@@ -8,10 +8,6 @@
 unsigned long long N_superph_recorded = 0;
 struct of_spectrum spect[N_THBINS][N_EBINS];
 
-__device__ unsigned long long d_N_superph_recorded = 0;
-__device__ struct of_spectrum d_spect[N_THBINS][N_EBINS];
-
-
 /*******************************************************************************
 * Host-only Functions
 *
@@ -34,19 +30,6 @@ void init_spectrum () {
 			spect[i][j].b0 = 0.0;
 			spect[i][j].E0 = 0.0;;
 		}
-
-	CUDASAFE(cudaMemcpyToSymbolAsync(d_spect, spect,
-				    N_THBINS*N_EBINS*sizeof(struct of_spectrum),
-				    0, cudaMemcpyHostToDevice));
-}
-
-void copy_spect_from_gpu() {
-	CUDASAFE(cudaMemcpyFromSymbol(spect, d_spect,
-				      N_THBINS*N_EBINS*sizeof(struct of_spectrum),
-				      0, cudaMemcpyDeviceToHost));
-	CUDASAFE(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded,
-				      sizeof(unsigned long long), 0,
-				      cudaMemcpyDeviceToHost));
 }
 
 /* output spectrum to file */
@@ -142,19 +125,12 @@ void report_spectrum(unsigned long long N_superph_made)
 
 }
 
-
-/*******************************************************************************
-* Device-only Functions
-*
-*******************************************************************************/
-
 /*
 	record contribution of super photon to spectrum.
 
 	This routine should make minimal assumptions about the
 	coordinate system.
 */
-__device__
 void record_super_photon(struct of_photon *ph)
 {
 	double lE, dx2;
@@ -173,11 +149,11 @@ void record_super_photon(struct of_photon *ph)
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */
-	dx2 = (d_stopx[2] - d_startx[2]) / (2. * N_THBINS);
-	if (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2]))
+	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
 		ix2 = (int) (ph->X[2] / dx2);
 	else
-		ix2 = (int) ((d_stopx[2] - ph->X[2]) / dx2);
+		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
 
 	/* check limits */
 	if (ix2 < 0 || ix2 >= N_THBINS)
@@ -191,22 +167,22 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
-	atomicAdd(&d_N_superph_recorded, 1);
+	N_superph_recorded += 1;
 	// #atomic
 	// N_scatt += ph->nscatt;
 
 	/* sum in photon */
-	atomicAdd(&d_spect[ix2][iE].dNdlE, ph->w);
-	atomicAdd(&d_spect[ix2][iE].dEdlE, ph->w * ph->E);
-	atomicAdd(&d_spect[ix2][iE].tau_abs, ph->w * ph->tau_abs);
-	atomicAdd(&d_spect[ix2][iE].tau_scatt, ph->w * ph->tau_scatt);
-	atomicAdd(&d_spect[ix2][iE].X1iav, ph->w * ph->X1i);
-	atomicAdd(&d_spect[ix2][iE].X2isq, ph->w * (ph->X2i * ph->X2i));
-	atomicAdd(&d_spect[ix2][iE].X3fsq, ph->w * (ph->X[3] * ph->X[3]));
-	atomicAdd(&d_spect[ix2][iE].ne0, ph->w * (ph->ne0));
-	atomicAdd(&d_spect[ix2][iE].b0, ph->w * (ph->b0));
-	atomicAdd(&d_spect[ix2][iE].thetae0, ph->w * (ph->thetae0));
-	atomicAdd(&d_spect[ix2][iE].nscatt, ph->w * ph->nscatt);
-	atomicAdd(&d_spect[ix2][iE].nph, 1.);
+	spect[ix2][iE].dNdlE += ph->w;
+	spect[ix2][iE].dEdlE += ph->w * ph->E;
+	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
+	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
+	spect[ix2][iE].X1iav += ph->w * ph->X1i;
+	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
+	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
+	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
+	spect[ix2][iE].b0 += ph->w * (ph->b0);
+	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
+	spect[ix2][iE].nscatt += ph->w * ph->nscatt;
+	spect[ix2][iE].nph += 1.;
 
 }

@@ -59,6 +59,10 @@
 #define MIN(elem1,elem2) ((elem1) < (elem2) ? (elem1) : (elem2))
 // #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
 
+// phothon's tracking status
+#define TRACKING_STATUS_INCOMPLETE 0
+#define TRACKING_STATUS_COMPLETE 1
+
 /** data structures **/
 struct of_photon {
 	double X[NDIM];
@@ -77,6 +81,7 @@ struct of_photon {
 	double E0;
 	double E0s;
 	int nscatt;
+	char tracking_status;
 };
 
 struct of_geom {
@@ -144,11 +149,9 @@ __global__
 void track_super_photon(curandState_t *curandstates, struct of_photon *ph,
 						unsigned int N);
 
-__device__
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(unsigned long long N_superph_made);
 void init_spectrum();
-void copy_spect_from_gpu();
 __device__
 void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
@@ -250,7 +253,6 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double Bcov[NDIM]);
 __device__
 int stop_criterion(curandState_t *curandstate, struct of_photon *ph);
-__device__
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */

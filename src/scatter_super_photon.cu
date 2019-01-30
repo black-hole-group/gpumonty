@@ -133,6 +133,7 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 	php->thetae0 = Thetae;
 	php->E0 = ph->E;
 	php->nscatt = ph->nscatt + 1;
+	php->tracking_status = TRACKING_STATUS_INCOMPLETE;
 
 	return;
 }

@@ -123,6 +123,18 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 }
 
+/* criterion for recording photon */
+int record_criterion(struct of_photon *ph)
+{
+	const double X1max = log(RMAX);
+	/* this is coordinate and simulation
+	   specific: stop at large distance */
+
+	if (ph->X[1] > X1max) return 1;
+	else return 0;
+
+}
+
 
 /******************************************************************************
 * Host/Device Functions
@@ -418,24 +430,6 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 
 	return (0);
 }
-
-/* criterion for recording photon */
-__device__
-int record_criterion(struct of_photon *ph)
-{
-	const double X1max = log(RMAX);
-	/* this is coordinate and simulation
-	   specific: stop at large distance */
-
-	if (ph->X[1] > X1max)
-		return (1);
-
-	else
-		return (0);
-
-}
-
-
 
 __device__
 double stepsize(double X[NDIM], double K[NDIM])

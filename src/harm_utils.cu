@@ -255,6 +255,7 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int fi
 	ph->ne0 = Ne;
 	ph->b0 = Bmag;
 	ph->thetae0 = Thetae;
+	ph->tracking_status = TRACKING_STATUS_INCOMPLETE;
 
 	return;
 }
