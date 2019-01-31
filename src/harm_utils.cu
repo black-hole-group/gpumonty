@@ -1,4 +1,3 @@
-#include <gsl/gsl_rng.h>
 #include <cuda.h>
 #include "decs.h"
 #include "harm_model.h"
@@ -13,7 +12,6 @@ static double lb_min, dlb;
 static double nint[NINT + 1];
 static double dndlnu_max[NINT + 1];
 static double wgt[N_ESAMP + 1];
-static gsl_rng *rng; // Random number generator state
 static double lnu_min, lnu_max, dlnu;
 
 
@@ -24,12 +22,6 @@ static double linear_interp_weight(double nu);
 * Host-only Functions
 *
 *******************************************************************************/
-
-void harm_rng_init(unsigned long int seed)
-{
-	rng = gsl_rng_alloc(gsl_rng_mt19937);	/* use Mersenne twister */
-	gsl_rng_set(rng, seed);
-}
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(unsigned long long Ns)
@@ -174,7 +166,7 @@ void init_zone(int i, int j, unsigned long long*nz, double *dnmax, unsigned long
 		*dnmax = 0.;
 	} else {
 		// Randomly round decimal up or down
-		if (fmod(dnz, 1.) > gsl_rng_uniform(rng)) *nz = (int) dnz + 1;
+		if (fmod(dnz, 1.) > rng_uniform_double()) *nz = (int) dnz + 1;
 		else *nz = (int) dnz;
 	}
 
@@ -199,20 +191,20 @@ void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph, int fi
 
 	/* Sample from superphoton distribution in current simulation zone */
 	do {
-		nu = exp(gsl_rng_uniform(rng) * Nln + lnu_min);
+		nu = exp(rng_uniform_double() * Nln + lnu_min);
 		weight = linear_interp_weight(nu);
-	} while (gsl_rng_uniform(rng) > (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
+	} while (rng_uniform_double() > (F_eval(Thetae, Bmag, nu) / weight) / dnmax);
 
 	ph->w = weight;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 	do {
-		cth = 2. * gsl_rng_uniform(rng) - 1.;
+		cth = 2. * rng_uniform_double() - 1.;
 		th = acos(cth);
-	} while (gsl_rng_uniform(rng) >
+	} while (rng_uniform_double() >
 		 jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
 
 	sth = sqrt(1. - cth * cth);
-	phi = 2. * M_PI * gsl_rng_uniform(rng);
+	phi = 2. * M_PI * rng_uniform_double();
 	cphi = cos(phi);
 	sphi = sin(phi);
 

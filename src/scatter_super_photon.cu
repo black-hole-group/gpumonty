@@ -10,7 +10,7 @@
 */
 
 __device__
-void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
+void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM])
@@ -78,11 +78,11 @@ void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, stru
 	}
 
 	/* find the electron that we collided with */
-	sample_electron_distr_p(curandstate, K_tetrad, P, Thetae);
+	sample_electron_distr_p(K_tetrad, P, Thetae);
 
 	/* given electron momentum P, find the new
 	   photon momentum Kp */
-	sample_scattered_photon(curandstate, K_tetrad, P, K_tetrad_p);
+	sample_scattered_photon(K_tetrad, P, K_tetrad_p);
 
 
 	/* transform back to coordinate frame */

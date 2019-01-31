@@ -13,23 +13,21 @@
 #define MAXNSTEP	1280000
 
 __device__
-void __track_super_photon(curandState_t *curandstate, struct of_photon *ph);
+static void track_super_photon(struct of_photon *ph);
 
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *phs,
-						unsigned int N)
+void track_super_photon_batch(struct of_photon *phs, unsigned int N)
 {
 	int my_id = gpu_thread_id();
-	curandState_t *curandstate = &curandstates[my_id];
 
 	if (my_id < N) {
 		struct of_photon *ph = &phs[my_id];
-		__track_super_photon(curandstate, ph);
+		track_super_photon(ph);
 	}
 }
 
 __device__
-void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
+static void track_super_photon(struct of_photon *ph)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -75,7 +73,7 @@ void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 	init_dKdlam(ph->X, ph->K, ph->dKdlam);
 
 	/* This loop solves radiative transfer equation along a geodesic */
-	while (!stop_criterion(curandstate, ph)) {
+	while (!stop_criterion(ph)) {
 
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -97,7 +95,7 @@ void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 
 		/* step the geodesic */
 		push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s));
-		if (stop_criterion(curandstate, ph))
+		if (stop_criterion(ph))
 			break;
 
 		/* allow photon to interact with matter, */
@@ -162,7 +160,7 @@ void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 				bi = bf;
 			}
 
-			x1 = -log(curand_uniform_double(curandstate));
+			x1 = -log(rng_uniform_double());
 			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				// if (isnan(php.w) || isinf(php.w)) {
@@ -214,10 +212,8 @@ void __track_super_photon(curandState_t *curandstate, struct of_photon *ph)
 						 Bcov);
 
 				if (Ne > 0.) {
-					scatter_super_photon(curandstate, ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov);
+					scatter_super_photon(ph, &php, Ne, Thetae, B, Ucon, Bcon,
+ 										 Gcov);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}

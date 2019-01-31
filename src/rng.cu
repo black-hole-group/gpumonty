@@ -1,26 +1,66 @@
-#include "gpu_rng.h"
+#include "rng.h"
+#include "config.h"
 #include "gpu_utils.h"
-// #include <math.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+#include <curand_kernel.h>
+#include <omp.h>
 
+static gsl_rng **gsl_rngs;
+__device__ static curandState_t *d_curandstates;
 
 __global__
-void gpu_rng_init (curandState_t *curandstates, long int seed) {
+static void gpu_rng_init(curandState_t *d_tmp, unsigned long seed) {
     int id = gpu_thread_id();
-    curand_init (seed, id, 0, &curandstates[id]);
+    curand_init (seed, id, 0, &d_tmp[id]);
+    if (id == 0) d_curandstates = d_tmp;
 }
 
+void rng_init(unsigned long seed) {
+    gsl_rngs = (gsl_rng **) malloc(N_CPU_THS * sizeof(gsl_rng *));
+    for (int i = 0; i < N_CPU_THS; ++i) {
+        gsl_rngs[i] = gsl_rng_alloc(gsl_rng_mt19937); /* use Mersenne twister */
+        gsl_rng_set(gsl_rngs[i], seed);
+    }
 
-/*******************************************************************************
-* Device-only Functions
-*
-*******************************************************************************/
+    curandState_t *d_tmp;
+	CUDASAFE(cudaMalloc(&d_tmp, N_GPU_THS * sizeof(curandState_t)));
+    gpu_rng_init<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_tmp, seed);
+    CUDAERRCHECK();
+}
 
+void rng_destroy() {
+    for (int i = 0; i < N_CPU_THS; ++i) {
+        gsl_rng_free(gsl_rngs[i]);
+    }
+    free(gsl_rngs);
+    // TODO: Currently it's not possible (or too much time-expensive) to free
+    // d_curandstates as it is a device variable (?)
+}
+
+__device__ __host__
+double rng_uniform_double() {
+#ifdef __CUDA_ARCH__
+    return curand_uniform_double(&d_curandstates[gpu_thread_id()]);
+#else
+    return gsl_rng_uniform(gsl_rngs[omp_get_thread_num()]);
+#endif
+}
+
+__device__ __host__
+double rng_gaussian_double() {
+#ifdef __CUDA_ARCH__
+    return curand_normal_double(&d_curandstates[gpu_thread_id()]);
+#else
+    return gsl_ran_gaussian(gsl_rngs[omp_get_thread_num()], 1.0);
+#endif
+}
 
 /* Taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/sphere.c
    Line, 65-91
 */
-__device__
-void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z) {
+__host__ __device__
+void rng_ran_dir_3d(double *x, double *y, double *z) {
   double s, a;
 
   /* This is a variant of the algorithm for computing a random point
@@ -33,8 +73,8 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    */
   do
     {
-      *x = -1 + 2 * curand_uniform_double(curandst);
-      *y = -1 + 2 * curand_uniform_double(curandst);
+      *x = -1 + 2 * rng_uniform_double();
+      *y = -1 + 2 * rng_uniform_double();
       s = (*x) * (*x) + (*y) * (*y);
     }
   while (s > 1.0);
@@ -55,12 +95,12 @@ void gpu_rng_ran_dir_3d(curandState_t *curandst, double *x, double *y, double *z
    The algorithms below are from Knuth, vol 2, 2nd ed, p. 129.
    Code adapted from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/gamma.c
 */
-__device__
-double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
+__host__ __device__
+double rng_ran_gamma(double a, const double b){
     /* assume a > 0 */
     double pow_multiplier = 1.0;
     while (a < 1) {
-        pow_multiplier *= pow (curand_uniform_double(curandst), 1.0 / a);
+        pow_multiplier *= pow (rng_uniform_double(), 1.0 / a);
         a += 1.0;
     }
     double x, v, u;
@@ -69,12 +109,12 @@ double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
 
     while (1){
         do{
-            x = curand_normal_double(curandst);
+            x = rng_gaussian_double();
             v = 1.0 + c * x;
         } while (v <= 0);
 
         v = v * v * v;
-        u = curand_uniform_double(curandst);
+        u = rng_uniform_double();
 
         if (u < 1 - 0.0331 * x * x * x * x)
             break;
@@ -90,8 +130,8 @@ double gpu_rng_ran_gamma(curandState_t *curandst, double a, const double b){
    for x = 0 ... +infty
    Code taken from https://github.com/ampl/gsl/blob/48fbd40c7c9c24913a68251d23bdbd0637bbda20/randist/chisq.c
 */
-__device__
-double gpu_rng_ran_chisq(curandState_t *curandst, const double nu) {
-  double chisq = 2 * gpu_rng_ran_gamma(curandst, nu / 2, 1.0);
+__host__ __device__
+double rng_ran_chisq(const double nu) {
+  double chisq = 2 * rng_ran_gamma(nu / 2, 1.0);
   return chisq;
 }

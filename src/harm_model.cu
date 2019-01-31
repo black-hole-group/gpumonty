@@ -395,7 +395,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
 __device__
-int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
+int stop_criterion(struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
 
@@ -411,7 +411,7 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (curand_uniform_double(curandstate) <= 1. / ROULETTE) {
+			if (rng_uniform_double() <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -420,7 +420,7 @@ int stop_criterion(curandState_t *curandstate, struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (curand_uniform_double(curandstate) <= 1. / ROULETTE) {
+		if (rng_uniform_double() <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;

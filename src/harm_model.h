@@ -41,7 +41,6 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
 
 // harm_utils's functions
-void harm_rng_init(unsigned long int seed);
 void init_storage(void);
 double dOmega_func(double x2i, double x2f);
 void init_weight_table(unsigned long long Ns);

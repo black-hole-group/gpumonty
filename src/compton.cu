@@ -78,7 +78,7 @@ double klein_nishina(double a, double ap)
    find new wavevector $kp$
 */
 __device__
-void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p[4], double kp[4])
+void sample_scattered_photon(double k[4], double l_p[4], double kp[4])
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -90,11 +90,11 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p
 
 	boost(k, l_p, ke);
 	if (ke[0] > 1.e-4) {
-		k0p = sample_klein_nishina(curandstate, ke[0]);
+		k0p = sample_klein_nishina(ke[0]);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
-		cth = sample_thomson(curandstate);
+		cth = sample_thomson();
 	}
 	sth = sqrt(fabs(1. - cth * cth));
 
@@ -106,7 +106,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p
 
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
-	gpu_rng_ran_dir_3d(curandstate, &n0x, &n0y, &n0z);
+	rng_ran_dir_3d(&n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -129,7 +129,7 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * curand_uniform_double(curandstate);
+	phi = 2. * M_PI * rng_uniform_double();
 	sphi = sin(phi);
 	cphi = cos(phi);
 
@@ -174,14 +174,14 @@ void sample_scattered_photon(curandState_t *curandstate, double k[4], double l_p
 
 /* uses simple rejection scheme */
 __device__
-double sample_thomson(curandState_t *curandstate)
+double sample_thomson()
 {
 	double x1, x2;
 
 	do {
 
-		x1 = 2. * curand_uniform_double(curandstate) - 1.;
-		x2 = (3. / 4.) * curand_uniform_double(curandstate);
+		x1 = 2. * rng_uniform_double() - 1.;
+		x2 = (3. / 4.) * rng_uniform_double();
 
 	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
 
@@ -194,7 +194,7 @@ sample Klein-Nishina differential cross section.
 This routine is inefficient; it needs improvement.
 */
 __device__
-double sample_klein_nishina(curandState_t *curandstate, double k0)
+double sample_klein_nishina(double k0)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	/* a low efficiency sampling algorithm, particularly for large k0;
@@ -204,12 +204,12 @@ double sample_klein_nishina(curandState_t *curandstate, double k0)
 	do {
 
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * curand_uniform_double(curandstate);
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * rng_uniform_double();
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= curand_uniform_double(curandstate);
+		x1 *= rng_uniform_double();
 
 	} while (x1 >= klein_nishina(k0, k0p_tent));
 
@@ -221,7 +221,7 @@ double sample_klein_nishina(curandState_t *curandstate, double k0)
 	scattered.
 */
 __device__
-void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p[4], double Thetae)
+void sample_electron_distr_p(double k[4], double l_p[4], double Thetae)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -232,8 +232,8 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p
 	int sample_cnt = 0;
 
 	do {
-		sample_beta_distr(curandstate, Thetae, &gamma_e, &beta_e);
-		mu = sample_mu_distr(curandstate, beta_e);
+		sample_beta_distr(Thetae, &gamma_e, &beta_e);
+		mu = sample_mu_distr(beta_e);
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -262,7 +262,7 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p
 						   log(1. + 2. * K));
 		}
 
-		x1 = curand_uniform_double(curandstate);
+		x1 = rng_uniform_double();
 
 		sample_cnt++;
 
@@ -287,7 +287,7 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p
 	v0z /= v0;
 
 	/* pick zero-angle for coordinate system */
-	gpu_rng_ran_dir_3d(curandstate, &n0x, &n0y, &n0z);
+	rng_ran_dir_3d(&n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */
@@ -309,7 +309,7 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p
 
 	/* now resolve new momentum vector along unit vectors
 	   and create a four-vector $l_p$ */
-	phi = curand_uniform_double(curandstate) * 2. * M_PI;	/* orient uniformly */
+	phi = rng_uniform_double() * 2. * M_PI;	/* orient uniformly */
 	sphi = sin(phi);
 	cphi = cos(phi);
 
@@ -339,12 +339,12 @@ void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p
    checked.
 */
 __device__
-void sample_beta_distr(curandState_t *curandstate, double Thetae, double *gamma_e, double *beta_e)
+void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 {
 	double y;
 
 	/* checked */
-	y = sample_y_distr(curandstate, Thetae);
+	y = sample_y_distr(Thetae);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -361,7 +361,7 @@ void sample_beta_distr(curandState_t *curandstate, double Thetae, double *gamma_
    p. 572 et seq.
 */
 __device__
-double sample_y_distr(curandState_t *curandstate, double Thetae)
+double sample_y_distr(double Thetae)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -380,23 +380,23 @@ double sample_y_distr(curandState_t *curandstate, double Thetae)
 	pi_6 /= S_3;
 
 	do {
-		x1 = curand_uniform_double(curandstate);
+		x1 = rng_uniform_double();
 
 		if (x1 < pi_3) {
-			x = gpu_rng_ran_chisq(curandstate, 3);
+			x = rng_ran_chisq(3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = gpu_rng_ran_chisq(curandstate, 4);
+			x = rng_ran_chisq(4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = gpu_rng_ran_chisq(curandstate, 5);
+			x = rng_ran_chisq(5);
 		} else {
-			x = gpu_rng_ran_chisq(curandstate, 6);
+			x = rng_ran_chisq(6);
 		}
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = curand_uniform_double(curandstate);
+		x2 = rng_uniform_double();
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
@@ -408,11 +408,11 @@ double sample_y_distr(curandState_t *curandstate, double Thetae)
 }
 
 __device__
-double sample_mu_distr(curandState_t *curandstate, double beta_e)
+double sample_mu_distr(double beta_e)
 {
 	double mu, x1, det;
 
-	x1 = curand_uniform_double(curandstate);
+	x1 = rng_uniform_double();
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	// if (det < 0.)
 	// 	fprintf(stderr, "det < 0  %g %g\n\n", beta_e, x1);

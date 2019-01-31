@@ -22,11 +22,15 @@
 #include "harm_model.h"
 #include "gpu_utils.h"
 #include <time.h>
+#include <omp.h>
 
 #define NPHOTONS_BIAS 23 // Expected photons to be produces equals NPHOTONS_BIAS * Ns
 #define MIN2(fst, snd) ((fst) <= (snd) ? (fst) : (snd))
 
 // Declare external global variables
+int BLOCK_SIZE = 512;
+int NUM_BLOCKS = 30;
+int N_CPU_THS = 8;
 struct of_geom **geom;
 double Ladv, dMact, bias_norm;
 double gam;
@@ -83,16 +87,24 @@ unsigned long long generate_photons (unsigned long long Ns, struct of_photon **p
 	return ph_count;
 }
 
-void check_env_vars(int *NUM_BLOCKS, int *BLOCK_SIZE) {
+void check_env_vars() {
 	char *num_blocks_str = getenv("NUM_BLOCKS");
 	char *block_size_str = getenv("BLOCK_SIZE");
+	char *n_cpu_ths_str = getenv("N_CPU_THS");
 
-	if (num_blocks_str && (sscanf(num_blocks_str, "%d", NUM_BLOCKS) != 1))
+	if (num_blocks_str && (sscanf(num_blocks_str, "%d", NUM_BLOCKS) != 1 ||
+		NUM_BLOCKS <= 0))
 		terminate("Invalid argument for NUM_BLOCKS environment variable.",
 				  EINVAL);
 
-	if (block_size_str && (sscanf(block_size_str, "%d", BLOCK_SIZE) != 1))
+	if (block_size_str && (sscanf(block_size_str, "%d", BLOCK_SIZE) != 1 ||
+		BLOCK_SIZE <= 0))
 		terminate("Invalid argument for BLOCK_SIZE environment variable.",
+				  EINVAL);
+
+	if (n_cpu_ths_str && (sscanf(n_cpu_ths_str, "%d", N_CPU_THS) != 1 ||
+		N_CPU_THS <= 0))
+		terminate("Invalid argument for N_CPU_THS environment variable.",
 				  EINVAL);
 }
 
@@ -109,36 +121,26 @@ void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *
 int main(int argc, char *argv[]) {
 	unsigned long long Ns, N_superph_made;
 	struct of_photon *phs;
-	curandState_t *d_curandstates;
 	unsigned long seed;
 	time_t currtime, starttime;
 
 	// Initializations and initial assignments
 	check_args(argc, argv, &Ns, &seed);
-	harm_rng_init(seed);
+	rng_init(seed);
 	init_spectrum();
 	init_model(argv); /* initialize model data, auxiliary variables */
 	starttime = time(NULL);
-
 
 	fprintf(stderr, "Generating photons...\n\n");
 	fflush(stderr);
 	N_superph_made = generate_photons(Ns, &phs);
 
-	// Default kernel config is the one found to be optimal in a GTX1080 8GB
-	int BLOCK_SIZE = 512;
-	int NUM_BLOCKS = 30;
-	check_env_vars(&NUM_BLOCKS, &BLOCK_SIZE);
-	fprintf(stderr, "Kenels-config: %d BLOCKS of %d THREADS.\n\n",
-		NUM_BLOCKS, BLOCK_SIZE);
-	int BATCH_SIZE = BLOCK_SIZE * NUM_BLOCKS;
+	check_env_vars();
+	omp_set_num_threads(N_CPU_THS);
+	fprintf(stderr, "Config:\n");
+	fprintf(stderr, "  CUDA: %d blocks of %d threads\n", NUM_BLOCKS, BLOCK_SIZE);
+	fprintf(stderr, "  OMP:  %d threads\n\n", N_CPU_THS);
 	fflush(stderr);
-
-	// Copy and initialize curandstates
-	CUDASAFE(cudaMalloc(&d_curandstates, BLOCK_SIZE * NUM_BLOCKS *
-						sizeof(curandState_t)));
-	gpu_rng_init<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, seed);
-	CUDAERRCHECK();
 
 
 	/*------------------------------------------------------------------------*/
@@ -155,27 +157,27 @@ int main(int argc, char *argv[]) {
 	CUDASAFE(cudaStreamCreate(&batch_cpy_stream));
 
 	struct of_photon *d_batch_1, *d_batch_2;
-	CUDASAFE(cudaMalloc(&d_batch_1, BATCH_SIZE * sizeof(struct of_photon)));
-	CUDASAFE(cudaMalloc(&d_batch_2, BATCH_SIZE * sizeof(struct of_photon)));
+	CUDASAFE(cudaMalloc(&d_batch_1, N_GPU_THS * sizeof(struct of_photon)));
+	CUDASAFE(cudaMalloc(&d_batch_2, N_GPU_THS * sizeof(struct of_photon)));
 
-	unsigned int N_1 = (unsigned int) MIN2(BATCH_SIZE, N_superph_made);
+	unsigned int N_1 = (unsigned int) MIN2(N_GPU_THS, N_superph_made);
 	unsigned int N_2;
 	CUDASAFE(cudaMemcpy(d_batch_1, phs, N_1 * sizeof(struct of_photon),
 						cudaMemcpyHostToDevice));
-	track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_batch_1, N_1);
+	track_super_photon_batch<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_batch_1, N_1);
 	CUDAERRCHECK();
 
 	unsigned long long offset_1 = 0, offset_2 = N_1;
 
 	while (offset_2 < N_superph_made) {
 
-		N_2 = (unsigned int) MIN2(BATCH_SIZE, N_superph_made - offset_2);
+		N_2 = (unsigned int) MIN2(N_GPU_THS, N_superph_made - offset_2);
 		CUDASAFE(cudaMemcpyAsync(d_batch_2, phs + offset_2, N_2 *
 								 sizeof(struct of_photon),
 								 cudaMemcpyHostToDevice, batch_cpy_stream));
 		CUDASAFE(cudaDeviceSynchronize()); // wait previous kernel launch and asyncmemcpy
 
-		track_super_photon<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_curandstates, d_batch_2, N_2);
+		track_super_photon_batch<<<BLOCK_SIZE, NUM_BLOCKS>>>(d_batch_2, N_2);
 
 		CUDASAFE(cudaMemcpyAsync(phs + offset_1, d_batch_1, N_1 *
 								 sizeof(struct of_photon),

@@ -14,8 +14,9 @@
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_integration.h>
 #include <openacc.h>
+#include "config.h"
 #include "constants.h"
-#include "gpu_rng.h"
+#include "rng.h"
 
 #define NDIM	4
 #define NPRIM	8
@@ -146,14 +147,13 @@ extern __device__ int d_N1, d_N2;
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
 __global__
-void track_super_photon(curandState_t *curandstates, struct of_photon *ph,
-						unsigned int N);
+void track_super_photon_batch(struct of_photon *phs, unsigned int N);
 
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(unsigned long long N_superph_made);
 void init_spectrum();
 __device__
-void scatter_super_photon(curandState_t *curandstate, struct of_photon *ph, struct of_photon *php,
+void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
@@ -223,19 +223,19 @@ double klein_nishina(double a, double ap);
 __device__
 double kappa_es(double nu, double theta);
 __device__
-void sample_electron_distr_p(curandState_t *curandstate, double k[4], double l_p[4], double Thetae);
+void sample_electron_distr_p(double k[4], double l_p[4], double Thetae);
 __device__
-void sample_beta_distr(curandState_t *curandstate, double theta, double *gamma_e, double *beta_e);
+void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
 __device__
-double sample_klein_nishina(curandState_t *curandstate, double k0);
+double sample_klein_nishina(double k0);
 __device__
-double sample_thomson(curandState_t *curandstate);
+double sample_thomson();
 __device__
-double sample_mu_distr(curandState_t *curandstate, double beta_e);
+double sample_mu_distr(double beta_e);
 __device__
-double sample_y_distr(curandState_t *curandstate, double theta);
+double sample_y_distr(double theta);
 __device__
-void sample_scattered_photon(curandState_t *curandstate, double k[4],
+void sample_scattered_photon(double k[4],
 							 double l_p[4], double kp[4]);
 
 /** model dependent functions required by code: these
@@ -252,7 +252,7 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
 __device__
-int stop_criterion(curandState_t *curandstate, struct of_photon *ph);
+int stop_criterion(struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
