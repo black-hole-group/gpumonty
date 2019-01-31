@@ -118,41 +118,7 @@ void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *
 	sscanf(argv[1], "%llu", Ns);
 }
 
-int main(int argc, char *argv[]) {
-	unsigned long long Ns, N_superph_made;
-	struct of_photon *phs;
-	unsigned long seed;
-	time_t currtime, starttime;
-
-	// Initializations and initial assignments
-	check_args(argc, argv, &Ns, &seed);
-	rng_init(seed);
-	init_spectrum();
-	init_model(argv); /* initialize model data, auxiliary variables */
-	starttime = time(NULL);
-
-	fprintf(stderr, "Generating photons...\n\n");
-	fflush(stderr);
-	N_superph_made = generate_photons(Ns, &phs);
-
-	check_env_vars();
-	omp_set_num_threads(N_CPU_THS);
-	fprintf(stderr, "Config:\n");
-	fprintf(stderr, "  CUDA: %d blocks of %d threads\n", NUM_BLOCKS, BLOCK_SIZE);
-	fprintf(stderr, "  OMP:  %d threads\n\n", N_CPU_THS);
-	fflush(stderr);
-
-
-	/*------------------------------------------------------------------------*/
-	/*                             CORE                                       */
-	/*------------------------------------------------------------------------*/
-
-
-	if (N_superph_made == 0)
-		terminate("0 photons were generated. Aborting...", 1);
-	fprintf(stderr, "Staring photon tracking...\n\n");
-	fflush(stderr);
-
+void core_photon_tracking(struct of_photon *phs, unsigned long long N_superph_made) {
 	cudaStream_t batch_cpy_stream;
 	CUDASAFE(cudaStreamCreate(&batch_cpy_stream));
 
@@ -217,10 +183,38 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Calculate remainings of batch_1
+}
 
-	/*------------------------------------------------------------------------*/
-	/*                           END OF CORE                                  */
-	/*------------------------------------------------------------------------*/
+int main(int argc, char *argv[]) {
+	unsigned long long Ns, N_superph_made;
+	struct of_photon *phs;
+	unsigned long seed;
+	time_t currtime, starttime;
+
+	// Initializations and initial assignments
+	check_args(argc, argv, &Ns, &seed);
+	rng_init(seed);
+	init_spectrum();
+	init_model(argv); /* initialize model data, auxiliary variables */
+	starttime = time(NULL);
+
+	fprintf(stderr, "Generating photons...\n\n");
+	fflush(stderr);
+	N_superph_made = generate_photons(Ns, &phs);
+
+	check_env_vars();
+	omp_set_num_threads(N_CPU_THS);
+	fprintf(stderr, "Config:\n");
+	fprintf(stderr, "  CUDA: %d blocks of %d threads\n", NUM_BLOCKS, BLOCK_SIZE);
+	fprintf(stderr, "  OMP:  %d threads\n\n", N_CPU_THS);
+	fflush(stderr);
+
+	if (N_superph_made == 0)
+		terminate("0 photons were generated. Aborting...", 1);
+	fprintf(stderr, "Staring photon tracking...\n\n");
+	fflush(stderr);
+
+	core_photon_tracking(phs, N_superph_made);
 
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",
@@ -232,5 +226,4 @@ int main(int argc, char *argv[]) {
 	free(phs);
 
 	return 0;
-
 }
