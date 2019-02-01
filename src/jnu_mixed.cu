@@ -217,27 +217,27 @@ __host__ __device__
 static double linear_interp_K2(double Thetae)
 {
 
+#ifdef __CUDA_ARCH__
+	#define AS_K2 d_K2
+	#define AS_j_dlT d_j_dlT
+	#define AS_lT_min d_lT_min
+#else
+	#define AS_K2 K2
+	#define AS_j_dlT j_dlT
+	#define AS_lT_min lT_min
+#endif
+
 	int i;
 	double di, lT;
 
 	lT = log(Thetae);
 
-#ifdef __CUDA_ARCH__
-	#define ARCH_EXP_K2 d_K2
-	#define ARCH_EXP_j_dlT d_j_dlT
-	#define ARCH_EXP_lT_min d_lT_min
-#else
-	#define ARCH_EXP_K2 K2
-	#define ARCH_EXP_j_dlT j_dlT
-	#define ARCH_EXP_lT_min lT_min
-#endif
-
-	di = (lT - ARCH_EXP_lT_min) * ARCH_EXP_j_dlT;
+	di = (lT - AS_lT_min) * AS_j_dlT;
 	i = (int) di;
 	di = di - i;
-	return exp((1. - di) * ARCH_EXP_K2[i] + di * ARCH_EXP_K2[i + 1]);
+	return exp((1. - di) * AS_K2[i] + di * AS_K2[i + 1]);
 
-#undef ARCH_EXP_K2
-#undef ARCH_EXP_j_dlT
-#undef ARCH_EXP_lT_min
+#undef AS_K2
+#undef AS_j_dlT
+#undef AS_lT_min
 }

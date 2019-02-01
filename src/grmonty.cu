@@ -214,7 +214,16 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "Staring photon tracking...\n\n");
 	fflush(stderr);
 
+	// Track with GPU
 	core_photon_tracking(phs, N_superph_made);
+
+	// Track with CPU
+	// #pragma omp parallel for schedule(guided)
+	// for (unsigned long long i = 0; i < N_superph_made; ++i)
+	// 	track_super_photon(&phs[i]);
+	// for (unsigned long long i = 0; i < N_superph_made; ++i)
+	// 	if (phs[i].tracking_status == TRACKING_STATUS_COMPLETE &&
+	// 		record_criterion(&phs[i])) record_super_photon(&phs[i]);
 
 	currtime = time(NULL);
 	fprintf(stderr, "Final time %g, rate %g ph/s\n",

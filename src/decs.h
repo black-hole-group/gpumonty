@@ -148,32 +148,35 @@ extern __device__ int d_N1, d_N2;
 /* core monte carlo/radiative transport routines */
 __global__
 void track_super_photon_batch(struct of_photon *phs, unsigned int N);
+__host__ __device__
+void track_super_photon(struct of_photon *ph);
+
 
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(unsigned long long N_superph_made);
 void init_spectrum();
-__device__
+__host__ __device__
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM]);
 
 /* geodesic integration */
-__device__
+__host__ __device__
 void init_dKdlam(double X[], double Kcon[], double dK[]);
-__device__
+__host__ __device__
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double dl,
 	double *E0);
-__device__
+__host__ __device__
 double stepsize(double X[NDIM], double K[NDIM]);
 
 /* basic coordinate functions supplied by grmonty */
-__device__
+__host__ __device__
 void boost(double v[4], double u[4], double vp[4]);
 __host__ __device__
 void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
 double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
-__device__
+__host__ __device__
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
 __host__ __device__
@@ -188,19 +191,19 @@ void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
 
 /* functions related to basic radiation functions & physics */
 	/* physics-independent */
-__device__
+__host__ __device__
 double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
-__device__
+__host__ __device__
 double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
 		    double Bcov[NDIM], double B);
-__device__
+__host__ __device__
 double alpha_inv_scatt(double nu, double Thetae, double Ne);
-__device__
+__host__ __device__
 double alpha_inv_abs(double nu, double Thetae, double Ne, double B,
 		     double theta);
-__device__
+__host__ __device__
 double Bnu_inv(double nu, double thetae);
-__device__
+__host__ __device__
 double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
@@ -216,25 +219,25 @@ double K2_eval(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);
-__device__
+__host__ __device__
 double total_compton_cross_lkup(double nu, double theta);
-__device__
+__host__ __device__
 double klein_nishina(double a, double ap);
-__device__
+__host__ __device__
 double kappa_es(double nu, double theta);
-__device__
+__host__ __device__
 void sample_electron_distr_p(double k[4], double l_p[4], double Thetae);
-__device__
+__host__ __device__
 void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
-__device__
+__host__ __device__
 double sample_klein_nishina(double k0);
-__device__
+__host__ __device__
 double sample_thomson();
-__device__
+__host__ __device__
 double sample_mu_distr(double beta_e);
-__device__
+__host__ __device__
 double sample_y_distr(double theta);
-__device__
+__host__ __device__
 void sample_scattered_photon(double k[4],
 							 double l_p[4], double kp[4]);
 
@@ -244,14 +247,14 @@ void sample_scattered_photon(double k[4],
 /* physics related */
 void init_model(char *args[]);
 void init_zone(int i, int j, unsigned long long*nz, double *dnmax, unsigned long long Ns);
-__device__
+__host__ __device__
 double bias_func(double Te, double w);
-__device__
+__host__ __device__
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM]);
-__device__
+__host__ __device__
 int stop_criterion(struct of_photon *ph);
 int record_criterion(struct of_photon *ph);
 

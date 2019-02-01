@@ -12,9 +12,6 @@
 
 #define MAXNSTEP	1280000
 
-__device__
-static void track_super_photon(struct of_photon *ph);
-
 __global__
 void track_super_photon_batch(struct of_photon *phs, unsigned int N)
 {
@@ -26,8 +23,8 @@ void track_super_photon_batch(struct of_photon *phs, unsigned int N)
 	}
 }
 
-__device__
-static void track_super_photon(struct of_photon *ph)
+__host__ __device__
+void track_super_photon(struct of_photon *ph)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;

@@ -33,6 +33,8 @@
 
 #define HOTCROSS	"hotcross.dat"
 
+static double table[NW + 1][NT + 1];
+static double dlw, dlT, lminw, lmint;
 // TODO: Maybe declare these as __constant__
 __device__ static double d_table[NW + 1][NT + 1];
 __device__ static double d_dlw, d_dlT, d_lminw, d_lmint;
@@ -54,9 +56,6 @@ static double total_compton_cross_num(double w, double thetae);
 
 void init_hotcross(void)
 {
-	double table[NW + 1][NT + 1];
-	double dlw, dlT, lminw, lmint;
-
 	int i, j, idum, jdum, nread;
 	double lw, lT;
 	FILE *fp;
@@ -129,13 +128,28 @@ void init_hotcross(void)
 }
 
 /*******************************************************************************
-* Device-only Functions
+* Host/Device Functions
 *
 *******************************************************************************/
 
-__device__
+__host__ __device__
 double total_compton_cross_lkup(double w, double thetae)
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_lminw d_lminw
+	#define AS_dlw d_dlw
+	#define AS_lmint d_lmint
+	#define AS_dlT d_dlT
+	#define AS_table d_table
+#else
+	#define AS_lminw lminw
+	#define AS_dlw dlw
+	#define AS_lmint lmint
+	#define AS_dlT dlT
+	#define AS_table table
+#endif
+
 	int i, j;
 	double lw, lT, di, dj, lcross;
 
@@ -152,16 +166,16 @@ double total_compton_cross_lkup(double w, double thetae)
 
 		lw = log10(w);
 		lT = log10(thetae);
-		i = (int) ((lw - d_lminw) / d_dlw);
-		j = (int) ((lT - d_lmint) / d_dlT);
-		di = (lw - d_lminw) / d_dlw - i;
-		dj = (lT - d_lmint) / d_dlT - j;
+		i = (int) ((lw - AS_lminw) / AS_dlw);
+		j = (int) ((lT - AS_lmint) / AS_dlT);
+		di = (lw - AS_lminw) / AS_dlw - i;
+		dj = (lT - AS_lmint) / AS_dlT - j;
 
 		lcross =
-		    (1. - di) * (1. - dj) * d_table[i][j] + di * (1. -
+		    (1. - di) * (1. - dj) * AS_table[i][j] + di * (1. -
 								dj) *
-		    d_table[i + 1][j]  + (1. - di) * dj * d_table[i][j + 1]  +
-		    di * dj *d_table[i + 1][j + 1] ;
+		    AS_table[i + 1][j]  + (1. - di) * dj * AS_table[i][j + 1]  +
+		    di * dj *AS_table[i + 1][j + 1] ;
 
 		// if (isnan(lcross)) fprintf(stderr, "%g %g %d %d %g %g\n", lw, lT, i, j, di, dj);
 
@@ -171,12 +185,13 @@ double total_compton_cross_lkup(double w, double thetae)
 	// fprintf(stderr, "out of bounds: %g %g\n", w, thetae);
 	return (total_compton_cross_num(w, thetae));
 
-}
+#undef AS_lminw
+#undef AS_dlw
+#undef AS_lmint
+#undef AS_dlT
+#undef AS_table
 
-/*******************************************************************************
-* Host/Device Functions
-*
-*******************************************************************************/
+}
 
 __host__ __device__
 static double total_compton_cross_num(double w, double thetae)

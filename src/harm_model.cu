@@ -386,15 +386,9 @@ void get_connection(double X[4], double lconn[4][4][4])
 
 }
 
-
-/*******************************************************************************
-* Device-only Functions
-*
-*******************************************************************************/
-
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
-__device__
+__host__ __device__
 int stop_criterion(struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
@@ -431,14 +425,21 @@ int stop_criterion(struct of_photon *ph)
 	return (0);
 }
 
-__device__
+__host__ __device__
 double stepsize(double X[NDIM], double K[NDIM])
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_stopx d_stopx
+#else
+	#define AS_stopx stopx
+#endif
+
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
 
 	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	dlx2 = EPS * MIN (X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+	dlx2 = EPS * MIN (X[2], AS_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -448,18 +449,27 @@ double stepsize(double X[NDIM], double K[NDIM])
 	dl = 1. / (idlx1 + idlx2 + idlx3);
 
 	return (dl);
+
+#undef AS_stopx
 }
 
 /* produces a bias (> 1) for probability of Compton scattering as a function of
 local temperature */
-__device__
+__host__ __device__
 double bias_func(double Te, double w)
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_max_tau_scatt d_max_tau_scatt
+#else
+	#define AS_max_tau_scatt max_tau_scatt
+#endif
+
 	double bias, max ;
 
 	max = 0.5 * w / WEIGHT_MIN;
 
-	bias = Te*Te/(5. * d_max_tau_scatt) ;
+	bias = Te*Te/(5. * AS_max_tau_scatt) ;
 	//bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
 
 	if (bias < TP_OVER_TE)
@@ -468,15 +478,32 @@ double bias_func(double Te, double w)
 		bias = max;
 
 	return bias / TP_OVER_TE;
+
+#undef AS_max_tau_scatt
 }
 
 /* Returns the fluid variables at the location indicated by X */
- __device__
+ __host__ __device__
 void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 		      double *Thetae, double *B, double Ucon[NDIM],
 		      double Ucov[NDIM], double Bcon[NDIM],
 		      double Bcov[NDIM])
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_startx d_startx
+	#define AS_stopx d_stopx
+	#define AS_Ne_unit d_Ne_unit
+	#define AS_Thetae_unit d_Thetae_unit
+	#define AS_B_unit d_B_unit
+#else
+	#define AS_startx startx
+	#define AS_stopx stopx
+	#define AS_Ne_unit Ne_unit
+	#define AS_Thetae_unit Thetae_unit
+	#define AS_B_unit B_unit
+#endif
+
 	int i, j;
 	double del[NDIM];
 	double rho, uu;
@@ -484,8 +511,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	double gcon[NDIM][NDIM], coeff[4];
 	double sig ;
 
-	if (X[1] < d_startx[1] ||
-	    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
+	if (X[1] < AS_startx[1] ||
+	    X[1] > AS_stopx[1] || X[2] < AS_startx[2] || X[2] > AS_stopx[2]) {
 
 		*Ne = 0.;
 
@@ -502,8 +529,8 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	rho = interp_p_scalar(KRHO, i, j, coeff);
 	uu = interp_p_scalar(UU, i, j, coeff);
 
-	*Ne = rho * d_Ne_unit;
-	*Thetae = uu / rho * d_Thetae_unit;
+	*Ne = rho * AS_Ne_unit;
+	*Thetae = uu / rho * AS_Thetae_unit;
 
 	Bp[1] = interp_p_scalar(B1, i, j, coeff);
 	Bp[2] = interp_p_scalar(B2, i, j, coeff);
@@ -536,11 +563,17 @@ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
 	lower(Bcon, gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
+		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * AS_B_unit;
 
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
-	sig = pow(*B/d_B_unit,2)/(*Ne/d_Ne_unit) ;
-	if(sig > 1.) *Ne = 1.e-10*d_Ne_unit ;
+	sig = pow(*B/AS_B_unit,2)/(*Ne/AS_Ne_unit) ;
+	if(sig > 1.) *Ne = 1.e-10*AS_Ne_unit ;
+
+#undef AS_startx
+#undef AS_stopx
+#undef AS_Ne_unit
+#undef AS_Thetae_unit
+#undef AS_B_unit
 }
 
 

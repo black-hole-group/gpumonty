@@ -10,20 +10,13 @@ Canfield, Howard, and Liang, 1987, ApJ 323, 565.
 */
 
 
-
-/*******************************************************************************
-* Device-only Functions
-*
-*******************************************************************************/
-
-
 /*
 Lorentz boost vector v into frame given by four-velocity u.
 Result goes out in vp.
 Assumes all four-velocities are given in orthonormal coordinates.
 
 */
-__device__
+__host__ __device__
 void boost(double v[4], double u[4], double vp[4])
 {
 	double g, V, n1, n2, n3, gm1;
@@ -60,7 +53,7 @@ void boost(double v[4], double u[4], double vp[4])
    frequency a -> frequency ap.  Frequencies are
    in units of m_e.  Unnormalized!
 */
-__device__
+__host__ __device__
 double klein_nishina(double a, double ap)
 {
 	double ch, kn;
@@ -77,7 +70,7 @@ double klein_nishina(double a, double ap)
    momentum $l_p$, ($l_p$ is actually the four-velocity)
    find new wavevector $kp$
 */
-__device__
+__host__ __device__
 void sample_scattered_photon(double k[4], double l_p[4], double kp[4])
 {
 	double ke[4], kpe[4];
@@ -173,7 +166,7 @@ void sample_scattered_photon(double k[4], double l_p[4], double kp[4])
    differential cross section */
 
 /* uses simple rejection scheme */
-__device__
+__host__ __device__
 double sample_thomson()
 {
 	double x1, x2;
@@ -193,7 +186,7 @@ sample Klein-Nishina differential cross section.
 
 This routine is inefficient; it needs improvement.
 */
-__device__
+__host__ __device__
 double sample_klein_nishina(double k0)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
@@ -220,7 +213,7 @@ double sample_klein_nishina(double k0)
 	sample electron distribution to find which electron was
 	scattered.
 */
-__device__
+__host__ __device__
 void sample_electron_distr_p(double k[4], double l_p[4], double Thetae)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
@@ -338,7 +331,7 @@ void sample_electron_distr_p(double k[4], double l_p[4], double Thetae)
 
    checked.
 */
-__device__
+__host__ __device__
 void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
 {
 	double y;
@@ -360,7 +353,7 @@ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
    Uses procedure outlined in Canfield et al. 1987,
    p. 572 et seq.
 */
-__device__
+__host__ __device__
 double sample_y_distr(double Thetae)
 {
 
@@ -407,7 +400,7 @@ double sample_y_distr(double Thetae)
 	return (y);
 }
 
-__device__
+__host__ __device__
 double sample_mu_distr(double beta_e)
 {
 	double mu, x1, det;

@@ -22,8 +22,12 @@
 extern double *harm_p;
 extern __device__ double *d_harm_p;
 
+#ifdef __CUDA_ARCH__
+#define HARM_P(x,y,z) (d_harm_p[(x)*d_N1*d_N2 + (y)*d_N2 + (z)])
+#else
 #define HARM_P(x,y,z) (harm_p[(x)*N1*N2 + (y)*N2 + (z)])
-#define D_HARM_P(x,y,z) (d_harm_p[(x)*d_N1*d_N2 + (y)*d_N2 + (z)])
+#endif
+
 
 #define R0 0.0
 #define a  0.9375
@@ -50,9 +54,9 @@ void set_units(char *munitstr);
 void sample_zone_photon(int i, int j, double dnmax, struct of_photon *ph,
 						int first_zone_photon);
 void init_geometry(void);
- __device__
+__host__ __device__
 double interp_p_scalar(int x, int y, int z, double coeff[4]);
-__device__
+__host__ __device__
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 __host__ __device__
 void bl_coord(double *X, double *r, double *th);

@@ -9,12 +9,19 @@
 	scatter photon ph into photon php at same position
 */
 
-__device__
+__host__ __device__
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM])
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_B_unit d_B_unit
+#else
+	#define AS_B_unit B_unit
+#endif
+
 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM],
 	    K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
 	int k;
@@ -42,7 +49,7 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 	/* note that B is in cgs but Bcon is in code units */
 	if (B > 0.) {
 		for (k = 0; k < NDIM; k++)
-			Bhatcon[k] = Bcon[k] / (B / d_B_unit);
+			Bhatcon[k] = Bcon[k] / (B / AS_B_unit);
 	} else {
 		for (k = 0; k < NDIM; k++)
 			Bhatcon[k] = 0.;
@@ -136,4 +143,6 @@ void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 	php->tracking_status = TRACKING_STATUS_INCOMPLETE;
 
 	return;
+
+#undef AS_B_unit
 }

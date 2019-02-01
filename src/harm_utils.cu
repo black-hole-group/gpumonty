@@ -380,9 +380,8 @@ void init_storage(void)
 }
 
 
-
 /*******************************************************************************
-* Device-only Functions
+* Host/Device Functions
 *
 *******************************************************************************/
 
@@ -390,57 +389,67 @@ void init_storage(void)
  * Finds interpolated value of d_p at location given by i,j.
  * What is coeff?
  */
- __device__
+ __host__ __device__
 double interp_p_scalar(int x, int y, int z, double coeff[4])
 {
 
 	double interp;
 
 	interp =
-		D_HARM_P(x, y,  z) * coeff[0] +
-		D_HARM_P(x, y, z + 1) * coeff[1] +
-		D_HARM_P(x, y + 1, z) * coeff[2] +
-		D_HARM_P(x, y + 1, z + 1) * coeff[3];
+		HARM_P(x, y,  z) * coeff[0] +
+		HARM_P(x, y, z + 1) * coeff[1] +
+		HARM_P(x, y + 1, z) * coeff[2] +
+		HARM_P(x, y + 1, z + 1) * coeff[3];
 
 	return interp;
 }
 
-__device__
+__host__ __device__
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 {
 
-	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000) - 1000;
-	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000) - 1000;
+#ifdef __CUDA_ARCH__
+	#define AS_startx d_startx
+	#define AS_N1 d_N1
+	#define AS_N2 d_N2
+	#define AS_dx d_dx
+#else
+	#define AS_startx startx
+	#define AS_N1 N1
+	#define AS_N2 N2
+	#define AS_dx dx
+#endif
+
+	*i = (int) ((X[1] - AS_startx[1]) / AS_dx[1] - 0.5 + 1000) - 1000;
+	*j = (int) ((X[2] - AS_startx[2]) / AS_dx[2] - 0.5 + 1000) - 1000;
 
 	if (*i < 0) {
 		*i = 0;
 		del[1] = 0.;
-	} else if (*i > d_N1 - 2) {
-		*i = d_N1 - 2;
+	} else if (*i > AS_N1 - 2) {
+		*i = AS_N1 - 2;
 		del[1] = 1.;
 	} else {
-		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
+		del[1] = (X[1] - ((*i + 0.5) * AS_dx[1] + AS_startx[1])) / AS_dx[1];
 	}
 
 	if (*j < 0) {
 		*j = 0;
 		del[2] = 0.;
-	} else if (*j > d_N2 - 2) {
-		*j = d_N2 - 2;
+	} else if (*j > AS_N2 - 2) {
+		*j = AS_N2 - 2;
 		del[2] = 1.;
 	} else {
-		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2];
+		del[2] = (X[2] - ((*j + 0.5) * AS_dx[2] + AS_startx[2])) / AS_dx[2];
 	}
 
 	return;
+
+#undef AS_startx
+#undef AS_N1
+#undef AS_N2
+#undef AS_dx
 }
-
-
-
-/*******************************************************************************
-* Host/Device Functions
-*
-*******************************************************************************/
 
 /* return boyer-lindquist coordinate of point */
 __host__ __device__

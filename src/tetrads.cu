@@ -15,12 +15,12 @@ static void project_out(double *vcona, double *vconb, double Gcov[4][4]);
 
 
 /*******************************************************************************
-* Device-only Functions
+* Host/Device Functions
 *
 *******************************************************************************/
 
 /* input and vectors are contravariant (index up) */
-__device__
+__host__ __device__
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM])
 {
@@ -33,12 +33,6 @@ void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 		    Ecov[k][2] * K[2] + Ecov[k][3] * K[3];
 	}
 }
-
-
-/*******************************************************************************
-* Host/Device Functions
-*
-*******************************************************************************/
 
 /* input and vectors are contravariant (index up) */
 __host__ __device__

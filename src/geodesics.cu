@@ -12,17 +12,24 @@ this is the main photon orbit integrator
 #define ETOL 1.e-3
 #define MAX_ITER 2
 
-__device__
+__host__ __device__
 void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double dl,
 	double *E0)
 {
+
+#ifdef __CUDA_ARCH__
+	#define AS_startx d_startx
+#else
+	#define AS_startx startx
+#endif
+
         double lconn[NDIM][NDIM][NDIM];
         double Kcont[NDIM], K[NDIM], dK;
         double Gcov[NDIM][NDIM];
         double dl_2, err;
         int i, k, iter;
 
-        if (X[1] < d_startx[1]) return;
+        if (X[1] < AS_startx[1]) return;
 
         dl_2 = 0.5 * dl;
         /* Step the position and estimate new wave vector */
@@ -73,10 +80,11 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double 
                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
 
         /* done! */
+#undef AS_startx
 }
 
 /* spare photon integrator: 4th order Runge-Kutta */
-// __device__
+// __host__ __device__
 // void push_photon4(double X[], double K[], double dK[], double dl)
 // {
 //
@@ -203,7 +211,7 @@ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double 
 // 	/* done */
 // }
 
-__device__
+__host__ __device__
 void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;
