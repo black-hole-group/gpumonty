@@ -63,6 +63,7 @@
 // phothon's tracking status
 #define TRACKING_STATUS_INCOMPLETE 0
 #define TRACKING_STATUS_COMPLETE 1
+#define TRACKING_STATUS_POSTPONED 2
 
 /** data structures **/
 struct of_photon {

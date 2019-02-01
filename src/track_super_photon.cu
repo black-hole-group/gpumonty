@@ -10,7 +10,35 @@
 #include "decs.h"
 #include "gpu_utils.h"
 
-#define MAXNSTEP	1280000
+#ifdef __CUDA_ARCH__
+	#define MAXNSTEP 170
+#else
+	#define MAXNSTEP 1280000
+#endif
+
+__device__
+static void copy_ph(struct of_photon *from, struct of_photon *to)
+{
+	for (int i = 0; i < NDIM; ++i) {
+		to->X[i] = from->X[i];
+		to->K[i] = from->K[i];
+		to->dKdlam[i] = from->dKdlam[i];
+	}
+	to->w = from->w;
+	to->E = from->E;
+	to->L = from->L;
+	to->X1i = from->X1i;
+	to->X2i = from->X2i;
+	to->tau_abs = from->tau_abs;
+	to->tau_scatt = from->tau_scatt;
+	to->ne0 = from->ne0;
+	to->thetae0 = from->thetae0;
+	to->b0 = from->b0;
+	to->E0 = from->E0;
+	to->E0s = from->E0s;
+	to->nscatt = from->nscatt;
+	to->tracking_status = from->tracking_status;
+}
 
 __global__
 void track_super_photon_batch(struct of_photon *phs, unsigned int N)
@@ -54,6 +82,11 @@ void track_super_photon(struct of_photon *ph)
 		// 	ph->K[1], ph->K[2], ph->K[3], ph->w, ph->nscatt);
 		return;
 	}
+
+#ifdef __CUDA_ARCH__
+	struct of_photon ph_backup;
+	copy_ph(ph, &ph_backup);
+#endif
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -263,6 +296,11 @@ void track_super_photon(struct of_photon *ph)
 			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
 			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
 			// 	bias);
+#ifdef __CUDA_ARCH__
+			copy_ph(&ph_backup, ph);
+			ph->tracking_status = TRACKING_STATUS_POSTPONED;
+#endif
+
 			return;
 		}
 

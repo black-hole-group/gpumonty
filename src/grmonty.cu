@@ -118,6 +118,24 @@ void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *
 	sscanf(argv[1], "%llu", Ns);
 }
 
+
+void handle_GPU_returned_batch(struct of_photon *phs, unsigned long long offset,
+							   unsigned int N) {
+	for (unsigned int i = 0; i < N; ++i) {
+		struct of_photon *ph = &phs[offset + i];
+		#pragma omp task
+		{
+			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
+				record_criterion(ph)) record_super_photon(ph);
+			else if (ph->tracking_status == TRACKING_STATUS_POSTPONED) {
+				track_super_photon(ph);
+				if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
+					record_criterion(ph)) record_super_photon(ph);
+			}
+		}
+	}
+}
+
 void core_photon_tracking(struct of_photon *phs, unsigned long long N_superph_made) {
 	cudaStream_t batch_cpy_stream;
 	CUDASAFE(cudaStreamCreate(&batch_cpy_stream));
@@ -150,15 +168,8 @@ void core_photon_tracking(struct of_photon *phs, unsigned long long N_superph_ma
 								 cudaMemcpyDeviceToHost, batch_cpy_stream));
 		CUDASAFE(cudaStreamSynchronize(batch_cpy_stream));
 
-		// Add batch_1 contribution to spect
-		// #pragma omp parallel for schedule(static)
-		for (unsigned int i = 0; i < N_1; ++i) {
-			struct of_photon *ph = &phs[offset_1 + i];
-			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
-				record_criterion(ph)) record_super_photon(ph);
-		}
-
-		// Calculate remainings of batch_1
+		// Add batch_1 contributions to spect and track postponed photons at CPU
+		handle_GPU_returned_batch(phs, offset_1, N_1);
 
 		// Flip batch 1 and 2
 		struct of_photon *d_batch_aux = d_batch_1;
@@ -175,14 +186,8 @@ void core_photon_tracking(struct of_photon *phs, unsigned long long N_superph_ma
 	CUDASAFE(cudaMemcpy(phs + offset_1, d_batch_1, N_1 *
 						sizeof(struct of_photon), cudaMemcpyDeviceToHost));
 
-	// Add batch_1 contribution to spect
-	// #pragma omp parallel for schedule(static)
-	for (unsigned int i = 0; i < N_1; ++i) {
-		struct of_photon *ph = &phs[offset_1 + i];
-		if (record_criterion(ph)) record_super_photon(ph);
-	}
-
-	// Calculate remainings of batch_1
+	// Add batch_1 contributions to spect and track postponed photons at CPU
+	handle_GPU_returned_batch(phs, offset_1, N_1);
 }
 
 int main(int argc, char *argv[]) {
@@ -211,16 +216,21 @@ int main(int argc, char *argv[]) {
 
 	if (N_superph_made == 0)
 		terminate("0 photons were generated. Aborting...", 1);
-	fprintf(stderr, "Staring photon tracking...\n\n");
+	fprintf(stderr, "Starting photon tracking...\n\n");
 	fflush(stderr);
 
 	// Track with GPU
-	core_photon_tracking(phs, N_superph_made);
+	#pragma omp parallel
+	{
+		#pragma omp master
+		core_photon_tracking(phs, N_superph_made);
+	}
 
 	// Track with CPU
 	// #pragma omp parallel for schedule(guided)
 	// for (unsigned long long i = 0; i < N_superph_made; ++i)
 	// 	track_super_photon(&phs[i]);
+	// // #pragma omp parallel for schedule(static)
 	// for (unsigned long long i = 0; i < N_superph_made; ++i)
 	// 	if (phs[i].tracking_status == TRACKING_STATUS_COMPLETE &&
 	// 		record_criterion(&phs[i])) record_super_photon(&phs[i]);

@@ -167,22 +167,35 @@ void record_super_photon(struct of_photon *ph)
 	if (iE < 0 || iE >= N_EBINS)
 		return;
 
+	#pragma omp atomic update
 	N_superph_recorded += 1;
 	// #atomic
 	// N_scatt += ph->nscatt;
 
 	/* sum in photon */
+	#pragma omp atomic update
 	spect[ix2][iE].dNdlE += ph->w;
+	#pragma omp atomic update
 	spect[ix2][iE].dEdlE += ph->w * ph->E;
+	#pragma omp atomic update
 	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
+	#pragma omp atomic update
 	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
+	#pragma omp atomic update
 	spect[ix2][iE].X1iav += ph->w * ph->X1i;
+	#pragma omp atomic update
 	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
+	#pragma omp atomic update
 	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
+	#pragma omp atomic update
 	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
+	#pragma omp atomic update
 	spect[ix2][iE].b0 += ph->w * (ph->b0);
+	#pragma omp atomic update
 	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
+	#pragma omp atomic update
 	spect[ix2][iE].nscatt += ph->w * ph->nscatt;
+	#pragma omp atomic update
 	spect[ix2][iE].nph += 1.;
 
 }
