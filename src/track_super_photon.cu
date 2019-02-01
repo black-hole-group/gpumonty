@@ -242,12 +242,23 @@ void track_super_photon(struct of_photon *ph)
 						 Bcov);
 
 				if (Ne > 0.) {
+#ifdef __CUDA_ARCH__
+					copy_ph(&ph_backup, ph);
+					ph->tracking_status = TRACKING_STATUS_POSTPONED;
+#else
 					scatter_super_photon(ph, &php, Ne, Thetae, B, Ucon, Bcon,
- 										 Gcov);
-					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+										 Gcov);
+					if (ph->w < 1.e-100) {
+						/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					// track_super_photon(&php);
+					#pragma omp task
+					{
+						track_super_photon(&php);
+						if (php.tracking_status == TRACKING_STATUS_COMPLETE &&
+							record_criterion(&php)) record_super_photon(&php);
+					}
+#endif
 				}
 
 				theta =

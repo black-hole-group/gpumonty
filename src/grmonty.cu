@@ -128,6 +128,7 @@ void handle_GPU_returned_batch(struct of_photon *phs, unsigned long long offset,
 			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
 				record_criterion(ph)) record_super_photon(ph);
 			else if (ph->tracking_status == TRACKING_STATUS_POSTPONED) {
+				ph->tracking_status = TRACKING_STATUS_INCOMPLETE;
 				track_super_photon(ph);
 				if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
 					record_criterion(ph)) record_super_photon(ph);
