@@ -51,6 +51,7 @@ __device__ double d_max_tau_scatt;
 __device__ double d_Ne_unit;
 __device__ double d_Thetae_unit;
 __device__ int d_N1, d_N2;
+cudaStream_t max_tau_scatt_stream;
 
 void terminate (const char *msg, int code) {
 	fprintf(stderr, "%s\n", msg);
@@ -203,6 +204,8 @@ int main(int argc, char *argv[]) {
 	init_spectrum();
 	init_model(argv); /* initialize model data, auxiliary variables */
 	starttime = time(NULL);
+	CUDASAFE(cudaStreamCreateWithFlags(&max_tau_scatt_stream,
+									   cudaStreamNonBlocking));
 
 	fprintf(stderr, "Generating photons...\n\n");
 	fflush(stderr);

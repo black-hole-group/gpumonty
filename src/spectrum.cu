@@ -140,12 +140,17 @@ void record_super_photon(struct of_photon *ph)
 		// fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
 		return;
 	}
-// #pragma omp critical (MAXTAU)
-// 	{
-// 		if (ph->tau_scatt > max_tau_scatt)
-// 			max_tau_scatt = ph->tau_scatt;
-// 	}
-	// atomicMax(&max_tau_scatt, d2i(ph->tau_scatt));
+
+	if (ph->tau_scatt > max_tau_scatt) {
+		#pragma omp critical (MAXTAUSCATT_UPDATE)
+		if (ph->tau_scatt > max_tau_scatt) {
+			max_tau_scatt = ph->tau_scatt;
+			CUDASAFE(cudaMemcpyToSymbolAsync(d_max_tau_scatt, &max_tau_scatt,
+											 sizeof(double), 0,
+											 cudaMemcpyHostToDevice,
+											 max_tau_scatt_stream));
+		}
+	}
 	/* currently, bin in x2 coordinate */
 
 	/* get theta bin, while folding around equator */

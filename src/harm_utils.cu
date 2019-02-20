@@ -343,9 +343,7 @@ void set_units(char *munitstr)
 	Ne_unit = RHO_unit / (MP + ME);
 	CUDASAFE(cudaMemcpyToSymbolAsync(d_Ne_unit, &Ne_unit, sizeof(double), 0, cudaMemcpyHostToDevice));
 
-	// max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
-    // max_tau_scatt = 0.001295;
-	max_tau_scatt = 0.0024;
+	max_tau_scatt = (6. * L_unit) * RHO_unit * 0.4;
 	CUDASAFE(cudaMemcpyToSymbolAsync(d_max_tau_scatt, &max_tau_scatt, sizeof(double), 0, cudaMemcpyHostToDevice));
 
 	fprintf(stderr, "max_tau_scatt: %g\n", max_tau_scatt);

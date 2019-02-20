@@ -137,6 +137,7 @@ extern double Ne_unit;
 extern double Thetae_unit;
 extern int N1, N2;
 // double L_unit;
+extern cudaStream_t max_tau_scatt_stream;
 
 extern __device__ double d_startx[NDIM], d_stopx[NDIM], d_dx[NDIM];
 extern __device__ double d_B_unit;
