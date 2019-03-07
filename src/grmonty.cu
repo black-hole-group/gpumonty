@@ -23,6 +23,7 @@
 #include "gpu_utils.h"
 #include <time.h>
 #include <omp.h>
+#include "pcfifo.h"
 
 #define NPHOTONS_BIAS 23 // Expected photons to be produces equals NPHOTONS_BIAS * Ns
 #define MIN2(fst, snd) ((fst) <= (snd) ? (fst) : (snd))
@@ -52,6 +53,8 @@ __device__ double d_Ne_unit;
 __device__ double d_Thetae_unit;
 __device__ int d_N1, d_N2;
 cudaStream_t max_tau_scatt_stream;
+
+struct pcfifo pcf;
 
 void terminate (const char *msg, int code) {
 	fprintf(stderr, "%s\n", msg);
@@ -129,22 +132,28 @@ void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *
 	sscanf(argv[1], "%llu", Ns);
 }
 
+void *consume_leftovers(void *args) {
+	while(1) {
+		struct of_photon *ph = (struct of_photon *) pcfifo_get(&pcf);
+
+		if (ph == NULL)
+			return NULL;
+
+		if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
+			record_criterion(ph)) record_super_photon(ph);
+		else if (ph->tracking_status == TRACKING_STATUS_POSTPONED) {
+			ph->tracking_status = TRACKING_STATUS_INCOMPLETE;
+			track_super_photon(ph);
+			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
+				record_criterion(ph)) record_super_photon(ph);
+		}
+	}
+}
 
 void handle_GPU_returned_batch(struct of_photon *phs, unsigned long long offset,
 							   unsigned int N) {
 	for (unsigned int i = 0; i < N; ++i) {
-		struct of_photon *ph = &phs[offset + i];
-		#pragma omp task
-		{
-			if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
-				record_criterion(ph)) record_super_photon(ph);
-			else if (ph->tracking_status == TRACKING_STATUS_POSTPONED) {
-				ph->tracking_status = TRACKING_STATUS_INCOMPLETE;
-				track_super_photon(ph);
-				if (ph->tracking_status == TRACKING_STATUS_COMPLETE &&
-					record_criterion(ph)) record_super_photon(ph);
-			}
-		}
+		pcfifo_put(&pcf, (void *)&phs[offset + i]);
 	}
 }
 
@@ -234,11 +243,19 @@ int main(int argc, char *argv[]) {
 	fflush(stderr);
 
 	// Track with GPU
-	#pragma omp parallel
-	{
-		#pragma omp master
-		core_photon_tracking(phs, N_superph_made);
-	}
+	pthread_t *consumer_ths = (pthread_t *) malloc(sizeof(pthread_t) *
+												   (N_CPU_THS - 1));
+	pcfifo_init(&pcf);
+
+	for (int i = 0; i < N_CPU_THS - 1; ++i)
+		pthread_create(&consumer_ths[i], NULL, consume_leftovers, NULL);
+
+	core_photon_tracking(phs, N_superph_made);
+	pcfifo_emit_end_tokens(&pcf, N_CPU_THS);
+	consume_leftovers(NULL);
+
+	for (int i = 0; i < N_CPU_THS - 1; ++i)
+		pthread_join(consumer_ths[i], NULL);
 
 	// Track with CPU
 	// #pragma omp parallel for schedule(guided)
@@ -256,6 +273,8 @@ int main(int argc, char *argv[]) {
 
 	report_spectrum(N_superph_made);
 
+	pcfifo_destroy(&pcf);
+	free(consumer_ths);
 	free(phs);
 
 	return 0;

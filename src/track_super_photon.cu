@@ -254,12 +254,9 @@ void track_super_photon(struct of_photon *ph)
 						/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					#pragma omp task
-					{
-						track_super_photon(&php);
-						if (php.tracking_status == TRACKING_STATUS_COMPLETE &&
-							record_criterion(&php)) record_super_photon(&php);
-					}
+					track_super_photon(&php);
+					if (php.tracking_status == TRACKING_STATUS_COMPLETE &&
+						record_criterion(&php)) record_super_photon(&php);
 #endif
 				}
 
