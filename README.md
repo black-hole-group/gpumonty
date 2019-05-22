@@ -5,60 +5,24 @@ Based on [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..
 
 This version of GRMONTY is configured to use input files from the HARM code available on the same site. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
 
-This version of GRMONTY is parallelized in GPU using [OpenACC](https://www.openacc.org). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/). Also, scatteting
-is still not enabled in this version.
-
+This version of GRMONTY is parallelized in GPU using CUDA. This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
 
 # Dependencies:
-To compile and run on your system:
 
-- [PGI](https://www.pgroup.com/products/community.htm), version >= 18.4
-- [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) v9.2
+To compile, you will need:
+
+- [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit)
 - NVIDIA drivers
 - [GSL](https://www.gnu.org/software/gsl/)
-- gcc, version < 7.0 (preferably 5.4.1)
 
-To compile and run on a Docker container:
+# Compiling
 
-- NVIDIA drivers
-- [Docker](https://www.docker.com/)
-- [Nvidia-Docker](https://github.com/NVIDIA/nvidia-docker)
-
-# Quick start
-
-You can compile and run grmonty either directly on your system or in a [Docker](https://www.docker.com/) container. We recommend the container's option (if you already familliar with Docker) as you don't have to worry about all grmonty's compilation dependencies.
-
-### To compile on your system:
-
-You have to install all dependecies listed, and then compile
+After you installed all dependecies, run:
 
     make
 
-### To compile on a Docker container:
+# Running the code
 
- Start the Docker service (if not already started)
-
-    sudo systemctl start docker
-
-Donwload [PGI's tarball](https://www.pgroup.com/products/community.htm) 18.04-x86-64 at grmonty's directory (You can delete it after image is built)
-
-Build the image (this will take some time)
-
-    docker build -t bhgroup/grmonty .
-
-Compile
-
-    nvidia-docker run -v "$PWD:/grmonty"  bhgroup/grmonty make
-    # Don't forget the 'optirun' prefix if you're using optimus drivers
-
-After compiling, you can run the container with:
-
-    nvidia-docker run -itv "$PWD:/grmonty"  bhgroup/grmonty
-    # This will invoke bash inside the container, where you can invoke grmonty
-    # Again, remember of 'optirun'.
-
-
-### Running the code
 Run the code on the supplied harm output file:
 
     ./bin/grmonty 5000000 dump1000 4.e19 [C]
@@ -72,7 +36,13 @@ Arguments are:
 
 This will output spectrum to `grmonty.spec`.
 
-NOTE: Code compiled directly on your system does not necessarily runs in the container vice-versa. So, always run in the platform you have compiled in.
+You may also set the following environment variables:
+
+- `N_CPU_THS`: the number of threads on the CPU (default is 8)
+- `NUM_THREADS`: the number of threads per CUDA block (default is 512)
+- `NUM_BLOCKS`: the number of CUDA blocks (default is 30)
+- `GPU_MAX_NSTEP`: the threshold nstep to abort simulation on GPU and start over
+on CPU. This is used to mitigate branch divergence (default is 170)
 
 # Plotting
 
@@ -109,22 +79,6 @@ get_connection
 
 in the model file.
 
-# Explanation of main branches
-
-- `master`, stable: matches the original release functionality, supports only input from `HARM2D`
-- `illinois`: latest bug corrections by Gammie's group, `HARM2D`
-
-Please note that all other branches include significant amount of work which has not been made public yet.
-
-## 3D HARM support
-
-work in progress...
-
-## GPU support
-
-- `cuda`, in progress: CUDA version in progress, lead by Rodrigo
-- `openacc`: OpenACC in progress, lead by Matheus
-
 ## Misc.
 
 - `track_ph`: output photon world lines for visualization
@@ -133,14 +87,14 @@ work in progress...
 
 A set of python codes written only for educational purposes, for understanding what the code does. Includes a proposal for a GPU version.
 
-- `pseudocode/cpu.py`: basic steps that the current version of the codes perfoms
-- `pseudocode/gpu.py`: a proposal for a GPU version
-- `pseudocode/mpi.py`: a proposal for a MPI version
+- `doc/cpu.py`: basic steps that the current version of the codes perfoms
+- `doc/gpu.py`: a proposal for a GPU version
+- `doc/mpi.py`: a proposal for a MPI version
 
 # TODO
 
 - [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
-- [ ] GPU support: CUDA, OpenACC
+- [ ] GPU support: fix scattering errors
 - [ ] add bremsstrahlung
 - [ ] nonthermal electron distribution
 - [ ] dynamic metrics as input
