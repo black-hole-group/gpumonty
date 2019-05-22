@@ -130,6 +130,7 @@ extern double U_unit;
 // int n_within_horizon;
 
 // Gpu used variables
+extern __device__ int GPU_MAX_NSTEP;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 extern double B_unit;
 extern double max_tau_scatt;

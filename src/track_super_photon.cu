@@ -10,8 +10,10 @@
 #include "decs.h"
 #include "gpu_utils.h"
 
+__device__ int GPU_MAX_NSTEP = 170;
+
 #ifdef __CUDA_ARCH__
-	#define MAXNSTEP 170
+	#define MAXNSTEP GPU_MAX_NSTEP
 #else
 	#define MAXNSTEP 1280000
 #endif

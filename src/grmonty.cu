@@ -92,21 +92,31 @@ void check_env_vars() {
 	char *num_blocks_str = getenv("NUM_BLOCKS");
 	char *block_size_str = getenv("BLOCK_SIZE");
 	char *n_cpu_ths_str = getenv("N_CPU_THS");
+	char *gpu_max_nstep_str = getenv("GPU_MAX_NSTEP");
+	int gpu_max_nstep;
 
-	if (num_blocks_str && (sscanf(num_blocks_str, "%d", NUM_BLOCKS) != 1 ||
+	if (num_blocks_str && (sscanf(num_blocks_str, "%d", &NUM_BLOCKS) != 1 ||
 		NUM_BLOCKS <= 0))
 		terminate("Invalid argument for NUM_BLOCKS environment variable.",
 				  EINVAL);
 
-	if (block_size_str && (sscanf(block_size_str, "%d", BLOCK_SIZE) != 1 ||
+	if (block_size_str && (sscanf(block_size_str, "%d", &BLOCK_SIZE) != 1 ||
 		BLOCK_SIZE <= 0))
 		terminate("Invalid argument for BLOCK_SIZE environment variable.",
 				  EINVAL);
 
-	if (n_cpu_ths_str && (sscanf(n_cpu_ths_str, "%d", N_CPU_THS) != 1 ||
+	if (n_cpu_ths_str && (sscanf(n_cpu_ths_str, "%d", &N_CPU_THS) != 1 ||
 		N_CPU_THS <= 0))
 		terminate("Invalid argument for N_CPU_THS environment variable.",
 				  EINVAL);
+
+	if (gpu_max_nstep_str && (sscanf(gpu_max_nstep_str, "%d", &gpu_max_nstep) != 1 ||
+		gpu_max_nstep < 0))
+		terminate("Invalid argument for GPU_MAX_NSTEP environment variable.",
+				  EINVAL);
+
+	if (gpu_max_nstep_str)
+		CUDASAFE(cudaMemcpyToSymbol(GPU_MAX_NSTEP, &gpu_max_nstep, sizeof(int)));
 }
 
 void check_args (int argc, char *argv[], unsigned long long *Ns, unsigned long *seed) {
