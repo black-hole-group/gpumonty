@@ -3,7 +3,7 @@
 
 Computes spectral energy distributions (SEDs) from numerical simulations of radiatively inefficient accretion flows around black holes. This version of GRMONTY is configured to use input files from the `HARM` code. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
 
-GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). For the alpha GPU version `gpumonty`, check out the [GPU documentation](GPU). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
+GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). For the alpha GPU version `gpumonty`, check out the [GPU documentation](GPU.md). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
 
 Pros:
 
@@ -14,7 +14,7 @@ Cons:
 
 - Only supports HARM data
 - Only useful for post-processing radiative transfer (i.e. neglects momentum effect of photons on gas), thus only supports optically-thin flows
-- Currently only supports multi-core CPUs and is inefficiently parallelized (see [GPU acceleration](GPU))
+- Currently only supports multi-core CPUs and is inefficiently parallelized (see [GPU acceleration](GPU.md))
 - Only handles a thermal electron distribution
 
 
@@ -86,7 +86,7 @@ in the model file.
 
 # Branch structure
 
-See [`branches.md`](branches).
+See [`branches.md`](branches.md).
 
 
 # References
