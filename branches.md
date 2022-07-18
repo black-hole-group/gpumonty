@@ -14,8 +14,9 @@ work in progress...
 
 See the [GPU documentation](GPU.md) for more details.
 
-- `cuda`, in progress: CUDA version in progress, lead by Rodrigo
-- `openacc`: OpenACC in progress, lead by Matheus
+- `acc2cuda`: contains all efforts at porting the alpha OpenACC version to CUDA. This is the most important branch regarding GPU acceleration.
+- `openacc`: contains work towards an OpenACC version.
+- `cuda`, in progress: CUDA version in progress, lead by Rodrigo. Work on `acc2cuda` branch instead.
 
 # Misc.
 
