@@ -1,11 +1,26 @@
-GRMONTY: A relativistic Monte Carlo code
+`GRMONTY`: A relativistic Monte Carlo code
 ==========================================
+
+Computes spectral energy distributions (SEDs) from numerical simulations of radiatively inefficient accretion flows around black holes. This version of GRMONTY is configured to use input files from the `HARM` code. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
+
+GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). For the alpha GPU version `gpumonty`, check out the [GPU documentation](GPU). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
+
+Pros:
+
+- Deals with whatever curved spacetime as long as you provide the metric data
+- Properly compute inverse Compton scattering in the Klein-Nishina regime
+
+Cons:
+
+- Only supports HARM data
+- Only useful for post-processing radiative transfer (i.e. neglects momentum effect of photons on gas), thus only supports optically-thin flows
+- Currently only supports multi-core CPUs and is inefficiently parallelized (see [GPU acceleration](GPU))
+- Only handles a thermal electron distribution
+
 
 Based on [Dolence et al. 2009 ApJ](http://adsabs.harvard.edu/abs/2009ApJS..184..387D). Originally downloaded from [Astrophysical Code Library](http://rainman.astro.illinois.edu/codelib/) @ [UI](http://illinois.edu).
 
-This version of GRMONTY is configured to use input files from the HARM code available on the same site. It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
 
-GRMONTY is parallelized using [OpenMP](https://en.wikipedia.org/wiki/OpenMP). This version is configured to use input from [`harm2d`](http://rainman.astro.illinois.edu/codelib/codes/ham2d/src/).
 
 # Quick start
 
@@ -33,7 +48,7 @@ Arguments are:
 
 This will output spectrum to `spectrum.dat`.
 
-# Plotting
+## Plotting
 
 Use python and the [`nmmn`](https://github.com/rsnemmen/nmmn) module:
 
@@ -42,14 +57,14 @@ from  nmmn import plots
 plots.plot('grmonty.spec')
 ```
 
-# Running Tests
+## Running Tests
 
     ./test/tester.py
 
 See ./test/README.md for test details.
 
 
-# Calculate spectra from other sources
+## Calculate spectra from other sources
 
 Replace `harm_model.c` with your own source model.  Begin by modifying `harm_model.c`. You must supply
 
@@ -69,42 +84,10 @@ get_connection
 
 in the model file.
 
-# Explanation of main branches
+# Branch structure
 
-- `master`, stable: matches the original release functionality, supports only input from `HARM2D`
-- `illinois`: latest bug corrections by Gammie's group, `HARM2D`
+See [`branches.md`](branches).
 
-Please note that all other branches include significant amount of work which has not been made public yet.
-
-## 3D HARM support
-
-work in progress...
-
-## GPU support
-
-- `cuda`, in progress: CUDA version in progress, lead by Rodrigo
-- `openacc`: OpenACC in progress, lead by Matheus
-
-## Misc.
-
-- `track_ph`: output photon world lines for visualization
-
-# Pseudocodes
-
-A set of python codes written only for educational purposes, for understanding what the code does. Includes a proposal for a GPU version.
-
-- `pseudocode/cpu.py`: basic steps that the current version of the codes perfoms
-- `pseudocode/gpu.py`: a proposal for a GPU version
-- `pseudocode/mpi.py`: a proposal for a MPI version
-
-# TODO
-
-- [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
-- [ ] GPU support: CUDA, OpenACC
-- [ ] add bremsstrahlung
-- [ ] nonthermal electron distribution
-- [ ] dynamic metrics as input
-- [x] add LICENSE
 
 # References
 
@@ -118,9 +101,13 @@ You are morally obligated to cite the following paper in any scientific literatu
 
 > [Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009, Astrophysical Journal Supplement, 184, 387]((http://adsabs.harvard.edu/abs/2009ApJS..184..387D))
 
+If you use one of the alpha versions contained in this repo, for reproducibility purposes please cite this repo and the corresponding commit you use.
 
-# LICENSE
+# TODO
 
-`grmonty` is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the `LICENSE` file or the [GNU General Public License](http://www.gnu.org/licenses/) for more details.
+- [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
+- [ ] GPU support: CUDA, OpenACC
+- [ ] add bremsstrahlung
+- [ ] nonthermal electron distribution
+- [ ] dynamic metrics as input
+- [x] add LICENSE
