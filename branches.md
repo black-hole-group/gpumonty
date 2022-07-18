@@ -1,23 +1,23 @@
 Branch structure
 ==================
 
-See `branches.md`.
-
 - `master`, stable: matches the original release functionality, supports only input from `HARM2D`
 - `illinois`: latest bug corrections by Gammie's group, `HARM2D`
 
 Please note that all other branches include significant amount of work which has not been made public yet.
 
-## 3D HARM support
+# 3D HARM support
 
 work in progress...
 
-## GPU acceleration
+# GPU acceleration
+
+See the [GPU documentation](GPU.md) for more details.
 
 - `cuda`, in progress: CUDA version in progress, lead by Rodrigo
 - `openacc`: OpenACC in progress, lead by Matheus
 
-## Misc.
+# Misc.
 
 - `track_ph`: output photon world lines for visualization
 

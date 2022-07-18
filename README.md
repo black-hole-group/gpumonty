@@ -106,7 +106,7 @@ If you use one of the alpha versions contained in this repo, for reproducibility
 # TODO
 
 - [x] make it work with [HARMPI](https://github.com/atchekho/harmpi)
-- [ ] GPU support: CUDA, OpenACC
+- [ ] GPU support: CUDA, OpenACC (work in progress — broken but could be fun to fix)
 - [ ] add bremsstrahlung
 - [ ] nonthermal electron distribution
 - [ ] dynamic metrics as input

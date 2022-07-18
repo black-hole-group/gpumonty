@@ -1,6 +1,9 @@
 Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka, and Po Kin Leung
 
+All other modifications including 3D support, HARMPI, alpha GPU acceleration with CUDA and more were added by Rodrigo Nemmen, Matheus Tavares and others (see full list of contributors in github).
+
 GRMONTY  version 1.0   (released February 1, 2013)
+=====================
 
 This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the emergent spectrum from a model using a Monte Carlo technique. This version of GRMONTY is configured to use input files from the HARM code available on the same site.   It assumes that the source is a plasma near a black hole described by Kerr-Schild coordinates that radiates via thermal synchrotron and inverse compton scattering.
     
