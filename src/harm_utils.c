@@ -13,10 +13,21 @@ extern double **ne;
 extern double **thetae;
 extern double **b;
 
+
+#define RADEXP 1.0
+#define RTRANS 5000000.
+#define RB  0.
+
+#define BRAVO (0.0)
+#define TANGO (1.0)
+#define CHARLIE (0.0)
+#define DELTA (3.0)
+
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
+void vofx_matthewcoords(double *X, double *V);
 
 /** HARM utilities **/
 
@@ -97,8 +108,10 @@ void init_weight_table(void)
 	for (i = 0; i <= N_ESAMP; i++) {
 		sum[i] = 0.;
 		nu[i] = exp(i * dlnu + lnu_min);
+		if (nu[i] < 0){
+			fprintf("nu[%d] = %le, dlnu, lnu_min", i, nu[i], dlnu, lnu_min);
+		}
 	}
-
 	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
 #pragma omp parallel private(i,j,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
@@ -107,6 +120,7 @@ void init_weight_table(void)
 		myid = omp_get_thread_num();
 		lstart = myid * (N_ESAMP / nthreads);
 		lend = (myid + 1) * (N_ESAMP / nthreads);
+		//fprintf(stderr, "lstart = %d, lend = %d\n", lstart, lend);
 		if (myid == nthreads - 1)
 			lend = N_ESAMP + 1;
 
@@ -116,19 +130,39 @@ void init_weight_table(void)
 					       Ucon, Bcon);
 				if (Ne == 0. || Thetae < THETAE_MIN)
 					continue;
+				else{
+					//fprintf(stderr, "either Ne = 0 or thetae > thetae_min, Ne = %le, Thetae = %le, THETAE_MIN = %le\n", Ne, Thetae, THETAE_MIN);
+				}
 				K2 = K2_eval(Thetae);
 				fac =
 				    (JCST * Ne * B * Thetae * Thetae /
 				     K2) * sfac * geom[i][j].g;
 				for (l = lstart; l < lend; l++)
+					#pragma omp critical
+						{
+							if(isnan(sum[l])){
+							fprintf(stderr, "sum[%d]_before = %le\n", l, sum[l]);	
+							exit(1);
+							}						
+						}
 					sum[l] +=
 					    fac * F_eval(Thetae, B, nu[l]);
+						#pragma omp critical
+						{
+							if(isnan(sum[l])){
+								//fprintf(stderr,	"N1 = %d, N2 = %d\n", i, j);
+								fprintf(stderr, "JCST = %le, Ne = %le, B = %le, Thetae = %le, K2 = %le, sfac = %le, geom[%d][%d].g = %le\n", JCST, Ne, B, Thetae, K2, sfac, i,j, geom[i][j].g);
+								fprintf(stderr,"sum[%d] = %le, fac = %le, F_eval(Theta_e = %le, B = %le, nu[l] = %le) = %le\n", l, sum[l], fac, Thetae, B, nu[l], F_eval(Thetae, B, nu[l]));
+								exit(1);
+							}
+						}
 			}
 #pragma omp barrier
 	}
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++)
 		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
+		//fprintf(stderr, "wgt = %le, sum = %le, Ns = %d", wgt[i], sum[i], Ns);
 
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
@@ -138,13 +172,14 @@ void init_weight_table(void)
 
 #undef JCST
 
-#define BTHSQMIN	(1.e-4)
-#define BTHSQMAX	(1.e9)
-#define	NINT		(40000)
+#define BTHSQMIN	(1.e-8)
+#define BTHSQMAX	(1.e10)
+#define	NINT		(20000)
 
 double lb_min, dlb;
 double nint[NINT + 1];
 double dndlnu_max[NINT + 1];
+
 void init_nint_table(void)
 {
 
@@ -169,10 +204,12 @@ void init_nint_table(void)
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
+			//fprintf(stderr, "j = %d, Bmag = %le, lnu_min = %le, dlnu = %le, wgt = %le, dn = %le\n", j, Bmag, lnu_min, dlnu, wgt[j], dn);
 		}
 		nint[i] *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
 		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 		    * 1. / HPL;
+		//fprintf(stderr, "dx[1] = %le, dx[2] = %le, dx[3] = %le, L_unit = %le, M_SQRT2 = %le, EE = %le, ME = %le, CL = %le, HPL = %le, nint[%d] = %le\n", dx[1], dx[2], dx[3], L_unit, M_SQRT2, EE, ME, CL, HPL, i, nint[i]);
 		nint[i] = log(nint[i]);
 		dndlnu_max[i] = log(dndlnu_max[i]);
 	}
@@ -180,7 +217,7 @@ void init_nint_table(void)
 	return;
 }
 
-static void init_zone(int i, int j, double *nz, double *dnmax)
+static void init_zone (int i, int j, double *nz, double *dnmax)
 {
 
 	int l;
@@ -189,21 +226,26 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 	double Ucon[NDIM], Bcon[NDIM];
 
 	get_fluid_zone(i, j, &Ne, &Thetae, &Bmag, Ucon, Bcon);
-
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*nz = 0.;
 		*dnmax = 0.;
+		//fprintf(stderr, "It entered Here!1\n");	
+		//fprintf(stderr, "Ne = %le, Thetae = %le\n", Ne, Thetae);
 		return;
 	}
-
+	//fprintf(stderr, "Bmag = %le, Thetae = %le\n", Bmag, Thetae);
+	if(Bmag == 0) Bmag = 1e-8;
 	lbth = log(Bmag * Thetae * Thetae);
 
 	dl = (lbth - lb_min) / dlb;
 	l = (int) dl;
 	dl = dl - l;
 	if (l < 0) {
+		//fprintf(stderr, "lbth = %le, lb_min = %le, dlb = %le, dl = %le\n", lbth, lb_min, dlb, dl);
+		//fprintf(stderr, "It entered Here!2, i = %d, j = %d\n", i, j);
 		*dnmax = 0.;
 		*nz = 0.;
+		
 		return;
 	} else if (l >= NINT) {
 
@@ -220,13 +262,17 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
+			//fprintf(stderr, "Ninterp is not going inf, but going 01 = %le\n", ninterp);
+
 		}
 		ninterp *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
 		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 		    * 1. / HPL;
+		//fprintf(stderr, "Ninterp is not going inf, but going 02 = %le\n", ninterp);
 	} else {
 		if (isinf(nint[l]) || isinf(nint[l + 1])) {
 			ninterp = 0.;
+			//fprintf(stderr, "n interp is going inf\n");
 			*dnmax = 0.;
 		} else {
 			ninterp =
@@ -234,25 +280,31 @@ static void init_zone(int i, int j, double *nz, double *dnmax)
 			*dnmax =
 			    exp((1. - dl) * dndlnu_max[l] +
 				dl * dndlnu_max[l + 1]);
+				//fprintf(stderr, "dl = %le, nint[%d] = %le, nint[%d + 1] = %le\n", dl, l, nint[l], l, nint[l+1]);
+				//fprintf(stderr, "Ninterp is not going inf, but going 03 = %le\n", ninterp);
+
 		}
 	}
-
 	K2 = K2_eval(Thetae);
+	//K2 = K2_eval_pedro(Thetae);
 	if (K2 == 0.) {
 		*nz = 0.;
 		*dnmax = 0.;
+		//fprintf(stderr, "It entered Here!3\n");
+
 		return;
 	}
-
 	*nz = geom[i][j].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	//fprintf(stderr, "geom = %le, Ne = %le, Bmag = %le, Thetae = %le, ninterp = %le, K2 = %le, nz = %le\n", geom[i][j].g, Ne, Bmag, Thetae, ninterp, K2, *nz);
+	//fprintf(stderr, "*nz = %le, Ne = %le, Bmag = %le, Thetae = %le, ninterp = %le, K2 = %le\n", *nz, Ne, Bmag, Thetae, ninterp, K2);
 	if (*nz > Ns * log(NUMAX / NUMIN)) {
 		fprintf(stderr,
 			"Something very wrong in zone %d %d: \nB=%g  Thetae=%g  K2=%g  ninterp=%g\n\n",
 			i, j, Bmag, Thetae, K2, ninterp);
 		*nz = 0.;
+		//fprintf(stderr, "It entered Here!4\n");
 		*dnmax = 0.;
 	}
-
 	return;
 }
 
@@ -279,6 +331,7 @@ int get_zone(int *i, int *j, double *dnmax)
 		}
 	}
 	init_zone(zi, zj, &n2gen, dnmax);
+	//fprintf(stderr, "analazing zones! Zone:%lf\n", n2gen);
 	if (fmod(n2gen, 1.) > monty_rand()) {
 		in2gen = (int) n2gen + 1;
 	} else {
@@ -287,7 +340,7 @@ int get_zone(int *i, int *j, double *dnmax)
 
 	*i = zi;
 	*j = zj;
-
+	//fprintf(stderr, "Analazing zones! Zone:%d\n", in2gen);
 	return in2gen;
 }
 
@@ -402,14 +455,93 @@ void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM])
 }
 
 /* return boyer-lindquist coordinate of point */
-void bl_coord(double *X, double *r, double *th)
+// void bl_coord(double *X, double *r, double *th)
+// {
+
+// 	*r = exp(X[1]) + R0;
+// 	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+
+// 	return;
+// }
+
+//Editted for hamr bl_coord
+void bl_coord(double * restrict X, double * restrict r, double * restrict th, double * restrict phi)
 {
+	double V[4];
+  	void (*vofx_function_pointer)(double*, double*);
 
-	*r = exp(X[1]) + R0;
-	*th = M_PI * X[2] + ((1. - hslope) / 2.) * sin(2. * M_PI * X[2]);
+  //choose the type of coordinates depending on the problem at hand
 
-	return;
+    vofx_function_pointer = vofx_matthewcoords;
+
+  
+	#if(!DOCYLINDRIFYCOORDS)
+    vofx_function_pointer(X,V);
+	#else
+    vofx_cylindrified(X, vofx_function_pointer, V);
+	#endif
+
+	// avoid singularity at polar axis
+	#if(COORDSINGFIX && !CARTESIAN)
+	if (fabs(V[2])<SINGSMALL){
+		if (V[2] >= 0.0) V[2] = SINGSMALL;
+		if (V[2]<0.0)  V[2] = -SINGSMALL;
+	}
+	if (fabs(M_PI - V[2]) <SINGSMALL){
+		if (V[2] >= M_PI) V[2] = M_PI + SINGSMALL;
+		if (V[2]<M_PI)  V[2] = M_PI -  SINGSMALL;
+	}
+	#endif
+
+	*r = V[1];
+	*th = V[2];
+	*phi = V[3];
+	return ;
 }
+
+void vofx_matthewcoords(double *X, double *V){
+	#if(CARTESIAN)
+	V[1] = X[1];
+	V[2] = X[2];
+	V[3] = X[3];
+	#else
+	V[0] = X[0];
+	double Xtrans = pow(log(RTRANS - RB), 1. / RADEXP);
+	if (X[1] < Xtrans){
+		V[1] = exp(pow(X[1], RADEXP)) + RB;
+	}
+	else if (X[1] >= Xtrans && X[1]<1.01*Xtrans){
+		V[1] = 10.*(X[1] / Xtrans - 1.)*((X[1] - Xtrans)*RADEXP*exp(pow(Xtrans, RADEXP))*pow(Xtrans, -1. + RADEXP) + RTRANS) +
+			(1. - 10.*(X[1] / Xtrans - 1.))*(exp(pow(X[1], RADEXP)) + RB);
+	}
+	else{
+		V[1] = (X[1] - Xtrans)*RADEXP*exp(pow(Xtrans, RADEXP))*pow(Xtrans, -1. + RADEXP) + RTRANS;
+	}
+	double A1 = 1. / (1. + pow(CHARLIE*(log(V[1]) / log(10.)), DELTA));
+	double A2 = BRAVO*(log(V[1]) / log(10.)) + TANGO;
+	double A3 = pow(0.5, 1. - A2);
+	double sign = 1.;
+	double X_2 =(X[2]+1.0)/2.0;
+	double Xc = sqrt(pow(X_2, 2.));
+
+	if (X_2 < 0.0){
+		sign = -1.;
+	}
+	if (X_2 > 1.0){
+		sign = -1.;
+		Xc = 2. - Xc;
+	}
+	if (X_2 >= 0.5){
+		Xc = 1. - Xc;
+		V[2] = M_PI - sign*(A1* M_PI*Xc + M_PI*(1. - A1)*(A3*pow(Xc, A2) + 0.50 / M_PI*sin(M_PI + 2.*M_PI*(A3*pow(Xc, A2)))));
+	}
+	else{
+		V[2] = sign*(A1* M_PI*Xc + M_PI*(1. - A1)*(A3*pow(Xc, A2) + 0.50 / M_PI*sin(M_PI + 2.*M_PI*(A3*pow(Xc, A2)))));
+	}
+	V[3] = X[3];
+#endif
+}
+
 
 void coord(int i, int j, double *X)
 {
@@ -432,7 +564,7 @@ void set_units(char *munitstr)
 
 	/** from this, calculate units of length, time, mass,
 	    and derivative units **/
-	MBH = 4.6e6 * MSUN ;
+	MBH = 4e6 * MSUN ;
 	L_unit = GNEWT * MBH / (CL * CL);
 	T_unit = L_unit / CL;
 

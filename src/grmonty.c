@@ -23,7 +23,8 @@
 /* defining declarations for global variables */
 struct of_geom **geom;
 int N1, N2, N3, n_within_horizon;
-double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
+//double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
+double wgt[N_ESAMP+1];
 int Ns, N_superph_recorded, N_scatt;
 
 /* some coordinate parameters */
@@ -85,7 +86,6 @@ int main(int argc, char *argv[])
 
 #pragma omp parallel private(ph)
 	{
-
 		while (1) {
 
 			/* get pseudo-quanta */

@@ -112,8 +112,7 @@ void init_harm_data(char *fname)
 		       &p[U2][i][j],
 		       &p[U3][i][j],
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]);
-
-
+		
 		fscanf(fp, "%lf", &divb);
 
 		fscanf(fp, "%lf %lf %lf %lf",

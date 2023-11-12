@@ -4,7 +4,7 @@
 # makefile adapted from https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/
 #
 CC = gcc
-CCFLAGS  = -Wall -O2 -fopenmp
+CCFLAGS  = -g -Wall -O2 -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas
 
 GRMONTY_BASEBUILD ?= "."

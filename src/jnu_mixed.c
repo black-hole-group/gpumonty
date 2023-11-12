@@ -87,7 +87,7 @@ double jnu_integrand(double th, void *params)
 /* Tables */
 double F[N_ESAMP + 1], K2[N_ESAMP + 1];
 double lK_min, dlK;
-double lT_min, dlT;
+double lT_min;
 
 #define EPSABS 0.
 #define EPSREL 1.e-6
@@ -163,7 +163,6 @@ double F_eval(double Thetae, double Bmag, double nu)
 
 	double K, x;
 	double linear_interp_F(double);
-
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
 
 	if (K > KMAX) {
@@ -194,6 +193,7 @@ double linear_interp_K2(double Thetae)
 	di = (lT - lT_min) * dlT;
 	i = (int) di;
 	di = di - i;
+	//fprintf(stderr, "di = %le, i = %d, lk = %le\n", di, i, lT);
 
 	return exp((1. - di) * K2[i] + di * K2[i + 1]);
 }
@@ -209,6 +209,7 @@ double linear_interp_F(double K)
 	di = (lK - lK_min) * dlK;
 	i = (int) di;
 	di = di - i;
+	//fprintf(stderr, "di = %le, i = %d, lk = %le\n", di, i, lK);
 
 	return exp((1. - di) * F[i] + di * F[i + 1]);
 }

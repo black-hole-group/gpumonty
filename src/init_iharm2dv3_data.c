@@ -18,10 +18,13 @@ void check_scan_error(int scan_output, int number_of_arguments ) {
 	if(scan_output == EOF)fprintf(stderr, "error reading HARM header\n");
 	else if(scan_output != number_of_arguments){
 		fprintf(stderr, "Not all HARM data could be set\n");
+		fprintf(stderr, "Scan Output = %d\n", scan_output);
+		fprintf(stderr, "Number of Arguments = %d\n", number_of_arguments);
+		exit(1);
 	}
 }
 
-void init_harm_data(char *fname)
+void init_harm_data(char *fname_parameters)
 {
 	FILE *fp;
 	double x[4];
@@ -35,13 +38,13 @@ void init_harm_data(char *fname)
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	double J ;
 
-	fp = fopen(fname, "r");
+	fp = fopen(fname_parameters, "r");
 
 	if (fp == NULL) {
-		fprintf(stderr, "can't open sim data file\n");
+		fprintf(stderr, "can't open sim dump data file\n");
 		exit(1);
 	} else {
-		fprintf(stderr, "successfully opened %s\n", fname);
+		fprintf(stderr, "successfully opened %s\n", fname_parameters);
 	}
 
 	/* get standard HARM header */
@@ -64,7 +67,7 @@ void init_harm_data(char *fname)
 	check_scan_error(fscanf(fp, "%d ", &image_cnt), 1);
 	check_scan_error(fscanf(fp, "%d ", &rdump_cnt), 1);
 	check_scan_error(fscanf(fp, "%lf ", &dt), 1);
-
+	fprintf(stderr, "N1 = %d, N2 = %d\n", N1, N2);
   /* finish reading out the line */
   fseek(fp, 0, SEEK_SET);
   while ( (i=fgetc(fp)) != '\n' ) ;
@@ -106,6 +109,9 @@ void init_harm_data(char *fname)
 	bias_norm = 0.;
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
+
+
+
 	for (k = 0; k < N1 * N2; k++) {
 		j = k % N2;
 		i = (k - j) / N2;
@@ -117,17 +123,29 @@ void init_harm_data(char *fname)
 		       &p[U1][i][j], &p[U2][i][j], &p[U3][i][j],
 		       &p[B1][i][j], &p[B2][i][j], &p[B3][i][j]), 8);
 
-
 		check_scan_error(fscanf(fp, "%lf", &divb), 1);
 
 		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
 			&Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]), 4);
+
+		// fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+		// fprintf(stderr, "Ucon1[%d, %d] = %le\n", i, j, Ucon[1]);
+		// fprintf(stderr, "Ucon2[%d, %d] = %le\n", i, j, Ucon[2]);
+		// fprintf(stderr, "Ucon3[%d, %d] = %le\n", i, j, Ucon[3]);
 		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
 			&Ucov[0], &Ucov[1], &Ucov[2], &Ucov[3]), 4);
 		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
 			&Bcon[0], &Bcon[1], &Bcon[2], &Bcon[3]), 4);
 		check_scan_error(fscanf(fp, "%lf %lf %lf %lf",
 			&Bcov[0], &Bcov[1], &Bcov[2], &Bcov[3]), 4);
+		// fprintf(stderr, "Bcov0[%d][%d] = %le\n", i, j, Bcov[0]);
+		// fprintf(stderr, "Bcov1[%d][%d] = %le\n", i, j, Bcov[1]);
+		// fprintf(stderr, "Bcov2[%d][%d] = %le\n", i, j, Bcov[2]);
+		// fprintf(stderr, "Bcov3[%d][%d] = %le\n", i, j, Bcov[3]);
+		// fprintf(stderr, "Bcon0[%d][%d] = %le\n", i, j, Bcon[0]);
+		// fprintf(stderr, "Bcon1[%d][%d] = %le\n", i, j, Bcon[1]);
+		// fprintf(stderr, "Bcon2[%d][%d] = %le\n", i, j, Bcon[2]);
+		// fprintf(stderr, "Bcon3[%d][%d] = %le\n", i, j, Bcon[3]);
 
 		check_scan_error(fscanf(fp, "%lf ", &vmin), 1);
 		check_scan_error(fscanf(fp, "%lf ", &vmax), 1);
@@ -145,18 +163,22 @@ void init_harm_data(char *fname)
 		check_scan_error(fscanf(fp, "%lf ", &J), 1);
 		check_scan_error(fscanf(fp, "%lf ", &J), 1);
 		check_scan_error(fscanf(fp, "%lf\n", &J), 1);
-
+		//fprintf(stderr, "rho[%d][%d] = %le, UU[%d][%d] = %le\n", i, j, p[KRHO][i][j], i, j, p[UU][i][j]);
+		//fprintf(stderr, "gdet[%d][%d] = %le\n", i, j, gdet);
 		bias_norm +=
 		    dV * gdet * pow(p[UU][i][j] / p[KRHO][i][j] *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
-
+		//fprintf(stderr, "V[%d][%d] = %le\n", i, j, V);
 		/* check accretion rate */
 		if (i <= 20)
 			dMact += gdet * p[KRHO][i][j] * Ucon[1];
 		if (i >= 20 && i < 40)
 			Ladv += gdet * p[UU][i][j] * Ucon[1] * Ucov[0];
 	}
+	fprintf(stderr, "Bias Norm Final = %le, V Final = %le\n", bias_norm, V);
+	fprintf(stderr, "Dx[1] = %le, Dx[2] = %le, Dx[3] = %le\n", dx[1], dx[2], dx[3]);
+	fprintf(stderr, "dMact before = %le, Ladv before = %le\n", dMact, Ladv);
 
 	bias_norm /= V;
 	dMact *= dx[3] * dx[2];

@@ -26,8 +26,8 @@ void init_model(char *args[])
 	set_units(args[3]);
 
 	fprintf(stderr, "getting simulation data...\n");
-	init_harm_data(args[2]);	/* read in HARM simulation data */
-
+	//init_harm_data(args[2]);	/* read in HARM simulation data */
+	init_hamr_data(args[2]);
 	/* initialize the metric */
 	fprintf(stderr, "initializing geometry...\n");
 	fflush(stderr);
@@ -64,15 +64,20 @@ void make_super_photon(struct of_photon *ph, int *quit_flag)
 
 	while (n2gen <= 0) {
 		n2gen = get_zone(&zone_i, &zone_j, &dnmax);
+		//fprintf(stderr, "zone_i = %d\n", zone_i);
+		//fprintf(stderr, "dnmax = %le\n", dnmax);
 	}
 
 	n2gen--;
 
-	if (zone_i == N1)
+	if (zone_i == N1){
 		*quit_flag = 1;
-	else
+		//fprintf(stderr, "It entered here!\n");
+		// fprintf(stderr, "N1 = %d", N1);
+	}else{
 		*quit_flag = 0;
-
+		//fprintf(stderr, "doing zone: %d\n", zone_i);
+	}
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
 		sample_zone_photon(zone_i, zone_j, dnmax, ph);
@@ -122,6 +127,7 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 
 	*Ne = p[KRHO][i][j] * Ne_unit;
 	*Thetae = p[UU][i][j] / (*Ne) * Ne_unit * Thetae_unit;
+	int a, b, c;
 
 	Bp[1] = p[B1][i][j];
 	Bp[2] = p[B2][i][j];
@@ -159,6 +165,8 @@ void get_fluid_zone(int i, int j, double *Ne, double *Thetae, double *B,
 	if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX ;
 
 	sig = pow(*B/B_unit,2)/(*Ne/Ne_unit) ;
+	//fprintf(stderr, "Ne = %le, Thetae = %le, B = %le, Ucon = %le, Bcon = %le, sig = %le, \n", *Ne, *Thetae, *B, *Ucon, *Bcon, sig);
+
 	if(sig > 1.) *Ne = 1.e-10*Ne_unit ;
 
 }
@@ -254,14 +262,14 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	int k, l;
 	double sth, cth, irho2;
-	double r, th;
+	double r, th, ph;
 	double hfac;
 	/* required by broken math.h */
 	void sincos(double in, double *sth, double *cth);
 
 	DLOOP gcon[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	bl_coord(X, &r, &th, &ph);
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;
@@ -289,14 +297,14 @@ void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
-	double r, th;
+	double r, th, ph;
 	double tfac, rfac, hfac, pfac;
 	/* required by broken math.h */
 	void sincos(double th, double *sth, double *cth);
 
 	DLOOP gcov[k][l] = 0.;
 
-	bl_coord(X, &r, &th);
+	bl_coord(X, &r, &th, &ph);
 
 	sincos(th, &sth, &cth);
 	sth = fabs(sth) + SMALL;

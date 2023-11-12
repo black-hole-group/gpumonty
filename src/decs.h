@@ -14,11 +14,11 @@
 #include "constants.h"
 
 #define NDIM	4
-#define NPRIM	8
+#define NPRIM	10
 
 /* Range of initial superphoton frequencies */
-#define NUMIN 1.e9
-#define NUMAX 1.e20
+#define NUMIN 1.e4
+#define NUMAX 1.e30
 
 #define THETAE_MAX	1000.	
 #define THETAE_MIN	0.3
@@ -34,6 +34,8 @@
 #define B1      5
 #define B2      6
 #define B3      7
+#define ETEMP   8
+#define ITEMP   9
 
 /* numerical convenience */
 #define SMALL	1.e-40
@@ -113,7 +115,7 @@ extern double a;
 extern double R0, Rin, Rh, Rout, Rms;
 extern double hslope;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
-extern double dlE, lE0;
+extern double dlE, lE0, dlT;
 extern double gam;
 extern double dMsim;
 

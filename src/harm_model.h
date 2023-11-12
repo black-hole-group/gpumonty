@@ -15,13 +15,16 @@ global double **ne;
 global double **thetae;
 global double **b;
 
+
 /* HARM model internal utilities */
 void init_weight_table(void);
-void bl_coord(double *X, double *r, double *th);
+void bl_coord(double * restrict X, double * restrict r, double * restrict th, double * restrict phi);
+void vofx_matthewcoords(double *X, double *V);
 void make_zone_centered_tetrads(void);
 void set_units(char *munitstr);
 void init_geometry(void);
 void init_harm_data(char *fname);
+void init_hamr_data(char *fname);
 void init_nint_table(void);
 void init_storage(void);
 double dOmega_func(double x2i, double x2f);
