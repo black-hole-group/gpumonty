@@ -97,6 +97,8 @@ struct of_grid {
 extern struct of_geom *geom;
 extern int N1, N2, N3, n_within_horizon;
 extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
+extern double table[NW + 1][NT + 1];
+
 extern int Ns, N_superph_recorded, N_scatt;
 
 /* some coordinate parameters */

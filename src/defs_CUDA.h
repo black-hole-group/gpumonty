@@ -39,19 +39,40 @@
 #define NW	220
 #define NT	80
 
+/*for stop criterium*/
+#define RMAX	10.
+#define ROULETTE	1.e4
+
+/*for stepsize*/
+#define EPS   0.04
+
+/*Push photon routine*/
+#define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
+#define ETOL 1.e-3
+#define MAX_ITER 2
+
+/*Hot cross routines*/
+#define MAXGAMMA	12.
+#define DMUE		0.05
+#define DGAMMAE		0.05
+#define NW	220
+#define NT	80
+__device__ double d_dlw, d_dlT, d_lminw, d_lmint;
+__device__ double d_table[NW + 1][NT + 1];
 
 /*GLOBAL VARIABLES*/
-__device__ int d_N1, d_N2, d_N3, d_Ns;
-__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1];;
+__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt, d_N_superph_recorded;
+__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt, d_lE0, d_dlE;
 __device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
 __device__ 	int zone_flag;
 
+#define d_lmint     (log10(MINT))
+#define d_lminw     (log10(MINW))
 #define d_lT_min    (log(TMIN))
 #define d_dlw       (log10(MAXW / MINW) / NW)
 #define d_dlT       (log10(MAXT / MINT) / NT)
-
 
 #define REF_2 (1)
 #define TILT_ANGLE (0.0)

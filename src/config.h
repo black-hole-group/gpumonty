@@ -81,3 +81,5 @@
 #define N_ESAMP		200
 #define N_EBINS		200
 #define N_THBINS	6
+#define NW	220
+#define NT	80
