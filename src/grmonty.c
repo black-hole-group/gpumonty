@@ -17,11 +17,11 @@ int main(int argc, char *argv[])
 	Ns = (int) Ntot;
 
 	/* initialize random number generator */
-#pragma omp parallel private(myid)
-	{
-		myid = omp_get_thread_num();
-		init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
-	}
+// #pragma omp parallel private(myid)
+// 	{
+// 		myid = omp_get_thread_num();
+// 		init_monty_rand(139 * myid + time(NULL));	/* Arbitrarily picked initial seed */
+// 	}
 
 	/* spectral bin parameters */
 	dlE = 0.25;		/* bin width */
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 // #endif
 // 	report_spectrum((int) N_superph_made);
 
-// 	/* done! */
-// 	return (0);
+	/* done! */
+	return (0);
 
 }

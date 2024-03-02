@@ -57,6 +57,9 @@
 #define DGAMMAE		0.05
 #define NW	220
 #define NT	80
+/*track super photon*/
+#define MAXNSTEP 1280000
+
 __device__ double d_dlw, d_dlT, d_lminw, d_lmint;
 __device__ double d_table[NW + 1][NT + 1];
 
