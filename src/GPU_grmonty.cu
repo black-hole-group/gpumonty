@@ -4,7 +4,6 @@
 #include <math.h>
 #include <string.h>
 #include <omp.h>
-#include <curand_kernel.h>
 
 extern "C"
 {
@@ -35,6 +34,8 @@ __device__ struct local_track_var{
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
+	struct of_photon * ph;
+	struct of_photon php;
 };
 __global__ void test_struct_data2(){
 	//printf("startx = (%lf, %lf, %lf, %lf), dx = (%lf, %lf, %lf, %lf)\n", d_startx[0], d_startx[1], d_startx[2], d_startx[3], d_dx[0], d_dx[1], d_dx[2], d_dx[3]);
@@ -43,8 +44,11 @@ __global__ void test_struct_data2(){
 	// 	printf("d_wgt[%d] = %le\n", i, d_wgt[i]);
 	// }
 }
+
 void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Copying global variables*/
+	int threads_number = 1;
+	int seed = 139 + time;
     cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
 	cudaMemcpyToSymbol(d_Ns, &Ns, sizeof(int));
     cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
@@ -72,8 +76,6 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
     // Copy data from host to device
     cudaMemcpyErrorCheck(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice);
 
-
-
 	/*Transfering geom array*/
 	struct of_geom *d_geom;
 	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
@@ -88,10 +90,27 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	int N_superph_made_cpu = 0;
 	int *N_superph_made_gpu;
 	gpuErrchk(cudaMalloc((void **)&N_superph_made_gpu, sizeof(int)));
-	//*N_superph_made_gpu=0;
-	//cudaMalloc((void**)&N_superph_made_gpu, sizeof(int));
+
+
+	/*Initializing the Random number generator*/
+	curandStateMtgp32 *devMTGPStates;
+    mtgp32_kernel_params *devKernelParams;
+
+	/* Allocate space for prng states on device */
+    gpuErrchk(cudaMalloc((void **)&devMTGPStates, 64 *
+              sizeof(curandStateMtgp32)));
+	/* Allocate space for MTGP kernel parameters */
+    gpuErrchk(cudaMalloc((void**)&devKernelParams, sizeof(mtgp32_kernel_params)));
+
+    /* Reformat from predefined parameter sets to kernel format, */
+    /* and copy kernel parameters to device memory               */
+    curandMakeMTGP32Constants(mtgp32dc_params_fast_11213, devKernelParams);
+    /* Initialize one state per thread block */
+    curandMakeMTGP32KernelState(devMTGPStates,
+                mtgp32dc_params_fast_11213, devKernelParams, threads_number, seed);
+
 	/*Calling the main function*/
-    GPU_mainloop<<<1,1>>>(ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu);
+    GPU_mainloop<<<1,threads_number>>>(devMTGPStates, ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu);
 	cudaMemcpyErrorCheck(&N_superph_made_cpu, N_superph_made_gpu, sizeof(int), cudaMemcpyDeviceToHost);
     //cudaMemcpy(&N_superph_made_cpu, N_superph_made_gpu, sizeof(int), cudaMemcpyDeviceToHost);
 
@@ -108,13 +127,15 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
     	fprintf(stderr, "CUDA Error: %s\n", cudaGetErrorString(cudaStatus));
     // Additional error handling code here, if needed
 }
+    cudaFree(devKernelParams);
+    cudaFree(devMTGPStates);
 	cudaFree(N_superph_made_gpu);
 	cudaFree(d_table_ptr);
 	cudaFree(local_track_vars);
 }
 
 
-__global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom * d_geom, double * d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int *super_photon_made)
+__global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom * d_geom, double * d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int *super_photon_made)
 {
 
 	struct of_photon d_ph = ph;
@@ -126,12 +147,10 @@ __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom * 
 	d_N_superph_recorded = 0;
 	time_t starttime = time;
 	time_t currtime;
-    int seed = 139 * (blockIdx.x * blockDim.x + threadIdx.x) + time;  // Use a different seed for each thread
-    GPU_init_monty_rand(seed); /*TODO: Maybe there is a better way to do this?*/
     while(1){
         /*First thing we should do is make super photon*/
         if (!quit_flag){
-            GPU_make_super_photon(&d_ph, &quit_flag, d_geom, d_p);
+            GPU_make_super_photon(state, &d_ph, &quit_flag, d_geom, d_p);
         }
 
 			//printf("quit_flag after= %d", quit_flag);
@@ -142,7 +161,7 @@ __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom * 
 			/* push them around */
 			//printf("it is doing its thing\n");
  			
-			GPU_track_super_photon(&d_ph, d_p, local_track_vars);
+			GPU_track_super_photon(state, &d_ph, d_p, local_track_vars);
 
 			/* step */
 		 	atomicAdd(super_photon_made, 1);
@@ -161,14 +180,14 @@ __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom * 
 		// 	*N_superph_made / (currtime - starttime));
 
 }
-__device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p)
+__device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p)
 {
     int n2gen = -1;
     double dnmax;
     int zone_i, zone_j, zone_k;
 
 	while (n2gen <= 0) {
-		n2gen = GPU_get_zone(&zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p);
+		n2gen = GPU_get_zone(state, &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p);
 	}
 
 	n2gen--;
@@ -179,12 +198,12 @@ __device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, stru
 
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
-		GPU_sample_zone_photon(zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p);
+		GPU_sample_zone_photon(state, zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p);
 	}
 
 	return;
 }
-__device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p)
+__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p)
 {
 /* Return the next zone and the number of superphotons that need to be		*
  * generated in it.								*/
@@ -211,7 +230,7 @@ __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geo
 	}
 	GPU_init_zone(zi, zj, zk, &n2gen, dnmax, d_geom, d_p);
 
-	if (fmod(n2gen, 1.) > GPU_monty_rand()) {
+	if (fmod(n2gen, 1.) > GPU_monty_rand(state)) {
 		in2gen = (int) n2gen + 1;
 	} else {
 		in2gen = (int) n2gen;
@@ -223,7 +242,7 @@ __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geo
 
 	return in2gen;
 }
-__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p)
+__device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p)
 {
 /* Set all initial superphoton attributes */
 	int l;
@@ -245,22 +264,22 @@ __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct
 
 	/* Sample from superphoton distribution in current simulation zone */
 	do {
-		nu = exp(GPU_monty_rand() * Nln + lnu_min);
+		nu = exp(GPU_monty_rand(state) * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
-	} while (GPU_monty_rand() >
+	} while (GPU_monty_rand(state) >
 		 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 
 	ph->w = weight;
 	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 	do {
-		cth = 2. * GPU_monty_rand() - 1.;
+		cth = 2. * GPU_monty_rand(state) - 1.;
 		th = acos(cth);
 
-	} while (GPU_monty_rand() >
+	} while (GPU_monty_rand(state) >
 		 GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
 
 	sth = sqrt(1. - cth * cth);
-	phi = 2. * M_PI * GPU_monty_rand();
+	phi = 2. * M_PI * GPU_monty_rand(state);
 	cphi = cos(phi);
 	sphi = sin(phi);
 
@@ -301,16 +320,16 @@ __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct
 
 	return;
 }
-__device__ void GPU_init_monty_rand(int seed) {
-    int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    curand_init(seed, tid, 0, my_curand_state);
-	// curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MT19937);
-	// curandSetPseudoRandomGeneratorSeed(gen, seed);
+
+__device__ double GPU_monty_rand(curandStateMtgp32 *state) {
+	int tid = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
+	//printf("state = %g\n", &state[tid]);
+	//printf("Curand = %le\n",curand_uniform_double(&state[tid]));
+	return curand_uniform_double(&state[tid]);
 }
-__device__ double GPU_monty_rand() {
-	//printf("GPU_monty_rand is = %g\n", curand_uniform_double(&my_curand_state) - 1e-10);
-    return curand_uniform_double(&my_curand_state);
-}
+
+
+
 __device__ void GPU_coord_hamr(int i, int j, int z, int loc, double * X)
 {
 	X[0] = 0.0;
@@ -793,13 +812,12 @@ __device__ double GPU_linear_interp_K2(double Thetae)
 
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
 
-__device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struct local_track_var * local_track_vars)
+__device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photon *ph, double * d_p, struct local_track_var * local_track_vars)
 {
 	int recursive_index = 0;
 	int max_recursions = MAXNSTEP;
-	bool condition = false;
-	//struct local_track_var *local_track_vars;
-	//gpuErrchk(cudaMalloc(&local_track_vars, max_recursions* sizeof(struct of_geom)));
+	bool starting_recursion = false;
+	bool jump_to_ending = false;
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
 	double bi, bf;
@@ -814,7 +832,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 		Bcov[NDIM];
 	int nstep = 0;
-	bool recursive_round = false;
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 		isnan(ph->X[1]) ||
@@ -847,11 +864,11 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
 	recursive_round:
-		while (!GPU_stop_criterion(ph) || recursive_round) {
-			if(!recursive_round){
+		while (!GPU_stop_criterion(state, ph) || jump_to_ending) {
+			if(!jump_to_ending){
 				/*****************************condition******************************/
-				if(condition){
-				condition = false;
+				if(starting_recursion){
+				starting_recursion = false;
 				int bound_flag;
 				double dtau_scatt, dtau_abs, dtau;
 				double bi, bf;
@@ -923,7 +940,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 				/* step the geodesic */
 				GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s),0);
 				//printf("First push photon\n");
-				if (GPU_stop_criterion(ph))
+				if (GPU_stop_criterion(state,ph))
 					break;
 
 				/* allow photon to interact with matter, */
@@ -956,6 +973,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 								dKi[3]);
 							//exit(1);
 							printf("The function should exit the code!");
+							return;
 						}
 					}
 
@@ -989,7 +1007,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 						bi = bf;
 					}
 
-					x1 = -log(GPU_monty_rand());
+					x1 = -log(GPU_monty_rand(state));
 					php.w = ph->w / bias;
 					if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 						if (isnan(php.w) || isinf(php.w)) {
@@ -1040,8 +1058,9 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 								&B, Ucon, Ucov, Bcon,
 								Bcov, d_p);
 						//printf("we are before the Ne<0 conditional\n");
+					
 						if (Ne > 0.) {
-							GPU_scatter_super_photon(ph, &php, Ne,
+							GPU_scatter_super_photon(state, ph, &php, Ne,
 										Thetae, B,
 										Ucon, Bcon,
 										Gcov);
@@ -1049,11 +1068,11 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 								return;
 							}
 							/*Modifying condition to true*/
-							condition = true;
+							//printf("It got recursive!\n");
+							//printf("Nstep = %d\n", nstep);
+							starting_recursion = true;
 							/*Saving local variables to a certain index*/
-							//printf("Beginning to copy local variables\n");
 							local_track_vars[recursive_index].bound_flag = bound_flag;
-							//printf("Now copying local arrays\n");
 							local_track_vars[recursive_index].dtau_scatt = dtau_scatt;
 							local_track_vars[recursive_index].dtau_abs = dtau_abs;
 							local_track_vars[recursive_index].dtau = dtau;
@@ -1088,21 +1107,27 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 							}
 
 							local_track_vars[recursive_index].nstep = nstep;
-
+							local_track_vars[recursive_index].php = php;
+							local_track_vars[recursive_index].ph = ph;
 							/*transfer content from php to ph*/
 							ph = &php;
 							/*Increasing the place in the list*/
+							//printf("Recursive_index = %d\n", recursive_index);
 							recursive_index++;
 							//printf("all the value for ph and php are updated\n");
 							//printf("recursive_index = %d\n", recursive_index);
+
 							continue;
 							//track_super_photon(&php);
 						}
+
 					}
 				}
 			}else{
-				recursive_round = false;
+				//printf("It's leaving recursion!\n");
+				jump_to_ending = false;
 				recursive_index--;
+				//printf("Recursive index = %d\n", recursive_index);
 				bound_flag = local_track_vars[recursive_index].bound_flag;
 				dtau_scatt = local_track_vars[recursive_index].dtau_scatt;
 				dtau_abs = local_track_vars[recursive_index].dtau_abs;
@@ -1124,6 +1149,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 				frac = local_track_vars[recursive_index].frac;
 				bias = local_track_vars[recursive_index].bias;
 				E0 = local_track_vars[recursive_index].E0;
+
 				for (int i = 0; i < NDIM; i++) {
 					Xi[i] = local_track_vars[recursive_index].Xi[i];
 					Ki[i] = local_track_vars[recursive_index].Ki[i];
@@ -1137,6 +1163,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 						Gcov[i][j]= local_track_vars[recursive_index].Gcov[i][j];
 				}
 				nstep = local_track_vars[recursive_index].nstep;
+				ph = local_track_vars[recursive_index].ph;
+				php = local_track_vars[recursive_index].php;
+
+				//printf("Nstep = %d\n", nstep);
 			}
 			if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 				if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
@@ -1196,7 +1226,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 		GPU_record_super_photon(ph);
 
 	if(recursive_index > 0){
-		recursive_round = true;
+		jump_to_ending = true;
 		goto recursive_round;
 	}
 	/* done! */
@@ -1332,7 +1362,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 //                     bi = bf;
 //                 }
 
-//                 x1 = -log(GPU_monty_rand());
+//                 x1 = -log(GPU_monty_rand(state));
 //                 php.w = current_ph->w / bias;
 //                 if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 //                     frac = x1 / (bias * dtau_scatt);
@@ -1482,7 +1512,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 
 // 	/* Initialize dK/dlam */
 // 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
-// 	while (!GPU_stop_criterion(ph)) {
+// 	while (!GPU_stop_criterion(state,ph)) {
 // 		/* Save initial position/wave vector */
 // 		Xi[0] = ph->X[0];
 // 		Xi[1] = ph->X[1];
@@ -1505,7 +1535,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 
 // 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s));
 
-// 		if (GPU_stop_criterion(ph))
+// 		if (GPU_stop_criterion(state,ph))
 // 			break;
 
 // 		/* allow photon to interact with matter, */
@@ -1575,7 +1605,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 // 				bi = bf;
 // 			}
 
-// 			x1 = -log(GPU_monty_rand());
+// 			x1 = -log(GPU_monty_rand(state));
 // 			php.w = ph->w / bias;
 // 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 // 				if (isnan(php.w) || isinf(php.w)) {
@@ -1764,7 +1794,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 
 // 		/* Initialize dK/dlam */
 // 		GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
-// 		while (!GPU_stop_criterion(ph)) {
+// 		while (!GPU_stop_criterion(state,ph)) {
 // 			/* Save initial position/wave vector */
 // 			Xi[0] = ph->X[0];
 // 			Xi[1] = ph->X[1];
@@ -1787,7 +1817,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 
 // 			GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s));
 
-// 			if (GPU_stop_criterion(ph))
+// 			if (GPU_stop_criterion(state,ph))
 // 				break;
 
 // 			/* allow photon to interact with matter, */
@@ -1859,7 +1889,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 // 					bi = bf;
 // 				}
 
-// 				x1 = -log(GPU_monty_rand());
+// 				x1 = -log(GPU_monty_rand(state));
 // 				php.w = ph->w / bias;
 // 				if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 // 					if (isnan(php.w) || isinf(php.w)) {
@@ -2569,7 +2599,7 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 
 	return;
 }
-__device__ int GPU_stop_criterion(struct of_photon *ph)
+__device__ int GPU_stop_criterion(curandStateMtgp32 *state, struct of_photon *ph)
 {
 	double wmin, X1min, X1max;
 
@@ -2588,7 +2618,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (GPU_monty_rand() <= 1. / ROULETTE) {
+			if (GPU_monty_rand(state) <= 1. / ROULETTE) {
 				//printf( "it's getting here 2\n");
 				ph->w *= ROULETTE;
 			} else
@@ -2599,7 +2629,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 	}
 
 	if (ph->w < wmin) {
-		if (GPU_monty_rand() <= 1. / ROULETTE) {
+		if (GPU_monty_rand(state) <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 			//printf( "it's getting here 4\n");
 		} else {
@@ -2703,94 +2733,204 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 //         /* done! */
 // }
 
+// __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
+// 		 double dl, double *E0, int n)
+// {
+//     double lconn[NDIM][NDIM][NDIM];
+// 	double Kcont[NDIM], K[NDIM], dK;
+// 	double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
+// 	double Gcov[NDIM][NDIM], E1;
+// 	double dl_2, err, errE;
+// 	int i, k, iter;
+//     do{
+
+// 	if (X[1] < d_startx[1])
+// 		return;
+
+// 	FAST_CPY(X, Xcpy);
+// 	FAST_CPY(Kcon, Kcpy);
+// 	FAST_CPY(dKcon, dKcpy);
+
+// 	dl_2 = 0.5 * dl;
+// 	/* Step the position and estimate new wave vector */
+// 	for (i = 0; i < NDIM; i++) {
+// 		dK = dKcon[i] * dl_2;
+// 		Kcon[i] += dK;
+// 		K[i] = Kcon[i] + dK;
+// 		X[i] += Kcon[i] * dl;
+// 	}
+
+// 	GPU_get_connection(X, lconn);
+
+// 	/* We're in a coordinate basis so take advantage of symmetry in the connection */
+// 	iter = 0;
+// 	do {
+// 		iter++;
+// 		FAST_CPY(K, Kcont);
+
+// 		err = 0.;
+// 		for (k = 0; k < 4; k++) {
+// 			dKcon[k] =
+// 			    -2. * (Kcont[0] *
+// 				   (lconn[k][0][1] * Kcont[1] +
+// 				    lconn[k][0][2] * Kcont[2] +
+// 				    lconn[k][0][3] * Kcont[3])
+// 				   +
+// 				   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
+// 					       lconn[k][1][3] * Kcont[3])
+// 				   + lconn[k][2][3] * Kcont[2] * Kcont[3]
+// 			    );
+
+// 			dKcon[k] -=
+// 			    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
+// 			     lconn[k][1][1] * Kcont[1] * Kcont[1] +
+// 			     lconn[k][2][2] * Kcont[2] * Kcont[2] +
+// 			     lconn[k][3][3] * Kcont[3] * Kcont[3]
+// 			    );
+
+// 			K[k] = Kcon[k] + dl_2 * dKcon[k];
+// 			err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+// 		}
+// 	} while (err > ETOL && iter < MAX_ITER);
+
+// 	FAST_CPY(K, Kcon);
+
+// 	GPU_gcov_func_hamr(X, Gcov);
+// 	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
+// 	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
+// 	errE = fabs((E1 - (*E0)) / (*E0));
+
+// 	if (n < 7
+// 	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
+// 		FAST_CPY(Xcpy, X);
+// 		FAST_CPY(Kcpy, Kcon);
+// 		FAST_CPY(dKcpy, dKcon);
+// 		dl = 0.5 * dl;
+// 		E1 = *E0;
+// 	}
+//     n++;
+// 	*E0 = E1;
+//     }while(n < 100 && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err)));
+
+//     if(n >= 100){
+//         printf("n = 7 in push photon function. Maybe the results are not right!\n");
+//         printf("errE should be < 1e-4:%le\n", errE);
+//         printf("err should be < %le (ETOL):%le\n", ETOL, err);
+//     }
+
+// 	/* done! */
+// }
+
+
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 		 double dl, double *E0, int n)
 {
-    double lconn[NDIM][NDIM][NDIM];
-	double Kcont[NDIM], K[NDIM], dK;
-	double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
-	double Gcov[NDIM][NDIM], E1;
-	double dl_2, err, errE;
-	int i, k, iter;
-    do{
+	bool second_recursion = false;
+	int dl_original = dl;
+	start_pushphoton_recursion:
+		double lconn[NDIM][NDIM][NDIM];
+		double Kcont[NDIM], K[NDIM], dK;
+		double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
+		double Gcov[NDIM][NDIM], E1;
+		double dl_2, err, errE;
+		int i, k, iter;
+		
 
-	if (X[1] < d_startx[1])
-		return;
+		if (X[1] < startx[1])
+			return;
 
-	FAST_CPY(X, Xcpy);
-	FAST_CPY(Kcon, Kcpy);
-	FAST_CPY(dKcon, dKcpy);
+		FAST_CPY(X, Xcpy);
+		FAST_CPY(Kcon, Kcpy);
+		FAST_CPY(dKcon, dKcpy);
 
-	dl_2 = 0.5 * dl;
-	/* Step the position and estimate new wave vector */
-	for (i = 0; i < NDIM; i++) {
-		dK = dKcon[i] * dl_2;
-		Kcon[i] += dK;
-		K[i] = Kcon[i] + dK;
-		X[i] += Kcon[i] * dl;
-	}
-
-	GPU_get_connection(X, lconn);
-
-	/* We're in a coordinate basis so take advantage of symmetry in the connection */
-	iter = 0;
-	do {
-		iter++;
-		FAST_CPY(K, Kcont);
-
-		err = 0.;
-		for (k = 0; k < 4; k++) {
-			dKcon[k] =
-			    -2. * (Kcont[0] *
-				   (lconn[k][0][1] * Kcont[1] +
-				    lconn[k][0][2] * Kcont[2] +
-				    lconn[k][0][3] * Kcont[3])
-				   +
-				   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
-					       lconn[k][1][3] * Kcont[3])
-				   + lconn[k][2][3] * Kcont[2] * Kcont[3]
-			    );
-
-			dKcon[k] -=
-			    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
-			     lconn[k][1][1] * Kcont[1] * Kcont[1] +
-			     lconn[k][2][2] * Kcont[2] * Kcont[2] +
-			     lconn[k][3][3] * Kcont[3] * Kcont[3]
-			    );
-
-			K[k] = Kcon[k] + dl_2 * dKcon[k];
-			err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+		dl_2 = 0.5 * dl;
+		/* Step the position and estimate new wave vector */
+		// fprintf(stderr, "iteration = %d\n", n);
+		// fprintf(stderr, "Inside Push Photon before X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", X[0], X[1], X[2], X[3]);
+		// fprintf(stderr, "Inside Push Photon before k[0] = %lf, k[1] = %lf, k[2] = %lf, k[3] = %lf\n", K[0], K[1], K[2], K[3]);
+		// fprintf(stderr, "dl = %lf, dKcon[0] = %lf, dKcon[1] = %lf, dKcon[2] = %lf, dKcon[3] = %lf\n", dl, dKcon[0], dKcon[1], dKcon[2], dKcon[3]);
+		for (i = 0; i < NDIM; i++) {
+			dK = dKcon[i] * dl_2;
+			Kcon[i] += dK;
+			K[i] = Kcon[i] + dK;
+			X[i] += Kcon[i] * dl;
 		}
-	} while (err > ETOL && iter < MAX_ITER);
+		// fprintf(stderr, "Inside Push Photon after X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", X[0], X[1], X[2], X[3]);
+		// fprintf(stderr, "Inside Push Photon after k[0] = %lf, k[1] = %lf, k[2] = %lf, k[3] = %lf\n", K[0], K[1], K[2], K[3]);
 
-	FAST_CPY(K, Kcon);
+		// if(omp_get_thread_num() == 0){
+		// 	fprintf(stderr, "X1 after = %le, K1 after = %le\n", X[1], K[1]);
+		// }
+		GPU_get_connection(X, lconn);
 
-	GPU_gcov_func_hamr(X, Gcov);
-	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
-	errE = fabs((E1 - (*E0)) / (*E0));
+		/* We're in a coordinate basis so take advantage of symmetry in the connection */
+		iter = 0;
+		do {
+			iter++;
+			FAST_CPY(K, Kcont);
 
-	if (n < 7
-	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
-		FAST_CPY(Xcpy, X);
-		FAST_CPY(Kcpy, Kcon);
-		FAST_CPY(dKcpy, dKcon);
-		E1 = *E0;
-	}
-    n++;
-	*E0 = E1;
-    }while(n < 100 && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err)));
+			err = 0.;
+			for (k = 0; k < 4; k++) {
+				dKcon[k] =
+					-2. * (Kcont[0] *
+					(lconn[k][0][1] * Kcont[1] +
+						lconn[k][0][2] * Kcont[2] +
+						lconn[k][0][3] * Kcont[3])
+					+
+					Kcont[1] * (lconn[k][1][2] * Kcont[2] +
+							lconn[k][1][3] * Kcont[3])
+					+ lconn[k][2][3] * Kcont[2] * Kcont[3]
+					);
 
-    if(n >= 100){
-        printf("n = 7 in push photon function. Maybe the results are not right!\n");
-        printf("errE should be < 1e-4:%le\n", errE);
-        printf("err should be < %le (ETOL):%le\n", ETOL, err);
-    }
+				dKcon[k] -=
+					(lconn[k][0][0] * Kcont[0] * Kcont[0] +
+					lconn[k][1][1] * Kcont[1] * Kcont[1] +
+					lconn[k][2][2] * Kcont[2] * Kcont[2] +
+					lconn[k][3][3] * Kcont[3] * Kcont[3]
+					);
+
+				K[k] = Kcon[k] + dl_2 * dKcon[k];
+				err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+			}
+		} while (err > ETOL && iter < MAX_ITER);
+
+		FAST_CPY(K, Kcon);
+
+		GPU_gcov_func_hamr(X, Gcov);
+
+		E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
+			Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
+		errE = fabs((E1 - (*E0)) / (*E0));
+
+		if (n < 7
+			&& (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
+			second_recursion = false;
+			FAST_CPY(Xcpy, X);
+			FAST_CPY(Kcpy, Kcon);
+			FAST_CPY(dKcpy, dKcon);
+			dl =* 0.5;
+			n++;
+			goto start_pushphoton_recursion;
+			// push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
+			// push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
+		}
+		if(n > 0){
+			dl= dl_original/pow(2., n);
+			n--;
+			second_recursion = true;
+			goto start_pushphoton_recursion;
+		}
+		if(second_recursion){
+			second_recursion = false;
+			E1 = *E0;
+		}
+
+		*E0 = E1;
 
 	/* done! */
 }
 
-__device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,
+__device__ void GPU_scatter_super_photon(curandStateMtgp32 *state, struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
 			  double Gcov[NDIM][NDIM])
@@ -2858,11 +2998,11 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 	}
 
 	/* find the electron that we collided with */
-	GPU_sample_electron_distr_p(K_tetrad, P, Thetae);
+	GPU_sample_electron_distr_p(state, K_tetrad, P, Thetae);
 
 	/* given electron momentum P, find the new
 	   photon momentum Kp */
-	GPU_sample_scattered_photon(K_tetrad, P, K_tetrad_p);
+	GPU_sample_scattered_photon(state, K_tetrad, P, K_tetrad_p);
 
 
 	/* transform back to coordinate frame */
@@ -2929,7 +3069,7 @@ __device__ void GPU_coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM]
 		    Ecov[k][2] * K[2] + Ecov[k][3] * K[3];
 	}
 }
-__device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae)
+__device__ void GPU_sample_electron_distr_p(curandStateMtgp32 *state, double k[4], double p[4], double Thetae)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -2939,8 +3079,8 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	double v2x, v2y, v2z;
 	int sample_cnt = 0;
 	do {
-		GPU_sample_beta_distr(Thetae, &gamma_e, &beta_e);
-		mu = GPU_sample_mu_distr(beta_e);
+		GPU_sample_beta_distr(state, Thetae, &gamma_e, &beta_e);
+		mu = GPU_sample_mu_distr(state, beta_e);
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -2970,7 +3110,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 						   log(1. + 2. * K));
 		}
 
-		x1 = GPU_monty_rand();
+		x1 = GPU_monty_rand(state);
 
 		sample_cnt++;
 
@@ -2996,7 +3136,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	/* pick zero-angle for coordinate system */
 	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction(&n0x, &n0y, &n0z);
+	generate_random_direction(state, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */
@@ -3018,7 +3158,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
-	phi = GPU_monty_rand() * 2. * M_PI;	/* orient uniformly */
+	phi = GPU_monty_rand(state) * 2. * M_PI;	/* orient uniformly */
 	sphi = sinf(phi);
 	cphi = cosf(phi);
 	cth = mu;
@@ -3042,12 +3182,12 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	return;
 }
-__device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
+__device__ void GPU_sample_beta_distr(curandStateMtgp32 *state, double Thetae, double *gamma_e, double *beta_e)
 {
 	double y;
 
 	/* checked */
-	y = GPU_sample_y_distr(Thetae);
+	y = GPU_sample_y_distr(state, Thetae);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -3056,7 +3196,7 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
 	return;
 
 }
-__device__ double GPU_sample_y_distr(double Thetae)
+__device__ double GPU_sample_y_distr(curandStateMtgp32 *state, double Thetae)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -3073,36 +3213,33 @@ __device__ double GPU_sample_y_distr(double Thetae)
 	pi_4 /= S_3;
 	pi_5 /= S_3;
 	pi_6 /= S_3;
-
 	do {
-		x1 = GPU_monty_rand();
-
+		x1 = GPU_monty_rand(state);
 		if (x1 < pi_3) {
-			x = generate_chi_square(3);
+			x = generate_chi_square(state, 3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = generate_chi_square(4);
+			x = generate_chi_square(state, 4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = generate_chi_square(5);
+			x = generate_chi_square(state, 5);
 		} else {
-			x = generate_chi_square(6);
+			x = generate_chi_square(state, 6);
 		}
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = GPU_monty_rand();
+		x2 = GPU_monty_rand(state);
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
 		prob = num / den;
 
 	} while (x2 >= prob);
-
 	return (y);
 }
-__device__ double generate_chi_square(int df) {
-        return chi_square(&my_curand_state, df);
+__device__ double generate_chi_square(curandStateMtgp32 *state, int df) {
+        return chi_square(state, df);
 }
 __device__ double chi_square(curandStateMtgp32 *state, int df) {
     double sum = 0.0f;
@@ -3112,18 +3249,18 @@ __device__ double chi_square(curandStateMtgp32 *state, int df) {
     }
     return sum;
 }
-__device__ double GPU_sample_mu_distr(double beta_e)
+__device__ double GPU_sample_mu_distr(curandStateMtgp32 *state, double beta_e)
 {
 	double mu, x1, det;
 
-	x1 = GPU_monty_rand();
+	x1 = GPU_monty_rand(state);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	if (det < 0.)
 		printf("det < 0  %g %g\n\n", beta_e, x1);
 	mu = (1. - sqrt(det)) / beta_e;
 	return (mu);
 }
-__device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4])
+__device__ void GPU_sample_scattered_photon(curandStateMtgp32 *state, double k[4], double p[4], double kp[4])
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -3136,11 +3273,11 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 
 	GPU_boost(k, p, ke);
 	if (ke[0] > 1.e-4) {
-		k0p = GPU_sample_klein_nishina(ke[0]);
+		k0p = GPU_sample_klein_nishina(state, ke[0]);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
-		cth = GPU_sample_thomson();
+		cth = GPU_sample_thomson(state);
 	}
 	sth = sqrt(fabs(1. - cth * cth));
 
@@ -3153,7 +3290,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
 	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction(&n0x, &n0y, &n0z);
+	generate_random_direction(state, &n0x, &n0y, &n0z);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -3176,7 +3313,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * GPU_monty_rand();	
+	phi = 2. * M_PI * GPU_monty_rand(state);	
 	sphi = sinf(phi);
 	cphi = cosf(phi);
 
@@ -3243,20 +3380,20 @@ __device__ void GPU_boost(double v[4], double u[4], double vp[4])
 	    (1. + n3 * n3 * gm1) * v[3];
 
 }
-__device__ double GPU_sample_thomson()
+__device__ double GPU_sample_thomson(curandStateMtgp32 *state)
 {
 	double x1, x2;
 
 	do {
 
-		x1 = 2. * GPU_monty_rand() - 1.;
-		x2 = (3. / 4.) * GPU_monty_rand();
+		x1 = 2. * GPU_monty_rand(state) - 1.;
+		x2 = (3. / 4.) * GPU_monty_rand(state);
 
 	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
 
 	return (x1);
 }
-__device__ double GPU_sample_klein_nishina(double k0)
+__device__ double GPU_sample_klein_nishina(curandStateMtgp32 *state,double k0)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	int n = 0;
@@ -3268,12 +3405,12 @@ __device__ double GPU_sample_klein_nishina(double k0)
 	do {
 
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * GPU_monty_rand();
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * GPU_monty_rand(state);
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= GPU_monty_rand();
+		x1 *= GPU_monty_rand(state);
 
 		n++;
 
@@ -3290,10 +3427,10 @@ __device__ double GPU_klein_nishina(double a, double ap)
 
 	return (kn);
 }
-__device__ void generate_random_direction(double * x, double *y, double *z) {
-    double u = curand_normal(&my_curand_state);
-    double v = curand_normal(&my_curand_state);
-    double w = curand_normal(&my_curand_state);
+__device__ void generate_random_direction(curandStateMtgp32 *state, double * x, double *y, double *z) {
+    double u = curand_normal(state);
+    double v = curand_normal(state);
+    double w = curand_normal(state);
     double length = sqrt(u*u + v*v + w*w);
     *x = u / length;
     *y = v / length;
