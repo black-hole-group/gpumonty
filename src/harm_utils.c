@@ -537,6 +537,12 @@ void init_geometry()
 			coord_hamr(i, j, k, CENT, X);
 			//fprintf(stderr, "i = %d, j = %d, k = %d, X= %lf %lf %lf %lf\n", i, j, k, X[0], X[1], X[2], X[3]);
 			gcov_func_hamr(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
+			// for(int k = 0;k < NDIM; k++)  for(int l = 0; l <NDIM; l++){ 
+			// 	printf("Early (%d, %d)gcov[%d][%d] = %le\n",i,j, k, l, geom[SPATIAL_INDEX2D(i,j)].gcov[k][l]);
+			// 	if(j > 15){
+			// 		goto here;
+			// 	}
+			// }
 			#else
 			coord(i, j, X);
 			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
@@ -555,7 +561,7 @@ void init_geometry()
 			}
 		}
 	}
-
+	//here:
 	/* done! */
 }
 

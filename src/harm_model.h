@@ -65,7 +65,6 @@ extern double * d_p;
 extern double ***d_ne;
 extern double ***d_thetae;
 extern double ***d_b;
-
 /* HARM model internal utilities */
 void init_weight_table(void);
 void bl_coord(double *X, double *r, double *th);

@@ -334,6 +334,7 @@ void gcov_func_hamr(double *X, double gcovp[][NDIM])
 	double sth, cth, s2, rho2;
 	double del[NDIM];
 	double r, th, phi;
+	double a = 0.9375;
 	double tilt = TILT_ANGLE / 180.*M_PI;
 	//fprintf(stderr, "X = %lf, %lf, %lf, %lf\n", X[0], X[1], X[2], X[3]);
 

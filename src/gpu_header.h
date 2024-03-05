@@ -56,7 +56,7 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 // extern __device__ double d_a;
 
 /*Testing functions*/
-__global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int * super_photon_made);
+__global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int * super_photon_made, struct of_spectrum* d_spect);
 __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p);
 __device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p);
 __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom *d_geom, double *d_p);
@@ -83,7 +83,7 @@ __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
 __device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dnmax, struct of_geom *d_geom, double *d_p);
 
 /*track super photon and its dependencies*/
-__device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photon *ph, double *d_p, struct local_track_var * local_track_vars);
+__device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photon *ph, double *d_p, struct local_track_var * local_track_vars, int recursive_index, double * d_table_ptr, struct of_spectrum* d_spect);
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
                                      double *Thetae, double *B, double Ucon[NDIM],
                                      double Ucov[NDIM], double Bcon[NDIM],
@@ -100,7 +100,7 @@ __device__ void GPU_LU_substitution(double A[][NDIM], double B[], int permute[])
 __device__ int GPU_invert_matrix(double Am[][NDIM], double Aminv[][NDIM]);
 __device__ void GPU_gcon_func_hamr(double gcov[][NDIM], double gcon[][NDIM]);
 __device__ double GPU_get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
-__device__ double GPU_alpha_inv_scatt(double nu, double Thetae, double Ne);
+__device__ double GPU_alpha_inv_scatt(double nu, double Thetae, double Ne, double * d_table_ptr);
 __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double B,
                                     double theta);
 __device__ double GPU_bias_func(double Te, double w);
@@ -130,10 +130,10 @@ __device__ void generate_random_direction(curandStateMtgp32 *state, double * x, 
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]);
 __device__ void GPU_get_connection(double X[4], double lconn[4][4][4]);
 __device__ int GPU_record_criterion(struct of_photon *ph);
-__device__ void GPU_record_super_photon(struct of_photon *ph);
+__device__ void GPU_record_super_photon(struct of_photon *ph, struct of_spectrum* d_spect);
 __device__ void omp_reduce_spect_kernel(struct of_spectrum *spect, struct of_spectrum *shared_spect);
 __device__ double atomicMax_double(double* address, double val);
-__device__ double GPU_kappa_es(double nu, double Thetae);
+__device__ double GPU_kappa_es(double nu, double Thetae, double * d_table_ptr);
 __device__ double GPU_total_compton_cross_num(double w, double thetae);
 __device__ double GPU_dNdgammae(double thetae, double gammae);
 __device__ double GPU_boostcross(double w, double mue, double gammae);
@@ -145,6 +145,6 @@ __device__ double bessk1(double xbess);
 __device__ double bessk2(double xbess);
 __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, double theta);
 __device__ double GPU_Bnu_inv(double nu, double Thetae);
-__device__ double GPU_total_compton_cross_lkup(double w, double thetae);
+__device__ double GPU_total_compton_cross_lkup(double w, double thetae, double * d_table_ptr);
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/

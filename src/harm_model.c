@@ -8,7 +8,8 @@
 
 struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 
-#pragma omp threadprivate(spect)
+/*TODO: CHECK THE CONDITION BELOW FOR OUTPUTING SPECT*/
+//#pragma omp threadprivate(spect)
 
 /*
 
@@ -804,7 +805,7 @@ void omp_reduce_spect()
 
 #define SPECTRUM_FILE_NAME	"./output/grmonty_hamr.spec"
 
-void report_spectrum(int N_superph_made)
+void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS])
 {
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;
@@ -839,7 +840,7 @@ void report_spectrum(int N_superph_made)
 
 			nuLnu *= spect[j][i].dEdlE;
 			nuLnu /= LSUN;
-
+			fprintf(stderr, "nuLnu = %le, spect[j][i].dEdlE = %le,\n", nuLnu, spect[j][i].dEdlE);
 			tau_scatt =
 			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
 						     SMALL);

@@ -11,7 +11,7 @@ LDFLAGS = -lm -lgsl -lgslcblas -fopenmp
 
 # NVCC compiler and flags
 NVCC = nvcc
-NVCCFLAGS = -g -arch=compute_60 -code=sm_60 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -c 
+NVCCFLAGS = -g -arch=compute_75 -code=sm_75 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -c 
 EXTRALIBS = -lm -L /usr/local/cuda/lib64  -lstdc++ -lcudart -lcuda 
 
 # Source files
