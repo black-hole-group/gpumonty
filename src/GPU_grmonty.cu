@@ -47,7 +47,6 @@ __global__ void test_struct_data2(){
 
 void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Copying global variables*/
-	int threads_number = 1;
 	int seed = 139 + time;
 	struct of_spectrum spect[N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
@@ -72,11 +71,11 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
-	size_t limit = 0;
+	//size_t limit = 0;
 	//cudaDeviceSetLimit(cudaLimitStackSize, 1024);
-	cudaDeviceSetLimit(cudaLimitStackSize, 16384);
-    cudaDeviceGetLimit(&limit, cudaLimitStackSize);
-    printf("cudaLimitStackSize: %u\n", (unsigned)limit);
+	//cudaDeviceSetLimit(cudaLimitStackSize, 16384);
+    //cudaDeviceGetLimit(&limit, cudaLimitStackSize);
+    //printf("cudaLimitStackSize: %u\n", (unsigned)limit);
 	// Allocate device memory
     double *d_table_ptr;
     gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
@@ -115,10 +114,11 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
     curandMakeMTGP32Constants(mtgp32dc_params_fast_11213, devKernelParams);
     /* Initialize one state per thread block */
     curandMakeMTGP32KernelState(devMTGPStates,
-                mtgp32dc_params_fast_11213, devKernelParams, threads_number, seed);
+                mtgp32dc_params_fast_11213, devKernelParams, N_THREADS, seed);
 
 	/*Calling the main function*/
-    GPU_mainloop<<<1,threads_number>>>(devMTGPStates, ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu, d_spect);
+    GPU_mainloop<<<1,N_THREADS>>>(devMTGPStates, ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu, d_spect);
+	cudaDeviceSynchronize();
 	cudaMemcpyErrorCheck(&N_superph_made_cpu, N_superph_made_gpu, sizeof(int), cudaMemcpyDeviceToHost);
     //cudaMemcpy(&N_superph_made_cpu, N_superph_made_gpu, sizeof(int), cudaMemcpyDeviceToHost);
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
@@ -157,10 +157,11 @@ __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time
 	d_N_superph_recorded = 0;
 	time_t starttime = time;
 	time_t currtime;
+	int zi = 0;
     while(1){
         /*First thing we should do is make super photon*/
         if (!quit_flag){
-            GPU_make_super_photon(state, &d_ph, &quit_flag, d_geom, d_p);
+            GPU_make_super_photon(state, &d_ph, &quit_flag, d_geom, d_p, &zi);
         }
 
 			//printf("quit_flag after= %d", quit_flag);
@@ -171,50 +172,33 @@ __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time
 			/* push them around */
 			//printf("it is doing its thing\n");
  			
-			GPU_track_super_photon(state, &d_ph, d_p, local_track_vars, 0, d_table_ptr, d_spect);
+			//GPU_track_super_photon(state, &d_ph, d_p, local_track_vars, 0, d_table_ptr, d_spect);
 
 			/* step */
-		 	atomicAdd(super_photon_made, 1);
-
-			/* give interim reports on rates */
-			// if (((int) (N_superph_made)) % 100000 == 0
-			// 	&& N_superph_made > 0) {
-			// 	printf("time %g, rate %g ph/s\n",
-			// 		(double) (currtime - starttime),
-			// 		*N_superph_made / (currtime -
-			// 				starttime));
-			// 	}
+		 	//atomicAdd(super_photon_made, 1);
 			}
-		// printf("Final time %g, rate %g ph/s\n",
-		// 	(double) (currtime - starttime),
-		// for (int i = 0; i < N_EBINS; i++)for (int j = 0; j < N_THBINS; j++) {
-		// 	if (isnan(d_spect[j + i*N_THBINS].dNdlE))
-		// 	d_spect[j+i*N_THBINS].dNdlE = 0;
-		// 	printf("spect[%d][%d].dNdlE = %le\n",j, i, d_spect[j + i*N_THBINS].dNdlE);
-
-
-		// }
-		// printf("should have printed\n");
-		/*Variables that should be passed to host memory:*/
-
 
 }
-__device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p)
+__device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p, int * zi)
 {
     int n2gen = -1;
     double dnmax;
     int zone_i, zone_j, zone_k;
 
+	/*if the number of photons is not negative, e.g there are super photons in the zone
+	then, continue the program, e.g, sample the zone photon and then pushes, this function is only checking the need to generate this zone photon
+	*/
 	while (n2gen <= 0) {
-		n2gen = GPU_get_zone(state, &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p);
+		n2gen = GPU_get_zone(state, &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p, zi);
 	}
 
 	n2gen--;
+	/*Before continue sampleing the zone photon, check if we reached the final radial zone
+	if so, just leave the program.*/
 	if (zone_i == d_N1)
 		*quit_flag = 1;
 	else
 		*quit_flag = 0;
-
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
 		GPU_sample_zone_photon(state, zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p);
@@ -222,13 +206,24 @@ __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon
 
 	return;
 }
-__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p)
+__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p, int * zi)
 {
 /* Return the next zone and the number of superphotons that need to be		*
  * generated in it.								*/
 	int in2gen;
 	double n2gen;
-	static int zi = 0;
+	int tid = threadIdx.x;
+	int offset = 0;
+	// The fact this is static int means it is only set to 0 when function is called first time
+	// meanwhile, the value is updated and kept in memory
+	//TODO: Gotta check if max_threads is N_THREADS -1
+	if (tid == N_THREADS - 1){
+		offset = d_N1%N_THREADS;
+	}	
+	//static int zi = -1;
+	if (*zi == 0){
+		*zi = (int)(d_N1/N_THREADS) * threadIdx.x;
+	}
 	static int zj = 0;
 	static int zk = -1;
 	zone_flag = 1;
@@ -238,25 +233,23 @@ __device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, do
 		zj++;
 		if (zj >= d_N2) {
 			zj = 0;
-			printf( "zi = %d\n", zi);
-			zi++;
-			if (zi >= d_N1) {
+			*zi = *zi + 1;
+			if (*zi >= ((d_N1/N_THREADS * tid) + d_N1/N_THREADS) + offset) {
 				in2gen = 1;
 				*i = d_N1;
 				return 1;
 			}
 		}
 	}
-
-	GPU_init_zone(zi, zj, zk, &n2gen, dnmax, d_geom, d_p);
-
+	GPU_init_zone(*zi, zj, zk, &n2gen, dnmax, d_geom, d_p);
+	/*in2gen is the number of photons that need to be generated in the next zone*/
 	if (fmod(n2gen, 1.) > GPU_monty_rand(state)) {
 		in2gen = (int) n2gen + 1;
 	} else {
 		in2gen = (int) n2gen;
 	}
 
-	*i = zi;
+	*i = *zi;
 	*j = zj;
 	*k = zk;
 
@@ -283,6 +276,7 @@ __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, i
 	GPU_get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	/* Sample from superphoton distribution in current simulation zone */
+
 	do {
 		nu = exp(GPU_monty_rand(state) * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
@@ -290,6 +284,7 @@ __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, i
 		 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 	ph->w = weight;
 	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+
 	do {
 		cth = 2. * GPU_monty_rand(state) - 1.;
 		th = acos(cth);
@@ -342,8 +337,6 @@ __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, i
 
 __device__ double GPU_monty_rand(curandStateMtgp32 *state) {
 	int tid = (blockDim.x * blockDim.y * threadIdx.z) + (blockDim.x * threadIdx.y) + threadIdx.x;
-	//printf("state = %g\n", &state[tid]);
-	//printf("Curand = %le\n",curand_uniform_double(&state[tid]));
 	return curand_uniform_double(&state[tid]);
 }
 
@@ -458,7 +451,6 @@ __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thet
 }
 __device__ static double GPU_linear_interp_weight(double nu)
 {
-
 	int i;
 	double di, lnu;
 	double lnu_max = log(NUMAX);
@@ -479,18 +471,13 @@ __device__ double GPU_F_eval(double Thetae, double Bmag, double nu)
 	__device__ double GPU_linear_interp_F(double);
 
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
-
 	if (K > KMAX) {
-		//printf( "K > Kmax\n");
 		return 0.;
 	} else if (K < KMIN) {
 		/* use a good approximation */
 		x = pow(K, 0.333333333333333333);
-		//printf( "K < Kmin// x= %le\n", x);
-
 		return (x * (37.67503800178 + 2.240274341836 * x));
 	} else {
-		//printf( "normal print K = %le, nu = %le, Bmag = %le, Thetae = %le\n", K, nu, Bmag, Thetae);
 		return GPU_linear_interp_F(K);
 	}
 }
@@ -510,14 +497,15 @@ __device__ double GPU_linear_interp_F(double K)
 {
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
+	double result;
 	int i;
 	double di, lK;
 	lK = log(K);
 	di = (lK - lK_min) * dlK;
 	i = (int) di;
 	di = di - i;
-
-	return exp((1. - di) * d_F[i] + di * d_F[i + 1]);
+	result = exp((1. - di) * d_F[i] + di * d_F[i + 1]);
+	return result;
 }
 __device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
@@ -742,7 +730,6 @@ __device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dn
 	double Ucon[NDIM], Bcon[NDIM];
 	double lb_min = log(BTHSQMIN);
 	double dlb = log(BTHSQMAX / BTHSQMIN) / NINT;
-	
 	double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
