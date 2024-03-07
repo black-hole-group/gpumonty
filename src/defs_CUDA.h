@@ -70,12 +70,14 @@ __device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
 __device__ 	int zone_flag;
+__device__ double d_hslope = 0;
+__device__ double d_R0 = 0;
 
 #define d_lmint     (log10(MINT))
 #define d_lminw     (log10(MINW))
 #define d_lT_min    (log(TMIN))
 #define d_dlw       (log10(MAXW / MINW) / NW)
-#define d_dlT       (log10(MAXT / MINT) / NT)
+#define d_dlT       (1/(log(TMAX / TMIN) / (N_ESAMP)))
 
 #define REF_2 (1)
 #define TILT_ANGLE (0.0)

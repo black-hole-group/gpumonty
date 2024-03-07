@@ -107,6 +107,7 @@ void init_harm_data(char *fname)
 	fscanf(fp, "%lf ", &R0);
 	N3 = 1;
 	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
+	fprintf(stderr, "hslope = %le\n", hslope);
 	/* nominal non-zero values for axisymmetric simulations */
 	startx[0] = 0.;
 	startx[3] = 0.;
@@ -153,12 +154,12 @@ void init_harm_data(char *fname)
 		}
 
 		fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf",
-		       &p[KRHO][k],
-		       &p[UU][k],
-		       &p[U1][k],
-		       &p[U2][k],
-		       &p[U3][k],
-		       &p[B1][k], &p[B2][k], &p[B3][k]);
+		       &p[NPRIM_INDEX(KRHO,k)],
+		       &p[NPRIM_INDEX(UU,k)],
+		       &p[NPRIM_INDEX(U1,k)],
+		       &p[NPRIM_INDEX(U2,k)],
+		       &p[NPRIM_INDEX(U3,k)],
+		       &p[NPRIM_INDEX(B1,k)], &p[NPRIM_INDEX(B2,k)], &p[NPRIM_INDEX(B3,k)]);
 
 
 		fscanf(fp, "%lf", &divb);
@@ -178,15 +179,15 @@ void init_harm_data(char *fname)
 		fscanf(fp, "%lf\n", &gdet);
 
 		bias_norm +=
-		    dV * gdet * pow(p[UU][k] / p[KRHO][k] *
+		    dV * gdet * pow(p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)] *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
 
 		/* check accretion rate */
 		if (i <= 20)
-			dMact += gdet * p[KRHO][k] * Ucon[1];
+			dMact += gdet * p[NPRIM_INDEX(KRHO,k)] * Ucon[1];
 		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][k] * Ucon[1] * Ucov[0];
+			Ladv += gdet * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucov[0];
 
 	}
 
@@ -197,6 +198,12 @@ void init_harm_data(char *fname)
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
 
+	for (int i = 0; i < N1 * N2 * N3; i++){
+		int z = i % N2;
+		int y = (i - z) / N2;
+		if(y == 13 && z == 43)
+		printf("Ne(%d, %d)(%d) = %le\n",y, z, i, p[NPRIM_INDEX(KRHO, i)]);
+	}
 
 	/* done! */
 

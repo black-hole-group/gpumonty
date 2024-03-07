@@ -56,18 +56,19 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 // extern __device__ double d_a;
 
 
-#define N_THREADS 2
+#define N_THREADS 1
 /*Testing functions*/
 __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int * super_photon_made, struct of_spectrum* d_spect);
-__device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi);
-__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi);
+__device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par);
+__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par);
 __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom *d_geom, double *d_p);
 __device__ void GPU_init_monty_rand(int seed);
-__device__ double GPU_monty_rand(curandStateMtgp32 *state);
+__device__ double GPU_monty_rand();
 __device__ void GPU_coord_hamr(int i, int j, int z, int loc, double *X);
 __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
                                    double Ucon[NDIM], double Bcon[NDIM], struct of_geom *d_geom, double *d_p);
 __device__ static double GPU_linear_interp_weight(double nu);
+__device__ void GPU_coord(int i, int j, double *X);
 __device__ double GPU_F_eval(double Thetae, double Bmag, double nu);
 __device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
@@ -82,7 +83,7 @@ __device__ double GPU_linear_interp_F(double K);
 __device__ double GPU_K2_eval(double Thetae);
 __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM]);
 __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
-__device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dnmax, struct of_geom *d_geom, double *d_p);
+__device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dnmax, struct of_geom *d_geom, double *d_p, int d_Ns_par);
 
 /*track super photon and its dependencies*/
 __device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photon *ph, double *d_p, struct local_track_var * local_track_vars, int recursive_index, double * d_table_ptr, struct of_spectrum* d_spect);
@@ -150,3 +151,6 @@ __device__ double GPU_Bnu_inv(double nu, double Thetae);
 __device__ double GPU_total_compton_cross_lkup(double w, double thetae, double * d_table_ptr);
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/
+__device__ void GPU_gcon_func(double *X, double gcon[][NDIM]);
+__device__ void GPU_gcov_func(double *X, double gcov[][NDIM]);
+__device__ void GPU_bl_coord(double *X, double *r, double *th);

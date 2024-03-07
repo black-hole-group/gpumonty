@@ -28,13 +28,23 @@
 
 #define WEIGHT_MIN	(1e31)
 
-#define HAMR (1)
+#define HAMR (0)
 #define HAMR3D (0) /* Leave it equal 0 to do HAMR2D */
 
 
 /*Setting units for the problem*/
-#define MBH (10) /*In solar UNITs*/
-#define M_UNIT (3.2e10) /*Try to find rho_scale as this parameter*/
+#if(HAMR)
+#define MBH (10)/*In solar UNITs*/
+#else
+#define MBH (4e6)/*In solar UNITs*/
+#endif
+
+#if(HAMR)
+#define M_UNIT (3.2e10)
+#else
+#define M_UNIT (4.e19) /*Try to find rho_scale as this parameter*/
+#endif
+
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
 #define T_UNIT (L_UNIT/CL) /*UNIT of time*/
 #define RHO_UNIT (M_UNIT / pow(L_UNIT, 3)) /* UNIT of density*/
