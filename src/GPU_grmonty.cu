@@ -76,7 +76,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
 	size_t limit = 0;
-	cudaDeviceSetLimit(cudaLimitStackSize, 4096);
+	cudaDeviceSetLimit(cudaLimitStackSize, 8192);
 	//cudaDeviceSetLimit(cudaLimitStackSize, 8192);
 	//cudaDeviceSetLimit(cudaLimitStackSize, 16384);
     //cudaDeviceGetLimit(&limit, cudaLimitStackSize);
@@ -126,7 +126,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaDeviceSynchronize();
 	cudaMemcpyErrorCheck(&N_superph_made_cpu, N_superph_made_gpu, sizeof(int), cudaMemcpyDeviceToHost);
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
-
+	//printf("N_superph_made_gpu = %d\n", N_superph_made_cpu);
 	report_spectrum(N_superph_made_cpu, spect);
 	
 	cudaError_t cudaStatus;
@@ -181,11 +181,13 @@ __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time
 			}
 
 }
+int zone_i, zone_j, zone_k;
 __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par)
 {
-    int n2gen = -1;
-    double dnmax;
-    int zone_i, zone_j, zone_k;
+	static int n2gen = -1;
+	static double dnmax;
+	static int zone_i, zone_j, zone_k;
+
 
 	/*if the number of photons is not negative, e.g there are super photons in the zone
 	then, continue the program, e.g, sample the zone photon and then pushes, this function is only checking the need to generate this zone photon
@@ -1346,9 +1348,6 @@ __device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photo
 		dl = GPU_stepsize(ph->X, ph->K);
 
 		/* step the geodesic */
-		// printf("before pushing photon: X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3]);
-		// printf("Outside Push Photon function dl = %lf, dKcon[0] = %lf, dKcon[1] = %lf, dKcon[2] = %lf, dKcon[3] = %lf\n", dl, ph->dKdlam[0], ph->dKdlam[1], ph->dKdlam[2], ph->dKdlam[3]);
-
 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
 
 		if (GPU_stop_criterion(state, ph))
@@ -1356,19 +1355,11 @@ __device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photo
 
 		/* allow photon to interact with matter, */
 		#if(HAMR)
-		// for(int i = 0; i < NDIM; i++)
-		// for(int j = 0; j < NDIM; j++){
-		// printf("Gcov[%d][%d] = %lf\n", i, j, Gcov[i][j]);
-		// }
 		GPU_gcov_func_hamr(ph->X, Gcov);
-		// printf("X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", ph->X[0], ph->X[1], ph->X[2], ph->X[3]);
-		// for(int i = 0; i < NDIM; i++)
-		// for(int j = 0; j < NDIM; j++){
-		// printf("Gcov[%d][%d] = %lf\n", i, j, Gcov[i][j]);
-		// }
 		#else
 		GPU_gcov_func(ph->X, Gcov);
 		#endif
+
 		GPU_get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
 				 Bcon, Bcov, d_p);
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
@@ -1429,8 +1420,8 @@ __device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photo
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-			if(recursive_index == 0)
-			//printf("bias = %le, dtau_scatt = %le, dl = %le, php.w = %le, x1 = %le\n", bias, dtau_scatt, dl, php.w, x1);
+
+			/*I believe this is the section to consider scaterring, if bias * dtau_scatt > x1 and weight is high enough*/
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
@@ -1494,7 +1485,6 @@ __device__ void GPU_track_super_photon(curandStateMtgp32 *state, struct of_photo
 						return;
 					}
 					recursive_index++;
-					//printf("it got recursive (%d)\n", recursive_index);
 					GPU_track_super_photon(state, &php, d_p, local_track_vars, recursive_index, d_table_ptr, d_spect);
 				}
 				recursive_index--;
@@ -3302,6 +3292,7 @@ __device__ double atomicMax_double(double* address, double val) {
 
     return __longlong_as_double(old);
 }
+
 /* return electron scattering opacity, in cgs */
 __device__ double GPU_kappa_es(double nu, double Thetae,  double * d_table_ptr)
 {

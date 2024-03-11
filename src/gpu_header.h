@@ -56,7 +56,7 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 // extern __device__ double d_a;
 
 
-#define N_THREADS 1
+#define N_THREADS 16
 /*Testing functions*/
 __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int * super_photon_made, struct of_spectrum* d_spect);
 __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par);
