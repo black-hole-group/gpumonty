@@ -143,6 +143,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaFree(d_table_ptr);
 	cudaFree(local_track_vars);
 }
+/*this introduces shared variable zi, this will tell you in which zone_i you are*/
 
 
 __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom * d_geom, double * d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int *super_photon_made, struct of_spectrum* d_spect)
@@ -157,7 +158,7 @@ __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time
 	d_N_superph_recorded = 0;
 	int tid = threadIdx.x;
 	int seed = 139 * tid + time;
-	int zi = 0;
+	int zi = threadIdx.x;
 	int d_Ns_par = d_Ns;
 	GPU_init_monty_rand(seed);
     while(1){
@@ -181,19 +182,19 @@ __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time
 			}
 
 }
-int zone_i, zone_j, zone_k;
+
 __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par)
 {
 	static int n2gen = -1;
 	static double dnmax;
 	static int zone_i, zone_j, zone_k;
-
+	int zone_flag = 0;
 
 	/*if the number of photons is not negative, e.g there are super photons in the zone
 	then, continue the program, e.g, sample the zone photon and then pushes, this function is only checking the need to generate this zone photon
 	*/
 	while (n2gen <= 0) {
-		n2gen = GPU_get_zone(state, &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p, zi, d_Ns_par);
+		n2gen = GPU_get_zone(state, &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p, zi, d_Ns_par, &zone_flag);
 	}
 
 	n2gen--;
@@ -205,32 +206,26 @@ __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon
 		*quit_flag = 0;
 	if (*quit_flag != 1) {
 		/* Initialize the superphoton energy, direction, weight, etc. */
-		GPU_sample_zone_photon(state, zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p);
+		GPU_sample_zone_photon(state, zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p, &zone_flag);
 	}
 
 	return;
 }
-__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par)
+__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par, int * zone_flag)
 {
 /* Return the next zone and the number of superphotons that need to be		*
  * generated in it.								*/
 	int in2gen;
 	double n2gen;
 	int tid = threadIdx.x;
-	int offset = 0;
 	// The fact this is static int means it is only set to 0 when function is called first time
 	// meanwhile, the value is updated and kept in memory
 	//TODO: Gotta check if max_threads is N_THREADS -1
-	if (tid == N_THREADS - 1){
-		offset = d_N1%N_THREADS;
-	}	
 	//static int zi = -1;
-	if (*zi == 0){
-		*zi = (int)(d_N1/N_THREADS) * threadIdx.x;
-	}
+
 	static int zj = 0;
 	static int zk = -1;
-	zone_flag = 1;
+	*zone_flag = 1;
 	zk++;
 	if(zk >= d_N3){
 		zk = 0;
@@ -238,8 +233,8 @@ __device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, do
 		if (zj >= d_N2) {
 			zj = 0;
 			printf("(%d) zi = %d\n",tid, *zi);
-			*zi = *zi + 1;
-			if (*zi >= ((d_N1/N_THREADS * tid) + d_N1/N_THREADS) + offset) {
+			*zi = *zi + N_THREADS;
+			if (*zi >= d_N1) {
 				in2gen = 1;
 				*i = d_N1;
 				return 1;
@@ -272,7 +267,7 @@ __device__ void GPU_coord(int i, int j, double *X)
 	return;
 }
 
-__device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p)
+__device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int * zone_flag)
 {
 /* Set all initial superphoton attributes */
 	int l;
@@ -321,7 +316,7 @@ __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, i
 	K_tetrad[2] = E * cphi * sth;
 	K_tetrad[3] = E * sphi * sth;
 
-	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
+	if (*zone_flag) {	/* first photon created in this zone, so make the tetrad */
 		if (Bmag > 0.) {
 			for (l = 0; l < NDIM; l++)
 				bhat[l] = Bcon[l] * B_UNIT / Bmag;
@@ -331,7 +326,7 @@ __device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, i
 			bhat[1] = 1.;
 		}
 		GPU_make_tetrad(Ucon, bhat, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
-		zone_flag = 0;
+		*zone_flag = 0;
 	}
 
 	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph->K);

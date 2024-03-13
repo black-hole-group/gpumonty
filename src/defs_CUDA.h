@@ -71,7 +71,6 @@ __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP 
 __device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
-__device__ 	int zone_flag;
 __device__ double d_hslope = 0;
 __device__ double d_R0 = 0;
 

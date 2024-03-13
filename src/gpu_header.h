@@ -60,8 +60,8 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 /*Testing functions*/
 __global__ void GPU_mainloop(curandStateMtgp32 *state, struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int * super_photon_made, struct of_spectrum* d_spect);
 __device__ void GPU_make_super_photon(curandStateMtgp32 *state, struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par);
-__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par);
-__device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom *d_geom, double *d_p);
+__device__ int GPU_get_zone(curandStateMtgp32 *state, int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * zone_flag);
+__device__ void GPU_sample_zone_photon(curandStateMtgp32 *state, int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom *d_geom, double *d_p, int * zone_flag);
 __device__ void GPU_init_monty_rand(int seed);
 __device__ double GPU_monty_rand();
 __device__ void GPU_coord_hamr(int i, int j, int z, int loc, double *X);
