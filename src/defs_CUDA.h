@@ -16,7 +16,6 @@
 #include <cuda_runtime.h>
 #include "config.h"
 
-#define MAX_PHOTONS 100 /*This number will be multipled by the first argument of your command line "Ns"*/
 /*Definitions of other globals*/
 #define KFAC	(9*M_PI*ME*CL/EE)
 #define KMIN (0.002)

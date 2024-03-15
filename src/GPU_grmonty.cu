@@ -75,7 +75,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
 	size_t limit = 0;
-	cudaDeviceSetLimit(cudaLimitStackSize, 8192);
+	cudaDeviceSetLimit(cudaLimitStackSize, 1024);
 	//cudaDeviceSetLimit(cudaLimitStackSize, 8192);
 	//cudaDeviceSetLimit(cudaLimitStackSize, 16384);
     //cudaDeviceGetLimit(&limit, cudaLimitStackSize);
@@ -101,20 +101,34 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Number of super photons generated*/
 	int gen_superph = 0;
 
-
-	/*Creating array of initial superphotons state*/
-	struct of_photon * initial_photon_states;
-	gpuErrchk(cudaMalloc(&initial_photon_states, Ns * MAX_PHOTONS * sizeof(struct of_photon)));
-
+	/*Creating array for generated_photons and dnmax*/
+	int * generated_photons_arr;
+	gpuErrchk(cudaMalloc(&generated_photons_arr, N1 * N2 * N3 * sizeof(int)));
+	double * dnmax_arr;
+	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
+	
+	
 	/*Calling the function to generate photons and sample them*/
 	fprintf(stderr, "Generating super photons!\n");
-    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, time);
-	
-	//GPU_mainloop<<<1,N_THREADS>>>(ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu, d_spect);
+    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);
 	cudaDeviceSynchronize();
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(int), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %d\n", gen_superph);
-	//GPU_track<<<1,1>>>(initial_photon_states);
+	
+
+	/*Creating array of initial superphotons state*/
+	struct of_photon * initial_photon_states;
+	gpuErrchk(cudaMalloc(&initial_photon_states, gen_superph * sizeof(struct of_photon)));
+	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr);
+	cudaDeviceSynchronize();
+	fprintf(stderr, "Photon sampling process completed!\n");
+
+	/*Freeing unnecessary arrays from photon generation*/
+	cudaFree(generated_photons_arr);
+	cudaFree(dnmax_arr);
+
+	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
+	cudaDeviceSynchronize();
 
 
     //cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
@@ -134,26 +148,28 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaFree(local_track_vars);
 }
 
-__global__ void GPU_track(struct of_photon *ph_init){
-	for(int i = 0; i < photon_count; i++){
-		SLOOP_DEVICE{
-			printf("X[1] = %le\n", ph_init[DEVICE_SPATIAL_INDEX3D(i,j,k)].X[1]);
-		}
+__global__ void GPU_track(struct of_photon *ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect){
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	/*track each photon we created along its geodesic*/
+	for(int a = global_index; a < photon_count; (a += N_BLOCKS * N_THREADS)){
+		GPU_track_super_photon(&(ph[a]), d_p, d_table_ptr, d_spect);
+		//printf("this photon has ended: %d\n", a);
 	}
+
 }
-/*this function is perfect!*/
-__global__ void GPU_generate_photons(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, time_t time){
-	unsigned long long max_photons = d_Ns * MAX_PHOTONS;
+
+
+__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr){
 	int generated_photons;
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
+
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide d_N1 * d_N2 * d_N3 between blocks*/
-
-	/*I think warping is screwing me over here. Maybe I should find another way to share the blocks*/
 	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
 		k = a % d_N3;
 		j = (a/d_N3) % d_N2;
@@ -161,17 +177,32 @@ __global__ void GPU_generate_photons(struct of_photon *ph_init, struct of_geom *
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
 		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
-
-		/*Sample all the photons generated in GPU_init_zone*/
-		for (int sampled_photon = 0; sampled_photon < generated_photons; sampled_photon++){
-			GPU_sample_zone_photon(i,j,k, dnmax, ph_init, d_geom, d_p, (sampled_photon == 0? 1 : 0));
-			atomicAdd(&photon_count, 1);
-		}
-	}
-	if(photon_count >= max_photons){
-		printf("ERROR: The number of generated photons is way too high for region (%d, %d, %d). You should increase the max_photons in GPU_generate_photons or check for any errors!. (n2gen = %d, max_photons = %d)\n", i, j, k, generated_photons, max_photons);
+		generated_photons_arr[a] = generated_photons;
+		dnmax_arr[a] = dnmax;
+		atomicAdd(&photon_count, generated_photons);
+		// }
 	}
 	return;
+}
+
+__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr){
+	int i,j,k;
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	unsigned long long ph_array_index;
+	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
+		ph_array_index = 0;
+		k = a % d_N3;
+		j = (a/d_N3) % d_N2;
+		i = (a/(d_N2 * d_N3));
+
+		for (int dummy = 0; dummy < a; dummy++){
+			ph_array_index += generated_photons_arr[dummy];
+		}
+		/*Sample all the photons generated in GPU_init_zone*/
+		for (int sampled_photon = 0; sampled_photon < generated_photons_arr[a]; sampled_photon++){
+			GPU_sample_zone_photon(i,j,k, dnmax_arr[a], ph_init, d_geom, d_p, (sampled_photon == 0? 1 : 0), sampled_photon, ph_array_index);
+		}
+	}
 }
 
 
@@ -265,7 +296,7 @@ __device__ void GPU_coord(int i, int j, double *X)
 	return;
 }
 
-__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag)
+__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int sampled_count, int ph_arr_index)
 {
 /* Set all initial superphoton attributes */
 	int l;
@@ -277,7 +308,7 @@ __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct
 	#if(HAMR)
 	GPU_coord_hamr(i, j, z, CENT, ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X);
 	#else
-	GPU_coord(i, j, ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X);
+	GPU_coord(i, j, ph[ph_arr_index + sampled_count].X);
 	#endif
     double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
@@ -293,7 +324,7 @@ __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct
 	} while (GPU_monty_rand() >
 		 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].w = weight;
+	ph[ph_arr_index + sampled_count].w = weight;
 	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 
 	do {
@@ -331,16 +362,16 @@ __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct
 	K_tetrad[0] *= -1.;
 	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
 
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].E = ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].E0 = ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].E0s = -tmpK[0];
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].L = tmpK[3];
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].tau_scatt = 0.;
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].tau_abs = 0.;
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X1i = ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X[1];
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X2i = ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].X[2];
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].nscatt = 0;
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].ne0 = Ne;
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].b0 = Bmag;
-	ph[DEVICE_SPATIAL_INDEX3D(i,j,k)].thetae0 = Thetae;
+	ph[ph_arr_index + sampled_count].E = ph[ph_arr_index + sampled_count].E0 = ph[ph_arr_index + sampled_count].E0s = -tmpK[0];
+	ph[ph_arr_index + sampled_count].L = tmpK[3];
+	ph[ph_arr_index + sampled_count].tau_scatt = 0.;
+	ph[ph_arr_index + sampled_count].tau_abs = 0.;
+	ph[ph_arr_index + sampled_count].X1i = ph[ph_arr_index + sampled_count].X[1];
+	ph[ph_arr_index + sampled_count].X2i = ph[ph_arr_index + sampled_count].X[2];
+	ph[ph_arr_index + sampled_count].nscatt = 0;
+	ph[ph_arr_index + sampled_count].ne0 = Ne;
+	ph[ph_arr_index + sampled_count].b0 = Bmag;
+	ph[ph_arr_index + sampled_count].thetae0 = Thetae;
 
 	return;
 }
@@ -1267,7 +1298,7 @@ __device__ double GPU_linear_interp_K2(double Thetae)
 // 	return;
 // }
 
-__device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struct local_track_var * local_track_vars, int recursive_index, double * d_table_ptr, struct of_spectrum* d_spect)
+__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -1479,11 +1510,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, double * d_p, struc
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					recursive_index++;
-					GPU_track_super_photon( &php, d_p, local_track_vars, recursive_index, d_table_ptr, d_spect);
+					GPU_track_super_photon(&php, d_p, d_table_ptr, d_spect);
 				}
-				recursive_index--;
-				//printf("Leaving recursion (%d)\n", recursive_index);
 
 				theta =
 				    GPU_get_bk_angle(ph->X, ph->K, Ucov, Bcov,
