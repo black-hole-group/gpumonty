@@ -48,7 +48,6 @@ __global__ void test_struct_data2(){
 
 void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Copying global variables*/
-	int seed = 139 + time;
 	struct of_spectrum spect[N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
     gpuErrchk(cudaMalloc((void**)&d_spect, N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
@@ -107,14 +106,18 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	struct of_photon * initial_photon_states;
 	gpuErrchk(cudaMalloc(&initial_photon_states, Ns * MAX_PHOTONS * sizeof(struct of_photon)));
 
-	/*Calling the main function*/
-    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p);
+	/*Calling the function to generate photons and sample them*/
+	fprintf(stderr, "Generating super photons!\n");
+    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, time);
+	
 	//GPU_mainloop<<<1,N_THREADS>>>(ph, time, d_geom, d_p, d_table_ptr, local_track_vars, N_superph_made_gpu, d_spect);
-	//GPU_init_photons<<<1,1>>>(d_geom, d_p, initial_photon_states);
 	cudaDeviceSynchronize();
-	cudaMemcpyErrorCheck(&gen_superph, &photon_count, sizeof(int), cudaMemcpyDeviceToHost);
-    // cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
-	printf("photon_count = %d\n", gen_superph);
+	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(int), 0, cudaMemcpyDeviceToHost);
+	fprintf(stderr, "Number of generated photons: %d\n", gen_superph);
+	//GPU_track<<<1,1>>>(initial_photon_states);
+
+
+    //cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	report_spectrum(gen_superph, spect);
 	
 	cudaError_t cudaStatus;
@@ -131,76 +134,42 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaFree(local_track_vars);
 }
 
-// __global__ void GPU_init_photons(struct of_geom * d_geom, double * d_p, struct of_photon * ph_init){
-// 	/*if the number of photons is not negative, e.g there are super photons in the zone
-// 	then, continue the program, e.g, sample the zone photon and then pushes, this function is only checking the need to generate this zone photon
-// 	*/
-// 	unsigned long long phs_max = Ns * 
-// }
-
-// __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom * d_geom, double * d_p, double * d_table_ptr, struct local_track_var * local_track_vars, int *super_photon_made, struct of_spectrum* d_spect)
-// {
-
-// 	struct of_photon d_ph = ph;
-// 	int quit_flag = 0;
-// 	/* spectral bin parameters */
-// 	d_dlE = 0.25;		/* bin width */
-// 	d_lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
-// 	d_N_scatt = 0;
-// 	d_N_superph_recorded = 0;
-// 	int tid = threadIdx.x;
-// 	int seed = 139 * tid + time;
-// 	int zi = threadIdx.x;
-// 	int d_Ns_par = d_Ns;
-// 	int n2gen = -1;
-// 	GPU_init_monty_rand(seed);
-//     while(1){
-//         /*First thing we should do is make super photon*/
-//         if (!quit_flag){
-//             GPU_make_super_photon(&d_ph, &quit_flag, d_geom, d_p, &zi, d_Ns_par, &n2gen);
-//         }
-// 			//printf("quit_flag after= %d", quit_flag);
-// 			if (quit_flag){
-// 				break;
-//             }
-
-// 			/* push them around */
-// 			//printf("it is doing its thing\n");
- 			
-// 			GPU_track_super_photon(&d_ph, d_p, local_track_vars, 0, d_table_ptr, d_spect);
-
-// 			/* step */
-// 		 	atomicAdd(super_photon_made, 1);
-// 			}
-
-// }
-__global__ void GPU_generate_photons(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p){
+__global__ void GPU_track(struct of_photon *ph_init){
+	for(int i = 0; i < photon_count; i++){
+		SLOOP_DEVICE{
+			printf("X[1] = %le\n", ph_init[DEVICE_SPATIAL_INDEX3D(i,j,k)].X[1]);
+		}
+	}
+}
+/*this function is perfect!*/
+__global__ void GPU_generate_photons(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, time_t time){
 	unsigned long long max_photons = d_Ns * MAX_PHOTONS;
 	int generated_photons;
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-
+	int seed = 139 * global_index + time;
+	GPU_init_monty_rand(seed);
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide d_N1 * d_N2 * d_N3 between blocks*/
 
-	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a = a + N_BLOCKS * N_THREADS)){
+	/*I think warping is screwing me over here. Maybe I should find another way to share the blocks*/
+	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
 		k = a % d_N3;
 		j = (a/d_N3) % d_N2;
 		i = (a/(d_N2 * d_N3));
-		//printf("(%d) (%d,%d,%d)\n", global_index, i,j,k);
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
 		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
 
-		if(photon_count + generated_photons >= max_photons){
-			printf("ERROR: The number of generated photons is way too high for region (%d, %d, %d). You should increase the max_photons in GPU_generate_photons or check for any errors!. (n2gen = %d, max_photons = %d)\n", i, j, k, generated_photons, max_photons);
-		}
-		/*You will sample all the photons generated in GPU_init_zone*/
+		/*Sample all the photons generated in GPU_init_zone*/
 		for (int sampled_photon = 0; sampled_photon < generated_photons; sampled_photon++){
 			GPU_sample_zone_photon(i,j,k, dnmax, ph_init, d_geom, d_p, (sampled_photon == 0? 1 : 0));
 			atomicAdd(&photon_count, 1);
 		}
+	}
+	if(photon_count >= max_photons){
+		printf("ERROR: The number of generated photons is way too high for region (%d, %d, %d). You should increase the max_photons in GPU_generate_photons or check for any errors!. (n2gen = %d, max_photons = %d)\n", i, j, k, generated_photons, max_photons);
 	}
 	return;
 }
@@ -702,10 +671,6 @@ __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetra
 		K[l] = Econ[0][l] * K_tetrad[0] +
 		    Econ[1][l] * K_tetrad[1] +
 		    Econ[2][l] * K_tetrad[2] + Econ[3][l] * K_tetrad[3];
-	}
-	for (int i = 0; i < NDIM; i++){
-		//fprintf(stderr, "k[%d] = %le\n", i, K[i]);
-		//printf("Econ[0][%d] = %le,Econ[1][%d] = %le,Econ[2][%d] = %le,Econ[3][%d] = %le\n", i, Econ[0][i], i, Econ[1][i], i, Econ[2][i], i, Econ[3][i]);
 	}
 	return;
 }
