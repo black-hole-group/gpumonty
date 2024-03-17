@@ -101,3 +101,19 @@ __device__ double d_R0 = 0;
 #define DEVICE_NPRIM_INDEX3D(i,j,k,l) (i * (d_N1 * d_N2 * d_N3) + ((l) + d_N3 * (k + d_N2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
 #define DEVICE_SPATIAL_INDEX2D(i,j) ((j + d_N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
 #define DEVICE_SPATIAL_INDEX3D(i,j,k) (k+ d_N3*(j + d_N2 * i))
+
+__device__ struct of_scattering{
+	int bound_flag;
+	double dtau_scatt, dtau_abs, dtau;
+	double bi, bf;
+	double alpha_scatti, alpha_scattf;
+	double alpha_absi, alpha_absf;
+	double dl, x1;
+	double nu, Thetae, Ne, B, theta;
+	double dtauK, frac;
+	double bias;
+	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
+	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	int nstep;
+	struct of_photon photon;
+};

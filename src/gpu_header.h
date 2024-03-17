@@ -54,7 +54,7 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 
 
 #define N_BLOCKS 2
-#define N_THREADS 128
+#define N_THREADS 32
 /*Testing functions*/
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 

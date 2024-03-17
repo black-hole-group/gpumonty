@@ -63,6 +63,7 @@ struct of_photon {
 	int nscatt;
 };
 
+
 struct of_geom {
 	double gcon[NDIM][NDIM];
 	double gcov[NDIM][NDIM];
