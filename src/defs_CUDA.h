@@ -115,5 +115,4 @@ __device__ struct of_scattering{
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
-	struct of_photon photon;
 };

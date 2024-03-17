@@ -54,7 +54,7 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 
 
 #define N_BLOCKS 2
-#define N_THREADS 32
+#define N_THREADS 64
 /*Testing functions*/
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 
@@ -90,7 +90,8 @@ __device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *d
 /*track super photon and its dependencies*/
 __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect);
-__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);
+__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon_properties, struct of_photon * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);
+//__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p);
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double *d_p);
 __device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM], double Bcov[NDIM], double B);
 __device__ void GPU_gcov_func_hamr(double *X, double gcovp[][NDIM]);
