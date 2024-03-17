@@ -35,7 +35,7 @@ __device__ struct of_scattering{
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
-	struct of_photon php;
+	struct of_photon ph;
 };
 __global__ void test_struct_data2(){
 	//printf("startx = (%lf, %lf, %lf, %lf), dx = (%lf, %lf, %lf, %lf)\n", d_startx[0], d_startx[1], d_startx[2], d_startx[3], d_dx[0], d_dx[1], d_dx[2], d_dx[3]);
@@ -73,12 +73,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
-	size_t limit = 0;
-	cudaDeviceSetLimit(cudaLimitStackSize, 1024);
-	//cudaDeviceSetLimit(cudaLimitStackSize, 8192);
-	//cudaDeviceSetLimit(cudaLimitStackSize, 16384);
-    //cudaDeviceGetLimit(&limit, cudaLimitStackSize);
-    printf("cudaLimitStackSize: %u\n", (unsigned)limit);
+
 
 	// Allocate device memory
     double *d_table_ptr;
@@ -115,6 +110,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Creating array of initial superphotons state*/
 	struct of_photon * initial_photon_states;
 	gpuErrchk(cudaMalloc(&initial_photon_states, gen_superph * sizeof(struct of_photon)));
+	
 	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr);
 	cudaDeviceSynchronize();
 	fprintf(stderr, "Photon sampling process completed!\n");
@@ -122,21 +118,22 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Freeing unnecessary arrays from photon generation*/
 	cudaFree(generated_photons_arr);
 	cudaFree(dnmax_arr);
-
-	/*defining pointer that are going to be passed to GPU_track*/
-	struct of_photon *curr_ph_state;
-	gpuErrchk(cudaMalloc(&curr_ph_state, gen_superph * sizeof(struct of_photon)));
-
-	/*Define array of scattered photons properties*/
-	struct of_scattering * scattered_photons;
-	int max_scatterings = 1000;
-	gpuErrchk(cudaMalloc(&scattered_photons, max_scatterings * gen_superph * sizeof(struct of_scattering)));
-
-	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, curr_ph_state, d_p, d_table_ptr, d_spect, scattered_photons);
+	/*Tracking photons*/
+	fprintf(stderr, "Tracking photons along the geodesics\n");
+	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
 	cudaDeviceSynchronize();
+	fprintf(stderr, "Done!, printing results...\n");
+	
+    cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
+	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(int), 0, cudaMemcpyDeviceToHost);
+	
+	double maximum_w;
+	cudaMemcpyFromSymbol(&maximum_w, d_maximum_w, sizeof(double), 0, cudaMemcpyDeviceToHost);
+	int scattered_total;
+	cudaMemcpyFromSymbol(&scattered_total, number_of_scattered_photons, sizeof(int), 0, cudaMemcpyDeviceToHost);
 
-
-    //cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
+	fprintf(stderr, "Number of scattered_photons = %d\n", scattered_total);
+	fprintf(stderr, "Maximum_w: %le\n", maximum_w);
 	report_spectrum(gen_superph, spect);
 	
 	cudaError_t cudaStatus;
@@ -150,23 +147,33 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaFree(initial_photon_states);
 	cudaFree(d_geom);
 	cudaFree(d_table_ptr);
-	cudaFree(local_track_vars);
 }
 
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int local_recursive_index = 0;
 	struct of_scattering survivors_photons[1000];
-	bool is_recursive = false;
-
+	int is_recursive = 0;
 	struct of_photon scattered_photon;
-
+	unsigned long long initial_ph_count = photon_count;
+	double percentage;
+	int n = 1;
 	/*track each photon we created along its geodesic*/
-	for(int a = global_index; a < photon_count; (a += N_BLOCKS * N_THREADS)){
-		GPU_track_super_photon(&(ph[a]), d_p, d_table_ptr, d_spect, &survivors_photon[0], &local_recursive_index, &is_recursive, &scattered_photon);
+	for(int a = global_index; a < initial_ph_count; (a += N_BLOCKS * N_THREADS)){
+		GPU_track_super_photon(&(ph[a]), d_p, d_table_ptr, d_spect, &survivors_photons[0], &local_recursive_index, &is_recursive, &scattered_photon);
 
-		while(local_recursive_index > 0){
+		while(local_recursive_index > 0 || is_recursive){
 			GPU_track_super_photon(&(scattered_photon), d_p, d_table_ptr, d_spect, &survivors_photons[local_recursive_index], &local_recursive_index, &is_recursive, &scattered_photon);
+		}
+		atomicAdd(&photon_count, -1);
+
+		/*progress indicator*/
+		if(global_index == 0){
+			percentage = ((initial_ph_count - photon_count) * 100) / initial_ph_count;
+			if(percentage >= n * 10){
+				printf("Progress: %d%%\n", (int) percentage);
+				n++;
+			}
 		}
 	}
 }
@@ -715,15 +722,7 @@ __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetra
 		    Econ[1][l] * K_tetrad[1] +
 		    Econ[2][l] * K_tetrad[2] + Econ[3][l] * K_tetrad[3];
 	}
-	if(global_index == 0){
-		if(K[1]> 1){
-			for (l = 0; l < 4; l++){
-				for (int j = 0; j < 4; j++)
-					printf("Econ[%d][%d] = %le\n", l,j, Econ[l][j]);
-				printf("K_tetrad[%d] = %le", l, K_tetrad[l]);
-			}
-		}
-	}
+
 	return;
 }
 __device__ void GPU_lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
@@ -1319,53 +1318,55 @@ __device__ double GPU_linear_interp_K2(double Thetae)
 // 	return;
 // }
 
-// __device__ void GPU_copy_survivor (struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau,
-// 	double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf,
-// 	double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[NDIM],
-// 	double Ki[], double dKi[], double E0, double Gcov[][], double Ucon[], double Ucov[], double Bcon[], double Bcov[],
-// 	int nstep, struct of_photon * ph) {
-//     survivor->bound_flag = bound_flag;
-//     survivor->dtau_scatt = dtau_scatt;
-//     survivor->dtau_abs = d_tau_abs;
-//     survivor->dtau = dtau;
-//     survivor->bi = bi;
-//     survivor->bf = bf;
-//     survivor->alpha_scatti = alpha_scatti;
-//     survivor->alpha_scattf = alpha_scattf;
-//     survivor->alpha_absi = alpha_absi;
-//     survivor->alpha_absf = alpha_absf;
-//     survivor->dl = dl;
-//     survivor->x1 = x1;
-//     survivor->nu = nu;
-//     survivor->Thetae = Thetae;
-//     survivor->Ne = Ne;
-//     survivor->B = B;
-//     survivor->theta = theta;
-//     survivor->dtauK = dtauK;
-//     survivor->frac = frac;
-//     survivor->bias = bias;
-//     for (int i = 0; i < NDIM; i++) {
-//         survivor->Xi[i] = Xi[i];
-//         survivor->Ki[i] = Ki[i];
-//         survivor->dKi[i] = dKi[i];
-//         survivor->Ucon[i] = Ucon[i];
-//         survivor->Ucov[i] = Ucov[i];
-//         survivor->Bcon[i] = Bcon[i];
-//         survivor->Bcov[i] = Bcov[i];
-//     }
-//     survivor->nstep = nstep;
-//     survivor->E0 = E0;
-//     for (int i = 0; i < NDIM; i++) {
-//         for (int j = 0; j < NDIM; j++) {
-//             survivor->Gcov[i][j] = Gcov[i][j];
-//         }
-//     }
-//     survivor->ph = ph;
-// }
+__device__ void GPU_copy_survivor (struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau,
+	double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf,
+	double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[NDIM],
+	double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[],
+	int nstep, struct of_photon * ph) {
+    survivor->bound_flag = bound_flag;
+    survivor->dtau_scatt = dtau_scatt;
+    survivor->dtau_abs = d_tau_abs;
+    survivor->dtau = dtau;
+    survivor->bi = bi;
+    survivor->bf = bf;
+    survivor->alpha_scatti = alpha_scatti;
+    survivor->alpha_scattf = alpha_scattf;
+    survivor->alpha_absi = alpha_absi;
+    survivor->alpha_absf = alpha_absf;
+    survivor->dl = dl;
+    survivor->x1 = x1;
+    survivor->nu = nu;
+    survivor->Thetae = Thetae;
+    survivor->Ne = Ne;
+    survivor->B = B;
+    survivor->theta = theta;
+    survivor->dtauK = dtauK;
+    survivor->frac = frac;
+    survivor->bias = bias;
+    for (int i = 0; i < NDIM; i++) {
+        survivor->Xi[i] = Xi[i];
+        survivor->Ki[i] = Ki[i];
+        survivor->dKi[i] = dKi[i];
+        survivor->Ucon[i] = Ucon[i];
+        survivor->Ucov[i] = Ucov[i];
+        survivor->Bcon[i] = Bcon[i];
+        survivor->Bcov[i] = Bcov[i];
+    }
+    survivor->nstep = nstep;
+    survivor->E0 = E0;
+    for (int i = 0; i < NDIM; i++) {
+        for (int j = 0; j < NDIM; j++) {
+            survivor->Gcov[i][j] = Gcov[i][j];
+        }
+    }
+    survivor->ph = *ph;
+}
+
 __device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, 
-struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_recursive, struct of_photon * scattered_photon)
+struct of_scattering * survivor_photon, int * local_recursive_index, int * is_recursive, struct of_photon * scattered_photon)
 {
 	int bound_flag;
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	double dtau_scatt, dtau_abs, dtau;
 	double bi, bf;
 	double alpha_scatti, alpha_scattf;
@@ -1379,8 +1380,9 @@ struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_r
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
-	if(*is_recursive)
+	if(*is_recursive){
 		goto finish_survivor;
+	}
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -1572,20 +1574,22 @@ struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_r
 						return;
 					}
 					//printf("recursive_index= %d\n", recursive_index);
-					/*Save location of the scattered photon created*/
 					
-					//atomicAdd(&recursive_index, 1);
-					*local_recursive_index ++;
-					*is_recursive = false;
+					/*Save location of the scattered photon created*/
+					(*local_recursive_index)++;
+					printf("(%d)we got recursive_in! %d\n",global_index, *local_recursive_index);
+					*is_recursive = 0;
 					
 					*scattered_photon = php;
 					GPU_copy_survivor(survivor_photon, bound_flag, dtau_scatt, dtau_abs, dtau, bi,  bf,  alpha_scatti,  alpha_scattf, alpha_absi,  alpha_absf, dl,  x1,  nu,  Thetae,  Ne,  B,  theta,  dtauK,  frac,  bias,  Xi, Ki,  dKi,  E0,  Gcov,  Ucon,  Ucov,  Bcon,  Bcov, nstep, ph);
+					if(global_index == 0)
+					atomicAdd(&number_of_scattered_photons, 1);
 					return;
-					//GPU_track_super_photon(&php, d_p, d_table_ptr, d_spect, scattered_photons);
 				}
 				
 				finish_survivor:
 				if(*is_recursive){
+					*is_recursive = 0;
 					bound_flag = survivor_photon->bound_flag;
 					dtau_scatt = survivor_photon->dtau_scatt;
 					dtau_abs = survivor_photon->dtau_abs;
@@ -1621,7 +1625,8 @@ struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_r
 							Gcov[i][j]= survivor_photon->Gcov[i][j];
 					}
 					nstep = survivor_photon->nstep;
-					ph = survivor_photon->ph;
+					*ph = survivor_photon->ph;
+
 				}
 				theta =
 				    GPU_get_bk_angle(ph->X, ph->K, Ucov, Bcov,
@@ -1644,6 +1649,9 @@ struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_r
 
 			} else {
 				if (dtau_abs > 100){
+					if(nu > 1e18){
+						printf("nu is leaving cause its absorbed2\n");
+					}
 					return;	/* This photon has been absorbed */
 				}
 				ph->tau_abs += dtau_abs;
@@ -1676,14 +1684,16 @@ struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_r
 	}
 
 	// /* accumulate result in spectrum on escape */
-	if (GPU_record_criterion(ph) && nstep < MAXNSTEP)
+	if (GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		GPU_record_super_photon(ph, d_spect);
-	if(*local_recursive_index > 0){
-		scattered_photon = survivor_photon;
-		*local_recursive_index--;
-		*is_recursive = true;
 	}
-	/* done! */
+
+	if(*local_recursive_index > 0){
+		(*local_recursive_index)--;
+		atomicAdd(&number_of_scattered_photons, -1);
+		*is_recursive = 1;
+	}
+	// /* done! */
 	return;
 }
 
@@ -2177,6 +2187,9 @@ __device__ double GPU_get_fluid_nu(double X[4], double K[4], double Ucov[NDIM])
 		 K[1] * Ucov[1] + K[2] * Ucov[2] + K[3] * Ucov[3]);
 
 	nu = ener * ME * CL * CL / HPL;
+	if(nu > 1e18){
+		printf("nu is getting high frequency values!\n (%le, %le, %le, %le), (%le, %le, %le, %le)\n", K[0], K[1], K[2], K[3], Ucov[1], Ucov[2], Ucov[3], Ucov[4]);
+	}
 
 	if (isnan(ener)) {
 		printf("isnan get_fluid_nu, K: %g %g %g %g\n",
@@ -3369,8 +3382,8 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
         return;
     }
 
-/*TODO: FIX RACE CONDITION BY USING https://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf slide 7
-taken from https://stackoverflow.com/questions/16785263/cuda-multiple-threads-writing-to-a-shared-variable*/
+	/*TODO: FIX RACE CONDITION BY USING https://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf slide 7
+	taken from https://stackoverflow.com/questions/16785263/cuda-multiple-threads-writing-to-a-shared-variable*/
     if (ph->tau_scatt > d_max_tau_scatt) {
        d_max_tau_scatt = ph->tau_scatt;
     }
@@ -3379,22 +3392,27 @@ taken from https://stackoverflow.com/questions/16785263/cuda-multiple-threads-wr
     dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
     ix2 = (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph->X[2] / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
 
-    if (ix2 < 0 || ix2 >= N_THBINS)
+    if (ix2 < 0 || ix2 >= N_THBINS){
+		printf("Ix2 = %d\n", ix2);
         return;
+	}
 
     // Get energy bin
     lE = log(ph->E);
-    iE = (int)((lE - d_lE0) / d_dlE + 2.5) - 2;
+    iE = (int)((lE - lE0) / dlE + 2.5) - 2;
 
-    if (iE < 0 || iE >= N_EBINS)
-        return;
+    if (iE < 0 || iE >= N_EBINS){
+	    return;
+	}
 
     atomicAdd(&d_N_superph_recorded, 1);
     atomicAdd(&d_N_scatt, ph->nscatt);
     // Sum in photon
-	double inbetween = d_spect[(ix2 * N_EBINS) + iE].dNdlE;
-    d_spect[(ix2 * N_EBINS) + iE].dNdlE += ph->w;
-	//if (isnan(d_spect[(ix2 * N_EBINS) + iE].dNdlE) || isinf(d_spect[(ix2 * N_EBINS) + iE].dNdlE))
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dNdlE), ph->w);
+	if(ph->w > d_maximum_w){
+		d_maximum_w = ph->w;
+	}
+    //d_spect[(ix2 * N_EBINS) + iE].dNdlE += ph->w;
     d_spect[(ix2 * N_EBINS) + iE].dEdlE += ph->w * ph->E;
     d_spect[(ix2 * N_EBINS) + iE].tau_abs += ph->w * ph->tau_abs;
     d_spect[(ix2 * N_EBINS) + iE].tau_scatt += ph->w * ph->tau_scatt;
@@ -3406,20 +3424,6 @@ taken from https://stackoverflow.com/questions/16785263/cuda-multiple-threads-wr
     d_spect[(ix2 * N_EBINS) + iE].thetae0 += ph->w * (ph->thetae0);
     d_spect[(ix2 * N_EBINS) + iE].nscatt += ph->nscatt;
     d_spect[(ix2 * N_EBINS) + iE].nph += 1.;
-}
-
-__device__ double atomicMax_double(double* address, double val) {
-
-    unsigned long long int* address_as_ull = (unsigned long long int*)address;
-    unsigned long long int old = *address_as_ull, assumed;
-
-    do {
-        assumed = old;
-        old = atomicCAS(address_as_ull, assumed,
-            __double_as_longlong(fmax(val, __longlong_as_double(assumed))));
-    } while (assumed != old);
-
-    return __longlong_as_double(old);
 }
 
 /* return electron scattering opacity, in cgs */

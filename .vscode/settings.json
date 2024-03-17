@@ -6,6 +6,7 @@
         "harm_model.h": "c",
         "type_traits": "c",
         "math.h": "c",
-        "decs.h": "c"
+        "decs.h": "c",
+        "stdio.h": "c"
     }
 }

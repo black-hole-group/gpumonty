@@ -52,11 +52,9 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
     }
 }
 
-// extern __device__ int d_N1, d_N2, d_N3;
-// extern __device__ double d_a;
 
 #define N_BLOCKS 2
-#define N_THREADS 32
+#define N_THREADS 128
 /*Testing functions*/
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 
@@ -90,16 +88,11 @@ __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
 __device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
 
 /*track super photon and its dependencies*/
-__device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[NDIM], double Ki[], double dKi[], double E0, double Gcov[][], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
-__global__ void GPU_track(struct of_photon *ph_init, struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scattered_photons);
-__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon, int * local_recursive_index, bool * is_recursive, struct of_photon * scattered_photon)
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-                                     double *Thetae, double *B, double Ucon[NDIM],
-                                     double Ucov[NDIM], double Bcon[NDIM],
-                                     double Bcov[NDIM], double *d_p);
-__device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
-                                   double Bcov[NDIM], double B);
-
+__device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
+__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect);
+__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);
+__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double *d_p);
+__device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM], double Bcov[NDIM], double B);
 __device__ void GPU_gcov_func_hamr(double *X, double gcovp[][NDIM]);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __device__ void GPU_vofx_matthewcoords(double *X, double *V);
@@ -118,10 +111,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph);
 __device__ double GPU_stepsize(double X[NDIM], double K[NDIM]);
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
                                 double dl, double *E0, int n);
-__device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,
-                                         double Ne, double Thetae, double B,
-                                         double Ucon[NDIM], double Bcon[NDIM],
-                                         double Gcov[NDIM][NDIM]);
+__device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php, double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM]);
 __device__ void GPU_coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
                                          double K_tetrad[NDIM]);
 __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae);
@@ -141,7 +131,6 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4]);
 __device__ int GPU_record_criterion(struct of_photon *ph);
 __device__ void GPU_record_super_photon(struct of_photon *ph, struct of_spectrum* d_spect);
 __device__ void omp_reduce_spect_kernel(struct of_spectrum *spect, struct of_spectrum *shared_spect);
-__device__ double atomicMax_double(double* address, double val);
 __device__ double GPU_kappa_es(double nu, double Thetae, double * d_table_ptr);
 __device__ double GPU_total_compton_cross_num(double w, double thetae);
 __device__ double GPU_dNdgammae(double thetae, double gammae);
