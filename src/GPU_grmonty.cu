@@ -21,7 +21,85 @@ extern "C"
 // Define the device random number generator state
 //__device__ curandStateMtgp32 my_curand_state;
 /*TODO: I'm not using the Mtgp32 algorithm, i don't know if this will cause any problems*/
-__device__ curandState my_curand_state[N_THREADS]; // Array of curandState structures
+__device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
+__device__ MTRand r_MT[N_BLOCKS * N_THREADS];
+
+/* An implementation of the MT19937 Algorithm for the Mersenne Twister
+ * by Evan Sultanik.  Based upon the pseudocode in: M. Matsumoto and
+ * T. Nishimura, "Mersenne Twister: A 623-dimensionally
+ * equidistributed uniform pseudorandom number generator," ACM
+ * Transactions on Modeling and Computer Simulation Vol. 8, No. 1,
+ * January pp.3-30 1998.
+ *
+ * http://www.sultanik.com/Mersenne_twister
+ */
+
+#define UPPER_MASK		0x80000000
+#define LOWER_MASK		0x7fffffff
+#define TEMPERING_MASK_B	0x9d2c5680
+#define TEMPERING_MASK_C	0xefc60000
+
+
+__device__ inline static void m_seedRand(MTRand* rand, unsigned long seed) {
+  /* set initial seeds to mt[STATE_VECTOR_LENGTH] using the generator
+   * from Line 25 of Table 1 in: Donald Knuth, "The Art of Computer
+   * Programming," Vol. 2 (2nd Ed.) pp.102.
+   */
+  rand->mt[0] = seed & 0xffffffff;
+  for(rand->index=1; rand->index<STATE_VECTOR_LENGTH; rand->index++) {
+    rand->mt[rand->index] = (6069 * rand->mt[rand->index-1]) & 0xffffffff;
+  }
+}
+
+/**
+* Creates a new random number generator from a given seed.
+*/
+__device__ MTRand seedRand(unsigned long seed) {
+  MTRand rand;
+  m_seedRand(&rand, seed);
+  return rand;
+}
+
+/**
+ * Generates a pseudo-randomly generated long.
+ */
+__device__ unsigned long genRandLong(MTRand* rand) {
+
+  unsigned long y;
+  static unsigned long mag[2] = {0x0, 0x9908b0df}; /* mag[x] = x * 0x9908b0df for x = 0,1 */
+  if(rand->index >= STATE_VECTOR_LENGTH || rand->index < 0) {
+    /* generate STATE_VECTOR_LENGTH words at a time */
+    int kk;
+    if(rand->index >= STATE_VECTOR_LENGTH+1 || rand->index < 0) {
+      m_seedRand(rand, 4357);
+    }
+    for(kk=0; kk<STATE_VECTOR_LENGTH-STATE_VECTOR_M; kk++) {
+      y = (rand->mt[kk] & UPPER_MASK) | (rand->mt[kk+1] & LOWER_MASK);
+      rand->mt[kk] = rand->mt[kk+STATE_VECTOR_M] ^ (y >> 1) ^ mag[y & 0x1];
+    }
+    for(; kk<STATE_VECTOR_LENGTH-1; kk++) {
+      y = (rand->mt[kk] & UPPER_MASK) | (rand->mt[kk+1] & LOWER_MASK);
+      rand->mt[kk] = rand->mt[kk+(STATE_VECTOR_M-STATE_VECTOR_LENGTH)] ^ (y >> 1) ^ mag[y & 0x1];
+    }
+    y = (rand->mt[STATE_VECTOR_LENGTH-1] & UPPER_MASK) | (rand->mt[0] & LOWER_MASK);
+    rand->mt[STATE_VECTOR_LENGTH-1] = rand->mt[STATE_VECTOR_M-1] ^ (y >> 1) ^ mag[y & 0x1];
+    rand->index = 0;
+  }
+  y = rand->mt[rand->index++];
+  y ^= (y >> 11);
+  y ^= (y << 7) & TEMPERING_MASK_B;
+  y ^= (y << 15) & TEMPERING_MASK_C;
+  y ^= (y >> 18);
+  return y;
+}
+
+/**
+ * Generates a pseudo-randomly generated double in the range [0..1].
+ */
+__device__ double GPU_monty_rand_MT() {
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+  	return((double)genRandLong(&r_MT[global_index]) / (unsigned long)0xffffffff);
+}
 
 
 
@@ -53,7 +131,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
-	//cudaDeviceSetLimit(cudaLimitStackSize, 16384);
+	//cudaDeviceSetLimit(cudaLimitStackSize, 8000);
 
 
 	// Allocate device memory
@@ -79,30 +157,38 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	double * dnmax_arr;
 	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
 	
-	
 	/*Calling the function to generate photons and sample them*/
 	fprintf(stderr, "Generating super photons!\n");
     GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);
 	cudaDeviceSynchronize();
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(int), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %d\n", gen_superph);
+
+	unsigned long long * ph_array_index;
+	gpuErrchk(cudaMalloc(&ph_array_index, N1 * N2 * N3* sizeof(unsigned long long)));
 	
+	struct of_zones * ph_zones;
+	gpuErrchk(cudaMalloc(&ph_zones, gen_superph * sizeof(struct of_zones)));
+ 	GPU_calculate_ph_index<<<1,1>>>(ph_array_index, generated_photons_arr, ph_zones);
+	cudaDeviceSynchronize();
 
 	/*Creating array of initial superphotons state*/
 	struct of_photon * initial_photon_states;
 	gpuErrchk(cudaMalloc(&initial_photon_states, gen_superph * sizeof(struct of_photon)));
-	
-	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr);
+	fprintf(stderr, "Sampling the photons!\n");
+	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, ph_array_index, ph_zones);
 	cudaDeviceSynchronize();
 	fprintf(stderr, "Photon sampling process completed!\n");
 
 	/*Freeing unnecessary arrays from photon generation*/
 	cudaFree(generated_photons_arr);
 	cudaFree(dnmax_arr);
+	cudaFree(ph_zones);
 	/*Tracking photons*/
 	fprintf(stderr, "Tracking photons along the geodesics\n");
-	GPU_track<<<1,1>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
-	//GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
+	return;	
+	//GPU_track<<<1,1>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
+	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
 
 	cudaDeviceSynchronize();
 	fprintf(stderr, "Done!, printing results...\n");
@@ -120,7 +206,6 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 		fprintf(stderr, "Number of scattered_photons = %d\n", scattered_total);
 	}
 	report_spectrum(gen_superph, spect);
-	
 	cudaError_t cudaStatus;
 	cudaStatus = cudaGetLastError();
 	//printf(cudaStatus);
@@ -137,8 +222,8 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int local_recursive_index = 0;
-	struct of_scattering survivor_photons_properties[10];
-	struct of_photon survivor_photons[10];
+	struct of_scattering survivor_photons_properties[100];
+	struct of_photon survivor_photons[100];
 	int is_recursive = 0;
 	struct of_photon scattered_photon;
 	unsigned long long initial_ph_count = photon_count;
@@ -146,9 +231,8 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 	int n = 1;
 	/*track each photon we created along its geodesic*/
 	for(int a = global_index; a < initial_ph_count; (a += N_BLOCKS * N_THREADS)){
-	//for(int a = 400000; a <initial_ph_count; a++){
+
 		GPU_track_super_photon(&(ph[a]), d_p, d_table_ptr, d_spect, &survivor_photons_properties[0], survivor_photons, &local_recursive_index, &is_recursive, &scattered_photon);
-		//printf("OUTSIDE survivor_photon[%d]->w, %le\n", local_recursive_index, survivor_photons[local_recursive_index].w);
 		while(local_recursive_index > 0 || is_recursive){
 			GPU_track_super_photon(&(scattered_photon), d_p, d_table_ptr, d_spect, &survivor_photons_properties[local_recursive_index], survivor_photons, &local_recursive_index, &is_recursive, &scattered_photon);
 		}
@@ -164,32 +248,23 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 	}
 }
 
-// __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect){
-// 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-// 	int local_recursive_index = 0;
-// 	struct of_scattering survivor_photons_properties[10];
-// 	struct of_photon survivor_photons[10];
-// 	int is_recursive = 0;
-// 	struct of_photon scattered_photon;
-// 	unsigned long long initial_ph_count = photon_count;
-// 	double percentage;
-// 	int n = 1;
-// 	/*track each photon we created along its geodesic*/
-// 	//for(int a = global_index; a < initial_ph_count; (a += N_BLOCKS * N_THREADS)){
-// 	for(int a = 0; a <initial_ph_count; a++){
-// 		//GPU_track_super_photon(&(ph[a]), d_p, d_table_ptr, d_spect, &survivor_photons_properties[0], survivor_photons, &local_recursive_index, &is_recursive, &scattered_photon);
-// 		GPU_track_super_photon(&(ph[a]), d_spect, d_p);
-// 		/*progress indicator*/
-// 		if(global_index == 0){
-// 			percentage = ((initial_ph_count - photon_count) * 100) / initial_ph_count;
-// 			if(percentage >= n * 10){
-// 				printf("Progress: %d%%\n", (int) percentage);
-// 				n++;
-// 			}
-// 		}
-// 	}
-// }
 
+/*tested*/
+__global__ void GPU_calculate_ph_index(unsigned long long * ph_array_index, int * generated_photons_arr, struct of_zones * ph_zones){
+	ph_array_index[0] = 0;
+	int resolution = d_N1 * d_N2 * d_N3;
+	int old = 0;
+	for(int a = 1; a<resolution; a++){
+		old = ph_array_index[a - 1];
+		ph_array_index[a] = old + generated_photons_arr[a-1];
+		for(int i = old; i < ph_array_index[a]; i++){
+			ph_zones[i].i = a % d_N3;
+			ph_zones[i].j = (a/d_N3) % d_N2;
+			ph_zones[i].k = a/(d_N2 * d_N3);
+		 }
+	}
+	return;
+}
 
 __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr){
 	int generated_photons;
@@ -198,7 +273,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
-
+	//r_MT[global_index] = seedRand(seed);
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide d_N1 * d_N2 * d_N3 between blocks*/
 	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
@@ -213,109 +288,83 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 		atomicAdd(&photon_count, generated_photons);
 		// }
 	}
+
 	return;
 }
 
-__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr){
-	int i,j,k;
+__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr, unsigned long long * ph_array_index, struct of_zones * ph_zones){
+	int i = 0;
+	int j = 0;
+	int k = 0;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	unsigned long long ph_array_index;
-	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
-		ph_array_index = 0;
-		k = a % d_N3;
-		j = (a/d_N3) % d_N2;
-		i = (a/(d_N2 * d_N3));
+	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
+	double gridsize = N_BLOCKS * N_THREADS;
+	double percentage;
+	int n = 0;
+	int zone_flag = 1;
+	int old_i, old_j, old_k;
+	for(int a = global_index; a < photon_count; (a += gridsize)){
+		/*Find out indexes i, j, k, based on the photon indexes saved*/
+		old_i = i;
+		old_j = j;
+		old_k = k;
+		i = ph_zones[a].i;
+		j = ph_zones[a].j;
+		k = ph_zones[a].k;
 
-		for (int dummy = 0; dummy < a; dummy++){
-			ph_array_index += generated_photons_arr[dummy];
+		if(old_i != i || old_j != j || old_k != k){
+			zone_flag = 1;
+		}else{
+			zone_flag = 0;
 		}
+	
+
 		/*Sample all the photons generated in GPU_init_zone*/
-		double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
-		for (int sampled_photon = 0; sampled_photon < generated_photons_arr[a]; sampled_photon++){
-			GPU_sample_zone_photon(i,j,k, dnmax_arr[a], ph_init, d_geom, d_p, (sampled_photon == 0? 1 : 0), sampled_photon, ph_array_index, Econ, Ecov);
+		GPU_sample_zone_photon(i,j,k, dnmax_arr[a], &ph_init[a], d_geom, d_p, zone_flag, Econ, Ecov);
+		if(global_index == 0){
+			percentage = ((a) * 100) / photon_count;
+			if(percentage >= n * 10){
+				printf("Progress: %d%%\n", (int) percentage);
+				n++;
+			}
 		}
 	}
+	return;
 }
 
+// __global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr, unsigned long long * ph_array_index){
+// 	int i,j,k;
+// 	//unsigned long long ph_array_index;
+// 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+// 	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
+// 	double resolution = d_N1 * d_N2 * d_N3;
+// 	double gridsize = N_BLOCKS * N_THREADS;
+// 	double percentage;
+// 	int n = 0;
 
-// __device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par, int * n2gen)
-// {
-// 	static double dnmax;
-// 	static int zone_i, zone_j, zone_k;
-// 	int zone_flag = 0;
+// 	for(int a = global_index; a < resolution; (a += gridsize)){
+// 		//ph_array_index = 0;
+// 		k = a % d_N3;
+// 		j = (a/d_N3) % d_N2;
+// 		i = (a/(d_N2 * d_N3));
 
-// 	/*if the number of photons is not negative, e.g there are super photons in the zone
-// 	then, continue the program, e.g, sample the zone photon and then pushes, this function is only checking the need to generate this zone photon
-// 	*/
 
-// 	while (*n2gen <= 0) {
-// 		*n2gen = GPU_get_zone( &zone_i, &zone_j, &zone_k, &dnmax, d_geom, d_p, zi, d_Ns_par, &zone_flag);
-		
-// 		/*For some reason I need this line for the program to work*/
-// 		if (threadIdx.x == 1){
-// 			printf("I'm stuck = %d\n", *n2gen);
+// 		/*Sample all the photons generated in GPU_init_zone*/
+// 		for (int sampled_photon = 0; sampled_photon < generated_photons_arr[a]; sampled_photon++){
+// 			GPU_sample_zone_photon(i,j,k, dnmax_arr[a], ph_init, d_geom, d_p, (sampled_photon == 0? 1:0), sampled_photon, ph_array_index[a], Econ, Ecov);
 // 		}
-// 	}
-// 	//  printf("(%d)n2gen = %d\n", threadIdx.x,  *n2gen);
-// 	(*n2gen)--;
-
-// 	/*Before continue sampleing the zone photon, check if we reached the final radial zone
-// 	if so, just leave the program.*/
-// 	if (zone_i == d_N1)
-// 		*quit_flag = 1;
-// 	else
-// 		*quit_flag = 0;
-// 	if (*quit_flag != 1) {
-// 		/* Initialize the superphoton energy, direction, weight, etc. */
-// 		GPU_sample_zone_photon( zone_i, zone_j, zone_k, dnmax, ph, d_geom, d_p, &zone_flag);
-// 	}
-
-// 	return;
-// }
-// __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geom * d_geom, double * d_p, int * zi, int d_Ns_par, int * zone_flag)
-// {
-// /* Return the next zone and the number of superphotons that need to be		*
-//  * generated in it.								*/
-// 	int in2gen;
-// 	double n2gen;
-// 	int tid = threadIdx.x;
-
-// 	// The fact this is static int means it is only set to 0 when function is called first time
-// 	// meanwhile, the value is updated and kept in memory
-// 	//static int zi = -1;
-
-// 	static int zj = 0;
-// 	static int zk = -1;
-// 	*zone_flag = 1;
-// 	zk++;
-// 	if(zk >= d_N3){
-// 		zk = 0;
-// 		zj++;
-// 		if (zj >= d_N2) {
-// 			zj = 0;
-// 			printf("(%d) zi = %d\n",tid, *zi);
-// 			*zi = *zi + N_THREADS;
-// 			if (*zi >= d_N1) {
-// 				in2gen = 1;
-// 				*i = d_N1;
-// 				return 1;
+// 		if(global_index == 0){
+// 			percentage = ((a) * 100) / resolution;
+// 			if(percentage >= n * 10){
+// 				printf("Progress: %d%%\n", (int) percentage);
+// 				n++;
 // 			}
 // 		}
 // 	}
-// 	GPU_init_zone(*zi, zj, zk, &n2gen, dnmax, d_geom, d_p, d_Ns_par);
-// 	/*in2gen is the number of photons that need to be generated in the next zone*/
-// 	if (fmod(n2gen, 1.) > GPU_monty_rand()) {
-// 		in2gen = (int) n2gen + 1;
-// 	} else {
-// 		in2gen = (int) n2gen;
-// 	}
-
-// 	*i = *zi;
-// 	*j = zj;
-// 	*k = zk;
-
-// 	return in2gen;
+// 	return;
 // }
+
+
 
 __device__ void GPU_coord(int i, int j, double *X)
 {
@@ -327,8 +376,7 @@ __device__ void GPU_coord(int i, int j, double *X)
 
 	return;
 }
-
-__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int sampled_count, int ph_arr_index,
+__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag,
 double (*Econ)[NDIM], double (*Ecov)[NDIM])
 {
 /* Set all initial superphoton attributes */
@@ -338,33 +386,36 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 	double nu, th, cth, sth, phi, sphi, cphi, jmax, weight;
 	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
 	#if(HAMR)
-	GPU_coord_hamr(i, j, z, CENT, ph[ph_arr_index + sampled_count].X);
+	GPU_coord_hamr(i, j, z, CENT, ph->X);
 	#else
-	GPU_coord(i, j, ph[ph_arr_index + sampled_count].X);
+	GPU_coord(i, j, ph->X);
 	#endif
     double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
 	Nln = lnu_max - lnu_min;
-
+	int count = 0;
 	GPU_get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-
+	
 	/* Sample from superphoton distribution in current simulation zone */
 
 	do {
 		nu = exp(GPU_monty_rand() * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
+		count++;
+		if(count > 2000){
+		printf("Thread = %d is causing trouble, count = %d\n", blockIdx.x * blockDim.x + threadIdx.x, count);
+		}
 	} while (GPU_monty_rand() >
 		 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-
-	ph[ph_arr_index + sampled_count].w = weight;
+	ph->w = weight;
 	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 
-	do {
-		cth = 2. * GPU_monty_rand() - 1.;
-		th = acos(cth);
+	// do {
+	// 	cth = 2. * GPU_monty_rand() - 1.;
+	// 	th = acos(cth);
 
-	} while (GPU_monty_rand() >
-		 GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
+	// } while (GPU_monty_rand() >
+	// 	 GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
 
 	sth = sqrt(1. - cth * cth);
 	phi = 2. * M_PI * GPU_monty_rand();
@@ -375,8 +426,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 	K_tetrad[0] = E;
 	K_tetrad[1] = E * cth;
 	K_tetrad[2] = E * cphi * sth;
-	K_tetrad[3] = E * sphi * sth;
-
+	K_tetrad[3] = E * sphi * sth;	
 	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
 		if (Bmag > 0.) {
 			for (l = 0; l < NDIM; l++)
@@ -388,21 +438,23 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 		}
 		GPU_make_tetrad(Ucon, bhat, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
 	}
-
-	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph[ph_arr_index + sampled_count].K);
+	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph->K);
 	K_tetrad[0] *= -1.;
 	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
 
-	ph[ph_arr_index + sampled_count].E = ph[ph_arr_index + sampled_count].E0 = ph[ph_arr_index + sampled_count].E0s = -tmpK[0];
-	ph[ph_arr_index + sampled_count].L = tmpK[3];
-	ph[ph_arr_index + sampled_count].tau_scatt = 0.;
-	ph[ph_arr_index + sampled_count].tau_abs = 0.;
-	ph[ph_arr_index + sampled_count].X1i = ph[ph_arr_index + sampled_count].X[1];
-	ph[ph_arr_index + sampled_count].X2i = ph[ph_arr_index + sampled_count].X[2];
-	ph[ph_arr_index + sampled_count].nscatt = 0;
-	ph[ph_arr_index + sampled_count].ne0 = Ne;
-	ph[ph_arr_index + sampled_count].b0 = Bmag;
-	ph[ph_arr_index + sampled_count].thetae0 = Thetae;
+	ph->E = ph->E0 = ph->E0s = -tmpK[0];
+	// if(ph->E > 2.37e-8 && ph->E < 4.2e-8){
+	// 	atomicAdd(&zone_photon_counter, 1);
+	// }
+	ph->L = tmpK[3];
+	ph->tau_scatt = 0.;
+	ph->tau_abs = 0.;
+	ph->X1i = ph->X[1];
+	ph->X2i = ph->X[2];
+	ph->nscatt = 0;
+	ph->ne0 = Ne;
+	ph->b0 = Bmag;
+	ph->thetae0 = Thetae;
 
 	return;
 }
@@ -414,7 +466,7 @@ __device__ void GPU_init_monty_rand(int seed) {
 
 __device__ double GPU_monty_rand() {
 	int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    return curand_uniform_double(&my_curand_state[tid]) - 1e-20;
+    return curand_uniform_double(&my_curand_state[tid]);
 }
 
 // __device__ double GPU_monty_rand() {
@@ -681,9 +733,13 @@ __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 		Econ[3][k] = GPU_delta(k, 3);
 	/* project out econ[0-2] */
 	GPU_project_out(Econ[3], Econ[0], Gcov);
+
 	GPU_project_out(Econ[3], Econ[1], Gcov);
+
 	GPU_project_out(Econ[3], Econ[2], Gcov);
+
 	GPU_normalize(Econ[3], Gcov);
+
 
 	/*** done w/ basis vector 3 ***/
 
@@ -728,7 +784,6 @@ __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetra
 			  double K[NDIM])
 {
 	int l;
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	for (l = 0; l < 4; l++) {
 		K[l] = Econ[0][l] * K_tetrad[0] +
 		    Econ[1][l] * K_tetrad[1] +
@@ -792,7 +847,6 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
 			vconb_sq += vconb[k] * vconb[l] * Gcov[k][l];
-
 	adotb = 0.;
 	for (k = 0; k < 4; k++)
 		for (l = 0; l < 4; l++)
@@ -800,10 +854,9 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 	for (k = 0; k < 4; k++)
 		vcona[k] -= vconb[k] * adotb / vconb_sq;
-
 	return;
 }
-__device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
+__device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
@@ -1218,13 +1271,14 @@ __device__ void GPU_copy_survivor (struct of_scattering * survivor, int bound_fl
 
 // 	}
 
-// 	/* accumulate result in spectrum on escape */
+// // 	/* accumulate result in spectrum on escape */
 // 	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP)
 // 		 GPU_record_super_photon(ph, d_spect);
 
 // 	/* done! */
 // 	return;
 // }
+
 __device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, 
 struct of_scattering * survivor_photon_properties, struct of_photon * survivor_photon, int * local_recursive_index, int * is_recursive, struct of_photon * scattered_photon)
 {
@@ -1243,6 +1297,7 @@ struct of_scattering * survivor_photon_properties, struct of_photon * survivor_p
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+
 	if(*is_recursive){
 		goto finish_survivor;
 	}
@@ -1304,7 +1359,7 @@ struct of_scattering * survivor_photon_properties, struct of_photon * survivor_p
 		/* step the geodesic */
 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
 
-		if (GPU_stop_criterion( ph))
+		if (GPU_stop_criterion(ph))
 			break;
 
 		/* allow photon to interact with matter, */
@@ -1549,7 +1604,7 @@ struct of_scattering * survivor_photon_properties, struct of_photon * survivor_p
 
 	if(*local_recursive_index > 0){
 		*local_recursive_index = *local_recursive_index - 1;
-		//atomicAdd(&number_of_scattered_photons, -1);
+		atomicAdd(&number_of_scattered_photons, -1);
 		*is_recursive = 1;
 	}
 	// /* done! */
@@ -1567,7 +1622,6 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[8];
 	__device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double del[8]);
-	//printf( "d_startx[1] = %le, d_stopx[1] = %le, d_startx[2] = %le, d_stopx[2] = %le\n", d_startx[1], d_stopx[1], d_startx[2], d_stopx[2]);
 
 	//checks if it's within the grid
 	if (X[1] < d_startx[1] ||
@@ -2267,123 +2321,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
         /* done! */
 }
 
-// __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-// 		 double dl, double *E0, int n)
-// {
-// 	const int max_n = 7;
-// 	/*if it has already done first recursion for that specific n(recursion), it value will be true for first recursion*/
-// 	bool second_recursion[max_n];
-// 	//double * E0_list[max_n];
-// 	int dl_original = dl;
-// 	start_pushphoton_recursion:
-// 		double lconn[NDIM][NDIM][NDIM];
-// 		double Kcont[NDIM], K[NDIM], dK;
-// 		double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
-// 		double Gcov[NDIM][NDIM], E1;
-// 		double dl_2, err, errE;
-// 		int i, k, iter;
-		
-
-// 		if (X[1] < d_startx[1])
-// 			return;
-
-// 		FAST_CPY(X, Xcpy);
-// 		FAST_CPY(Kcon, Kcpy);
-// 		FAST_CPY(dKcon, dKcpy);
-// 		dl_2 = 0.5 * dl;
-// 		/* Step the position and estimate new wave vector */
-// 		for (i = 0; i < NDIM; i++) {
-// 			dK = dKcon[i] * dl_2;
-// 			Kcon[i] += dK;
-// 			K[i] = Kcon[i] + dK;
-// 			X[i] += Kcon[i] * dl;
-// 		}
-
-// 		GPU_get_connection(X, lconn);
-
-// 		/* We're in a coordinate basis so take advantage of symmetry in the connection */
-// 		iter = 0;
-// 		do {
-// 			iter++;
-// 			FAST_CPY(K, Kcont);
-
-// 			err = 0.;
-// 			for (k = 0; k < 4; k++) {
-// 				dKcon[k] =
-// 					-2. * (Kcont[0] *
-// 					(lconn[k][0][1] * Kcont[1] +
-// 						lconn[k][0][2] * Kcont[2] +
-// 						lconn[k][0][3] * Kcont[3])
-// 					+
-// 					Kcont[1] * (lconn[k][1][2] * Kcont[2] +
-// 							lconn[k][1][3] * Kcont[3])
-// 					+ lconn[k][2][3] * Kcont[2] * Kcont[3]
-// 					);
-
-// 				dKcon[k] -=
-// 					(lconn[k][0][0] * Kcont[0] * Kcont[0] +
-// 					lconn[k][1][1] * Kcont[1] * Kcont[1] +
-// 					lconn[k][2][2] * Kcont[2] * Kcont[2] +
-// 					lconn[k][3][3] * Kcont[3] * Kcont[3]
-// 					);
-
-// 				K[k] = Kcon[k] + dl_2 * dKcon[k];
-// 				err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
-// 			}
-// 		} while (err > ETOL && iter < MAX_ITER);
-
-// 		FAST_CPY(K, Kcon);
-
-// 		GPU_gcov_func_hamr(X, Gcov);
-
-// 		E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-// 			Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
-// 		errE = fabs((E1 - (*E0)) / (*E0));
-
-// 		/*start recursions for n state*/
-// 		if (n < 7
-// 			&& (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
-// 			FAST_CPY(Xcpy, X);
-// 			FAST_CPY(Kcpy, Kcon);
-// 			FAST_CPY(dKcpy, dKcon);
-// 			//E0_list[n] = E0;
-// 			dl *= 0.5;
-// 			second_recursion[n] = false;
-// 			n++;
-// 			goto start_pushphoton_recursion;
-// 		}else{
-// 			*E0 = E1;
-// 			n--;
-// 		}
-
-// 		/*start second recursion*/
-// 		if(n >= 0 && !second_recursion[n]){
-// 			second_recursion[n] = true;
-// 			n++;
-// 			dl = dl_original/pow(2., n+1);
-// 			goto start_pushphoton_recursion;
-// 		}
-// 		if(n >= 0 && second_recursion[n]){
-// 			E1 = *E0;
-// 			n--;
-// 		}
-
-// 		/*go to the caller of recursion n -> n-1*/
-// 		if(n >= 0){
-// 			dl= dl_original/pow(2., n+1);
-// 			*E0 = E1;
-// 			if (!second_recursion[n]){
-// 				goto start_pushphoton_recursion;
-// 			}
-// 		}
-		
-// 		*E0 = E1;
-// 		// if(n == 0){
-// 		// for (i = 0; i < NDIM; i++)
-// 		// printf("New X[%d] = %le\n", i, X[i]);
-// 		// }
-// 	/* done! */
-// }
 
 // __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
 // 		 double dl, double *E0, int n)
@@ -2403,22 +2340,12 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 // 	FAST_CPY(dKcon, dKcpy);
 // 	dl_2 = 0.5 * dl;
 // 	/* Step the position and estimate new wave vector */
-// 	// printf("iteration = %d\n", n);
-// 	// printf("Inside Push Photon before X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", X[0], X[1], X[2], X[3]);
-// 	// printf("Inside Push Photon before k[0] = %lf, k[1] = %lf, k[2] = %lf, k[3] = %lf\n", K[0], K[1], K[2], K[3]);
-// 	// printf("dl = %lf, dKcon[0] = %lf, dKcon[1] = %lf, dKcon[2] = %lf, dKcon[3] = %lf\n", dl, dKcon[0], dKcon[1], dKcon[2], dKcon[3]);
 // 	for (i = 0; i < NDIM; i++) {
 // 		dK = dKcon[i] * dl_2;
 // 		Kcon[i] += dK;
 // 		K[i] = Kcon[i] + dK;
 // 		X[i] += Kcon[i] * dl;
 // 	}
-// 	// printf("Inside Push Photon after X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", X[0], X[1], X[2], X[3]);
-// 	// printf("Inside Push Photon after k[0] = %lf, k[1] = %lf, k[2] = %lf, k[3] = %lf\n", K[0], K[1], K[2], K[3]);
-
-// 	// if(omp_get_thread_num() == 0){
-// 	// 	printf("X1 after = %le, K1 after = %le\n", X[1], K[1]);
-// 	// }
 // 	GPU_get_connection(X, lconn);
 
 // 	/* We're in a coordinate basis so take advantage of symmetry in the connection */
@@ -2471,11 +2398,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 // 	}
 
 // 	*E0 = E1;
-// 	// if(n == 0){
-// 	// for (i = 0; i < NDIM; i++)
-// 	// printf("New X[%d] = %le\n", i, X[i]);
-// 	// }
-// 	/* done! */
 // }
 
 __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM])
@@ -2699,8 +2621,8 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
 	phi = GPU_monty_rand() * 2. * M_PI;	/* orient uniformly */
-	sphi = sinf(phi);
-	cphi = cosf(phi);
+	sphi = sin(phi);
+	cphi = cos(phi);
 	cth = mu;
 	sth = sqrt(1. - mu * mu);
 
@@ -2855,8 +2777,8 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 
 	/* find phi for new photon */
 	phi = 2. * M_PI * GPU_monty_rand();	
-	sphi = sinf(phi);
-	cphi = cosf(phi);
+	sphi = sin(phi);
+	cphi = cos(phi);
 
 	p[1] *= -1.;
 	p[2] *= -1.;
@@ -3004,8 +2926,8 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 	r4 = r3 * r1;
 
 	//sincos(2. * M_PI * X[2], &sx, &cx);
-	sx = sinf(2 * M_PI * X[2]);
-	cx = cosf(2 * M_PI * X[2]);
+	sx = sin(2 * M_PI * X[2]);
+	cx = cos(2 * M_PI * X[2]);
 	/* HARM-2D MKS */
 	#if(HAMR)
 	double x2_mod;
@@ -3021,8 +2943,8 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 	dthdx22 = dthdx2 * dthdx2;
 
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 	sth2 = sth * sth;
 	r1sth2 = r1 * sth2;
 	sth4 = sth2 * sth2;
@@ -3174,61 +3096,7 @@ __device__ int GPU_record_criterion(struct of_photon *ph)
 
 }
 
-// void record_super_photon(struct of_photon *ph)
-// {
-// 	double lE, dx2;
-// 	int iE, ix2;
 
-// 	if (isnan(ph->w) || isnan(ph->E)) {
-// 		fprintf(stderr, "record isnan: %g %g\n", ph->w, ph->E);
-// 		return;
-// 	}
-// #pragma omp critical (MAXTAU)
-// 	{
-// 		if (ph->tau_scatt > max_tau_scatt)
-// 			max_tau_scatt = ph->tau_scatt;
-// 	}
-// 	/* currently, bin in x2 coordinate */
-
-// 	/* get theta bin, while folding around equator */
-// 	dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
-// 	if (ph->X[2] < 0.5 * (startx[2] + stopx[2]))
-// 		ix2 = (int) (ph->X[2] / dx2);
-// 	else
-// 		ix2 = (int) ((stopx[2] - ph->X[2]) / dx2);
-
-// 	/* check limits */
-// 	if (ix2 < 0 || ix2 >= N_THBINS)
-// 		return;
-
-// 	/* get energy bin */
-// 	lE = log(ph->E);
-// 	iE = (int) ((lE - lE0) / dlE + 2.5) - 2;	/* bin is centered on iE*dlE + lE0 */
-
-// 	/* check limits */
-// 	if (iE < 0 || iE >= N_EBINS)
-// 		return;
-
-// #pragma omp atomic
-// 	N_superph_recorded++;
-// #pragma omp atomic
-// 	N_scatt += ph->nscatt;
-
-// 	/* sum in photon */
-// 	spect[ix2][iE].dNdlE += ph->w;
-// 	spect[ix2][iE].dEdlE += ph->w * ph->E;
-// 	spect[ix2][iE].tau_abs += ph->w * ph->tau_abs;
-// 	spect[ix2][iE].tau_scatt += ph->w * ph->tau_scatt;
-// 	spect[ix2][iE].X1iav += ph->w * ph->X1i;
-// 	spect[ix2][iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-// 	spect[ix2][iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-// 	spect[ix2][iE].ne0 += ph->w * (ph->ne0);
-// 	spect[ix2][iE].b0 += ph->w * (ph->b0);
-// 	spect[ix2][iE].thetae0 += ph->w * (ph->thetae0);
-// 	spect[ix2][iE].nscatt += ph->nscatt;
-// 	spect[ix2][iE].nph += 1.;
-
-// }
 __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectrum* d_spect) {
     double lE, dx2;
     int iE, ix2;
@@ -3263,20 +3131,26 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
 
     atomicAdd(&d_N_superph_recorded, 1);
     atomicAdd(&d_N_scatt, ph->nscatt);
-    // Sum in photon
+
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dNdlE), ph->w);
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dEdlE), ph->w * ph->E);
-    //d_spect[(ix2 * N_EBINS) + iE].dEdlE += ph->w * ph->E;
-    d_spect[(ix2 * N_EBINS) + iE].tau_abs += ph->w * ph->tau_abs;
-    d_spect[(ix2 * N_EBINS) + iE].tau_scatt += ph->w * ph->tau_scatt;
-    d_spect[(ix2 * N_EBINS) + iE].X1iav += ph->w * ph->X1i;
-    d_spect[(ix2 * N_EBINS) + iE].X2isq += ph->w * (ph->X2i * ph->X2i);
-    d_spect[(ix2 * N_EBINS) + iE].X3fsq += ph->w * (ph->X[3] * ph->X[3]);
-    d_spect[(ix2 * N_EBINS) + iE].ne0 += ph->w * (ph->ne0);
-    d_spect[(ix2 * N_EBINS) + iE].b0 += ph->w * (ph->b0);
-    d_spect[(ix2 * N_EBINS) + iE].thetae0 += ph->w * (ph->thetae0);
-    d_spect[(ix2 * N_EBINS) + iE].nscatt += ph->nscatt;
-    d_spect[(ix2 * N_EBINS) + iE].nph += 1.;
+	// if(iE == 18){
+	// 	atomicAdd(&counter, 1);
+	// 	printf("counter = %d\n", counter);
+	// }
+	// if(ix2 == 5 && iE == 18){
+	// 	atomicAdd(&counter, 1);
+	// 	printf("counter = %d\n", counter);
+	// }
+    atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].tau_abs), ph->w * ph->tau_abs);
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X1iav), ph->w * ph->X1i);
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X2isq), ph->w * (ph->X2i * ph->X2i));
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X3fsq), ph->w * (ph->X[3] * ph->X[3]));
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].ne0),  ph->w * (ph->ne0));
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].b0), ph->w * (ph->b0));
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].thetae0),ph->w * (ph->thetae0));
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nscatt),  ph->nscatt);
+	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nph), 1);
 }
 
 /* return electron scattering opacity, in cgs */
@@ -3804,8 +3678,8 @@ __device__ void GPU_gcon_func(double *X, double gcon[][NDIM])
 
 
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 
 	sth = fabs(sth) + SMALL;
 
@@ -3844,8 +3718,8 @@ __device__ void GPU_gcov_func(double *X, double gcov[][NDIM])
 	GPU_bl_coord(X, &r, &th);
 
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
 	rho2 = r * r + d_a * d_a * cth * cth;

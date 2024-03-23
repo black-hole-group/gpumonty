@@ -60,6 +60,10 @@
 /*track super photon*/
 #define MAXNSTEP 1280000
 
+
+
+__device__ int zone_photon_counter = 0;
+
 __device__ double d_dlw, d_dlT, d_lminw, d_lmint;
 __device__ double d_table[NW + 1][NT + 1];
 __device__ double d_maximum_w = 0;
@@ -76,6 +80,7 @@ __device__ int number_of_scattered_photons = 0;
 #define	dlE (0.25)
 #define lE0	(log(1.e-12))
 
+__device__ int counter = 0;
 __device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
@@ -102,7 +107,7 @@ __device__ double d_R0 = 0;
 #define DEVICE_SPATIAL_INDEX2D(i,j) ((j + d_N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
 #define DEVICE_SPATIAL_INDEX3D(i,j,k) (k+ d_N3*(j + d_N2 * i))
 
-__device__ struct of_scattering{
+struct of_scattering{
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
 	double bi, bf;
@@ -115,4 +120,10 @@ __device__ struct of_scattering{
 	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
+};
+
+struct of_zones{
+	int i;
+	int j;
+	int k;
 };

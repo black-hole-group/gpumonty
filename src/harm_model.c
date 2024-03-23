@@ -840,10 +840,13 @@ void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EB
 
 			nuLnu *= spect[j][i].dEdlE;
 			nuLnu /= LSUN;
-			//fprintf(stderr, "nuLnu = %le, spect[j][i].dEdlE = %le,\n", nuLnu, spect[j][i].dEdlE);
+			if(i == 18 && j == 5)
+			fprintf(stderr, "nuLnu = %le", nuLnu);
+
 			tau_scatt =
 			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
 						     SMALL);
+
 			fprintf(fp,
 				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
 				nuLnu,
