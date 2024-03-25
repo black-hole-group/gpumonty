@@ -73,18 +73,18 @@ __device__ double GPU_monty_rand();
 #endif /* #ifndef __MTWISTER_H */
 
 
-#define N_BLOCKS 240
-#define N_THREADS 512
+#define N_BLOCKS 40//30
+#define N_THREADS 256//256
 
 /*Testing functions*/
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 __global__ void GPU_calculate_ph_index(unsigned long long * ph_array_index, int * generated_photons_arr, struct of_zones * ph_zones);
 __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr);
-__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr, unsigned long long * ph_array_index, struct of_zones * ph_zones);
+__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr, double* nu_arr);;
+__global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p, double * dnmax_arr, double * nu_arr, int * generated_photons_arr);
 __device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * n2gen);
 __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * zone_flag);
-//__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int sampled_count, int ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM]);
-__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, double (*Econ)[NDIM], double (*Ecov)[NDIM]);
+__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int sampled_count, int ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu);
 __device__ void GPU_init_monty_rand(int seed);
 __device__ void GPU_coord_hamr(int i, int j, int z, int loc, double *X);
 __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,

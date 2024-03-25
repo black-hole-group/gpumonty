@@ -19,13 +19,13 @@
 /*Definitions of other globals*/
 #define KFAC	(9*M_PI*ME*CL/EE)
 #define KMIN (0.002)
+/*Right now, KMAX and KMIN should be changed with careful regarding the function GPU_Inverse_F_eval*/
 #define KMAX (1.e7)
+#define KMIN (0.002)
 #define CST 1.88774862536	/* 2^{11/12} */
 #define SMALL_VECTOR	1.e-30
 #define EPSABS 0.
 #define EPSREL 1.e-6
-#define KMIN (0.002)
-#define KMAX (1.e7)
 #define TMIN (THETAE_MIN)
 #define TMAX (1.e2)
 #define BTHSQMIN	(1.e-8)//Pedro edit from 1e-4 //1e-8 works for riaf
