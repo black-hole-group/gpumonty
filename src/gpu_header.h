@@ -73,15 +73,15 @@ __device__ double GPU_monty_rand();
 #endif /* #ifndef __MTWISTER_H */
 
 
-#define N_BLOCKS 40//30
-#define N_THREADS 256//256
+#define N_BLOCKS 2//30
+#define N_THREADS 32//256
 
 /*Testing functions*/
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 __global__ void GPU_calculate_ph_index(unsigned long long * ph_array_index, int * generated_photons_arr, struct of_zones * ph_zones);
-__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr);
+__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr, cudaTextureObject_t FTexObj);
 __global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, int * generated_photons_arr, double * dnmax_arr, double* nu_arr);;
-__global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p, double * dnmax_arr, double * nu_arr, int * generated_photons_arr);
+__global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p, double * dnmax_arr, double * nu_arr, int * generated_photons_arr, cudaTextureObject_t FTexObj);
 __device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * n2gen);
 __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * zone_flag);
 __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int sampled_count, int ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu);
@@ -91,7 +91,7 @@ __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thet
                                    double Ucon[NDIM], double Bcon[NDIM], struct of_geom *d_geom, double *d_p);
 __device__ static double GPU_linear_interp_weight(double nu);
 __device__ void GPU_coord(int i, int j, double *X);
-__device__ double GPU_F_eval(double Thetae, double Bmag, double nu);
+__device__ double GPU_F_eval(double Thetae, double Bmag, double nu, cudaTextureObject_t FTexObj);
 __device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
@@ -101,12 +101,12 @@ __device__ double GPU_delta(int i, int j);
 __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
                                          double K[NDIM]);
 __device__ void GPU_lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
-__device__ double GPU_linear_interp_F(double K);
+__device__ double GPU_linear_interp_F(double K, cudaTextureObject_t FTexObj);
 __device__ double GPU_K2_eval(double Thetae);
 __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM]);
 __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
 //__device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dnmax, struct of_geom *d_geom, double *d_p, int d_Ns_par);
-__device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
+__device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par, cudaTextureObject_t FTexObj);
 
 /*track super photon and its dependencies*/
 __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);

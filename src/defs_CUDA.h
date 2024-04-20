@@ -121,9 +121,3 @@ struct of_scattering{
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
 };
-
-struct of_zones{
-	int i;
-	int j;
-	int k;
-};

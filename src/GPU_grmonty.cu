@@ -101,9 +101,47 @@ __device__ double GPU_monty_rand_MT() {
   	return((double)genRandLong(&r_MT[global_index]) / (unsigned long)0xffffffff);
 }
 
+__global__ void global_test(float * d_F_tex, cudaTextureObject_t TexObj){
+	double output;
+	for(int i = 0; i < N_ESAMP + 1; i++){
+		output = tex1D<float>(TexObj, i + 0.5f);
+		printf("Output = %le\n", output);
+		printf("d_F = %le\n", d_F_tex[i]);
+	}
+}
 
+void createTexture(float * host_pointer, cudaTextureObject_t *  TexObj, int num_elements)
+{
+	// create texture object
+	// create CUDA array
+		cudaArray* cuArray;
+		cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
+		cudaMallocArray(&cuArray, &channelDesc, num_elements, 0);
+		cudaMemcpyToArray(cuArray, 0, 0, host_pointer, num_elements * sizeof(float), cudaMemcpyHostToDevice);
+
+		// create texture object
+		cudaResourceDesc resDesc;
+		memset(&resDesc, 0, sizeof(resDesc));
+		resDesc.resType = cudaResourceTypeArray;
+		resDesc.res.array.array = cuArray;
+
+		cudaTextureDesc texDesc;
+		memset(&texDesc, 0, sizeof(texDesc));
+		texDesc.readMode = cudaReadModeElementType;
+		texDesc.filterMode = cudaFilterModeLinear;
+		texDesc.addressMode[0] = cudaAddressModeClamp;
+		texDesc.normalizedCoords = false;
+
+		cudaCreateTextureObject(TexObj, &resDesc, &texDesc, NULL);
+		//cudaFreeArray(cuArray);
+		printf("Texture Created!\n");
+	return;
+}
+/**********************************************************************************************************************************************************************************/
 
 void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
+	cudaError_t cudaStatus;
+	cudaStatus = cudaGetLastError();
 	/*Copying global variables*/
 	struct of_spectrum spect[N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
@@ -148,6 +186,24 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	/*Done transfering geom*/
 
 
+	// /*****************************************************************************/
+	float * F_float;
+	cudaTextureObject_t FTexObj;
+	F_float = (float *) malloc((N_ESAMP + 1) * sizeof(float));
+	for(int i = 0; i < N_ESAMP + 1; i++){
+		F_float[i] = (float) F[i];
+	}
+	float * d_F_tex;
+	cudaMalloc(&d_F_tex, (N_ESAMP + 1 ) * sizeof(float));
+	cudaMemcpyErrorCheck(d_F_tex, F_float, (N_ESAMP + 1) *  sizeof(float), cudaMemcpyHostToDevice);
+	createTexture(F_float, &FTexObj, (N_ESAMP + 1));
+	//global_test<<<1,1>>>(d_F_tex, FTexObj);
+	//cudaDeviceSynchronize();
+	//return;
+	free(F_float);
+	cudaFree(d_F_tex);
+	// /*****************************************************************************/
+
 	/*Number of super photons generated*/
 	int gen_superph = 0;
 
@@ -159,7 +215,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 
 	/*Calling the function to generate photons and sample them*/
 	fprintf(stderr, "Generating super photons!\n");
-    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);
+    GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr, FTexObj);
 	cudaDeviceSynchronize();
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(int), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Done!\n");
@@ -172,7 +228,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	fprintf(stderr, "Sampling photons' frequencies!\n");
 	double* nu_arr;
 	gpuErrchk(cudaMalloc(&nu_arr, gen_superph * sizeof(double)));
-	GPU_calculate_frequencies<<<N_BLOCKS, N_THREADS>>>(d_geom, d_p, dnmax_arr, nu_arr, generated_photons_arr);
+	GPU_calculate_frequencies<<<N_BLOCKS, N_THREADS>>>(d_geom, d_p, dnmax_arr, nu_arr, generated_photons_arr, FTexObj);
 	cudaDeviceSynchronize();
 	fprintf(stderr, "Done!\n");
 	cudaFree(dnmax_arr);
@@ -184,11 +240,9 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, nu_arr);
 	cudaDeviceSynchronize();
 	fprintf(stderr, "Photon sampling process completed!\n");
-
 	/*Freeing unnecessary arrays from photon generation*/
 	cudaFree(generated_photons_arr);
 	cudaFree(nu_arr);
-
 	/*Tracking photons*/
 	fprintf(stderr, "Tracking photons along the geodesics\n");
 	//GPU_track<<<1,1>>>(initial_photon_states, d_p, d_table_ptr, d_spect);
@@ -210,14 +264,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 		fprintf(stderr, "Number of scattered_photons = %d\n", scattered_total);
 	}
 	report_spectrum(gen_superph, spect);
-	cudaError_t cudaStatus;
-	cudaStatus = cudaGetLastError();
-	//printf(cudaStatus);
-
-	if (cudaStatus != cudaSuccess) {
-    	printf("CUDA Error: %s\n", cudaGetErrorString(cudaStatus));
-    // Additional error handling code here, if needed
-}
+ 	cudaDestroyTextureObject(FTexObj);
 	cudaFree(initial_photon_states);
 	cudaFree(d_geom);
 	cudaFree(d_table_ptr);
@@ -252,7 +299,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 }
 
 
-__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr){
+__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, int * generated_photons_arr, double * dnmax_arr, cudaTextureObject_t FTexObj){
 	int generated_photons;
 	double dnmax;
 	int i, j, k;
@@ -269,7 +316,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
-		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
+		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, FTexObj);
 		generated_photons_arr[a] = generated_photons;
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
@@ -280,7 +327,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 }
 
 
-__global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p, double * dnmax_arr, double * nu_arr, int * generated_photons_arr ){
+__global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p, double * dnmax_arr, double * nu_arr, int * generated_photons_arr, cudaTextureObject_t FTexObj){
     __shared__ bool someoneFoundIt;
     int i, j, k;
     double nu;
@@ -289,35 +336,32 @@ __global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p,
     double Nln = lnu_max - lnu_min;
     double weight;
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
-    unsigned long long ph_array_index;
     bool do_condition;
-    if(threadIdx.x == 0){
-        someoneFoundIt = false;
-    }
-    __syncthreads();
-
+	__shared__ double dnmax;
+	
     for (int a = blockIdx.x; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS)){
+		if(threadIdx.x == 0){
+			dnmax = dnmax_arr[a]; 
+		}
         k = a % d_N3;
         j = (a/d_N3) % d_N2;
         i = (a/(d_N2 * d_N3));
-        //printf("nu = %le\n", nu_arr[a]);
-        for (int dummy = 0; dummy < a; dummy++){
-            ph_array_index += generated_photons_arr[dummy];
-        }
-        GPU_get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-        for (int sampled_photon = 0; sampled_photon < generated_photons_arr[a]; sampled_photon++){
+       GPU_get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+		for (int sampled_photon = 0; sampled_photon < generated_photons_arr[a]; sampled_photon++){
+			if(threadIdx.x == 0) someoneFoundIt = false;
+            __syncthreads();
             do {
                 nu = exp(GPU_monty_rand() * Nln + lnu_min);
                 weight = GPU_linear_interp_weight(nu);
-                do_condition = GPU_monty_rand() > (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax_arr[a];
+                do_condition = GPU_monty_rand()> (GPU_F_eval(Thetae, Bmag, nu, FTexObj) / (weight + 1.e-100)) / dnmax;
+				//do_condition = true;
 				if(do_condition){
                     nu_arr[a] = nu;
                     someoneFoundIt = true;
                 }
 				__syncthreads();
             } while (!someoneFoundIt);
-			if(threadIdx.x == 0) someoneFoundIt = false;
-            __syncthreads();
+
         }
     }
 }
@@ -369,6 +413,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu)
 	double K_tetrad[NDIM], tmpK[NDIM], E;
 	double th, cth, sth, phi, sphi, cphi, jmax, weight;
 	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
+	bool do_condition;
 	#if(HAMR)
 	GPU_coord_hamr(i, j, z, CENT, ph[ph_arr_index + sampled_count].X);
 	#else
@@ -395,9 +440,9 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu)
 	do {
 		cth = 2. * GPU_monty_rand() - 1.;
 		th = acos(cth);
+		do_condition = GPU_monty_rand() > GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
+	} while (do_condition);
 
-	} while (GPU_monty_rand() >
-		 GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax);
 
 	sth = sqrt(1. - cth * cth);
 	phi = 2. * M_PI * GPU_monty_rand();
@@ -769,11 +814,11 @@ __device__ static double GPU_linear_interp_weight(double nu)
 // 	}
 // }
 
-__device__ double GPU_F_eval(double Thetae, double Bmag, double nu)
+__device__ double GPU_F_eval(double Thetae, double Bmag, double nu, cudaTextureObject_t FTexObj)
 {
 
 	double K, x;
-	__device__ double GPU_linear_interp_F(double);
+	__device__ double GPU_linear_interp_F(double, cudaTextureObject_t);
 
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
 	if (K > KMAX) {
@@ -783,7 +828,7 @@ __device__ double GPU_F_eval(double Thetae, double Bmag, double nu)
 		x = pow(K, 0.333333333333333333);
 		return (x * (37.67503800178 + 2.240274341836 * x));
 	} else {
-		return GPU_linear_interp_F(K);
+		return GPU_linear_interp_F(K, FTexObj);
 	}
 }
 __device__ double GPU_K2_eval(double Thetae)
@@ -798,7 +843,7 @@ __device__ double GPU_K2_eval(double Thetae)
 
 	return GPU_linear_interp_K2(Thetae);
 }
-__device__ double GPU_linear_interp_F(double K)
+__device__ double GPU_linear_interp_F(double K, cudaTextureObject_t FTexObj)
 {
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
@@ -810,6 +855,8 @@ __device__ double GPU_linear_interp_F(double K)
 	i = (int) di;
 	di = di - i;
 	result = exp((1. - di) * d_F[i] + di * d_F[i + 1]);
+	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
+	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
 	return result;
 }
 __device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
@@ -1025,7 +1072,7 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 		vcona[k] -= vconb[k] * adotb / vconb_sq;
 	return;
 }
-__device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
+__device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par, cudaTextureObject_t FTexObj)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
@@ -1064,7 +1111,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		for (l = 0; l <= N_ESAMP; l++) {
 			dn = GPU_F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(d_wgt[l]) +
+					lnu_min), FTexObj) / (exp(d_wgt[l]) +
 						     1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
