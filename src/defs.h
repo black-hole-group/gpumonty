@@ -8,6 +8,7 @@ gsl_integration_workspace *w;
 int N1, N2, N3, n_within_horizon;
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 int Ns, N_superph_recorded, N_scatt;
+int num_scat_phs = 0;
 
 /* some coordinate parameters */
 double a;

@@ -99,6 +99,7 @@ extern struct of_spectrum spect[N_THBINS][N_EBINS];
 
 extern struct of_geom *geom;
 extern int N1, N2, N3, n_within_horizon;
+extern int num_scat_phs;
 extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 extern double table[NW + 1][NT + 1];
 
