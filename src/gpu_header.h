@@ -73,7 +73,7 @@ __device__ double GPU_monty_rand();
 #endif /* #ifndef __MTWISTER_H */
 
 
-#define N_BLOCKS 30//30
+#define N_BLOCKS 230//30
 #define N_THREADS 256//256
 
 /*Testing functions*/
@@ -113,7 +113,7 @@ __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_fla
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton);
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat);
 
-__global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n, int new_round_sca);
+__global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n);
 //__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon_properties, struct of_photon * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double *d_p);
 __device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM], double Bcov[NDIM], double B);

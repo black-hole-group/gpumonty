@@ -198,12 +198,12 @@ void init_harm_data(char *fname)
 	Ladv /= 21.;
 	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
 
-	for (int i = 0; i < N1 * N2 * N3; i++){
-		int z = i % N2;
-		int y = (i - z) / N2;
-		if(y == 13 && z == 43)
-		printf("Ne(%d, %d)(%d) = %le\n",y, z, i, p[NPRIM_INDEX(KRHO, i)]);
-	}
+	// for (int i = 0; i < N1 * N2 * N3; i++){
+	// 	int z = i % N2;
+	// 	int y = (i - z) / N2;
+	// 	if(y == 13 && z == 43)
+	// 	printf("Ne(%d, %d)(%d) = %le\n",y, z, i, p[NPRIM_INDEX(KRHO, i)]);
+	// }
 
 	/* done! */
 

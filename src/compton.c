@@ -131,8 +131,8 @@ void sample_scattered_photon(double k[4], double p[4], double kp[4])
 	/* find phi for new photon */
 	phi = 2. * M_PI * monty_rand();
 	sincos(phi, &sphi, &cphi);
-	sphi = sinf(phi);
-	cphi = cosf(phi);
+	sphi = sin(phi);
+	cphi = cos(phi);
 
 	p[1] *= -1.;
 	p[2] *= -1.;

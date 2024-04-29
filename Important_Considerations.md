@@ -2,43 +2,12 @@
 
 This GPU version is still incomplete. As of this version, GPU is not better than CPU at least for a low photon count. Some improvements should and must be made before the last version go out.
 
-Some comparisons for this version:
-GPU/CPU TIMES
-CPU: 8 threads
-GPU: 40 blocks, 256 threads (ran in a P6000).
-
-5.000 photon_parameter:
-    - GPU: 0m41.197s
-    - CPU: 0m3,973s
-
-50.000 photon_parameter:
-    - GPU: 1m9,896s
-    - CPU: 0m24,837s
-
-500.000 photon_parameter:
-    - GPU: 3m41,309s
-    - CPU: 3m54,560s
-
-1.000.000 photon_parameter:
-    -GPU: 6m34,634s
-    -CPU: 7m34,012s
-
-2.000.000 photon_parameter:
-    -GPU: 11m49,412s
-    -CPU: 16m
-
-
 Known need improvements:
-- GPU_track function as a whole. This function is very slow, maybe atomic adds for scattering photons could be taken out? As well as refactoring
+- GPU_track: I need to refactor this. This function is taking way to much time. I guess it had a great improvement in regards to separating the scatterings photons and resolving them later, but I can't comprove it because every version previous is biased, which means that it wasn't working fine. Mainly because the initial photon_count was wrong (I was setting it equal to photon_count, but photon count was getting decreased inside the for loop). I thought it wouldn't matter, but it did! Some ideas to refactor: I analyzed with ncu and it seems that a lot of threads are getting stalled waiting for it to complete. I guess this difference is introduced because the range of photons that the computation is heavy is actually small (Those that enter the while loop in GPU_track_super_photon), so a lot of threads just pass through the for loop and keep waiting for the other ones to arrive. My idea here is to solve all the photons that doesn't go into the loop first, then finally use all the threads to compute those photons that ac
 
-- Sampling right now is very slow. This is mainly because of rejection sampling. In this version of the code, I tried to implement rejection sampling in multiple threads to speed up the process and it actually did, but I think it can be done in a more proper way (I took this idea from this [paper](https://dspace.mit.edu/bitstream/handle/1721.1/132084/11222_2021_10003_ReferencePDF.pdf?sequence=1&isAllowed=y)). Right now, the main things that come to mind are: 
-    - Excessive __syncthreads() calls;
-    - Function  GPU_get_fluid_zone is both being called multiple times (256 times per block, which is unnecessary) and also calculating Ucov/Ucon, which is not needed for this part of the code. The unecessary calling may be causing excess function overhead. 
-    - The outer for loop is number of blocks dependent, which is not a large number and may slow down the process a lot. As of right now, this is not very good, since we are looping for $10^4 - 10^5$ photons. However, doing the rejection sample using multiple threads is actually pretty good. I'm not exactly sure if all the threads in a warps are exitting the loop as soon as the first one catches something, but since it got way faster, I am assuming it does. 
+- The bias method (using max_tau_scatt) may be getting in the way of luminosity calculation and also be responsible for some inconsistencies in the plot. This issue should be addressable, but right now, nothing comes to mind. Furthermore, some of the problems I was having in previous plots was due to the problem described in the paragraph above, where not all of the photons were being analyzed.
 
-- The bias method (using max_tau_scatt) may be getting in the way of luminosity calculation and also be responsible for some inconsistencies in the plot. This issue should be addressable, but right now, nothing comes to mind.
-
-- Maybe for a huge number of photons ($ > 10^7$) we could encounter memory error for allocating arrays? This is just a supposition and to be honest, shouldn't be a problem in modern GPUs.
+- Memory problem with large number of photons. Normal grmonty computer one photon at a time. I'm trying to compute all the photons altogether, which gives me a problem of storing these photons. With a large number of photons, gpu just does not have enough memory. For a V100/A100, this should not be that big of a deal, unless I'm trying to compute like exorbitants amount of photons.
 
 TODO (beside everything said above):
 - Separate the functions in different files in a more concise way, like: 'Reading_Data.cu', 'Create_photons.cu', 'Track_photons.cu', 'Record_report_photons.cu'.
@@ -89,3 +58,7 @@ full sampling thread method: real    7m44.368s
 
 
 You can see that even considering a low photon count as 50.000, it is still a valid choice. Also, it's good to point out that this behavior will impact significantly when photon numbers increase. 
+
+
+To profile it with ncu:
+ncu -f -o report_ncu_3 time ./grmonty 500 ./data/dump019 4.e19

@@ -5,13 +5,13 @@ SRC_DIR = src
 BUILD_DIR = build
 
 # Compiler and flags
-CC = mpicc
+CC = gcc
 CFLAGS = -pg -g -Wall -O0 -fopenmp
 LDFLAGS = -lm -lgsl -lgslcblas -fopenmp
 
 # NVCC compiler and flags
 NVCC = nvcc
-NVCCFLAGS = -g -G -arch=compute_75 -code=sm_75 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -c
+NVCCFLAGS = -pg -G -arch=compute_75 -code=sm_75 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -c
 EXTRALIBS = -lm -L /usr/local/cuda/lib64  -lstdc++ -lcudart -lcuda 
 
 # Source files

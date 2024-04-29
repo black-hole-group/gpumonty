@@ -157,6 +157,7 @@ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 	lower(Bcon, geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+
 	if (isnan(*B)){
 		fprintf(stderr,"i = %d, j = %d, k = %d\n", i, j, k);
 		fprintf(stderr, "VdotV = %le\n", VdotV);
@@ -292,8 +293,8 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 
 	sth = fabs(sth) + SMALL;
 
@@ -335,8 +336,8 @@ void gcov_func(double *X, double gcov[][NDIM])
 	bl_coord(X, &r, &th);
 	#endif
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
 	rho2 = r * r + a * a * cth * cth;
@@ -410,8 +411,8 @@ void get_connection(double X[4], double lconn[4][4][4])
 	r4 = r3 * r1;
 
 	//sincos(2. * M_PI * X[2], &sx, &cx);
-	sx = sinf(2 * M_PI * X[2]);
-	cx = cosf(2 * M_PI * X[2]);
+	sx = sin(2 * M_PI * X[2]);
+	cx = cos(2 * M_PI * X[2]);
 	/* HARM-2D MKS */
 	#if(HAMR)
 	double x2_mod;
@@ -427,8 +428,8 @@ void get_connection(double X[4], double lconn[4][4][4])
 	dthdx22 = dthdx2 * dthdx2;
 
 	//sincos(th, &sth, &cth);
-	sth = sinf(th);
-	cth = cosf(th);
+	sth = sin(th);
+	cth = cos(th);
 	sth2 = sth * sth;
 	r1sth2 = r1 * sth2;
 	sth4 = sth2 * sth2;

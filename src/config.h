@@ -20,7 +20,7 @@
 
 /* Range of initial superphoton frequencies */
 #define NUMIN 1.e9
-#define NUMAX 1.e16
+#define NUMAX 1.e18
 
 #define THETAE_MAX	1000.	/* Only used for harm3d models */
 #define THETAE_MIN	0.3

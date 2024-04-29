@@ -78,8 +78,9 @@ __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP 
 #define	dlE (0.25)
 #define lE0	(log(1.e-12))
 
-__device__ int d_num_scat_phs = 0;
-__device__ int counter = 0;
+__device__ int scattering_counter = 0;
+__device__ int d_num_scat_phs[MAX_LAYER_SCA];
+__device__ int tracking_counter = 0;
 __device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
