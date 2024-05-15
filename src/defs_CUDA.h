@@ -81,7 +81,6 @@ __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP 
 __device__ int scattering_counter = 0;
 __device__ int d_num_scat_phs[MAX_LAYER_SCA];
 __device__ int tracking_counter = 0;
-__device__ double * d_p;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
 __device__ double d_hslope = 0;
