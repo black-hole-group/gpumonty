@@ -570,7 +570,7 @@ void get_connection(double X[4], double lconn[4][4][4])
 /* stopping criterion for geodesic integrator */
 /* K not referenced intentionally */
 
-#define RMAX	10.
+#define RMAX	100.
 #define ROULETTE	1.e4
 int stop_criterion(struct of_photon *ph)
 {
@@ -806,7 +806,7 @@ void omp_reduce_spect()
 
 #define SPECTRUM_FILE_NAME	"./output/grmonty_hamr.spec"
 
-void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS])
+void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS])
 {
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;
@@ -821,9 +821,11 @@ void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EB
 	/* output */
 	max_tau_scatt = 0.;
 	L = 0.;
+	//Running through all energy bins. The frequency interval will correspond to:
+	//i * dlE + lE0 but this is in natural logarithm to go to log10 divide by ln(10)
 	for (i = 0; i < N_EBINS; i++) {
 
-		/* output log_10(photon energy/(me c^2)) */
+		/* output log_10(photon energy/(me c^2))*/
 		fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
 
 		for (j = 0; j < N_THBINS; j++) {
@@ -860,9 +862,9 @@ void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EB
 				      (spect[j][i].dNdlE + SMALL)))
 			    );
 
-			if (tau_scatt > max_tau_scatt)
+			if (tau_scatt > max_tau_scatt){
 				max_tau_scatt = tau_scatt;
-
+			}
 			L += nuLnu * dOmega * dlE;
 		}
 		fprintf(fp, "\n");
@@ -874,8 +876,8 @@ void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EB
 		L * LSUN / (Ladv * M_UNIT * CL * CL / T_UNIT),
 		max_tau_scatt);
 	fprintf(stderr, "\n");
-	fprintf(stderr, "N_superph_made: %d\n", N_superph_made);
-	fprintf(stderr, "N_superph_recorded: %d\n", N_superph_recorded);
+	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
+	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);
 
 	fclose(fp);
 

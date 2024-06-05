@@ -102,7 +102,8 @@ extern int N1, N2, N3, n_within_horizon;
 extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 extern double table[NW + 1][NT + 1];
 
-extern int Ns, N_superph_recorded, N_scatt;
+extern int Ns, N_scatt;
+extern unsigned long long N_superph_recorded;
 
 /* some coordinate parameters */
 extern double a;
@@ -124,7 +125,7 @@ extern gsl_rng *r;
 /* core monte carlo/radiative transport routines */
 void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
-void report_spectrum(int N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS]);
+void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS]);
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],

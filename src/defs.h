@@ -7,7 +7,8 @@ gsl_integration_workspace *w;
 /* defining declarations for global variables */
 int N1, N2, N3, n_within_horizon;
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-int Ns, N_superph_recorded, N_scatt;
+int Ns, N_scatt;
+unsigned long long N_superph_recorded;
 
 /* some coordinate parameters */
 double a;

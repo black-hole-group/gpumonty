@@ -41,7 +41,7 @@
 
 #define MAX_LAYER_SCA 8
 /*for stop criterium*/
-#define RMAX	10.
+#define RMAX	100.
 #define ROULETTE	1.e4
 
 /*for stepsize*/
@@ -56,8 +56,6 @@
 #define MAXGAMMA	12.
 #define DMUE		0.05
 #define DGAMMAE		0.05
-#define NW	220
-#define NT	80
 /*track super photon*/
 #define MAXNSTEP 1280000
 
@@ -69,18 +67,18 @@ __device__ double d_maximum_w = 0;
 /*GLOBAL VARIABLES*/
 /*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just
 do not edit with multiple threads, unless we know what we are doing*/
-__device__ int photon_count = 0;
-__device__ int generated_sphotons;
-__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt, d_N_superph_recorded;
+__device__ unsigned long long photon_count = 0;
+__device__ unsigned long long generated_sphotons, d_N_superph_recorded;
+__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
 __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
 	
 /* spectral bin parameters */
 #define	dlE (0.25)
 #define lE0	(log(1.e-12))
 
-__device__ int scattering_counter = 0;
-__device__ int d_num_scat_phs[MAX_LAYER_SCA];
-__device__ int tracking_counter = 0;
+__device__ unsigned long long scattering_counter = 0;
+__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
+__device__ unsigned long long tracking_counter = 0;
 __device__ double d_nint[NINT + 1];
 __device__ double d_dndlnu_max[NINT + 1];
 __device__ double d_hslope = 0;

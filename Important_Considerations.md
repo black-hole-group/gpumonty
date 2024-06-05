@@ -9,9 +9,19 @@ Known need improvements:
 
 - Memory problem with large number of photons. Normal grmonty computer one photon at a time. I'm trying to compute all the photons altogether, which gives me a problem of storing these photons. With a large number of photons, gpu just does not have enough memory. For a V100/A100, this should not be that big of a deal, unless I'm trying to compute like exorbitants amount of photons. Nonetheless, we could implement a way of knowing if the photon count will be too much: Measure the size of the photon quantity, see if it matches in Gb with the size of the GPU, if not, divide the section into parts and evaluate them. 
 
+
+-There was a mistake in the GPU_linear_interp_F where dlK is 1/dlK, which i wasnt doing. Now it seems fixed! This mistake was responsible for generating a second bump very close to the first one
+- There is a mistake in the calculate frequency function. It is calculating one frequency for every zone. Instead, it should calculate one frequency for each photon, but got to use the data for the zone.
+
+- 
+
 TODO (beside everything said above):
 - Separate the functions in different files in a more concise way, like: 'Reading_Data.cu', 'Create_photons.cu', 'Track_photons.cu', 'Record_report_photons.cu'.
 
+
+BUG FIXES:
+-> Luminosity is a bit off. If I run the original code from the github repository and change the parameters in order to fit my code (mainly RMAX = 10.), luminosities are off. I gotta check if there is a parameter that I'm not changing.
+-> Fix the size of the photon array
 
 
 
@@ -23,32 +33,70 @@ ncu -f -o report_ncu_3 time ./grmonty 500 ./data/dump019 4.e19
 
 
 Latest tests with optimization:
-50.000 photon_parameter:
-GPU: 230 x 256 threads
-real    0m23.128s
-CPU:
-real    0m22.710s
+using (176 x 256) threads:
 
-100.000 photon_parameter:
-GPU: 230 x 256 threads
-real    0m24.429s
-CPU:
-real    0m28.689s
+50.000 photon parameter:
+GPU:
+N_superph_made: 1036195
+N_superph_recorded: 324931
+real    0m1.829s
 
-500.000 photon_parameter:
-GPU: 230 x 256 threads
-real    0m51.311s
 CPU:
-real    1m22.931s
+N_superph_made: 805973
+N_superph_recorded: 338323
+real    0m2.932s
 
-1.000.000 photon_parameter:
-GPU: 230 x 256 threads
-real    1m27.657s
+150.000 photon_parameter:
+GPU:
+N_superph_made: 3108567
+N_superph_recorded: 976862
+real    0m3.659s
+
 CPU:
-real    2m39.139s
+N_superph_made: 2417743
+N_superph_recorded: 1017090
+real    0m7.283s
+
+350.000 photon_parameter:
+GPU:
+N_superph_made: 7253185
+N_superph_recorded: 2267559
+real    0m7.174s
+
+CPU:
+N_superph_made: 5641245
+N_superph_recorded: 2367496
+real    0m16.140s
+
+750.000 photon_parameter:
+GPU:
+N_superph_made: 15542463
+N_superph_recorded: 4871364
+real    0m14.372s
+
+CPU:
+N_superph_made: 12088621
+N_superph_recorded: 5052572
+real    0m33.416s
 
 1.500.000 photon_parameter:
-GPU:230 x 256 threads
-real    2m39.836s
-CPU: 
-real    3m31.231s
+GPU:
+N_superph_made: 31084992
+N_superph_recorded: 9679602
+real    0m27.790s
+
+CPU:
+N_superph_made: 24177075
+N_superph_recorded: 10093335
+real    1m8.503s
+
+2.000.000 photon_parameter:
+GPU:
+N_superph_made: 41446542
+N_superph_recorded: 12969870
+real    0m36.645s
+
+CPU:
+N_superph_made: 32236260
+N_superph_recorded: 13456522
+real    1m32.065s
