@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 	int quit_flag, myid;
 	struct of_photon ph;
 	time_t currtime, starttime;
+	const char *spect_file_name = argv[3];
 
 	if (argc < 3) {
 		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    launch_loop(ph, quit_flag, time(NULL), p);
+    launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
 
 // #pragma omp parallel private(ph)
 // 	{

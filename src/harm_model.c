@@ -804,15 +804,17 @@ void omp_reduce_spect()
 
 */
 
-#define SPECTRUM_FILE_NAME	"./output/grmonty_hamr.spec"
 
-void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS])
+void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename)
 {
 	int i, j;
 	double dx2, dOmega, nuLnu, tau_scatt, L;
 	FILE *fp;
+    char filepath[256]; // Adjust the size as needed
 
-	fp = fopen(SPECTRUM_FILE_NAME, "w");
+    // Construct the file path
+    snprintf(filepath, sizeof(filepath), "./output/%s", filename);
+	fp = fopen(filepath, "w");
 	if (fp == NULL) {
 		fprintf(stderr, "trouble opening spectrum file\n");
 		exit(0);
@@ -878,7 +880,7 @@ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect
 	fprintf(stderr, "\n");
 	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
 	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);
-
+	fprintf(stderr, "Data saved in %s\n", filepath);
 	fclose(fp);
 
 }

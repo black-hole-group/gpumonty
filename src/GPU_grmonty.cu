@@ -139,9 +139,9 @@ void createTexture(float * host_pointer, cudaTextureObject_t *  TexObj, int num_
 	return;
 }
 /**********************************************************************************************************************************************************************************/
-#define FILENAME "output_nz.txt"
 
-void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
+
+void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename){
 	clock_t start, end;
     double cpu_time_used;
 	cudaError_t cudaStatus;
@@ -237,7 +237,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	double* nu_arr;
 	gpuErrchk(cudaMalloc(&nu_arr, gen_superph * sizeof(double)));
 	start = clock();
-	//GPU_calculate_frequencies<<<N_BLOCKS, N_THREADS>>>(d_geom, d_p, dnmax_arr, nu_arr, generated_photons_arr);
+	GPU_calculate_frequencies<<<N_BLOCKS, N_THREADS>>>(d_geom, d_p, dnmax_arr, nu_arr, generated_photons_arr);
 	cudaDeviceSynchronize();
 
 	cudaStatus = cudaGetLastError();
@@ -259,7 +259,6 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	start = clock();
 	GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, nu_arr);
 	cudaDeviceSynchronize();
-
 	cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess) {
 		fprintf(stderr, "in GPU_sample_photons_batch %s\n", cudaGetErrorString(cudaStatus));
@@ -341,7 +340,7 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p){
 	double maximum_w;
 	cudaMemcpyFromSymbol(&maximum_w, d_maximum_w, sizeof(double), 0, cudaMemcpyDeviceToHost);
 	
-	report_spectrum(gen_superph, spect);
+	report_spectrum(gen_superph, spect, filename);
  	//cudaDestroyTextureObject(FTexObj);
 	cudaFree(scat_ofphoton);
 	cudaFree(initial_photon_states);
@@ -396,8 +395,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	//int seed = 139 * global_index + time;
-	//int seed = 139 * global_index + time;
-	int seed = 139; /*Change this later*/
+	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	//r_MT[global_index] = seedRand(seed);
 	/*This is how we'll split things between blocks and threads*/
@@ -460,13 +458,12 @@ __global__ void GPU_calculate_frequencies(struct of_geom * d_geom, double * d_p,
                 nu = exp(GPU_monty_rand() * Nln + lnu_min);
                 weight = GPU_linear_interp_weight(nu);
                 do_condition = GPU_monty_rand()> (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax;
-				//do_condition = true;
-				if(do_condition){
+				if(!do_condition){
 					/*This way, things are deterministic, e.g, it will generate the same number for the same seed*/
 					atomicMin(&min_thread, threadIdx.x);
 				}
                 __syncthreads(); 
-				if(do_condition && min_thread == threadIdx.x){
+				if(!do_condition && min_thread == threadIdx.x){
 					nu_arr[sampled_photon + ph_array_index] = nu;
                     someoneFoundIt = true;
                 }
@@ -532,26 +529,26 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu)
 	#endif
     double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
-	double Nln = lnu_max - lnu_min;
-	double nu2;
+	// double Nln = lnu_max - lnu_min;
+	// double nu2;
 	GPU_get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	/* Sample from superphoton distribution in current simulation zone */
 
-	do {
-		nu2 = exp(GPU_monty_rand() * Nln + lnu_min);
-		weight = GPU_linear_interp_weight(nu2);
-	} while (GPU_monty_rand() >
-		 (GPU_F_eval(Thetae, Bmag, nu2) / (weight + 1.e-100)) / dnmax);
+	// do {
+	// 	nu2 = exp(GPU_monty_rand() * Nln + lnu_min);
+	// 	weight = GPU_linear_interp_weight(nu2);
+	// } while (GPU_monty_rand() >
+	// 	 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 
-	//weight = GPU_linear_interp_weight(nu2);
+	weight = GPU_linear_interp_weight(nu);
 	ph[ph_arr_index + sampled_count].w = weight;
 	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 
 	do {
 		cth = 2. * GPU_monty_rand() - 1.;
 		th = acos(cth);
-		do_condition = GPU_monty_rand() > GPU_jnu_synch(nu2, Ne, Thetae, Bmag, th) / jmax;
+		do_condition = GPU_monty_rand() > GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
 	} while (do_condition);
 
 
@@ -560,7 +557,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], double nu)
 	cphi = cos(phi);
 	sphi = sin(phi);
 
-	E = nu2 * HPL / (ME * CL * CL);
+	E = nu * HPL / (ME * CL * CL);
 	K_tetrad[0] = E;
 	K_tetrad[1] = E * cth;
 	K_tetrad[2] = E * cphi * sth;
