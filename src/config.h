@@ -73,9 +73,9 @@
 /* some useful macros */
 #define SLOOP_DEVICE for(int i=0;i<d_N1;i++)for(int j = 0; j< d_N2; j++)for(int k=0; k < d_N3; k++)
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
-#define SPATIAL_INDEX2D(i,j) ((j + N2 * i))
-#define SPATIAL_INDEX3D(i,j,k) ((k) + N3 * (j + N2 * i))
-#define SPATIAL_INDEX4D(i,j,k,l) (l + NPRIM*((k) + N3 * (j + N2 * i)))
+#define SPATIAL_INDEX2D(i,j) (((j) + N2 * (i)))
+#define SPATIAL_INDEX3D(i,j,k) ((k) + N3 * ((j) + N2 * (i)))
+#define SPATIAL_INDEX4D(i,j,k,l) ((l) + NPRIM*((k) + N3 * ((j) + N2 * (i))))
 #define INDEX(i,j,k)	(NPRIM*( (k) + N3*((j) + N2*(i))))
 #define MYSIN(x,sx) 	{							\
 			double _xp = (x)-M_PI; 					\

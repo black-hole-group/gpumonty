@@ -395,7 +395,8 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	//int seed = 139 * global_index + time;
-	int seed = 139 * global_index + time;
+	//int seed = 139 * global_index + time;
+	int seed = 139;
 	GPU_init_monty_rand(seed);
 	//r_MT[global_index] = seedRand(seed);
 	/*This is how we'll split things between blocks and threads*/
@@ -2248,7 +2249,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 	//checks if it's within the grid
 	if (X[1] < d_startx[1] ||
-	    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2] || X[3] < d_startx[3] || X[3] > d_stopx[3]) {
+	    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
 
 		*Ne = 0.;
 
