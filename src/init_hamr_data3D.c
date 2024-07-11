@@ -17,7 +17,7 @@ void init_hamr3D_data(char *fname)
 	FILE *fp;
 	double x[4];
 	double rp, hp, php, V, dV, two_temp_gam;
-	int i, k;
+	int i, k, j, z;
 
 	/* header variables not used except locally */
 	double t, a, gam;
@@ -37,17 +37,34 @@ void init_hamr3D_data(char *fname)
 
 	/* get standard HARM header */
     check_scan_error(fread(&t, sizeof(double), 1, fp), 1);
+		//fprintf(stderr, "t = %lf\n", t);
 	check_scan_error(fread(&N1, int_size, 1, fp), 1);
     check_scan_error(fread(&N2, int_size, 1, fp), 1);
     check_scan_error(fread(&N3, int_size, 1, fp), 1);
 	check_scan_error(fread(&startx[1], double_size, 1, fp), 1);
+		//fprintf(stderr, "startx1 = %lf\n", startx[1]);
+
 	check_scan_error(fread(&startx[2], double_size, 1, fp), 1);
+		//fprintf(stderr, "startx[2] = %lf\n", startx[2]);
+
 	check_scan_error(fread(&startx[3], double_size, 1, fp), 1);
+		//fprintf(stderr, "startx[3] = %lf\n", startx[3]);
+
 	check_scan_error(fread(&dx[1], double_size, 1, fp), 1);
+		//fprintf(stderr, "dx = %lf\n", dx[1]);
+
 	check_scan_error(fread(&dx[2], double_size, 1, fp), 1);
+		//fprintf(stderr, "dx[2] = %lf\n", dx[2]);
+
 	check_scan_error(fread(&dx[3], double_size, 1, fp), 1);
+		//fprintf(stderr, "dx[3] = %lf\n", dx[3]);
+
 	check_scan_error(fread(&a, double_size, 1, fp), 1);
+		//fprintf(stderr, "a = %lf\n", a);
+
 	check_scan_error(fread(&gam, double_size, 1, fp), 1);
+		//fprintf(stderr, "gam = %lf\n", gam);
+
 	hslope = 0;
 	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
 
@@ -83,12 +100,12 @@ void init_hamr3D_data(char *fname)
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
 	for (k = 0; k < N1 * N2 * N3; k++) {
-		// z = k % N3;
-		// j = (k/N3) % N2;
+		z = k % N3;
+		j = (k/N3) % N2;
 		i = (k/ (N2 * N3));
         //fprintf(stderr, "i = %d, j = %d, z = %d\n", i, j, z);
 		check_scan_error(fread(&x[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "x1[%d, %d] = %le\n", i, j, x[1]);
+		//fprintf(stderr, "x1[%d, %d, %d] = %le\n", i, j,z, x[1]);
 		check_scan_error(fread(&x[2], double_size, 1, fp), 1);
 		//fprintf(stderr, "x2[%d, %d] = %le\n", i, j, x[2]);
         check_scan_error(fread(&x[3], double_size, 1, fp), 1);
@@ -105,26 +122,27 @@ void init_hamr3D_data(char *fname)
 		bl_coord_hamr(x, &rp, &hp, &php);
 		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5 || fabs(php - ph) > 1.e-5) {
 			fprintf(stderr, "grid setup error\n");
+			fprintf(stderr, "x1 = %le, x2 = %le, x3 = %le\n", x[1], x[2], x[3]);
 			fprintf(stderr, "rp,r,  %g %g, hp,h: %g %g, php, ph: %g %g\n",
 				rp, r, hp, h, php, ph);
 			exit(1);
 		}
 
-		check_scan_error(fread(&p[KRHO][k], double_size, 1, fp), 1);
-		//fprintf(stderr, "rho[%d, %d, %d] = %le\n", i, j, z, p[KRHO][k]);
-		check_scan_error(fread(&p[UU][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(KRHO,k)], double_size, 1, fp), 1);
+		//fprintf(stderr, "rho[%d, %d, %d] = %le\n", i, j, z, p[NPRIM_INDEX(KRHO,k)]);
+		check_scan_error(fread(&p[NPRIM_INDEX(UU,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "UU[%d, %d] = %le\n", i, j, p[UU][k]);
-		check_scan_error(fread(&p[U1][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(U1,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "U1[%d, %d] = %le\n", i, j, p[U1][k]);
-		check_scan_error(fread(&p[U2][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(U2,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "U2[%d, %d] = %le\n", i, j, p[U2][k]);
-		check_scan_error(fread(&p[U3][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(U3,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "U3[%d, %d] = %le\n", i, j, p[U3][k]);
-		check_scan_error(fread(&p[B1][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(B1,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "B1[%d, %d] = %le\n", i, j, p[B1][k]);
-		check_scan_error(fread(&p[B2][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(B2,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "B2[%d, %d] = %le\n", i, j, p[B2][k]);
-		check_scan_error(fread(&p[B3][k], double_size, 1, fp), 1);
+		check_scan_error(fread(&p[NPRIM_INDEX(B3,k)], double_size, 1, fp), 1);
 		//fprintf(stderr, "B3[%d, %d] = %le\n", i, j, p[B3][k]);
 		check_scan_error(fread(&Ucon[0], double_size, 1, fp), 1);
 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
@@ -159,9 +177,10 @@ void init_hamr3D_data(char *fname)
 		check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
 		check_scan_error(fread(&gdet, double_size, 1, fp), 1);
+		//fprintf(stderr, "gdet[%d, %d, %d] = %le\n", i, j,z, gdet);
 
 		bias_norm +=
-		    dV * gdet * pow(p[UU][k] / p[KRHO][k] *
+		    dV * gdet * pow(p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)] *
 				    Thetae_unit, 2.);
 		V += dV * gdet;
 		//fprintf(stderr, "rho[%d][%d] = %le, UU[%d][%d] = %le\n", i, j, p[KRHO][k], i, j, p[UU][k]);
@@ -170,9 +189,9 @@ void init_hamr3D_data(char *fname)
 
 		/* check accretion rate */
 		if (i <= 20)
-			dMact += gdet * p[KRHO][k] * Ucon[1];
+			dMact += gdet * p[NPRIM_INDEX(KRHO,k)] * Ucon[1];
 		if (i >= 20 && i < 40)
-			Ladv += gdet * p[UU][k] * Ucon[1] * Ucov[0];
+			Ladv += gdet * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucov[0];
 	}
 	fprintf(stderr, "Bias Norm Final = %le, V Final = %le\n", bias_norm, V);
 	fprintf(stderr, "dMact before = %le, Ladv before = %le\n", dMact, Ladv);

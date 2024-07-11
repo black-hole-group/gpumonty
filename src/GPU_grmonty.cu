@@ -394,9 +394,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	//int seed = 139 * global_index + time;
-	//int seed = 139 * global_index + time;
-	int seed = 139;
+	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	//r_MT[global_index] = seedRand(seed);
 	/*This is how we'll split things between blocks and threads*/
@@ -410,12 +408,8 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 		which will be used when sampling the photons*/
 		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
 		generated_photons_arr[a] = generated_photons;
-		// if(a < 3000){
-		// 	printf("Generated_photons photons[%d] = %d\n",a, generated_photons);
-		// }
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
-		// }
 	}
 	return;
 }
@@ -3737,11 +3731,15 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
 
 	d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph->tau_scatt);
     // Bin in x2 coordinate
-    dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
-    ix2 = (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph->X[2] / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
-
+	#if(HAMR)
+		dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
+		ix2 = ((ph->X[2]) < 0) ? (int)((1 +ph->X[2]) / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
+	#else
+	    dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
+    	ix2 = (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph->X[2] / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
+	#endif
     if (ix2 < 0 || ix2 >= N_THBINS){
-		printf("Ix2 = %d\n", ix2);
+		//printf("Ix2 = %d\n", ix2);
         return;
 	}
 
