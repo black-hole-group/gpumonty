@@ -182,15 +182,11 @@ void init_hamr_data(char *fname)
 		if (i >= 20 && i < 40)
 			Ladv += gdet * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucov[0];
 	}
-	fprintf(stderr, "Bias Norm Final = %le, V Final = %le\n", bias_norm, V);
-	fprintf(stderr, "dMact before = %le, Ladv before = %le\n", dMact, Ladv);
 	bias_norm /= V;
 	dMact *= dx[3] * dx[2];
 	dMact /= 21.;
 	Ladv *= dx[3] * dx[2];
 	Ladv /= 21.;
 
-	fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
     fclose(fp);
-
 }

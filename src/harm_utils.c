@@ -199,8 +199,7 @@ void init_weight_table(void)
 #undef JCST
 
 #define BTHSQMIN	(1.e-8)//Pedro edit from 1e-4 //1e-8 works for riaf
-#define BTHSQMAX	(1.e14) //1.e8 Pedro edit  // 1e12 works for riaf
-#define	NINT		(20000) //20000
+#define BTHSQMAX	(1.e40) //1.e8 Pedro edit  // 1e12 works for riaf
 double lb_min, dlb;
 double nint[NINT + 1];
 double dndlnu_max[NINT + 1];

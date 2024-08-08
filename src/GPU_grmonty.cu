@@ -231,7 +231,6 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, co
     printf("Execution time: %f seconds to generate photons\n", cpu_time_used);
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
-	
 
 	fprintf(stderr, "Sampling photons' frequencies!\n");
 	double* nu_arr;
@@ -281,7 +280,6 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, co
 	unsigned long long num_scat_phs[MAX_LAYER_SCA];
 	start = clock();
 	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton);
-	//GPU_track<<<1,1>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton);
 	cudaDeviceSynchronize();
 
 	cudaStatus = cudaGetLastError();
@@ -366,6 +364,8 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 		atomicAdd(&scattering_counter, 1);
 	}
 }
+
+
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	double percentage;
@@ -376,7 +376,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 	//for(int a = global_index; a < initial_ph_count; (a += 1)){
 		//printf("ThreadId = %d, photon_index = %d\n", global_index, a);
 		GPU_track_super_photon(&ph[photon_index], d_spect, d_p, d_table_ptr, scat_ofphoton, 0);
-		// /*progress indicator*/
+		/*progress indicator*/
 		atomicAdd(&tracking_counter, 1);
 		if(global_index == 0){
 			percentage = 100 - ((photon_count - tracking_counter) * 100) /photon_count;
@@ -386,6 +386,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 			}
 		}
 	}
+
 }
 
 
@@ -786,7 +787,7 @@ __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thet
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 	if (isnan(*B) && threadIdx.x == 0){
-		printf("i = %d, j = %d, k = %d\n", i, j, k);
+		//printf("i = %d, j = %d, k = %d\n", i, j, k);
 		printf( "VdotV = %le\n", VdotV);
 		printf( "Vfac = %lf\n", Vfac);
 		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[a][b]);
@@ -1207,11 +1208,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		*n2gen = 0.;
 		return;
 	} else if (l >= NINT) {
-		printf(
-			"warning: outside of nint table range %g...change in harm_utils.c\n",
-			Bmag * Thetae * Thetae);
-		printf( "lbth = %le, lb_min = %le, dlb = %le l = %d\n", lbth, lb_min, dlb, l);
-		printf("i = %d, j = %d\n", i, j);
+		printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (l = 0; l <= N_ESAMP; l++) {

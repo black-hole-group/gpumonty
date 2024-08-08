@@ -29,13 +29,12 @@
 #define TMIN (THETAE_MIN)
 #define TMAX (1.e2)
 #define BTHSQMIN	(1.e-8)//Pedro edit from 1e-4 //1e-8 works for riaf
-#define BTHSQMAX	(1.e14) //1.e8 Pedro edit  // 1e12 works for riaf
-#define	NINT		(20000) //20000
+#define BTHSQMAX	(1.e40) //1.e8 Pedro edit  // 1e12 works for riaf
 
 #define MINW	1.e-12
-#define MAXW	1.e6
-#define MINT	0.0001
-#define MAXT	1.e4
+#define MAXW	1.e10
+#define MINT	1e-10
+#define MAXT	1.e10
 #define NW	220
 #define NT	80
 

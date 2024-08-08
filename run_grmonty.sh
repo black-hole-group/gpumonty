@@ -3,7 +3,7 @@
 # Loop to execute the command 30 times
 for i in $(seq 0 9); do
     # Construct the command with the current value of i
-    cmd="time ./grmonty 500000 ./data/dump019 gpumonty_$i"
+    cmd="time ./grmonty 500000 ./data/HAMR_test.bin gpumonty_hamr_$i"
     
     # Execute the command
     echo "Executing: $cmd"

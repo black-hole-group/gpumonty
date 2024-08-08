@@ -59,9 +59,9 @@
 */
 
 #define MINW	1.e-12
-#define MAXW	1.e6
-#define MINT	0.0001
-#define MAXT	1.e4
+#define MAXW	1.e10
+#define MINT	1e-10
+#define MAXT	1.e10
 #define NW	220
 #define NT	80
 

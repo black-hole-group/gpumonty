@@ -40,7 +40,7 @@
 #endif
 
 #if(HAMR)
-#define M_UNIT (3.2e10)
+#define M_UNIT (4e7)
 #else
 #define M_UNIT (4.e19) /*Try to find rho_scale as this parameter*/
 #endif
