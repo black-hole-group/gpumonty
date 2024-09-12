@@ -28,7 +28,7 @@
 
 #define WEIGHT_MIN	(1.e31)
 
-#define HAMR (1)
+#define HAMR (0)
 #define HAMR3D (0) /* Leave it equal 0 to do HAMR2D */
 
 
