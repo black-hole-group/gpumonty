@@ -2626,13 +2626,7 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 	double lconn[NDIM][NDIM][NDIM];
 
 	GPU_get_connection(X, lconn);
-	//printf( "Inside INIT_DKDLAM after X[0] = %lf, X[1] = %lf, X[2] = %lf, X[3] = %lf\n", X[0], X[1], X[2], X[3]);
 
-	// for(int i = 0; i< 4; i++)
-	// for(int j = 0; j < 4; j++)
-	// for(int z = 0; z< 4; z++){
-	// 	printf( "We are inside init_dKdlam function: lconn[%d][%d][%d] = %le\n", i, j, z, lconn[i][j][z]);
-	// }
 	for (k = 0; k < 4; k++) {
 
 		dK[k] =
