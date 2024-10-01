@@ -419,7 +419,7 @@ __global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_ge
 		cumulative_photon_count_per_zone = 0;
 
 		photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
-		if (photon_index > photon_count){
+		if (photon_index >= photon_count){
 			break;
 		}
 
