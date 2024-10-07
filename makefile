@@ -12,13 +12,12 @@ LDFLAGS = -lm -L/home/pedro/gsl/lib -lgsl -lgslcblas -fopenmp
 # CUDA paths and flags
 CUDA_PATH ?= /usr/local/cuda
 CFLAGS += -I$(CUDA_PATH)/include
-LDFLAGS += -L$(CUDA_PATH)/lib64 -lcudart
-
+LDFLAGSCUDA += -L$(CUDA_PATH)/lib64 -lcudart
 
 # NVCC compiler and flags
 NVCC = nvcc
-NVCCFLAGS = -arch=compute_75 -code=sm_75 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -I/home/pedro/gsl/include -c
-EXTRALIBS = -lm -L /usr/local/cuda-12.4/lib64 -lstdc++ -lcudart -lcuda -L/home/pedro/gsl/lib
+NVCCFLAGS = -arch=compute_75 -code=sm_75 -rdc=true --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler="-fopenmp"
+EXTRALIBS = -lm -L /usr/local/cuda-12.4/lib64 -lstdc++ -lcudart -lcuda -lgomp
 
 # Source files
 SRCS = $(SRC_DIR)/grmonty.c $(SRC_DIR)/compton.c $(SRC_DIR)/init_geometry.c \
@@ -29,7 +28,7 @@ SRCS = $(SRC_DIR)/grmonty.c $(SRC_DIR)/compton.c $(SRC_DIR)/init_geometry.c \
        $(SRC_DIR)/init_hamr_data2D.c $(SRC_DIR)/init_harm_data.c $(SRC_DIR)/init_hamr_data3D.c\
 
 # GPU source file
-GPU_SRC = $(SRC_DIR)/GPU_grmonty.cu $(SRC_DIR)/Radiation.cu
+GPU_SRC = $(SRC_DIR)/GPUmonty.cu $(SRC_DIR)/radiation.cu $(SRC_DIR)/metrics.cu
 
 # Object files
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -39,19 +38,22 @@ GPU_OBJ = $(patsubst $(SRC_DIR)/%.cu,$(BUILD_DIR)/%.o,$(GPU_SRC))
 INCS = $(SRC_DIR)/decs.h $(SRC_DIR)/constants.h $(SRC_DIR)/harm_model.h $(SRC_DIR)/defs.h $(SRC_DIR)/config.h $(SRC_DIR)/gpu_header.h $(SRC_DIR)/defs_CUDA.h
 
 # Executable
-EXECUTABLE = grmonty
+EXECUTABLE = gpumonty
 
 # Build rule
 $(EXECUTABLE): $(OBJS) $(GPU_OBJ) $(INCS) | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(GPU_OBJ) $(LDFLAGS) $(EXTRALIBS)
+	# Step 1: Create a device link object from GPU objects
+	$(NVCC) $(NVCCFLAGS) -dlink -o $(BUILD_DIR)/cuda_device_link.o $(GPU_OBJ) $(LDFLAGSCUDA)
+	# Step 2: Link everything together
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(GPU_OBJ) $(BUILD_DIR)/cuda_device_link.o $(LDFLAGS) $(EXTRALIBS)
 
 # Compile rule for C files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-# Compile rule for GPU file
+# Compile rule for GPU files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR) 
-	$(NVCC) $(NVCCFLAGS) -o $@ $<
+	$(NVCC) $(NVCCFLAGS) -dc -o $@ $<
 
 # Create build directory if it doesn't exist
 $(BUILD_DIR):
@@ -60,4 +62,3 @@ $(BUILD_DIR):
 # Clean rule
 clean:
 	/bin/rm -rf $(BUILD_DIR) $(EXECUTABLE)
-
