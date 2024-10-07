@@ -111,7 +111,7 @@ extern double R0, Rin, Rh, Rout, Rms;
 extern double hslope;
 extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 
-extern double dlE, lE0;
+//extern double dlE, lE0;
 extern double gam;
 extern double dMsim;
 extern double Thetae_unit;
@@ -225,7 +225,6 @@ void gcon_func(double *X, double gcon[][NDIM]);
 /*Defining GPU functions*/
 void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
 
-#define	NINT (20000) //20000
 extern double nint[NINT + 1];
 extern double dndlnu_max[NINT + 1];
 extern double K2[N_ESAMP + 1];

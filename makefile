@@ -14,9 +14,10 @@ CUDA_PATH ?= /usr/local/cuda
 CFLAGS += -I$(CUDA_PATH)/include
 LDFLAGS += -L$(CUDA_PATH)/lib64 -lcudart
 
+
 # NVCC compiler and flags
 NVCC = nvcc
-NVCCFLAGS = -arch=compute_60 -code=sm_60 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -I/home/pedro/gsl/include -c
+NVCCFLAGS = -arch=compute_75 -code=sm_75 --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler \-fopenmp -lgomp -I/home/pedro/gsl/include -c
 EXTRALIBS = -lm -L /usr/local/cuda-12.4/lib64 -lstdc++ -lcudart -lcuda -L/home/pedro/gsl/lib
 
 # Source files
@@ -28,7 +29,7 @@ SRCS = $(SRC_DIR)/grmonty.c $(SRC_DIR)/compton.c $(SRC_DIR)/init_geometry.c \
        $(SRC_DIR)/init_hamr_data2D.c $(SRC_DIR)/init_harm_data.c $(SRC_DIR)/init_hamr_data3D.c\
 
 # GPU source file
-GPU_SRC = $(SRC_DIR)/GPU_grmonty.cu
+GPU_SRC = $(SRC_DIR)/GPU_grmonty.cu $(SRC_DIR)/Radiation.cu
 
 # Object files
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))

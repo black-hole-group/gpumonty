@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
 // 	}
 
 	/* spectral bin parameters */
-	dlE = 0.25;		/* bin width */
-	lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
+	//dlE = 0.25;		/* bin width */
+	//lE0 = log(1.e-12);	/* location of first bin, in electron rest-mass units */
 
 	/* initialize model data, auxiliary variables */
 	init_model(argv);

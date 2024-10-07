@@ -15,6 +15,10 @@
 #include "constants.h"
 #include <cuda_runtime.h>
 
+#define N_BLOCKS 176//176//30
+#define N_THREADS 256//256//256
+
+
 #define NDIM	4
 #define NPRIM	8
 
@@ -94,3 +98,70 @@
 #define N_THBINS	6
 #define NW	220
 #define NT	80
+
+#define REF_2 (1)
+#define TILT_ANGLE (0.0)
+#define LEFT (0)
+#define RIGHT (1)
+#define FACE1	(0)	
+#define FACE2	(1)
+#define CORN	(2)
+#define CENT	(3)
+#define FACE3	(4)
+
+#define DEVICE_NPRIM_INDEX3D(i,j,k,l) (i * (d_N1 * d_N2 * d_N3) + ((l) + d_N3 * (k + d_N2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+#define DEVICE_SPATIAL_INDEX2D(i,j) ((j + d_N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+#define DEVICE_SPATIAL_INDEX3D(i,j,k) (k+ d_N3*(j + d_N2 * i))
+
+#define d_lmint     (log10(MINT))
+#define d_lminw     (log10(MINW))
+#define d_lT_min    (log(TMIN))
+#define d_dlw       (log10(MAXW / MINW) / NW)
+#define d_dlT       (1/(log(TMAX / TMIN) / (N_ESAMP)))
+
+#define	NINT (20000) //20000
+
+/* spectral bin parameters */
+#define	dlE (0.25)
+#define lE0	(log(1.e-12))
+/*Definitions of other globals*/
+#define KFAC	(9*M_PI*ME*CL/EE)
+#define KMIN (0.002)
+/*Right now, KMAX and KMIN should be changed with careful regarding the function GPU_Inverse_F_eval*/
+#define KMAX (1.e7)
+#define KMIN (0.002)
+#define CST 1.88774862536	/* 2^{11/12} */
+#define SMALL_VECTOR	1.e-30
+#define EPSABS 0.
+#define EPSREL 1.e-6
+#define TMIN (THETAE_MIN)
+#define TMAX (1.e2)
+#define BTHSQMIN	(1.e-8)//Pedro edit from 1e-4 //1e-8 works for riaf
+#define BTHSQMAX	(1.e40) //1.e8 Pedro edit  // 1e12 works for riaf
+
+#define MINW	1.e-12
+#define MAXW	1.e10
+#define MINT	1e-10
+#define MAXT	1.e10
+#define NW	220
+#define NT	80
+
+#define MAX_LAYER_SCA 8
+/*for stop criterium*/
+#define RMAX	100.
+#define ROULETTE	1.e4
+
+/*for stepsize*/
+#define EPS   0.04
+
+/*Push photon routine*/
+#define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
+#define ETOL 1.e-3
+#define MAX_ITER 2
+
+/*Hot cross routines*/
+#define MAXGAMMA	12.
+#define DMUE		0.05
+#define DGAMMAE		0.05
+/*track super photon*/
+#define MAXNSTEP 1280000

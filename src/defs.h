@@ -16,7 +16,7 @@ double R0, Rin, Rh, Rout, Rms;
 double hslope;
 double startx[NDIM], stopx[NDIM], dx[NDIM];
 
-double dlE, lE0;
+//double dlE, lE0;
 double gam;
 double dMsim;
 double Thetae_unit;

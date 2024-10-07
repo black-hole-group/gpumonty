@@ -1,25 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdbool.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_sf_bessel.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_integration.h>
-#include <omp.h>
-#include "constants.h"
-#include <cuda_runtime.h>
-#include <curand_kernel.h>
-/* include MTGP host helper functions */
-#include <curand_mtgp32_host.h>
-/* include MTGP pre-computed parameter sets */
-#include <curand_mtgp32dc_p_11213.h>
-#include "config.h"
 
 /*Cuda error function*/
 #define gpuErrchk(ans)                        \
@@ -53,30 +31,14 @@ inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpy
 }
 
 
-/*Mersenne twister header*/
-#ifndef __MTWISTER_H
-#define __MTWISTER_H
-
-#define STATE_VECTOR_LENGTH 624
-#define STATE_VECTOR_M      397 /* changes to STATE_VECTOR_LENGTH also require changes to this */
-
-typedef struct tagMTRand {
-  unsigned long mt[STATE_VECTOR_LENGTH];
-  int index;
-} MTRand;
-
-__device__ MTRand seedRand(unsigned long seed);
-__device__ unsigned long genRandLong(MTRand* rand);
-__device__ double GPU_monty_rand_MT();
-__device__ double GPU_monty_rand();
-
-#endif /* #ifndef __MTWISTER_H */
 
 
-#define N_BLOCKS 176//176//30
-#define N_THREADS 256//256//256
+
 
 /*Testing functions*/
+#ifndef GPU_FUNCTIONS
+#define GPU_FUNCTIONS
+__device__ double GPU_monty_rand();
 __global__ void GPU_mainloop(struct of_photon ph, time_t time, struct of_geom *d_geom, double *d_p, double * d_table_ptr, int * super_photon_made, struct of_spectrum* d_spect);
 __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, unsigned long long * generated_photons_arr, double * dnmax_arr);
 __global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, unsigned long long * generated_photons_arr, double * dnmax_arr);;
@@ -173,3 +135,4 @@ __device__ void GPU_gcon_func(double *X, double gcon[][NDIM]);
 __device__ void GPU_gcov_func(double *X, double gcov[][NDIM]);
 __device__ void GPU_bl_coord(double *X, double *r, double *th);
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val);
+#endif
