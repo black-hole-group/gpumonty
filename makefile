@@ -21,9 +21,8 @@ EXTRALIBS = -lm -L /usr/local/cuda-12.4/lib64 -lstdc++ -lcudart -lcuda -L/home/p
 
 # Source files
 SRCS = $(SRC_DIR)/grmonty.c $(SRC_DIR)/compton.c $(SRC_DIR)/init_geometry.c \
-       $(SRC_DIR)/tetrads.c $(SRC_DIR)/geodesics.c $(SRC_DIR)/radiation.c \
+       $(SRC_DIR)/tetrads.c \
        $(SRC_DIR)/jnu_mixed.c $(SRC_DIR)/hotcross.c \
-       $(SRC_DIR)/track_super_photon.c $(SRC_DIR)/scatter_super_photon.c \
        $(SRC_DIR)/harm_model.c $(SRC_DIR)/harm_utils.c \
        $(SRC_DIR)/hamr_model.c \
        $(SRC_DIR)/init_hamr_data2D.c $(SRC_DIR)/init_harm_data.c $(SRC_DIR)/init_hamr_data3D.c\
