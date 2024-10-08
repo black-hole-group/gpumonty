@@ -66,8 +66,7 @@ __device__ double GPU_linear_interp_F(double K);
 __device__ double GPU_K2_eval(double Thetae);
 __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM]);
 __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
-//__device__ static void GPU_init_zone(int i, int j, int k, double *nz, double *dnmax, struct of_geom *d_geom, double *d_p, int d_Ns_par);
-__device__ static void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
+__device__  void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
 
 /*track super photon and its dependencies*/
 __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
@@ -112,7 +111,7 @@ __device__ double GPU_sample_klein_nishina(double k0);
 __device__ double GPU_klein_nishina(double a, double ap);
 __device__ void generate_random_direction(double * x, double *y, double *z);
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]);
-__device__ void GPU_get_connection(double X[4], double lconn[4][4][4]);
+__device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM]);
 __device__ int GPU_record_criterion(struct of_photon *ph);
 __device__ void GPU_record_super_photon(struct of_photon *ph, struct of_spectrum* d_spect);
 __device__ void omp_reduce_spect_kernel(struct of_spectrum *spect, struct of_spectrum *shared_spect);
@@ -131,7 +130,8 @@ __device__ double GPU_Bnu_inv(double nu, double Thetae);
 __device__ double GPU_total_compton_cross_lkup(double w, double thetae, double * d_table_ptr);
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/
-__device__ void GPU_gcon_func(double *X, double gcon[][NDIM]);
+//__device__ void GPU_gcon_func(double *X, double gcon[][NDIM]);
+__device__ void GPU_gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
 __device__ void GPU_gcov_func(double *X, double gcov[][NDIM]);
 __device__ void GPU_bl_coord(double *X, double *r, double *th);
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val);

@@ -17,50 +17,6 @@ struct of_spectrum spect[N_THBINS][N_EBINS] = { };
 	
 */
 
-void init_model(char *args[])
-{
-	/* This will tell the units defined in decs.h. 
-	There used to be a function here for this, but it's extremely 
-	unecessary as well as taking M_UNIT as an argument*/
-	fprintf(stderr, "\nUNITS\n");
-	fprintf(stderr, "L,T,M: %g %g %g\n", L_UNIT, T_UNIT, M_UNIT);
-	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_UNIT, U_UNIT, B_UNIT);
-	max_tau_scatt = (6. * L_UNIT) * RHO_UNIT * 0.4;
-	fprintf(stderr, "Initial max_tau_scatt: %g\n", max_tau_scatt);
-
-
-	fprintf(stderr, "getting simulation data...\n");
-	#if(HAMR)
-		#if(HAMR3D)
-		init_hamr3D_data(args[2]);/*PEDRO EDIT -> file to read H-AMR 3D data*/
-		#else
-		init_hamr_data(args[2]); /*PEDRO EDIT -> file to read H-AMR 2D data*/
-		#endif
-	#else
-	init_harm_data(args[2]);	/* read in HARM simulation data */
-	#endif
-	/* initialize the metric */
-	fprintf(stderr, "initializing geometry...\n");
-	fflush(stderr);
-	init_geometry();
-	fprintf(stderr, "done.\n\n");
-	fflush(stderr);
-	a = 0.9375;
-	Rh = 1 + sqrt(1. - a * a);
-
-	/* make look-up table for hot cross sections */
-	init_hotcross();
-
-	/* make table for solid angle integrated emissivity and K2 */
-	init_emiss_tables();
-
-	/* make table for superphoton weights */
-	init_weight_table();
-
-	/* make table for quick evaluation of ns_zone */
-	init_nint_table();
-
-}
 
 /*
 	make super photon 
@@ -279,7 +235,7 @@ void gcon_func(double *X, double gcon[][NDIM])
 
 	int k, l;
 	double sth, cth, irho2;
-	double r, th, phi;
+	double r, th;
 	double hfac;
 	/* required by broken math.h */
 	//void sincos(double in, double *sth, double *cth);
@@ -324,7 +280,7 @@ void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
-	double r, th, phi;
+	double r, th;
 	double tfac, rfac, hfac, pfac;
 	/* required by broken math.h */
 	//void sincos(double th, double *sth, double *cth);
@@ -393,7 +349,7 @@ void gcov_func(double *X, double gcov[][NDIM])
    where i = {1,2,3,4} corresponds to, e.g., {t,ln(r),theta,phi}
 */
 
-void get_connection(double X[4], double lconn[4][4][4])
+void get_connection(double * X, double lconn[][NDIM][NDIM])
 {
 	double r1, r2, r3, r4, sx, cx;
 	double th, dthdx2, dthdx22, d2thdx22, sth, cth, sth2, cth2, sth4,

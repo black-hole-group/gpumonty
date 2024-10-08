@@ -90,7 +90,7 @@ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
 {
 	int k, l;
 	double norm;
-	void normalize(double *vcon, double Gcov[4][4]);
+	void normalize(double vcon[NDIM], double Gcov[4][4]);
 	void project_out(double *vcona, double *vconb, double Gcov[4][4]);
 
 	/* econ/ecov index explanation:
@@ -223,7 +223,7 @@ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 	return;
 }
 
-void normalize(double *vcon, double Gcov[NDIM][NDIM])
+void normalize(double vcon[NDIM], double Gcov[NDIM][NDIM])
 {
 	int k, l;
 	double norm;
@@ -262,7 +262,7 @@ void project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
 	return;
 }
 
-void normalize_null(double Gcov[NDIM][NDIM], double K[])
+void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM])
 {
 	int k, l;
 	double A, B, C;

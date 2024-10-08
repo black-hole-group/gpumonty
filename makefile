@@ -1,3 +1,7 @@
+#Change this for the models name
+#Currently: GPU_harm
+MODEL = GPU_harm
+
 # Source directory
 SRC_DIR = src
 
@@ -28,7 +32,7 @@ SRCS = $(SRC_DIR)/grmonty.c $(SRC_DIR)/compton.c $(SRC_DIR)/init_geometry.c \
        $(SRC_DIR)/init_hamr_data2D.c $(SRC_DIR)/init_harm_data.c $(SRC_DIR)/init_hamr_data3D.c\
 
 # GPU source file
-GPU_SRC = $(SRC_DIR)/GPUmonty.cu $(SRC_DIR)/radiation.cu $(SRC_DIR)/metrics.cu
+GPU_SRC = $(SRC_DIR)/GPUmonty.cu $(SRC_DIR)/radiation.cu $(SRC_DIR)/metrics.cu $(SRC_DIR)/$(MODEL)_model.cu
 
 # Object files
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))

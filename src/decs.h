@@ -123,6 +123,8 @@ extern gsl_rng *r;
 
 /** model-independent subroutines **/
 /* core monte carlo/radiative transport routines */
+#ifndef CPUFUNCTIONS
+#define CPUFUNCTIONS
 void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
 void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
@@ -228,3 +230,4 @@ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, co
 extern double nint[NINT + 1];
 extern double dndlnu_max[NINT + 1];
 extern double K2[N_ESAMP + 1];
+#endif

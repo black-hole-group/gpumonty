@@ -78,7 +78,7 @@ int LU_decompose( double A[][NDIM], int permute[] )
 
   double absmin = 1.e-30; /* Value used instead of 0 for singular matrices */
 
-  double  absmax, maxtemp, mintemp;
+  double  absmax, maxtemp;
 
   int i, j, k, max_row;
   int n = NDIM;
@@ -234,7 +234,7 @@ void LU_substitution( double A[][NDIM], double B[], int permute[] )
 {
   int i, j ;
   int n = NDIM;
-  double tmpvar,tmpvar2;
+  double tmpvar;
 
   
   /* Perform the forward substitution using the LU matrix. 
@@ -270,39 +270,42 @@ void LU_substitution( double A[][NDIM], double B[], int permute[] )
 
 int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )  
 { 
+	int i,j;
+	int n = NDIM;
+	int permute[NDIM]; 
+	double dxm[NDIM], Amtmp[NDIM][NDIM];
 
-  int i,j;
-  int n = NDIM;
-  int permute[NDIM]; 
-  double dxm[NDIM], Amtmp[NDIM][NDIM];
+	for (i = 0; i < NDIM; i++) {
+		for (j = 0; j < NDIM; j++) {
+			Amtmp[i][j] = Am[i][j];
+		}
+	}
 
-  for( i = 0 ; i < NDIM*NDIM ; i++ ) {  Amtmp[0][i] = Am[0][i]; }
-
-  // Get the LU matrix:
-  if( LU_decompose( Amtmp,  permute ) != 0  ) { 
-    fprintf(stderr, "invert_matrix(): singular matrix encountered! \n");
-    fprintf(stderr, "This is probably due to a nan value somewhere rather than determinant = 0. Investigate!\n");
+	// Get the LU matrix:
+	if( LU_decompose( Amtmp,  permute ) != 0  ) { 
+	fprintf(stderr, "invert_matrix(): singular matrix encountered! \n");
+	fprintf(stderr, "This is probably due to a nan value somewhere rather than determinant = 0. Investigate!\n");
 	return(1);
-  }
+	}
 
-  for( i = 0; i < n; i++ ) { 
-    for( j = 0 ; j < n ; j++ ) { dxm[j] = 0. ; }
-    dxm[i] = 1.; 
-    
-    /* Solve the linear system for the i^th column of the inverse matrix: :  */
-    LU_substitution( Amtmp,  dxm, permute );
+	for( i = 0; i < n; i++ ) { 
+	for( j = 0 ; j < n ; j++ ) { dxm[j] = 0. ; }
+	dxm[i] = 1.; 
 
-    for( j = 0 ; j < n ; j++ ) {  Aminv[j][i] = dxm[j]; }
+	/* Solve the linear system for the i^th column of the inverse matrix: :  */
+	LU_substitution( Amtmp,  dxm, permute );
 
-  }
+	for( j = 0 ; j < n ; j++ ) {  Aminv[j][i] = dxm[j]; }
 
-  return(0);
+	}
+
+	return(0);
 }
 
 /*This function has been tested against dxdxp in HAMR's python notebook. Seems to be working good*/
 void dxdxp_func(double *X, double dxdxp[][NDIM])
 {
-	int i, j, k, l;
+	int j, k, l;
 	double Xh[NDIM], Xl[NDIM];
 	double Vh[NDIM], Vl[NDIM];
 	//fprintf(stderr, "X variables entered function X[0] = %le, X[1] = %le, X[2] = %le, X[3] = %le \n",X[0], X[1], X[2], X[3]);
@@ -330,12 +333,10 @@ void dxdxp_func(double *X, double dxdxp[][NDIM])
 /*This function has been tested against gcov in HAMR's python notebook. Seems to be working good*/
 void gcov_func_hamr(double *X, double gcovp[][NDIM])
 {
-	int i, j, k, l;
+	int j, k;
 	double sth, cth, s2, rho2;
-	double del[NDIM];
 	double r, th, phi;
 	double a = 0.9375;
-	double tilt = TILT_ANGLE / 180.*M_PI;
 	//fprintf(stderr, "X = %lf, %lf, %lf, %lf\n", X[0], X[1], X[2], X[3]);
 
 	for(j=0;j<NDIM;j++) for(k=0;k<NDIM;k++) gcovp[j][k] = 0.;

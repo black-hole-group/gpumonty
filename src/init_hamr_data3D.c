@@ -17,7 +17,7 @@ void init_hamr3D_data(char *fname)
 	FILE *fp;
 	double x[4];
 	double rp, hp, php, V, dV, two_temp_gam;
-	int i, k, j, z;
+	int i, k;
 
 	/* header variables not used except locally */
 	double t, a, gam;
@@ -100,8 +100,8 @@ void init_hamr3D_data(char *fname)
 	V = 0.;
 	dV = dx[1] * dx[2] * dx[3];
 	for (k = 0; k < N1 * N2 * N3; k++) {
-		z = k % N3;
-		j = (k/N3) % N2;
+		//z = k % N3;
+		//j = (k/N3) % N2;
 		i = (k/ (N2 * N3));
         //fprintf(stderr, "i = %d, j = %d, z = %d\n", i, j, z);
 		check_scan_error(fread(&x[1], double_size, 1, fp), 1);

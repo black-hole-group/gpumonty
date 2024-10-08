@@ -122,13 +122,10 @@ void init_hotcross(void)
 			HOTCROSS);
 		for (i = 0; i <= NW; i++)
 			for (j = 0; j <= NT; j++) {
-				nread =
-				    fscanf(fp, "%*d %*d %*lf %*lf %lf\n",
-					   &table[i][j]);
+				// Since we are suppressing, remove the length modifier on the suppressed items
+				nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &table[i][j]);
 				if (isnan(table[i][j]) || nread != 1) {
-					fprintf(stderr,
-						"error on table read: %d %d\n",
-						i, j);
+					fprintf(stderr, "error on table read: %d %d\n", i, j);
 					exit(0);
 				}
 			}
