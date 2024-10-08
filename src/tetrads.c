@@ -78,7 +78,6 @@ void tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
 	return;
 }
 
-#define SMALL_VECTOR	1.e-30
 
 /* make orthonormal basis 
    first basis vector || U

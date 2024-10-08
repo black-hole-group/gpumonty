@@ -131,12 +131,7 @@ double K2[N_ESAMP + 1];
 double lK_min, dlK;
 double lT_min;
 extern double dlT; //PEDRO EDIT -> F is being declared twice here and in hotcross.c, so I've just defined this as an extern
-#define EPSABS 0.
-#define EPSREL 1.e-6
-#define KMIN (0.002)
-#define KMAX (1.e7)
-#define TMIN (THETAE_MIN)
-#define TMAX (1.e2)
+
 void init_emiss_tables(void)
 {
 

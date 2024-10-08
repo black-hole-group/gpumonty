@@ -58,14 +58,6 @@
    
 */
 
-#define MINW	1.e-12
-#define MAXW	1.e10
-#define MINT	1e-10
-#define MAXT	1.e10
-#define NW	220
-#define NT	80
-
-#define HOTCROSS	"./table/hotcross.dat"
 
 double table[NW + 1][NT + 1];
 double dlw, dlT, lminw, lmint; 
@@ -183,9 +175,6 @@ double total_compton_cross_lkup(double w, double thetae)
 
 }
 
-#define MAXGAMMA	12.
-#define DMUE		0.05
-#define DGAMMAE		0.05
 
 double total_compton_cross_num(double w, double thetae)
 {

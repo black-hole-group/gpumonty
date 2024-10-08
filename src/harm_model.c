@@ -590,8 +590,6 @@ int record_criterion(struct of_photon *ph)
 
 /* EPS really ought to be related to the number of
    zones in the simulation. */
-//#define EPS	1e-5
-#define EPS   0.04
 
 
 double stepsize(double X[NDIM], double K[NDIM])

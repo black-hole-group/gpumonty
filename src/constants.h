@@ -89,4 +89,5 @@
 #define FOUR_PI	(1.2732395447351626862)	/* 4/pi */
 #define FOUR_PISQ (0.40528473456935108578)	/* 4/pi^2 */
 #define THREEPI_TWO (4.7123889803846898577)	/* 3pi/2 */
-
+#define CST 1.88774862536	/* 2^{11/12} */
+#define KFAC	(9*M_PI*ME*CL/EE) /*Used for synchrotron emissivity calculation*/
