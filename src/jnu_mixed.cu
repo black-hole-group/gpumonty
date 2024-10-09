@@ -41,6 +41,8 @@
 
 
 #include "decs.h"
+#include "defs_CUDA.h"
+
 #pragma omp threadprivate(r)
 /* 
 
@@ -54,11 +56,10 @@ good for Thetae > 1
 */
 
 #define CST 1.88774862536	/* 2^{11/12} */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
+__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
-	double K2_eval(double Thetae);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -79,7 +80,6 @@ double jnu_synch(double nu, double Ne, double Thetae, double B,
 
 	return (j);
 }
-
 #undef CST
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
@@ -126,13 +126,14 @@ double jnu_integrand(double th, void *params)
 
 /* Tables */
 //double F[N_ESAMP + 1], K2[N_ESAMP + 1]; //PEDRO EDIT -> F is being declared twice here and in grmonty.c, so I've just commented this and added line below \/
-extern double F[N_ESAMP + 1];
-double K2[N_ESAMP + 1];
-double lK_min, dlK;
-double lT_min;
-extern double dlT; //PEDRO EDIT -> F is being declared twice here and in hotcross.c, so I've just defined this as an extern
+// extern double F[N_ESAMP + 1];
+// double K2[N_ESAMP + 1];
+// double lK_min, dlK;
+// double lT_min;
+// extern double dlT; //PEDRO EDIT -> F is being declared twice here and in hotcross.c, so I've just defined this as an extern
 
-void init_emiss_tables(void)
+
+__host__ void init_emiss_tables(void)
 {
 
 	int k;
@@ -143,11 +144,11 @@ void init_emiss_tables(void)
 	func.function = &jnu_integrand;
 	func.params = &K;
 
-	lK_min = log(KMIN);
-	dlK = log(KMAX / KMIN) / (N_ESAMP);
+	double lK_min = log(KMIN);
+	double dlK = log(KMAX / KMIN) / (N_ESAMP);
 
-	lT_min = log(TMIN);
-	dlT = log(TMAX / TMIN) / (N_ESAMP);
+	double lT_min = log(TMIN);
+	double dlT = log(TMAX / TMIN) / (N_ESAMP);
 
 	/*  build table for F(K) where F(K) is given by
 	   \int_0^\pi ( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6})^2 \exp[-(K/\sin\theta)^{1/3}]
@@ -181,10 +182,8 @@ void init_emiss_tables(void)
 
 /* rapid evaluation of K_2(1/\Thetae) */
 
-double K2_eval(double Thetae)
+__host__ __device__ double K2_eval(double Thetae)
 {
-
-	double linear_interp_K2(double);
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
@@ -195,57 +194,68 @@ double K2_eval(double Thetae)
 }
 
 #define KFAC	(9*M_PI*ME*CL/EE)
-double F_eval(double Thetae, double Bmag, double nu)
+__host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 {
 
 	double K, x;
-	double linear_interp_F(double);
 
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
-
 	if (K > KMAX) {
 		return 0.;
 	} else if (K < KMIN) {
 		/* use a good approximation */
 		x = pow(K, 0.333333333333333333);
-
 		return (x * (37.67503800178 + 2.240274341836 * x));
 	} else {
 		return linear_interp_F(K);
 	}
 }
 
-#undef KFAC
-#undef KMIN
-#undef KMAX
-#undef EPSABS
-#undef EPSREL
 
-double linear_interp_K2(double Thetae)
+
+
+__host__ __device__ double linear_interp_F(double K)
 {
-
-	int i;
-	double di, lT;
-
-	lT = log(Thetae);
-
-	di = (lT - lT_min) * dlT;
-	i = (int) di;
-	di = di - i;
-
-	return exp((1. - di) * K2[i] + di * K2[i + 1]);
-}
-
-double linear_interp_F(double K)
-{
-
+	double lK_min = log(KMIN);
+    double dlK = log(KMAX / KMIN) / (N_ESAMP);
+	dlK = 1/dlK;
+	double result;
+	#ifdef __CUDA_ARCH__
+	double * Ftable;
+	Ftable = d_F;
+	#else
+	double * Ftable;
+	Ftable = F;
+	#endif
 	int i;
 	double di, lK;
 	lK = log(K);
 	di = (lK - lK_min) * dlK;
 	i = (int) di;
 	di = di - i;
+	result = exp((1. - di) * Ftable[i] + di * Ftable[i + 1]);
+	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
+	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
+	return result;
+}
+__host__ __device__ double linear_interp_K2(double Thetae)
+{
+	#ifdef __CUDA_ARCH__
+	double * bessel_table;
+	bessel_table = d_K2;
+	#else
+	double * bessel_table;
+	bessel_table = K2;
+	#endif
 
+	int i;
+	double di, lT;
+	
+	lT = log(Thetae);
 
-	return exp((1. - di) * F[i] + di * F[i + 1]);
+	di = (lT - d_lT_min) * d_dlT;
+	i = (int) di;
+	di = di - i;
+
+	return exp((1. - di) * bessel_table[i] + di * bessel_table[i + 1]);
 }

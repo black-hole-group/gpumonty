@@ -10,6 +10,30 @@ double dlw, dlT, lminw, lmint;
 double nint[NINT + 1];
 double K2[N_ESAMP + 1];
 double dndlnu_max[NINT + 1];
+
+
+__device__ double d_table[NW + 1][NT + 1];
+__device__ double d_maximum_w = 0;
+
+__device__ unsigned long long photon_count = 0;
+__device__ unsigned long long generated_sphotons, d_N_superph_recorded;
+__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
+__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
+	
+
+__device__ unsigned long long scattering_counter = 0;
+__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
+__device__ unsigned long long tracking_counter = 0;
+__device__ double d_nint[NINT + 1];
+__device__ double d_dndlnu_max[NINT + 1];
+__device__ double d_hslope = 0;
+__device__ double d_R0 = 0;
+__device__ int total_sca = 0;
+
+
+
+
+
 int main(int argc, char *argv[])
 {
 	double Ntot;
@@ -69,17 +93,17 @@ void init_model(char *args[])
 	init_hotcross();
 
 	/* make table for solid angle integrated emissivity and K2 */
-	//init_emiss_tables();
+	init_emiss_tables();
 
 	/* make table for superphoton weights */
-	//init_weight_table();
+	init_weight_table();
 
 	/* make table for quick evaluation of ns_zone */
 	//init_nint_table();
 
 }
 /* set up all grid functions */
-void init_geometry()
+__host__ void init_geometry()
 {
 	int i, j, k;
 	double X[NDIM];

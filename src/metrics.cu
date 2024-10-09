@@ -325,3 +325,26 @@ __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM]
   }
 }
 #undef DEL
+
+__host__ __device__ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
+{
+
+	ucov[0] = Gcov[0][0] * ucon[0]
+	    + Gcov[0][1] * ucon[1]
+	    + Gcov[0][2] * ucon[2]
+	    + Gcov[0][3] * ucon[3];
+	ucov[1] = Gcov[1][0] * ucon[0]
+	    + Gcov[1][1] * ucon[1]
+	    + Gcov[1][2] * ucon[2]
+	    + Gcov[1][3] * ucon[3];
+	ucov[2] = Gcov[2][0] * ucon[0]
+	    + Gcov[2][1] * ucon[1]
+	    + Gcov[2][2] * ucon[2]
+	    + Gcov[2][3] * ucon[3];
+	ucov[3] = Gcov[3][0] * ucon[0]
+	    + Gcov[3][1] * ucon[1]
+	    + Gcov[3][2] * ucon[2]
+	    + Gcov[3][3] * ucon[3];
+
+	return;
+}

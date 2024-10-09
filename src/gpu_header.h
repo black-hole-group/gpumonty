@@ -47,12 +47,12 @@ __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geo
 __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, int ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM]);
 
 __device__ void GPU_init_monty_rand(int seed);
-__device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
+__host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
                                    double Ucon[NDIM], double Bcon[NDIM], struct of_geom *d_geom, double *d_p);
 __device__ static double GPU_linear_interp_weight(double nu);
 __host__ __device__ void coord(int i, int j, double *X);
-__device__ double GPU_F_eval(double Thetae, double Bmag, double nu);
-__device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
+__host__ __device__ double F_eval(double Thetae, double Bmag, double nu);
+__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
                                 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
@@ -60,9 +60,10 @@ __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 __device__ double GPU_delta(int i, int j);
 __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
                                          double K[NDIM]);
-__device__ void GPU_lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
-__device__ double GPU_linear_interp_F(double K);
-__device__ double GPU_K2_eval(double Thetae);
+__host__ __device__ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
+__host__ __device__ double linear_interp_F(double K);
+__host__ __device__ double linear_interp_K2(double Thetae);
+__host__ __device__ double K2_eval(double Thetae);
 __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM]);
 __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
 __device__  void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
@@ -137,4 +138,7 @@ __host__ double dOmega_func(double x2i, double x2f);
 __host__ double gdet_func(double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
+__host__ void init_weight_table(void);
+__host__ void init_emiss_tables(void);
+
 #endif

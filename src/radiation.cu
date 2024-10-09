@@ -17,7 +17,7 @@ __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, dou
 {
 	double j;
 
-	j = GPU_jnu_synch(nu, Ne, Thetae, B, theta);
+	j = jnu_synch(nu, Ne, Thetae, B, theta);
 
 	return (j / (nu * nu));
 }

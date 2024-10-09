@@ -157,7 +157,7 @@ void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
 
 /* basic coordinate functions supplied by grmonty */
 void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
-void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
+//void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
 double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
 void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
 			  double K_tetrad[NDIM]);
@@ -183,12 +183,12 @@ double jnu_inv(double nu, double thetae, double ne, double B,
 	       double theta);
 
 	/* thermal synchrotron */
-double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta);
+//double jnu_synch(double nu, double Ne, double Thetae, double B,
+//		 double theta);
 double int_jnu(double Ne, double Thetae, double Bmag, double nu);
-void init_emiss_tables(void);
-double F_eval(double Thetae, double Bmag, double nu);
-double K2_eval(double Thetae);
+//void init_emiss_tables(void);
+//double F_eval(double Thetae, double Bmag, double nu);
+//double K2_eval(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);

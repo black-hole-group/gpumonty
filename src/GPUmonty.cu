@@ -13,25 +13,6 @@ extern "C"
 do not edit with multiple threads, unless we know what we are doing*/
 
 __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
-__device__ double d_table[NW + 1][NT + 1];
-__device__ double d_maximum_w = 0;
-
-__device__ unsigned long long photon_count = 0;
-__device__ unsigned long long generated_sphotons, d_N_superph_recorded;
-__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
-__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
-	
-
-__device__ unsigned long long scattering_counter = 0;
-__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
-__device__ unsigned long long tracking_counter = 0;
-__device__ double d_nint[NINT + 1];
-__device__ double d_dndlnu_max[NINT + 1];
-__device__ double d_hslope = 0;
-__device__ double d_R0 = 0;
-__device__ int total_sca = 0;
-
-
 
 struct of_scattering{
 	int bound_flag;
@@ -47,8 +28,6 @@ struct of_scattering{
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	int nstep;
 };
-
-
 
 /**********************************************************************************************************************************************************************************/
 
@@ -256,7 +235,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 	double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
-	GPU_get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*n2gen = 0.;
@@ -278,7 +257,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (l = 0; l <= N_ESAMP; l++) {
-			dn = GPU_F_eval(Thetae, Bmag,
+			dn = F_eval(Thetae, Bmag,
 				    exp(j * dlnu +
 					lnu_min)) / (exp(d_wgt[l]) +
 						     1.e-100);
@@ -304,24 +283,24 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		}
 	}
 
-	K2 = GPU_K2_eval(Thetae);
+	K2 = K2_eval(Thetae);
 	if (K2 == 0.) {
 		*n2gen = 0.;
 		*dnmax = 0.;
 		return;
 	}
 	
-	double nz = d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	// if(i == 0 && j == 82){
 	// 	printf("nz = %le\n", nz);
-	// 	printf("geom = %le, Ne = %le, Bmag = %le, Thetae = %le, K2 = %le, ninterp = %le\n", d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].g, Ne, Bmag, Thetae, K2, ninterp);
+	// 	printf("geom = %le, Ne = %le, Bmag = %le, Thetae = %le, K2 = %le, ninterp = %le\n", d_geom[SPATIAL_INDEX2D(i,j)].g, Ne, Bmag, Thetae, K2, ninterp);
 	// }
 	//printf("nz[%d][%d][%d] = %le\n",i, j, k, nz);
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
 		printf(
-			"Something very wrong in zone %d %d: nz = %le, d_Ns = %d, g = %le\n",i, j, nz, d_Ns_par, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].g);
+			"Something very wrong in zone %d %d: nz = %le, d_Ns = %d, g = %le\n",i, j, nz, d_Ns_par, d_geom[SPATIAL_INDEX2D(i,j)].g);
 		printf("dl = %le, d_nint[l] = %le, d_ninit[l+1] = %le, logratio = %le\n", dl, d_nint[l], d_nint[l+1], log(NUMAX/NUMIN));
 		*n2gen = 0.;
 		*dnmax = 0.;
@@ -439,7 +418,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 	double lnu_max = log(NUMAX);
 	double Nln = lnu_max - lnu_min;
 	double nu;
-	GPU_get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	/* Sample from superphoton distribution in current simulation zone */
 
@@ -447,16 +426,16 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 		nu = exp(GPU_monty_rand() * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
 	} while (GPU_monty_rand() >
-		 (GPU_F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		 (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 
 	//weight = GPU_linear_interp_weight(nu);
 	ph[ph_arr_index].w = weight;
-	jmax = GPU_jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 
 	do {
 		cth = 2. * GPU_monty_rand() - 1.;
 		th = acos(cth);
-		do_condition = GPU_monty_rand() > GPU_jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
+		do_condition = GPU_monty_rand() > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
 	} while (do_condition);
 
 
@@ -480,7 +459,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 				bhat[l] = 0.;
 			bhat[1] = 1.;
 		}
-		GPU_make_tetrad(Ucon, bhat, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
+		GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
 	}
 
 	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph[ph_arr_index].K);
@@ -519,35 +498,41 @@ __device__ double GPU_monty_rand() {
 
 
 
-__device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
+__host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM], struct of_geom * d_geom, double * d_p)
 {
 	int l, m;
 	double Ucov[NDIM], Bcov[NDIM];
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-	*Ne = d_p[DEVICE_NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
-	*Thetae = d_p[DEVICE_NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * d_thetae_unit;
+	#ifdef __CUDA_ARCH__
+	double thetaeUnit = d_thetae_unit;
+	#else
+	double thetaeUnit = Thetae_unit;
 
-	Bp[1] = d_p[DEVICE_NPRIM_INDEX3D(B1, i, j, k)];
-	Bp[2] = d_p[DEVICE_NPRIM_INDEX3D(B2, i, j, k)];
-	Bp[3] = d_p[DEVICE_NPRIM_INDEX3D(B3, i, j, k)];
+	#endif
+	*Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
+	*Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * thetaeUnit;
 
-	Vcon[1] = d_p[DEVICE_NPRIM_INDEX3D(U1, i, j, k)];
-	Vcon[2] = d_p[DEVICE_NPRIM_INDEX3D(U2, i, j, k)];
-	Vcon[3] = d_p[DEVICE_NPRIM_INDEX3D(U3, i, j, k)];
+	Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
+	Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
+	Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
+
+	Vcon[1] = d_p[NPRIM_INDEX3D(U1, i, j, k)];
+	Vcon[2] = d_p[NPRIM_INDEX3D(U2, i, j, k)];
+	Vcon[3] = d_p[NPRIM_INDEX3D(U3, i, j, k)];
 
 	/* Get Ucov */
 	VdotV = 0.;
 	for (l = 1; l < NDIM; l++)
 		for (m = 1; m < NDIM; m++)
-			VdotV += d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
-	Vfac = sqrt(-1. / d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
-	Ucon[0] = -Vfac * d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[0][0];
+			VdotV += d_geom[SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
+	Vfac = sqrt(-1. / d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
+	Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
 	for (l = 1; l < NDIM; l++){
-		Ucon[l] = Vcon[l] - Vfac * d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[0][l];
-		//printf("Ucon[%d] = %le, Vcon[%d] = %le, Vfac = %le, geom[0][%d] = %le\n", l, Ucon[l], l, Vcon[l], Vfac, l, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[0][l]);
+		Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
+		//printf("Ucon[%d] = %le, Vcon[%d] = %le, Vfac = %le, geom[0][%d] = %le\n", l, Ucon[l], l, Vcon[l], Vfac, l, d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l]);
 	}
-	GPU_lower(Ucon, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov, Ucov);
+	lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
 	/* Get B and Bcov */
 	UdotBp = 0.;
 	for (l = 1; l < NDIM; l++)
@@ -556,15 +541,15 @@ __device__ void GPU_get_fluid_zone(int i, int j, int k, double *Ne, double *Thet
 	for (l = 1; l < NDIM; l++){
 		Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
 	}
-	GPU_lower(Bcon, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov, Bcov);
+	lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
-	if (isnan(*B) && threadIdx.x == 0){
+	if (isnan(*B)){
 		//printf("i = %d, j = %d, k = %d\n", i, j, k);
 		printf( "VdotV = %le\n", VdotV);
 		printf( "Vfac = %lf\n", Vfac);
-		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcon[a][b]);
-		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[DEVICE_SPATIAL_INDEX2D(i,j)].gcov[a][b]);
+		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
+		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcov[a][b]);
 		printf( "Thetae: %lf\n", *Thetae);
 		printf( "Ne: %lf\n", *Ne);
 		printf( "Bp: %lf, %lf, %lf\n", Bp[1], Bp[2], Bp[3]);
@@ -590,77 +575,7 @@ __device__ static double GPU_linear_interp_weight(double nu)
 }
 
 
-__device__ double GPU_F_eval(double Thetae, double Bmag, double nu)
-{
 
-	double K, x;
-	__device__ double GPU_linear_interp_F(double);
-
-	K = KFAC * nu / (Bmag * Thetae * Thetae);
-	if (K > KMAX) {
-		return 0.;
-	} else if (K < KMIN) {
-		/* use a good approximation */
-		x = pow(K, 0.333333333333333333);
-		return (x * (37.67503800178 + 2.240274341836 * x));
-	} else {
-		return GPU_linear_interp_F(K);
-	}
-}
-__device__ double GPU_K2_eval(double Thetae)
-{
-
-	__device__ double GPU_linear_interp_K2(double);
-
-	if (Thetae < THETAE_MIN)
-		return 0.;
-	if (Thetae > TMAX)
-		return 2. * Thetae * Thetae;
-
-	return GPU_linear_interp_K2(Thetae);
-}
-__device__ double GPU_linear_interp_F(double K)
-{
-	double lK_min = log(KMIN);
-    double dlK = log(KMAX / KMIN) / (N_ESAMP);
-	dlK = 1/dlK;
-	double result;
-	int i;
-	double di, lK;
-	lK = log(K);
-	di = (lK - lK_min) * dlK;
-	i = (int) di;
-	di = di - i;
-	result = exp((1. - di) * d_F[i] + di * d_F[i + 1]);
-	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
-	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
-	return result;
-}
-__device__ double GPU_jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta)
-{
-	double K2, nuc, nus, x, f, j, sth, xp1, xx;
-	__device__ double GPU_K2_eval(double Thetae);
-
-	if (Thetae < THETAE_MIN)
-		return 0.;
-
-	K2 = GPU_K2_eval(Thetae);
-
-	nuc = EE * B / (2. * M_PI * ME * CL);
-	sth = sin(theta);
-	nus = (2. / 9.) * nuc * Thetae * Thetae * sth;
-	if (nu > 1.e12 * nus)
-		return (0.);
-	x = nu / nus;
-	xp1 = pow(x, 1. / 3.);
-	xx = sqrt(x) + CST * sqrt(xp1);
-	f = xx * xx;
-	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f *
-	    exp(-xp1);
-
-	return (j);
-}
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
 		 double Ecov[NDIM][NDIM])
@@ -740,7 +655,7 @@ __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
 	for (k = 0; k < 4; k++) {
 
 		/* lower coordinate basis index */
-		GPU_lower(Econ[k], Gcov, Ecov[k]);
+		lower(Econ[k], Gcov, Ecov[k]);
 	}
 
 	/* then raise tetrad basis index */
@@ -785,28 +700,7 @@ __device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetra
 
 	return;
 }
-__device__ void GPU_lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
-{
 
-	ucov[0] = Gcov[0][0] * ucon[0]
-	    + Gcov[0][1] * ucon[1]
-	    + Gcov[0][2] * ucon[2]
-	    + Gcov[0][3] * ucon[3];
-	ucov[1] = Gcov[1][0] * ucon[0]
-	    + Gcov[1][1] * ucon[1]
-	    + Gcov[1][2] * ucon[2]
-	    + Gcov[1][3] * ucon[3];
-	ucov[2] = Gcov[2][0] * ucon[0]
-	    + Gcov[2][1] * ucon[1]
-	    + Gcov[2][2] * ucon[2]
-	    + Gcov[2][3] * ucon[3];
-	ucov[3] = Gcov[3][0] * ucon[0]
-	    + Gcov[3][1] * ucon[1]
-	    + Gcov[3][2] * ucon[2]
-	    + Gcov[3][3] * ucon[3];
-
-	return;
-}
 __device__ double GPU_delta(int i, int j)
 {
 	if (i == j)
@@ -849,21 +743,6 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 		vcona[k] -= vconb[k] * adotb / vconb_sq;
 	return;
 }
-__device__ double GPU_linear_interp_K2(double Thetae)
-{
-
-	int i;
-	double di, lT;
-	
-	lT = log(Thetae);
-
-	di = (lT - d_lT_min) * d_dlT;
-	i = (int) di;
-	di = di - i;
-
-	return exp((1. - di) * d_K2[i] + di * d_K2[i + 1]);
-}
-
 
 
 
@@ -1260,7 +1139,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	for (i = 1; i < NDIM; i++){
 		Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
 	}
-	GPU_lower(Ucon, gcov, Ucov);
+	lower(Ucon, gcov, Ucov);
 
 	/* Get B and Bcov */
 	UdotBp = 0.;
@@ -1269,7 +1148,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	Bcon[0] = UdotBp;
 	for (i = 1; i < NDIM; i++)
 		Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-	GPU_lower(Bcon, gcov, Bcov);
+	lower(Bcon, gcov, Bcov);
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
@@ -1997,10 +1876,10 @@ __device__ void generate_random_direction(double * x, double *y, double *z) {
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]){
 	double interp;
 
-	interp = coeff[0] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i, j, k)] + coeff[5] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i+1, j, k)] +
-	coeff[4] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i, j + 1, k)] + coeff[7]  * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i+1, j+1, k)] +
-	coeff[1] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i, j, k+1)] + coeff[6] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i+1, j, k+1)] +
-	coeff[2] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i, j+1, k+1)] + coeff[3] * var[DEVICE_NPRIM_INDEX3D(mmenemonics, i+1, j+1, k+1)];
+	interp = coeff[0] * var[NPRIM_INDEX3D(mmenemonics, i, j, k)] + coeff[5] * var[NPRIM_INDEX3D(mmenemonics, i+1, j, k)] +
+	coeff[4] * var[NPRIM_INDEX3D(mmenemonics, i, j + 1, k)] + coeff[7]  * var[NPRIM_INDEX3D(mmenemonics, i+1, j+1, k)] +
+	coeff[1] * var[NPRIM_INDEX3D(mmenemonics, i, j, k+1)] + coeff[6] * var[NPRIM_INDEX3D(mmenemonics, i+1, j, k+1)] +
+	coeff[2] * var[NPRIM_INDEX3D(mmenemonics, i, j+1, k+1)] + coeff[3] * var[NPRIM_INDEX3D(mmenemonics, i+1, j+1, k+1)];
 
 	return interp;
 }
