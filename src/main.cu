@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    //launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
+    launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
 
 	return (0);
 
@@ -99,7 +99,7 @@ void init_model(char *args[])
 	init_weight_table();
 
 	/* make table for quick evaluation of ns_zone */
-	//init_nint_table();
+	init_nint_table();
 
 }
 /* set up all grid functions */

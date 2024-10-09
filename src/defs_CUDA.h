@@ -43,4 +43,6 @@ do not edit with multiple threads, unless we know what we are doing*/
 #define CPUGLOBALS
 	extern double * p;
 	extern double hslope;
+	extern double nint[NINT + 1];
+	extern double dndlnu_max[NINT + 1];
 #endif

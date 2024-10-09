@@ -140,5 +140,7 @@ __host__ double dOmega_func(double x2i, double x2f);
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 __host__ void init_weight_table(void);
 __host__ void init_emiss_tables(void);
+__host__ void init_nint_table(void);
+__host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
 
 #endif

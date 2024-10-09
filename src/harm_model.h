@@ -71,7 +71,7 @@ void make_zone_centered_tetrads(void);
 void seT_UNITs(char *munitstr);
 void init_geometry(void);
 void init_harm_data(char *fname);
-void init_nint_table(void);
+//void init_nint_table(void);
 void init_storage(void);
 double dOmega_func(double x2i, double x2f);
 

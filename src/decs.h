@@ -224,9 +224,9 @@ void gcon_func(double *X, double gcon[][NDIM]);
 
 
 /*Defining GPU functions*/
-void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
+//void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
 
-extern double nint[NINT + 1];
-extern double dndlnu_max[NINT + 1];
+// extern double nint[NINT + 1];
+// extern double dndlnu_max[NINT + 1];
 extern double K2[N_ESAMP + 1];
 #endif

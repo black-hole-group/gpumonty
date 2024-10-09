@@ -32,7 +32,7 @@ struct of_scattering{
 /**********************************************************************************************************************************************************************************/
 
 
-void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename){
+__host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename){
 	clock_t start, end;
     double cpu_time_used;
 	cudaError_t cudaStatus;
