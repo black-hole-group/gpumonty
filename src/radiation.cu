@@ -1,4 +1,4 @@
-#include "defs_CUDA.h"
+#include "decs.h"
 __device__ double GPU_Bnu_inv(double nu, double Thetae)
 {
 

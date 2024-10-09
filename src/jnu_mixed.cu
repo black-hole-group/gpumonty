@@ -41,7 +41,6 @@
 
 
 #include "decs.h"
-#include "defs_CUDA.h"
 
 #pragma omp threadprivate(r)
 /* 

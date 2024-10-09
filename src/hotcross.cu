@@ -41,7 +41,6 @@
 
 
 #include "decs.h"
-#include "defs_CUDA.h"
 /* 
 
    given energy of photon in fluid rest frame w, in units of electron rest mass

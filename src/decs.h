@@ -1,47 +1,8 @@
 
-/***********************************************************************************
-    Copyright 2013 Joshua C. Dolence, Charles F. Gammie, Monika Mo\'scibrodzka,
-                   and Po Kin Leung
-
-                        GRMONTY  version 1.0   (released February 1, 2013)
-
-    This file is part of GRMONTY.  GRMONTY v1.0 is a program that calculates the
-    emergent spectrum from a model using a Monte Carlo technique.
-
-    This version of GRMONTY is configured to use input files from the HARM code
-    available on the same site.   It assumes that the source is a plasma near a
-    black hole described by Kerr-Schild coordinates that radiates via thermal 
-    synchrotron and inverse compton scattering.
-    
-    You are morally obligated to cite the following paper in any
-    scientific literature that results from use of any part of GRMONTY:
-
-    Dolence, J.C., Gammie, C.F., Mo\'scibrodzka, M., \& Leung, P.-K. 2009,
-        Astrophysical Journal Supplement, 184, 387
-
-    Further, we strongly encourage you to obtain the latest version of 
-    GRMONTY directly from our distribution website:
-    http://rainman.astro.illinois.edu/codelib/
-
-    GRMONTY is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    GRMONTY is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GRMONTY; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-***********************************************************************************/
-
-/** global variables **/
-/** model independent */
 #include "config.h"
+#include "functions.h"
+
+
 
 /** data structures **/
 struct of_photon {
@@ -93,140 +54,65 @@ struct of_grid {
 	int *in;
 };
 
-/*Global Variable Section*/
-/* defining declarations for global variables */
-extern struct of_spectrum spect[N_THBINS][N_EBINS];
 
-extern struct of_geom *geom;
-extern int N1, N2, N3, n_within_horizon;
-extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-extern double table[NW + 1][NT + 1];
+/*GLOBAL VARIABLES*/
+/*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just
+do not edit with multiple threads, unless we know what we are doing*/
 
-extern int Ns, N_scatt;
-extern unsigned long long N_superph_recorded;
+#ifndef GPUGLOBALS
+#define GPUGLOBALS
+	extern __device__ double d_table[NW + 1][NT + 1];
+	extern __device__ double d_maximum_w;
 
-/* some coordinate parameters */
-extern double a;
-extern double R0, Rin, Rh, Rout, Rms;
-extern double hslope;
-extern double startx[NDIM], stopx[NDIM], dx[NDIM];
+	extern __device__ unsigned long long photon_count;
+	extern __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
+	extern __device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
+	extern __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
+		
 
-//extern double dlE, lE0;
-extern double gam;
-extern double dMsim;
-extern double Thetae_unit;
-extern double max_tau_scatt, Ladv, dMact, bias_norm;
+	extern __device__ unsigned long long scattering_counter;
+	extern __device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
+	extern __device__ unsigned long long tracking_counter;
+	extern __device__ double d_nint[NINT + 1];
+	extern __device__ double d_dndlnu_max[NINT + 1];
+	extern __device__ double d_hslope;
+	extern __device__ double d_R0;
+	extern __device__ int total_sca;
 
+#endif
 
-extern gsl_rng *r;
+#ifndef CPUGLOBALS
+#define CPUGLOBALS
+	extern double * p;
+	extern double hslope;
+	extern double nint[NINT + 1];
+	extern double dndlnu_max[NINT + 1];
+	extern double K2[N_ESAMP + 1];
+	/*Global Variable Section*/
+	/* defining declarations for global variables */
+	extern struct of_spectrum spect[N_THBINS][N_EBINS];
 
+	extern struct of_geom *geom;
+	extern int N1, N2, N3, n_within_horizon;
+	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
+	extern double table[NW + 1][NT + 1];
 
-/** model-independent subroutines **/
-/* core monte carlo/radiative transport routines */
-#ifndef CPUFUNCTIONS
-#define CPUFUNCTIONS
-void track_super_photon(struct of_photon *ph);
-void record_super_photon(struct of_photon *ph);
-//void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
-void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
-			  double Ne, double Thetae, double B,
-			  double Ucon[NDIM], double Bcon[NDIM],
-			  double Gcov[NDIM][NDIM]);
+	extern int Ns, N_scatt;
+	extern unsigned long long N_superph_recorded;
 
-/* OpenMP specific functions */
-void omp_reduce_spect(void);
+	/* some coordinate parameters */
+	extern double a;
+	extern double R0, Rin, Rh, Rout, Rms;
+	extern double hslope;
+	extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 
-/* MC/RT utilities */
-void init_monty_rand(int seed);
-double monty_rand(void);
-
-/* geodesic integration */
-void init_dKdlam(double X[], double Kcon[], double dK[]);
-void push_photon_ham(double X[NDIM], double Kcon[][NDIM], double dl[]);
-void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-		 double dl, double *E0, int n);
-void push_photon4(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-		  double dl);
-void push_photon_cart(double X[NDIM], double Kcon[NDIM],
-		      double dKcon[NDIM], double dl);
-double stepsize(double X[NDIM], double K[NDIM]);
-void push_photon_gsl(double X[NDIM], double Kcon[NDIM], double dl);
-int geodesic_deriv(double t, const double y[], double dy[], void *params);
-void interpolate_geodesic(double Xi[], double X[], double Ki[], double K[],
-			  double frac, double del_l);
-
-/* basic coordinate functions supplied by grmonty */
-void boost(double k[NDIM], double p[NDIM], double ke[NDIM]);
-//void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov);
-double gdet_func(double gcov[][NDIM]);  /* calculated numerically */
-void coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM],
-			  double K_tetrad[NDIM]);
-void tetrad_to_coordinate(double Ecov[NDIM][NDIM], double K_tetrad[NDIM],
-			  double K[NDIM]);
-double delta(int i, int j);
-void normalize(double Ucon[NDIM], double Gcov[NDIM][NDIM]);
-void normalize_null(double Gcov[NDIM][NDIM], double K[NDIM]);
-void make_tetrad(double Ucon[NDIM], double Bhatcon[NDIM],
-		 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
-		 double Ecov[NDIM][NDIM]);
-
-/* functions related to basic radiation functions & physics */
-	/* physics-independent */
-double get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
-double get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM],
-		    double Bcov[NDIM], double B);
-double alpha_inv_scatt(double nu, double thetae, double Ne);
-double alpha_inv_abs(double nu, double thetae, double Ne, double B,
-		     double theta);
-double Bnu_inv(double nu, double thetae);
-double jnu_inv(double nu, double thetae, double ne, double B,
-	       double theta);
-
-	/* thermal synchrotron */
-//double jnu_synch(double nu, double Ne, double Thetae, double B,
-//		 double theta);
-double int_jnu(double Ne, double Thetae, double Bmag, double nu);
-//void init_emiss_tables(void);
-//double F_eval(double Thetae, double Bmag, double nu);
-//double K2_eval(double Thetae);
-
-	/* compton scattering */
-void init_hotcross(void);
-//double total_compton_cross_lkup(double nu, double theta);
-double klein_nishina(double a, double ap);
-double kappa_es(double nu, double theta);
-void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);
-void sample_beta_distr(double theta, double *gamma_e, double *beta_e);
-double sample_klein_nishina(double k0);
-double sample_thomson(void);
-double sample_mu_distr(double beta_e);
-double sample_y_distr(double theta);
-void sample_scattered_photon(double k[NDIM], double p[NDIM],
-			     double kp[NDIM]);
-
-/** model dependent functions required by code: these 
-   basic interfaces define the model **/
-
-/* physics related */
-void init_model(char *args[]);
-void make_super_photon(struct of_photon *ph, int *quit_flag);
-double bias_func(double Te, double w);
-void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-		      double *Thetae, double *B, double Ucon[NDIM],
-		      double Ucov[NDIM], double Bcon[NDIM],
-		      double Bcov[NDIM]);
-int stop_criterion(struct of_photon *ph);
-int record_criterion(struct of_photon *ph);
-
-/* coordinate related */
-void get_connection(double *X, double lconn[][NDIM][NDIM]);
-void gcon_func(double *X, double gcon[][NDIM]);
+	//extern double dlE, lE0;
+	extern double gam;
+	extern double dMsim;
+	extern double Thetae_unit;
+	extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 
-/*Defining GPU functions*/
-//void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
+	extern gsl_rng *r;
 
-// extern double nint[NINT + 1];
-// extern double dndlnu_max[NINT + 1];
-extern double K2[N_ESAMP + 1];
 #endif

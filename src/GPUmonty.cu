@@ -1,12 +1,5 @@
-
-
-extern "C"
-{
-#include "decs.h"
-}
-
 /*This should be passed to every file*/
-#include "defs_CUDA.h"
+#include "decs.h"
 
 /*GLOBAL VARIABLES*/
 /*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just

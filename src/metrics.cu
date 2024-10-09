@@ -1,4 +1,4 @@
-#include "defs_CUDA.h"
+#include "decs.h"
 /* 
 	In this file, given gcov_func in the model, we can calculate the gcon, gdet and also the connection terms.
 */
@@ -232,7 +232,11 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
   int permute[NDIM]; 
   double dxm[NDIM], Amtmp[NDIM][NDIM];
 
-  for( i = 0 ; i < NDIM*NDIM ; i++ ) {  Amtmp[0][i] = Am[0][i]; }
+  for (int j = 0; j < NDIM; j++) {
+      for (i = 0; i < NDIM; i++) {
+          Amtmp[j][i] = Am[j][i];
+      }
+  }
 
   // Get the LU matrix:
   if( LU_decompose( Amtmp,  permute ) != 0  ) { 

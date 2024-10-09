@@ -35,4 +35,81 @@ double ***thetae;
 double ***b;
 
 
+double table[NW + 1][NT + 1];
+double dlw, dlT, lminw, lmint; 
+double nint[NINT + 1];
+double K2[N_ESAMP + 1];
+double dndlnu_max[NINT + 1];
+
+
+__device__ double d_table[NW + 1][NT + 1];
+__device__ double d_maximum_w = 0;
+
+__device__ unsigned long long photon_count = 0;
+__device__ unsigned long long generated_sphotons, d_N_superph_recorded;
+__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
+__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
+	
+
+__device__ unsigned long long scattering_counter = 0;
+__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
+__device__ unsigned long long tracking_counter = 0;
+__device__ double d_nint[NINT + 1];
+__device__ double d_dndlnu_max[NINT + 1];
+__device__ double d_hslope = 0;
+__device__ double d_R0 = 0;
+__device__ int total_sca = 0;
+
+
+/** data structures **/
+struct of_photon {
+	double X[NDIM];
+	double K[NDIM];
+	double dKdlam[NDIM];
+	double w;
+	double E;
+	double L;
+	double X1i;
+	double X2i;
+	double tau_abs;
+	double tau_scatt;
+	double ne0;
+	double thetae0;
+	double b0;
+	double E0;
+	double E0s;
+	int nscatt;
+};
+
+
+struct of_geom {
+	double gcon[NDIM][NDIM];
+	double gcov[NDIM][NDIM];
+	double g;
+};
+
+struct of_spectrum {
+	double dNdlE;
+	double dEdlE;
+	double nph;
+	double nscatt;
+	double X1iav;
+	double X2isq;
+	double X3fsq;
+	double tau_abs;
+	double tau_scatt;
+	double ne0;
+	double thetae0;
+	double b0;
+	double E0;
+};
+
+struct of_grid {
+	struct of_spectrum spec[N_EBINS];
+	double th, phi;
+	int nlist;
+	int *in;
+};
+
+
 

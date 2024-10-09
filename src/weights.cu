@@ -1,11 +1,5 @@
-
-extern "C"
-{
-#include "decs.h"
-}
-
 /*This should be passed to every file*/
-#include "defs_CUDA.h"
+#include "decs.h"
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(void)

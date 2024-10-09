@@ -1,44 +1,12 @@
 #include "defs.h"
-#include "decs.h"
-#include "harm_model.h"
-#include "gpu_header.h"
-
-#include <time.h>
-
-double table[NW + 1][NT + 1];
-double dlw, dlT, lminw, lmint; 
-double nint[NINT + 1];
-double K2[N_ESAMP + 1];
-double dndlnu_max[NINT + 1];
-
-
-__device__ double d_table[NW + 1][NT + 1];
-__device__ double d_maximum_w = 0;
-
-__device__ unsigned long long photon_count = 0;
-__device__ unsigned long long generated_sphotons, d_N_superph_recorded;
-__device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
-__device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
-	
-
-__device__ unsigned long long scattering_counter = 0;
-__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
-__device__ unsigned long long tracking_counter = 0;
-__device__ double d_nint[NINT + 1];
-__device__ double d_dndlnu_max[NINT + 1];
-__device__ double d_hslope = 0;
-__device__ double d_R0 = 0;
-__device__ int total_sca = 0;
-
-
-
+#include "functions.h"
 
 
 int main(int argc, char *argv[])
 {
 	double Ntot;
 	int quit_flag;
-	struct of_photon ph;
+	struct of_photon ph = {0}; 
 	const char *spect_file_name = argv[3];
 
 	if (argc < 3) {
@@ -66,7 +34,7 @@ int main(int argc, char *argv[])
 
 }
 
-void init_model(char *args[])
+__host__ void init_model(char *args[])
 {
 	/* This will tell the units defined in decs.h. 
 	There used to be a function here for this, but it's extremely 

@@ -14,6 +14,7 @@
 #include <omp.h>
 #include "constants.h"
 #include <cuda_runtime.h>
+#include <curand_kernel.h>
 
 
 /*GPU Number of blocks and threads*/

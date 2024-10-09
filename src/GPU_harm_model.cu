@@ -1,8 +1,4 @@
-extern "C"
-{
 #include "decs.h"
-}
-#include "defs_CUDA.h"
 
 
 void init_storage(void)
