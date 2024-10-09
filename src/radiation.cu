@@ -51,7 +51,7 @@ __device__ double GPU_kappa_es(double nu, double Thetae,  double * d_table_ptr)
 	/* assume pure hydrogen gas to 
 	   convert cross section to opacity */
 	Eg = HPL * nu / (ME * CL * CL);
-	double result = (GPU_total_compton_cross_lkup(Eg, Thetae, d_table_ptr) / MP);
+	double result = (total_compton_cross_lkup(Eg, Thetae, d_table_ptr) / MP);
 	if (isnan(result)){
 		printf("GPU_kappa_es is nan: %le, %le", nu, Thetae);
 	}

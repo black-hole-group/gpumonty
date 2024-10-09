@@ -530,39 +530,7 @@ void coord(int i, int j, double *X)
 	return;
 }
 
-/* set up all grid functions */
-void init_geometry()
-{
-	int i, j, k;
-	double X[NDIM];
 
-	for (i = 0; i < N1; i++) {
-		for (j = 0; j < N2; j++) {
-			for (k = 0; k < N3; k++) {
-
-			/* zone-centered */
-			#if(HAMR)
-			coord_hamr(i, j, k, CENT, X);
-			gcov_func_hamr(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
-			#else
-			coord(i, j, X);
-			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
-			#endif
-
-
-			geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
-
-			#if(HAMR)
-			gcon_func_hamr(geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
-			#else
-			gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcon);
-			#endif
-			}
-		}
-	}
-	//here:
-	/* done! */
-}
 
 /*
 
@@ -581,14 +549,5 @@ double dOmega_func(double x2i, double x2f)
 	    );
 
 	return (dO);
-}
-
-void init_storage(void)
-{
-
-    p = (double *) malloc(NPRIM * N1 * N2 * N3 * sizeof(double *));
-
-    geom = (struct of_geom *) malloc(N1* N2* sizeof(struct of_geom));
-    return;
 }
 

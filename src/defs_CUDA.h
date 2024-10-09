@@ -38,3 +38,9 @@ do not edit with multiple threads, unless we know what we are doing*/
 	extern __device__ int total_sca;
 
 #endif
+
+#ifndef CPUGLOBALS
+#define CPUGLOBALS
+	extern double * p;
+	extern double hslope;
+#endif

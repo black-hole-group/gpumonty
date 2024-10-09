@@ -3,7 +3,32 @@
 	In this file, given gcov_func in the model, we can calculate the gcon, gdet and also the connection terms.
 */
 
-__device__ int GPU_LU_decompose( double A[][NDIM], int permute[] )
+gsl_matrix *gsl_gcov, *gsl_gcon;
+gsl_permutation *perm;
+#pragma omp threadprivate (gsl_gcov, gsl_gcon, perm)
+
+/* assumes gcov has been set first; returns determinant */
+double gdet_func(double gcov[][NDIM])
+{
+	double d;
+	int k, l, signum;
+
+	if (gsl_gcov == NULL) {
+		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
+		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
+		perm = gsl_permutation_alloc(NDIM);
+	}
+
+	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
+
+	gsl_linalg_LU_decomp(gsl_gcov, perm, &signum);
+
+	d = gsl_linalg_LU_det(gsl_gcov, signum);
+
+	return (sqrt(fabs(d)));
+}
+
+__host__  __device__ int LU_decompose( double A[][NDIM], int permute[] )
 {
   double row_norm[NDIM];
 
@@ -161,7 +186,7 @@ __device__ int GPU_LU_decompose( double A[][NDIM], int permute[] )
 
 }
 
-__device__ void GPU_LU_substitution( double A[][NDIM], double B[], int permute[] )
+__host__ __device__ void LU_substitution( double A[][NDIM], double B[], int permute[] )
 {
   int i, j ;
   int n = NDIM;
@@ -199,7 +224,7 @@ __device__ void GPU_LU_substitution( double A[][NDIM], double B[], int permute[]
 
 }
 
-__device__ int GPU_invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )  
+__host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )  
 { 
 
   int i,j;
@@ -210,7 +235,7 @@ __device__ int GPU_invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
   for( i = 0 ; i < NDIM*NDIM ; i++ ) {  Amtmp[0][i] = Am[0][i]; }
 
   // Get the LU matrix:
-  if( GPU_LU_decompose( Amtmp,  permute ) != 0  ) { 
+  if( LU_decompose( Amtmp,  permute ) != 0  ) { 
     printf("invert_matrix(): singular matrix encountered! \n");
     printf("This is probably due to a nan value somewhere rather than determinant = 0. Investigate!\n");
 	return(1);
@@ -221,7 +246,7 @@ __device__ int GPU_invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
     dxm[i] = 1.; 
     
     /* Solve the linear system for the i^th column of the inverse matrix: :  */
-    GPU_LU_substitution( Amtmp,  dxm, permute );
+    LU_substitution( Amtmp,  dxm, permute );
 
     for( j = 0 ; j < n ; j++ ) {  Aminv[j][i] = dxm[j]; }
 
@@ -230,18 +255,23 @@ __device__ int GPU_invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
   return(0);
 }
 
-__device__ void GPU_gcon_func(double gcov[][NDIM], double gcon[][NDIM])
+__host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 {
-  GPU_invert_matrix( gcov, gcon );
+  invert_matrix( gcov, gcon );
 }
 
 
 /* return boyer-lindquist coordinate of point */
-__device__ void GPU_bl_coord(double *X, double *r, double *th)
+__host__ __device__ void bl_coord(double *X, double *r, double *th)
 {
+  #ifdef __CUDA_ARCH__
+  double theta_slope = d_hslope;
+  #else
+  double theta_slope = hslope;
+  #endif
 	//fprintf(stderr,"X[1] = %le, X[2] = %le, X[3] = %le \n", X[1], X[2], X[3]);
 	*r = exp(X[1]);
-	*th = M_PI * X[2] + ((1. - d_hslope) / 2.) * sin(2. * M_PI * X[2]);
+	*th = M_PI * X[2] + ((1. - theta_slope) / 2.) * sin(2. * M_PI * X[2]);
 
 	return;
 }
@@ -258,8 +288,8 @@ __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM]
   double gh[NDIM][NDIM];
   double gl[NDIM][NDIM];
 
-  GPU_gcov_func(X, gcov);
-  GPU_gcon_func(gcov, gcon);
+  gcov_func(X, gcov);
+  gcon_func(gcov, gcon);
 
   // take partial derivatives of metric
   for (int k = 0; k < NDIM; k++) {
@@ -267,8 +297,8 @@ __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM]
     for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
     Xh[k] += DEL;
     Xl[k] -= DEL;
-    GPU_gcov_func(Xh, gh);
-    GPU_gcov_func(Xl, gl);
+    gcov_func(Xh, gh);
+    gcov_func(Xl, gl);
 
     for (int i = 0; i < NDIM; i++){
       for (int j = 0; j < NDIM; j++){

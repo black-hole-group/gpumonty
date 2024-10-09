@@ -67,7 +67,6 @@ extern double ***d_thetae;
 extern double ***d_b;
 /* HARM model internal utilities */
 void init_weight_table(void);
-void bl_coord(double *X, double *r, double *th);
 void make_zone_centered_tetrads(void);
 void seT_UNITs(char *munitstr);
 void init_geometry(void);
@@ -82,7 +81,7 @@ int get_zone(int *i, int *j, int *k, double *dnamx);
 void Xtoij(double X[NDIM], int *i, int *j, double del[NDIM]);
 void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 
-void coord(int i, int j, double *X);
+//void coord(int i, int j, double *X);
 void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM]);
 
@@ -103,9 +102,9 @@ void init_hamr3D_data(char *fname);
 void bl_coord_hamr(double *X, double *r, double *th, double *phi);
 void vofx_matthewcoords(double *X, double *V);
 void dxdxp_func(double *X, double dxdxp[][NDIM]);
-void LU_substitution( double A[][NDIM], double B[], int permute[] );
-int LU_decompose( double A[][NDIM], int permute[] );
-int invert_matrix( double Am[][NDIM], double Aminv[][NDIM]);  
+//void LU_substitution( double A[][NDIM], double B[], int permute[] );
+//int LU_decompose( double A[][NDIM], int permute[] );
+//int invert_matrix( double Am[][NDIM], double Aminv[][NDIM]);  
 void gcon_func_hamr(double gcov[][NDIM], double gcon[][NDIM]);
 //void gcon_func_hamr(double *X, double gcovp[][NDIM]);
 void gcov_func_hamr(double *X, double gcovp[][NDIM]);

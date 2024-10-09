@@ -127,7 +127,7 @@ extern gsl_rng *r;
 #define CPUFUNCTIONS
 void track_super_photon(struct of_photon *ph);
 void record_super_photon(struct of_photon *ph);
-void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
+//void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 void scatter_super_photon(struct of_photon *ph, struct of_photon *php,
 			  double Ne, double Thetae, double B,
 			  double Ucon[NDIM], double Bcon[NDIM],
@@ -192,7 +192,7 @@ double K2_eval(double Thetae);
 
 	/* compton scattering */
 void init_hotcross(void);
-double total_compton_cross_lkup(double nu, double theta);
+//double total_compton_cross_lkup(double nu, double theta);
 double klein_nishina(double a, double ap);
 double kappa_es(double nu, double theta);
 void sample_electron_distr_p(double k[NDIM], double p[NDIM], double theta);
@@ -220,7 +220,6 @@ int record_criterion(struct of_photon *ph);
 
 /* coordinate related */
 void get_connection(double *X, double lconn[][NDIM][NDIM]);
-void gcov_func(double *X, double gcov[][NDIM]);
 void gcon_func(double *X, double gcon[][NDIM]);
 
 
