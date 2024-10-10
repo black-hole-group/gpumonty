@@ -1,7 +1,7 @@
-#include "decs.h"
+#include "../decs.h"
+#include "model.h"
 
-
-void init_storage(void)
+__host__ void init_storage(void)
 {
 
     p = (double *) malloc(NPRIM * N1 * N2 * N3 * sizeof(double *));
@@ -327,7 +327,4 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
 	    s2 * (rho2 + bhspin*bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
-
-	//fprintf(stderr, "gcov[3][3]_harm = %lf\n", gcov[3][3]);
-
 }

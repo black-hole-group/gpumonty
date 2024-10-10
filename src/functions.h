@@ -46,7 +46,6 @@ __device__ void GPU_init_monty_rand(int seed);
 __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
                                    double Ucon[NDIM], double Bcon[NDIM], struct of_geom *d_geom, double *d_p);
 __device__ static double GPU_linear_interp_weight(double nu);
-__host__ __device__ void coord(int i, int j, double *X);
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu);
 __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
@@ -73,7 +72,6 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 //__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon_properties, struct of_photon * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double *d_p);
 __device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[NDIM], double Bcov[NDIM], double B);
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __device__ void GPU_vofx_matthewcoords(double *X, double *V);
 __host__ __device__ int LU_decompose(double A[][NDIM], int permute[]);
 __host__ __device__ void LU_substitution(double A[][NDIM], double B[], int permute[]);
@@ -84,7 +82,6 @@ __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double 
                                     double theta);
 __device__ double GPU_bias_func(double Te, double w);
 __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[]);
-__device__ int GPU_stop_criterion(struct of_photon *ph);
 __device__ double GPU_stepsize(double X[NDIM], double K[NDIM]);
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
                                 double dl, double *E0, int n);
@@ -105,7 +102,6 @@ __device__ double GPU_klein_nishina(double a, double ap);
 __device__ void generate_random_direction(double * x, double *y, double *z);
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]);
 __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM]);
-__device__ int GPU_record_criterion(struct of_photon *ph);
 __device__ void GPU_record_super_photon(struct of_photon *ph, struct of_spectrum* d_spect);
 __device__ void omp_reduce_spect_kernel(struct of_spectrum *spect, struct of_spectrum *shared_spect);
 __device__ double GPU_kappa_es(double nu, double Thetae, double * d_table_ptr);
@@ -124,11 +120,10 @@ __host__ __device__ double total_compton_cross_lkup(double w, double thetae, dou
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/
 __host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
-__host__ __device__ void gcov_func(double *X, double gcov[][NDIM]);
 __host__ __device__ void bl_coord(double *X, double *r, double *th);
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val);
 
-__host__ void init_data(char *fname);
+
 __host__ void init_geometry();
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ double gdet_func(double gcov[][NDIM]);

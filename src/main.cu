@@ -1,9 +1,13 @@
 #include "defs.h"
 #include "functions.h"
+#include "model.h"
 
 
 int main(int argc, char *argv[])
 {
+	clock_t start, end;
+    start = clock();
+
 	double Ntot;
 	int quit_flag;
 	struct of_photon ph = {0}; 
@@ -29,6 +33,8 @@ int main(int argc, char *argv[])
 	fflush(stderr);
 
     launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
+	end = clock();
+    printf("Time spent running the full code: %f seconds. Ntot = %d\n", ((double)(end - start)) / CLOCKS_PER_SEC, Ns);
 
 	return (0);
 

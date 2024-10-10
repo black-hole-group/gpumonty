@@ -348,10 +348,9 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 
         // Progress indicator
         if (global_index == 0) {
-            percentage = 100 - ((photon_count - tracking_counter) * 100) / photon_count;
+            percentage = 100 - ((photon_count - photon_index) * 100) / photon_count;
             if (percentage >= n * 10) {
                 printf("Progress: %llu%%\n", (unsigned long long)percentage);
-				printf("tracking_counter number = %llu\n", tracking_counter);
                 n++;
             }
         }
@@ -1288,85 +1287,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 }
 
 
-// __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
-// 		 double dl, double *E0, int n)
-// {
-// 	double lconn[NDIM][NDIM][NDIM];
-// 	double Kcont[NDIM], K[NDIM], dK;
-// 	double Xcpy[NDIM], Kcpy[NDIM], dKcpy[NDIM];
-// 	double Gcov[NDIM][NDIM], E1;
-// 	double dl_2, err, errE;
-// 	int i, k, iter;
-
-// 	if (X[1] < d_startx[1])
-// 		return;
-
-// 	FAST_CPY(X, Xcpy);
-// 	FAST_CPY(Kcon, Kcpy);
-// 	FAST_CPY(dKcon, dKcpy);
-// 	dl_2 = 0.5 * dl;
-// 	/* Step the position and estimate new wave vector */
-// 	for (i = 0; i < NDIM; i++) {
-// 		dK = dKcon[i] * dl_2;
-// 		Kcon[i] += dK;
-// 		K[i] = Kcon[i] + dK;
-// 		X[i] += Kcon[i] * dl;
-// 	}
-// 	GPU_get_connection(X, lconn);
-
-// 	/* We're in a coordinate basis so take advantage of symmetry in the connection */
-// 	iter = 0;
-// 	do {
-// 		iter++;
-// 		FAST_CPY(K, Kcont);
-
-// 		err = 0.;
-// 		for (k = 0; k < 4; k++) {
-// 			dKcon[k] =
-// 			    -2. * (Kcont[0] *
-// 				   (lconn[k][0][1] * Kcont[1] +
-// 				    lconn[k][0][2] * Kcont[2] +
-// 				    lconn[k][0][3] * Kcont[3])
-// 				   +
-// 				   Kcont[1] * (lconn[k][1][2] * Kcont[2] +
-// 					       lconn[k][1][3] * Kcont[3])
-// 				   + lconn[k][2][3] * Kcont[2] * Kcont[3]
-// 			    );
-
-// 			dKcon[k] -=
-// 			    (lconn[k][0][0] * Kcont[0] * Kcont[0] +
-// 			     lconn[k][1][1] * Kcont[1] * Kcont[1] +
-// 			     lconn[k][2][2] * Kcont[2] * Kcont[2] +
-// 			     lconn[k][3][3] * Kcont[3] * Kcont[3]
-// 			    );
-
-// 			K[k] = Kcon[k] + dl_2 * dKcon[k];
-// 			err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
-// 		}
-// 	} while (err > ETOL && iter < MAX_ITER);
-
-// 	FAST_CPY(K, Kcon);
-// 	#if(HAMR)
-// 	GPU_gcov_func_hamr(X, Gcov);
-// 	#else
-// 	GPU_gcov_func(X, Gcov);
-// 	#endif
-// 	E1 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-// 	       Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
-// 	errE = fabs((E1 - (*E0)) / (*E0));
-
-// 	if (n < 7
-// 	    && (errE > 1.e-4 || err > ETOL || isnan(err) || isinf(err))) {
-// 		FAST_CPY(Xcpy, X);
-// 		FAST_CPY(Kcpy, Kcon);
-// 		FAST_CPY(dKcpy, dKcon);
-// 		GPU_push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
-// 		GPU_push_photon(X, Kcon, dKcon, 0.5 * dl, E0, n + 1);
-// 		E1 = *E0;
-// 	}
-
-// 	*E0 = E1;
-// }
 
 __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM])
 {
