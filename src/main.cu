@@ -181,14 +181,3 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
 	fclose(fp);
 
 }
-double dOmega_func(double x2i, double x2f)
-{
-	double dO;
-
-	dO = 2. * M_PI *
-	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
-	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
-	    );
-
-	return (dO);
-}

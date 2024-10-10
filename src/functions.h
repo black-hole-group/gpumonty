@@ -117,17 +117,15 @@ __host__ __device__ double bessk2(double xbess);
 __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, double theta);
 __device__ double GPU_Bnu_inv(double nu, double Thetae);
 __host__ __device__ double total_compton_cross_lkup(double w, double thetae, double * d_table_ptr);
+
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/
 __host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
-__host__ __device__ void bl_coord(double *X, double *r, double *th);
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val);
 
 
 __host__ void init_geometry();
-__host__ double dOmega_func(double x2i, double x2f);
 __host__ double gdet_func(double gcov[][NDIM]);
-__host__ double dOmega_func(double x2i, double x2f);
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 __host__ void init_hotcross(void);
 __host__ void init_weight_table(void);

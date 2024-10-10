@@ -328,3 +328,30 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[3][3] =
 	    s2 * (rho2 + bhspin*bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
+
+__host__ double dOmega_func(double x2i, double x2f)
+{
+	double dO;
+
+	dO = 2. * M_PI *
+	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
+	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
+	    );
+
+	return (dO);
+}
+
+/* return boyer-lindquist coordinate of point */
+__host__ __device__ void bl_coord(double *X, double *r, double *th)
+{
+  #ifdef __CUDA_ARCH__
+  double theta_slope = d_hslope;
+  #else
+  double theta_slope = hslope;
+  #endif
+	//fprintf(stderr,"X[1] = %le, X[2] = %le, X[3] = %le \n", X[1], X[2], X[3]);
+	*r = exp(X[1]);
+	*th = M_PI * X[2] + ((1. - theta_slope) / 2.) * sin(2. * M_PI * X[2]);
+
+	return;
+}

@@ -265,20 +265,7 @@ __host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 }
 
 
-/* return boyer-lindquist coordinate of point */
-__host__ __device__ void bl_coord(double *X, double *r, double *th)
-{
-  #ifdef __CUDA_ARCH__
-  double theta_slope = d_hslope;
-  #else
-  double theta_slope = hslope;
-  #endif
-	//fprintf(stderr,"X[1] = %le, X[2] = %le, X[3] = %le \n", X[1], X[2], X[3]);
-	*r = exp(X[1]);
-	*th = M_PI * X[2] + ((1. - theta_slope) / 2.) * sin(2. * M_PI * X[2]);
 
-	return;
-}
 
 
 
