@@ -67,6 +67,9 @@ __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double
 
 	nuc = EE * B / (2. * M_PI * ME * CL);
 	sth = sin(theta);
+	#if(SPHERE_TEST)
+	sth = 1;
+	#endif
 	nus = (2. / 9.) * nuc * Thetae * Thetae * sth;
 	if (nu > 1.e12 * nus)
 		return (0.);
@@ -112,6 +115,9 @@ double jnu_integrand(double th, void *params)
 
 	double K = *(double *) params;
 	double sth = sin(th);
+	#if(SPHERE_TEST)
+	sth = 1;
+	#endif
 	double x = K / sth;
 
 	if (sth < 1.e-150 || x > 2.e8)

@@ -10,9 +10,11 @@ gsl_permutation *perm;
 /* assumes gcov has been set first; returns determinant */
 double gdet_func(double gcov[][NDIM])
 {
-	double d;
+  #if(SPHERE_TEST)
+    return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
+  #else
+  double d;
 	int k, l, signum;
-
 	if (gsl_gcov == NULL) {
 		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
 		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
@@ -26,6 +28,7 @@ double gdet_func(double gcov[][NDIM])
 	d = gsl_linalg_LU_det(gsl_gcov, signum);
 
 	return (sqrt(fabs(d)));
+  #endif
 }
 
 __host__  __device__ int LU_decompose( double A[][NDIM], int permute[] )
@@ -261,7 +264,18 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 
 __host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 {
+  #if(SPHERE_TEST)
+  int k, l;
+
+	DLOOP gcon[k][l] = 0.;
+	/*Flat space in spherical coordinates for the test*/							
+    gcon[0][0] = -1.;
+    gcon[1][1] = 1.;
+    gcon[2][2] = 1./gcov[2][2];
+    gcov[3][3] = 1/gcov[3][3];
+  #else
   invert_matrix( gcov, gcon );
+  #endif
 }
 
 
@@ -272,48 +286,71 @@ __host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM])
 #define DEL (1.e-7)
 __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
 {
-  double tmp[NDIM][NDIM][NDIM];
-  double Xh[NDIM], Xl[NDIM];
-  double gcon[NDIM][NDIM];
-  double gcov[NDIM][NDIM];
-  double gh[NDIM][NDIM];
-  double gl[NDIM][NDIM];
+	/* required by broken math.h */
+	//void sincos(double th, double *sth, double *cth);
+	#if(SPHERE_TEST)
+  	double r1, th;
+		r1 = X[1];
+		th = X[2];
 
-  gcov_func(X, gcov);
-  gcon_func(gcov, gcon);
+		for (int i = 0; i < NDIM; i++)
+				for (int j = 0; j < NDIM; j++)
+						for (int k = 0; k < NDIM; k++)
+							conn[i][j][k] = 0.;
+		/*Taken from https://arxiv.org/pdf/0904.4184*/
+		conn[1][2][2] = -r1;
+		conn[2][3][3] = - sin(th) * cos(th);
+		conn[1][3][3] = - r1 * pow(sin(th), 2.);
+		conn[3][1][3] = 1./r1;
+		conn[3][3][1] = 1./r1;
+		conn[2][2][1] = 1./r1; 
+		conn[2][1][2] = 1./r1; 
+		conn[3][2][3] = 1/tan(th);
+		conn[3][3][2] = 1/tan(th);
+	#else
+    double tmp[NDIM][NDIM][NDIM];
+    double Xh[NDIM], Xl[NDIM];
+    double gcon[NDIM][NDIM];
+    double gcov[NDIM][NDIM];
+    double gh[NDIM][NDIM];
+    double gl[NDIM][NDIM];
 
-  // take partial derivatives of metric
-  for (int k = 0; k < NDIM; k++) {
-    for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
-    for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
-    Xh[k] += DEL;
-    Xl[k] -= DEL;
-    gcov_func(Xh, gh);
-    gcov_func(Xl, gl);
+    gcov_func(X, gcov);
+    gcon_func(gcov, gcon);
 
-    for (int i = 0; i < NDIM; i++){
-      for (int j = 0; j < NDIM; j++){
-        conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+    // take partial derivatives of metric
+    for (int k = 0; k < NDIM; k++) {
+      for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
+      for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
+      Xh[k] += DEL;
+      Xl[k] -= DEL;
+      gcov_func(Xh, gh);
+      gcov_func(Xl, gl);
+
+      for (int i = 0; i < NDIM; i++){
+        for (int j = 0; j < NDIM; j++){
+          conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+        }
       }
     }
-  }
 
-  // Rearrange to find \Gamma_{ijk}
-  for (int i = 0; i < NDIM; i++)
-    for (int j = 0; j < NDIM; j++)
-      for (int k = 0; k < NDIM; k++)
-        tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
+    // Rearrange to find \Gamma_{ijk}
+    for (int i = 0; i < NDIM; i++)
+      for (int j = 0; j < NDIM; j++)
+        for (int k = 0; k < NDIM; k++)
+          tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
 
-  // G_{ijk} -> G^i_{jk}
-  for (int i = 0; i < NDIM; i++) {
-    for (int j = 0; j < NDIM; j++) {
-      for (int k = 0; k < NDIM; k++) {
-        conn[i][j][k] = 0.;
-        for (int l = 0; l < NDIM; l++) 
-          conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+    // G_{ijk} -> G^i_{jk}
+    for (int i = 0; i < NDIM; i++) {
+      for (int j = 0; j < NDIM; j++) {
+        for (int k = 0; k < NDIM; k++) {
+          conn[i][j][k] = 0.;
+          for (int l = 0; l < NDIM; l++) 
+            conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+        }
       }
     }
-  }
+  #endif
 }
 #undef DEL
 

@@ -216,7 +216,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
 	
-	X1max = log(RMAX);	/* this is coordinate and simulation
+	X1max = RMAX;	/* this is coordinate and simulation
 				   specific: stop at large distance */
 
 
@@ -313,8 +313,8 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 
 	DLOOP gcov[k][l] = 0.;
 	/*Flat space in spherical coordinates for the test*/							
-	gcov[0][0] = -1;
-	gcov[1][1] = 1;
+	gcov[0][0] = -1.;
+	gcov[1][1] = 1.;
 	gcov[2][2] = pow(X[1], 2.);
 	gcov[3][3] = pow(X[1] * sin(X[2]), 2.);
 
@@ -324,10 +324,7 @@ __host__ double dOmega_func(double x2i, double x2f)
 {
 	double dO;
 
-	dO = 2. * M_PI *
-	    (-cos(M_PI * x2f + 0.5 * (1. - hslope) * sin(2 * M_PI * x2f))
-	     + cos(M_PI * x2i + 0.5 * (1. - hslope) * sin(2 * M_PI * x2i))
-	    );
+	dO = 2. * M_PI * (-cos( x2f)+ cos(x2i));
 
 	return (dO);
 }
@@ -335,14 +332,8 @@ __host__ double dOmega_func(double x2i, double x2f)
 /* return boyer-lindquist coordinate of point */
 __host__ __device__ void bl_coord(double *X, double *r, double *th)
 {
-  #ifdef __CUDA_ARCH__
-  double theta_slope = d_hslope;
-  #else
-  double theta_slope = hslope;
-  #endif
-	//fprintf(stderr,"X[1] = %le, X[2] = %le, X[3] = %le \n", X[1], X[2], X[3]);
-	*r = exp(X[1]);
-	*th = M_PI * X[2] + ((1. - theta_slope) / 2.) * sin(2. * M_PI * X[2]);
+	*r = X[1];
+	*th = X[2];
 
 	return;
 }

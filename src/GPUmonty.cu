@@ -1047,9 +1047,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				bias);
 			break;
 		}
-		// if (((int)((log(ph->E)- lE0) / dlE + 2.5)) - 2 > 74){
-		// 	printf("Ending 326 bin = %d, Record_criterion = %d,  X1 = %le, nstep = %d, w = %le, stop_criterion = %d, log(rmin) = %le\n", ((int)((log(ph->E)- lE0) / dlE + 2.5)) - 2, GPU_record_criterion(ph),ph->X[1], nstep, ph->w, GPU_stop_criterion(ph), log(d_Rh));
-		// }
 	}
 
 // 	/* accumulate result in spectrum on escape */
