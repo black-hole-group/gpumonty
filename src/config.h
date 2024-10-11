@@ -32,10 +32,10 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e-6)
+#define WEIGHT_MIN	(1.e31)
 
 /*for stop criterium*/
-#define RMAX	1. //Define the maximum radius up to track the photon
+#define RMAX	100. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 /*Choose model*/
@@ -73,13 +73,13 @@
 #if(HAMR)
 #define MBH (10)/*In solar UNITs*/
 #else
-#define MBH (6.8e-6)/*In solar UNITs*/
+#define MBH (4.1e6)/*In solar UNITs*/
 #endif
 
 #if(HAMR)
 #define M_UNIT (4e7)
 #else
-#define M_UNIT (1) /*Try to find rho_scale as this parameter*/
+#define M_UNIT (4.1e19) /*Try to find rho_scale as this parameter*/
 #endif
 
 
@@ -198,4 +198,4 @@
 #define MAXNSTEP (1280000)
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (1)
+#define SPHERE_TEST (0)

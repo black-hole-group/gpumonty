@@ -1,5 +1,5 @@
 # Model name
-MODEL_DIR = $(SRC_DIR)/sphere_model
+MODEL_DIR = $(SRC_DIR)/harm_model
 
 # Directories
 SRC_DIR = src
@@ -12,7 +12,7 @@ CUDA_INCLUDE = -I$(CUDA_PATH)/include
 CUDA_LIB = -L$(CUDA_PATH)/lib64
 
 # Compiler flags
-NVCCFLAGS = -G -arch=compute_60 -code=sm_60 -rdc=true --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler="-fopenmp"
+NVCCFLAGS = -arch=compute_60 -code=sm_60 -rdc=true --ptxas-options=-dlcm=cg --maxrregcount=255 -Xcompiler="-fopenmp"
 NVCCFLAGS += -I/home/pedro/gsl/include -O3
 NVCCFLAGS += -I$(MODEL_DIR)  # Add model directory to the include path
 

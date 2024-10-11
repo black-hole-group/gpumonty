@@ -63,7 +63,6 @@ do not edit with multiple threads, unless we know what we are doing*/
 #ifndef GPUGLOBALS
 #define GPUGLOBALS
 	extern __device__ double d_table[NW + 1][NT + 1];
-	extern __device__ double d_maximum_w;
 
 	extern __device__ unsigned long long photon_count;
 	extern __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
@@ -79,6 +78,7 @@ do not edit with multiple threads, unless we know what we are doing*/
 	extern __device__ double d_hslope;
 	extern __device__ double d_R0;
 	extern __device__ int total_sca;
+	extern __device__ unsigned long long tracking_counter_sampling;
 
 #endif
 

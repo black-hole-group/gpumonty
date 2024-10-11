@@ -43,7 +43,6 @@ double dndlnu_max[NINT + 1];
 
 
 __device__ double d_table[NW + 1][NT + 1];
-__device__ double d_maximum_w = 0;
 
 __device__ unsigned long long photon_count = 0;
 __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
@@ -59,7 +58,7 @@ __device__ double d_dndlnu_max[NINT + 1];
 __device__ double d_hslope = 0;
 __device__ double d_R0 = 0;
 __device__ int total_sca = 0;
-
+__device__ unsigned long long tracking_counter_sampling = 0;
 
 /** data structures **/
 struct of_photon {
