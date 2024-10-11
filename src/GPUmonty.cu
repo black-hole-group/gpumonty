@@ -97,8 +97,34 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
 
-	fprintf(stderr, "Sampling photons' frequencies!\n");
-
+	/*Now, things may get complicated memory wise. We need to partition it?*/
+	size_t free_mem, total_mem;
+	
+	//Get GPU remaining memory.
+	cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
+	if (err != cudaSuccess) {
+		printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
+	}
+    size_t required_mem ;
+	required_mem = gen_superph * sizeof(struct of_photon);
+	required_mem += MAX_LAYER_SCA *  gen_superph * sizeof(struct of_photon);
+	if (required_mem > free_mem) {
+		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
+		printf("Beginning equipartion of photons...\n");
+    }
+	// Check how many times gen_superph needs to be divided
+	unsigned long long superph_per_batch = gen_superph;
+	int batch_divisions = 1;
+	while (required_mem > free_mem) {
+		// Divide gen_superph by 2 and recalculate required memory
+		superph_per_batch /= 2;
+		required_mem = superph_per_batch * sizeof(struct of_photon);
+		required_mem += MAX_LAYER_SCA * superph_per_batch * sizeof(struct of_photon);
+		// Track the number of divisions
+		batch_divisions++;
+	}
+	printf("Required partitions: %d\n", batch_divisions);
+	//exit(1);
 	/*Creating array of initial superphotons state*/
 	struct of_photon * initial_photon_states;
 	gpuErrchk(cudaMalloc(&initial_photon_states, gen_superph * sizeof(struct of_photon)));
@@ -119,10 +145,13 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	/*Freeing unnecessary arrays from photon generation*/
 	cudaFree(generated_photons_arr);
 
+
+
+
 	/*Tracking photons*/
 	fprintf(stderr, "Tracking photons along the geodesics\n");
 	struct of_photon * scat_ofphoton;
-	gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * gen_superph/10 * sizeof(struct of_photon))); //In here, we consider a maximum of 8 scattering layers and each photon can scatter.
+	gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  gen_superph * sizeof(struct of_photon))); //In here, we consider a maximum of 8 scattering layers and each photon can scatter.
 	unsigned long long num_scat_phs[MAX_LAYER_SCA];
 	start = clock();
 	GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton);
@@ -995,8 +1024,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 					}else if(scat_ofphoton[my_local_index].w == 0){
 						printf("In GPU_track_super_photon, weight equals 0!, %d\n", my_local_index);
 					}
-					// GPU_track_super_photon(&php, d_spect, d_p);
-
 				}
 				theta =
 				    GPU_get_bk_angle(ph->X, ph->K, Ucov, Bcov,
@@ -1025,15 +1052,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau < 1.e-3)
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
-				else
-					ph->w *= exp(-dtau);
+					ph->w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
+				else{
+					ph->w *= exp(-dtau); //This seems to mess the low energy part of the plot;
+				}
 			}
 		}
 
@@ -1041,10 +1063,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			printf(
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
+			// printf(
+			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+			// 	bias);
 			break;
 		}
 	}
@@ -1150,19 +1172,29 @@ __device__ double GPU_bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
 
-	max = 0.5 * w / WEIGHT_MIN;
+	#if(SPHERE_TEST)
+		max = 0.5 * w / WEIGHT_MIN;
+		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
+		if (bias > max){
+			bias = max;
+		}
+		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
+		return bias;
+	#else
+		max = 0.5 * w / WEIGHT_MIN;
 
-	avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
-	bias =
-	    100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
-			      (avg_num_scatt + 2));
+		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
+		bias =
+			100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
+					(avg_num_scatt + 2));
 
-	if (bias < TP_OVER_TE)
-		bias = TP_OVER_TE;
-	if (bias > max)
-		bias = max;
-	return bias / TP_OVER_TE;
-	//return 1;
+		if (bias < TP_OVER_TE)
+			bias = TP_OVER_TE;
+		if (bias > max)
+			bias = max;
+			
+		return bias / TP_OVER_TE;
+	#endif
 }
 __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 {

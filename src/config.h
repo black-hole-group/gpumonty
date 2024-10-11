@@ -79,7 +79,7 @@
 #if(HAMR)
 #define M_UNIT (4e7)
 #else
-#define M_UNIT (4.1e-10) /*Try to find rho_scale as this parameter*/
+#define M_UNIT (1) /*Try to find rho_scale as this parameter*/
 #endif
 
 
@@ -142,7 +142,7 @@
 			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
 			cx = _yp*(0.225*fabs(_yp)+0.775);			\
 			}
-
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 
 /*Mmnemonics for hamr*/
