@@ -123,7 +123,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	int batch_divisions = 1;
 	while (required_mem > free_mem) {
 		// Divide gen_superph by 2 and recalculate required memory
-		superph_per_batch /= 2;
+		superph_per_batch = gen_superph/batch_divisions;
 		required_mem = superph_per_batch * sizeof(struct of_photon);
 		required_mem += MAX_LAYER_SCA * superph_per_batch * sizeof(struct of_photon);
 		// Track the number of divisions
@@ -144,7 +144,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 
 
 	while(instant_partition <= batch_divisions){
-		printf("Starting partition %d\n", instant_partition);
+		printf("Starting partition %d out of %d\n", instant_partition, batch_divisions);
 
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
@@ -153,7 +153,8 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
 
 		gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
-		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  instant_photon_number* sizeof(struct of_photon))); //In here, we consider a maximum of 8 scattering layers and each photon can scatter.
+		//In here, we consider a maximum of 8 scattering layers and each photon can scatter.
+		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  instant_photon_number* sizeof(struct of_photon))); 
 		
 		fprintf(stderr, "Sampling the photons!\n");
 		GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed);
@@ -213,8 +214,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 			fprintf(stderr, "in scattering kernerls %s\n", cudaGetErrorString(cudaStatus));
 			exit(1);
 		}
-		//fprintf(stderr, "Done!, printing results...\n");
-		//return;
+
 		cudaFree(scat_ofphoton);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
@@ -228,7 +228,9 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 
 	
 	report_spectrum(gen_superph, spect, filename);
-
+	cudaFree(d_spect);
+	cudaFree(generated_photons_arr); 
+	cudaFree(dnmax_arr);
 	cudaFree(d_geom);
 	cudaFree(d_table_ptr);
 }
