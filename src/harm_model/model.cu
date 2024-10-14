@@ -179,7 +179,6 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 	double wmin, X1min, X1max;
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
-	
 	X1min = log(d_Rh);	/* this is coordinate-specific; stop
 				   at event horizon */
 	X1max = log(RMAX);	/* this is coordinate and simulation

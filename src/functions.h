@@ -120,7 +120,7 @@ __host__ __device__ double total_compton_cross_lkup(double w, double thetae, dou
 
 /*GPU  variables*/
 /*These variables should be passed only to initialize GPU, then they should become function parameters*/
-__host__ __device__ void gcon_func(double gcov[][NDIM], double gcon[][NDIM]);
+__host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon[][NDIM]);
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val);
 
 

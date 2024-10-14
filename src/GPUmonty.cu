@@ -23,6 +23,7 @@ struct of_scattering{
 };
 
 /**********************************************************************************************************************************************************************************/
+__device__ float timingData; // To hold timing data (in clock cycles)
 
 
 __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename){
@@ -96,8 +97,6 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
     printf("Execution time: %f seconds to generate photons\n", cpu_time_used);
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
-
-
 
 
 
@@ -226,7 +225,9 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 
-	
+	float totalTime;
+	cudaMemcpyFromSymbol(&totalTime, timingData, sizeof(float), 0,cudaMemcpyDeviceToHost);
+	printf("Total time spent in GPU_push_photon: %.5e seconds\n", totalTime/CLOCKS_PER_SEC);
 	report_spectrum(gen_superph, spect, filename);
 	cudaFree(d_spect);
 	cudaFree(generated_photons_arr); 
@@ -347,6 +348,8 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 			*n2gen = (int) (nz);
 		}
 	}
+	// if(i == 0)
+	// printf("%d, %d, %d, (%le, %le, %le, %le, %le, %le)\n",i,j,*n2gen, d_geom[SPATIAL_INDEX2D(i,j)].g, Ne,  Bmag,  Thetae,  ninterp,  K2);
 
 	return;
 }
@@ -393,6 +396,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
             percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
             if (percentage >= n * 10) {
                 printf("Progress: %llu%%\n", (unsigned long long)percentage);
+				printf("tracking_counter number = %llu\n", tracking_counter);
                 n++;
             }
         }
@@ -1076,10 +1080,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			// printf(
-			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-			// 	bias);
+			printf(
+				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+				bias);
 			break;
 		}
 	}
@@ -1103,7 +1107,6 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	double rho, uu;
 	double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 	double gcon[NDIM][NDIM], coeff[8];
-	__device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double del[8]);
 
 	//checks if it's within the grid
 	if (X[1] < d_startx[1] ||
@@ -1151,7 +1154,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, coeff);
 	Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, coeff);
 
-	gcon_func(gcov, gcon);
+	gcon_func(X, gcov, gcon);
 	
 	/* Get Ucov */
 	VdotV = 0.;
@@ -1264,11 +1267,12 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 	return (dl);
 }
 
+
+
 // //This one below is from gpu_monty
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double dl,
 	double *E0, int n)
 {
-
         double lconn[NDIM][NDIM][NDIM];
         double Kcont[NDIM], K[NDIM], dK;
         double Gcov[NDIM][NDIM];
@@ -1325,7 +1329,7 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
         *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
 
-        /* done! */
+		/* done! */
 }
 
 
