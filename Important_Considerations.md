@@ -105,5 +105,5 @@ Time spent running the full code: 10.799421 seconds. Ntot = 150000
 Time spent running the full code: 44.711290 seconds. Ntot = 750000
 Time spent running the full code: 58.753125 seconds. Ntot = 1000000
 Time spent running the full code: 1143.118472 seconds. Ntot = 100000000 //in the same file
-
+Time spent running the full code: 1210.156004 seconds. Ntot = 100000000 // with dlto. it took an extra 67 seconds 1 min and 7 seconds longer
 Time spent running the full code: 6116.992129 seconds. Ntot = 100000000

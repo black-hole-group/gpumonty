@@ -23,12 +23,10 @@ struct of_scattering{
 };
 
 /**********************************************************************************************************************************************************************************/
-__device__ float timingData; // To hold timing data (in clock cycles)
 
 
 __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename){
-	clock_t start, end;
-    double cpu_time_used;
+
 	cudaError_t cudaStatus;
 	cudaStatus = cudaGetLastError();
 	/*Copying global variables*/
@@ -89,12 +87,8 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 
 	/*Calling the function to generate photons and sample them*/
 	fprintf(stderr, "Generating super photons!\n");
-	start = clock();
     GPU_generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);
 	cudaDeviceSynchronize();
-	end = clock();
-	cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Execution time: %f seconds to generate photons\n", cpu_time_used);
 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
 
@@ -225,9 +219,6 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 
-	float totalTime;
-	cudaMemcpyFromSymbol(&totalTime, timingData, sizeof(float), 0,cudaMemcpyDeviceToHost);
-	printf("Total time spent in GPU_push_photon: %.5e seconds\n", totalTime/CLOCKS_PER_SEC);
 	report_spectrum(gen_superph, spect, filename);
 	cudaFree(d_spect);
 	cudaFree(generated_photons_arr); 
@@ -396,7 +387,6 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
             percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
             if (percentage >= n * 10) {
                 printf("Progress: %llu%%\n", (unsigned long long)percentage);
-				printf("tracking_counter number = %llu\n", tracking_counter);
                 n++;
             }
         }
