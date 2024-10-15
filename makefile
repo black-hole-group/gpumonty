@@ -12,7 +12,7 @@ CUDA_INCLUDE = -I$(CUDA_PATH)/include
 CUDA_LIB = -L$(CUDA_PATH)/lib64
 
 # Compiler flags
-NVCCFLAGS = -arch=compute_60 -code=sm_60 -rdc=true --ptxas-options="-dlcm=cg -O3" --maxrregcount=255 -Xcompiler="-fopenmp -lgomp"
+NVCCFLAGS = -arch=compute_60 -code=lto_60 -rdc=true --ptxas-options="-dlcm=cg -O3" --maxrregcount=255 -Xcompiler="-fopenmp -lgomp"
 NVCCFLAGS += -I/home/pedro/gsl/include -O3
 NVCCFLAGS += -I$(MODEL_DIR)  # Add model directory to the include path
 
@@ -36,7 +36,7 @@ EXECUTABLE = gpumonty
 
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
-	$(NVCC) $(NVCCFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(NVCC) -arch=compute_60 -gencode arch=compute_60,code=sm_60 -dlto -o $@ $(OBJS) $(LDFLAGS)
 
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)
