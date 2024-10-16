@@ -210,13 +210,15 @@ __device__ int GPU_record_criterion(struct of_photon *ph)
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
 __device__ int GPU_stop_criterion(struct of_photon *ph)
 {
-	double wmin, X1max;
+	double wmin, X1max, X1min;
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
-	
+	X1min = RMIN;
 	X1max = RMAX;	/* this is coordinate and simulation
 				   specific: stop at large distance */
 
+	if (ph->X[1] < X1min)
+	return 1;
 
 
 	if (ph->X[1] > X1max) {

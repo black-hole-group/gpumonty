@@ -1186,6 +1186,7 @@ __device__ double GPU_bias_func(double Te, double w)
 		}
 		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
+		//return 1;
 	#else
 		max = 0.5 * w / WEIGHT_MIN;
 

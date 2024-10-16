@@ -22,8 +22,8 @@
 #define N_THREADS 256
 
 /* Range of superphoton frequencies */
-#define NUMIN 1.e8
-#define NUMAX 1.e16
+#define NUMIN 1.e7
+#define NUMAX 1.e18
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.02
@@ -32,10 +32,11 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e31)
+#define WEIGHT_MIN	(1.e-6)
 
 /*for stop criterium*/
-#define RMAX	100. //Define the maximum radius up to track the photon
+#define RMAX	1. //Define the maximum radius up to track the photon
+#define RMIN 1e-6;
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 /*Choose model*/
@@ -73,13 +74,13 @@
 #if(HAMR)
 #define MBH (10)/*In solar UNITs*/
 #else
-#define MBH (4.1e6)/*In solar UNITs*/
+#define MBH (6.8e-6)/*In solar UNITs*/
 #endif
 
 #if(HAMR)
 #define M_UNIT (4e7)
 #else
-#define M_UNIT (4.1e19) /*Try to find rho_scale as this parameter*/
+#define M_UNIT (1) /*Try to find rho_scale as this parameter*/
 #endif
 
 
@@ -198,4 +199,4 @@
 #define MAXNSTEP (1280000)
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (0)
+#define SPHERE_TEST (1)
