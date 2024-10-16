@@ -168,19 +168,21 @@ __host__ void init_data(char *fname)
 		check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
 		check_scan_error(fread(&gdet, double_size, 1, fp), 1);
-		if(p[NPRIM_INDEX(KRHO,k)] != 0){
-			V += dV * gdet;
-			bias_norm +=
-		    dV * gdet * pow((gam - 1)* p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)], 2.);
-		}
+		// if(p[NPRIM_INDEX(KRHO,k)] != 0){
+		// 	V += dV * gdet;
+		// 	bias_norm +=
+		//     dV * gdet * pow((gam - 1)* p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)], 2.);
+		// }
+		V += dV * gdet;
+		bias_norm += dV * gdet * pow(p[NPRIM_INDEX(UU,k)]/ p[NPRIM_INDEX(KRHO,k)] * Thetae_unit, 2.);
 		/* check accretion rate */
 		if (i <= 20)
 			dMact += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(KRHO,k)] * Ucon[1];
 			Ladv += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucon[0];
 	}
-	//bias_norm /= V;
-	bias_norm = V/bias_norm;
-	bias_norm = 1/1e4;
+	bias_norm /= V;
+	//bias_norm = V/bias_norm;
+	//bias_norm = 1/1e4;
 	fprintf(stderr, "bias_norm = %le, V = %le\n", bias_norm, V);
 	dMact *= dx[3] * dx[2];
 	dMact /= 21.;

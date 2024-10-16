@@ -1178,7 +1178,7 @@ __device__ double GPU_bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
 
-	#if(SPHERE_TEST)
+	#if(0)
 		max = 0.5 * w / WEIGHT_MIN;
 		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
 		if (bias > max){
@@ -1186,7 +1186,6 @@ __device__ double GPU_bias_func(double Te, double w)
 		}
 		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
-		//return 1;
 	#else
 		max = 0.5 * w / WEIGHT_MIN;
 

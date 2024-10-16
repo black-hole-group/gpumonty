@@ -22,11 +22,12 @@
 #define N_THREADS 256
 
 /* Range of superphoton frequencies */
-#define NUMIN 1.e7
-#define NUMAX 1.e18
+#define NUMIN 1.e8
+#define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
-#define THETAE_MIN	0.02
+#define THETAE_MIN	0.3
+#define THETAE_MAX 1000.
 
 /*Ratio of proton temperature to electron temperature*/
 #define TP_OVER_TE	(3.)
@@ -80,7 +81,7 @@
 #if(HAMR)
 #define M_UNIT (4e7)
 #else
-#define M_UNIT (1) /*Try to find rho_scale as this parameter*/
+#define M_UNIT (1.) /*Try to find rho_scale as this parameter*/
 #endif
 
 
@@ -181,8 +182,8 @@
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
-#define BTHSQMIN	(1.e-8) //Minimum of log(B *thetae^2)
-#define BTHSQMAX	(1.e12) //Maximum of log(B *thetae^2)
+#define BTHSQMIN	(1.e-4) //Minimum of log(B *thetae^2)
+#define BTHSQMAX	(1.e8) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
 #define MAX_LAYER_SCA (8)
