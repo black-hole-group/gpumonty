@@ -22,7 +22,7 @@
 #define N_THREADS 256
 
 /* Range of superphoton frequencies */
-#define NUMIN 1.e8
+#define NUMIN 1.e7
 #define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
@@ -37,19 +37,23 @@
 
 /*for stop criterium*/
 #define RMAX	1. //Define the maximum radius up to track the photon
-#define RMIN 1e-6;
+#define RMIN 0.01;
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 /*Choose model*/
 #define HAMR (0)
 #define HAMR3D (0) /* Leave it equal 0 to do HAMR2D */
 
-/*Number of energy bins (I don't quite know the difference between the two)*/
-#define N_ESAMP		200
-#define N_EBINS		200
+
 /* spectral bin parameters */
-#define	dlE (0.25) //Size of the energy bin
-#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+#define	dlE (0.05) //Size of the energy bin
+#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
+
+
+/*Number of energy bins (I don't quite know the difference between the two)*/
+//Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
+#define N_ESAMP 450
+#define N_EBINS 450
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
@@ -75,7 +79,7 @@
 #if(HAMR)
 #define MBH (10)/*In solar UNITs*/
 #else
-#define MBH (6.8e-6)/*In solar UNITs*/
+#define MBH (6.77e-6)/*In solar UNITs*/
 #endif
 
 #if(HAMR)

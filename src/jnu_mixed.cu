@@ -138,6 +138,7 @@ double jnu_integrand(double th, void *params)
 // extern double dlT; //PEDRO EDIT -> F is being declared twice here and in hotcross.c, so I've just defined this as an extern
 
 
+//F is the emissiviti's table
 __host__ void init_emiss_tables(void)
 {
 

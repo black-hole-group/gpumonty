@@ -6,11 +6,13 @@ __device__ double GPU_Bnu_inv(double nu, double Thetae)
 
 	x = HPL * nu / (ME * CL * CL * Thetae);
 
-	if (x < 1.e-3)		/* Taylor expand */
+	if (x < 1.e-3){	/* Taylor expand */
 		return ((2. * HPL / (CL * CL)) /
 			(x / 24. * (24. + x * (12. + x * (4. + x)))));
-	else
+	}
+	else{
 		return ((2. * HPL / (CL * CL)) / (exp(x) - 1.));
+	}
 }
 
 __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
@@ -18,7 +20,7 @@ __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, dou
 	double j;
 
 	j = jnu_synch(nu, Ne, Thetae, B, theta);
-
+	//printf("nu = %le, Thetae = %le, Ne = %le, B = %le, result = %le\n", nu, Thetae, Ne, B, j/(nu * nu));
 	return (j / (nu * nu));
 }
 
@@ -38,8 +40,10 @@ __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double 
 
 	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta);
 	bnu = GPU_Bnu_inv(nu, Thetae);
-
-	return (j / (bnu + 1.e-100));
+	if (j > 0){
+		return (j / (bnu + 1.e-100));
+	}
+	return 0;
 }
 
 
@@ -87,6 +91,7 @@ __device__ double GPU_get_bk_angle(double X[NDIM], double K[NDIM], double Ucov[N
 {
 
 	double k, mu;
+
 
 	if (B == 0.)
 		return (M_PI / 2.);

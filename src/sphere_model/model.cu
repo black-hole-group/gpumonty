@@ -86,6 +86,7 @@ __host__ void init_data(char *fname)
 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
 		   gam);
 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+	printf("Thetae_unit = %le\n", Thetae_unit);
 
 	dMact = 0.;
 	Ladv = 0.;
@@ -182,7 +183,7 @@ __host__ void init_data(char *fname)
 	}
 	bias_norm /= V;
 	//bias_norm = V/bias_norm;
-	//bias_norm = 1/1e4;
+	bias_norm = 0.0/0.0; //producing a nan
 	fprintf(stderr, "bias_norm = %le, V = %le\n", bias_norm, V);
 	dMact *= dx[3] * dx[2];
 	dMact /= 21.;
