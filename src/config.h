@@ -193,7 +193,7 @@
 #define MAX_LAYER_SCA (8)
 
 /*for stepsize*/
-#define EPS   (0.04)
+#define EPS   (0.0001)
 
 /*Push photon routine*/
 #define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
