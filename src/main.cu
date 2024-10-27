@@ -60,8 +60,6 @@ __host__ void init_model(char *args[])
 	init_geometry();
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
-	a = 0.9375;
-	Rh = 1 + sqrt(1. - a * a);
 
 	/* make look-up table for hot cross sections */
 	init_hotcross();

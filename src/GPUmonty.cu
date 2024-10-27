@@ -108,7 +108,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	required_mem = gen_superph * sizeof(struct of_photon);
 	//considering that 1 photon in 100 are going to scatter
 	//CHANGE LATER THIS MEANS NO SCATTERING IS ALLOCATED
-	//required_mem += MAX_LAYER_SCA *  gen_superph/100 * sizeof(struct of_photon);
+	required_mem += MAX_LAYER_SCA *  gen_superph/1 * sizeof(struct of_photon);
 	if (required_mem > free_mem) {
 		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
 		printf("Beginning equipartion of photons...\n");
@@ -121,7 +121,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		superph_per_batch = gen_superph/batch_divisions;
 		required_mem = superph_per_batch * sizeof(struct of_photon);
 		//CHANGE LATER THIS MEANS NO SCATTERING IS ALLOCATED
-		//required_mem += MAX_LAYER_SCA * superph_per_batch * sizeof(struct of_photon);
+		required_mem += MAX_LAYER_SCA * superph_per_batch * sizeof(struct of_photon);
 		// Track the number of divisions
 		batch_divisions++;
 	}
@@ -151,8 +151,8 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
 		//In here, we consider a maximum of 8 scattering layers and each photon can scatter.
 		//CHANGE LATER THIS MEANS NO SCATTERING IS ALLOCATED
-		gpuErrchk(cudaMalloc(&scat_ofphoton, sizeof(struct of_photon))); 
-		//gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  instant_photon_number* sizeof(struct of_photon))); 
+		//gpuErrchk(cudaMalloc(&scat_ofphoton, sizeof(struct of_photon))); 
+		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  instant_photon_number* sizeof(struct of_photon))); 
 		
 		fprintf(stderr, "Sampling the photons!\n");
 		GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed);
@@ -324,11 +324,6 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 	}
 	
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
-	// if(i == 0 && j == 82){
-	// 	printf("nz = %le\n", nz);
-	// 	printf("geom = %le, Ne = %le, Bmag = %le, Thetae = %le, K2 = %le, ninterp = %le\n", d_geom[SPATIAL_INDEX2D(i,j)].g, Ne, Bmag, Thetae, K2, ninterp);
-	// }
-	//printf("nz[%d][%d][%d] = %le\n",i, j, k, nz);
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -574,6 +569,8 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 	lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+
+
 	if (isnan(*B)){
 		//printf("i = %d, j = %d, k = %d\n", i, j, k);
 		printf( "VdotV = %le\n", VdotV);
@@ -1031,10 +1028,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			printf(
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
+			// printf(
+			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+			// 	bias);
 			break;
 		}
 	}
@@ -1406,7 +1403,7 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 		printf(
 			"conversion to tetrad frame problem: %g %g\n",
 			ph->K[0], K_tetrad[0]);
-/*		printf("%g %g %g\n",ph->K[1], ph->K[2], ph->K[3]);
+		printf("%g %g %g\n",ph->K[1], ph->K[2], ph->K[3]);
 		printf("%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
 		printf("%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
 		printf("%g %g %g %g\n",Bhatcon[0], Bhatcon[1], Bhatcon[2], Bhatcon[3]);
@@ -1418,7 +1415,7 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 		printf("%g %g %g %g\n", Ecov[1][0], Ecov[1][1], Ecov[1][2], Ecov[1][3]) ;
 		printf("%g %g %g %g\n", Ecov[2][0], Ecov[2][1], Ecov[2][2], Ecov[2][3]) ;
 		printf("%g %g %g %g\n", Ecov[3][0], Ecov[3][1], Ecov[3][2], Ecov[3][3]) ;
-		printf("X1,X2: %g %g\n",ph->X[1],ph->X[2]) ;*/
+		printf("X1,X2: %g %g\n",ph->X[1],ph->X[2]) ;
 		ph->w = 0.;
 		return;
 	}

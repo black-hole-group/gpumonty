@@ -1,6 +1,7 @@
 #include "../decs.h"
 #include "model.h"
 
+
 __host__ void init_storage(void)
 {
 
@@ -82,7 +83,8 @@ __host__ void init_data(char *fname)
 
     /* Allocate storage for all model size dependent variables */
     init_storage();
-
+	Rh = 1 + sqrt(1. - a * a);
+	fprintf(stderr, "Rh = %le\n", Rh);
     two_temp_gam = 0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
     Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
     dMact = 0.;
@@ -237,18 +239,6 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	}
 	*k = 0;
 	del[3] = 0;
-	#if(HAMR3D)
-	*k= (int) ((X[3] - d_startx[3]) / d_dx[3] - 0.5 + 1000) - 1000;
-	if (*k < 0) {
-		*k = 0;
-		del[3] = 0.;
-	} else if (*k > d_N3 - 2) {
-		*k = d_N3 - 2;
-		del[3] = 1.;
-	} else {
-		del[3] = (X[3] - ((*k + 0.5) * d_dx[3] + d_startx[3])) / d_dx[3]; //fractional displacement of the center of the grid cell
-	}
-	#endif
 	return;
 }
 
@@ -304,13 +294,6 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	rfac = r - radius0;
 	hfac = M_PI + (1. - theta_slope) * M_PI * cos(2. * M_PI * X[2]);
 	pfac = 1.;
-
-	#if(HAMR)
-	tfac = 1.;
-	rfac = 1.;
-	hfac = 1.;
-	pfac = 1.;
-	#endif
 
 	gcov[0][0] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[0][1] = (2. * r / rho2) * tfac * rfac;

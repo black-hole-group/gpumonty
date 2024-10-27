@@ -22,7 +22,7 @@
 #define N_THREADS 256
 
 /* Range of superphoton frequencies */
-#define NUMIN 1.e7
+#define NUMIN 1.e9
 #define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
@@ -33,27 +33,29 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e-6)
+#define WEIGHT_MIN	(1.e31)
 
 /*for stop criterium*/
-#define RMAX	1. //Define the maximum radius up to track the photon
-#define RMIN 0.01;
+#define RMAX	100. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
-/*Choose model*/
+//RMIN for sphere model only
+#define RMIN 0.01;
+
+/*HAMR switch for model shared functions*/
 #define HAMR (0)
-#define HAMR3D (0) /* Leave it equal 0 to do HAMR2D */
 
 
 /* spectral bin parameters */
-#define	dlE (0.05) //Size of the energy bin
-#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
+#define	dlE (0.25) //Size of the energy bin
+//#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
+#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
 
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 450
-#define N_EBINS 450
+#define N_ESAMP 200
+#define N_EBINS 200
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
@@ -62,7 +64,7 @@
 #define MINW      1.e-12       // Minimum weight in the table
 #define MAXW      1.e10        // Maximum weight in the table
 #define MINT      1.e-10       // Minimum temperature
-#define MAXT      1.e10        // Maximum temperature
+#define MAXT      1.e10        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
 #define NW        220          // Number of weight steps for table
 #define NT        80           // Number of temperature steps
 #define HOTCROSS  "./table/hotcross.dat" // Name of the table file
@@ -76,17 +78,12 @@
 /*Setting units for the problem*/
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
-#if(HAMR)
-#define MBH (10)/*In solar UNITs*/
-#else
-#define MBH (6.77e-6)/*In solar UNITs*/
-#endif
 
-#if(HAMR)
-#define M_UNIT (4e7)
-#else
-#define M_UNIT (1.) /*Try to find rho_scale as this parameter*/
-#endif
+
+/*Mass of the black hole and the unit of M in order to transform to natural code units*/
+#define MBH (4.e6)/*In solar UNITs*/
+#define M_UNIT (4.e19) /*Find this based on the rho_scale parameter for HAMR sims*/
+
 
 
 /*Units based off the mass of the blackhole and the Unit of mass*/
@@ -186,14 +183,14 @@
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
-#define BTHSQMIN	(1.e-4) //Minimum of log(B *thetae^2)
-#define BTHSQMAX	(1.e8) //Maximum of log(B *thetae^2)
+#define BTHSQMIN	(1.e-8) //Minimum of log(B *thetae^2)
+#define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
 #define MAX_LAYER_SCA (8)
 
 /*for stepsize*/
-#define EPS   (0.01)
+#define EPS   (0.04)
 
 /*Push photon routine*/
 #define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}
@@ -204,4 +201,4 @@
 #define MAXNSTEP (1280000)
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (1)
+#define SPHERE_TEST (0)

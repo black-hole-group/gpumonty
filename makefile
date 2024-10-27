@@ -1,5 +1,6 @@
 # Model name
-MODEL_DIR = $(SRC_DIR)/sphere_model
+#so far harm_model, hamr_model and sphere_model
+MODEL_DIR = $(SRC_DIR)/harm_model
 
 # Directories
 SRC_DIR = src
