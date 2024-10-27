@@ -59,11 +59,11 @@
 #define N_THBINS	6
 
 /*Compton cross section calculation */
-#define MINW      1.e-12       // Minimum wavelength
-#define MAXW      1.e10        // Maximum wavelength
+#define MINW      1.e-12       // Minimum weight in the table
+#define MAXW      1.e10        // Maximum weight in the table
 #define MINT      1.e-10       // Minimum temperature
 #define MAXT      1.e10        // Maximum temperature
-#define NW        220          // Number of wavelength steps
+#define NW        220          // Number of weight steps for table
 #define NT        80           // Number of temperature steps
 #define HOTCROSS  "./table/hotcross.dat" // Name of the table file
 
@@ -193,7 +193,7 @@
 #define MAX_LAYER_SCA (8)
 
 /*for stepsize*/
-#define EPS   (0.0001)
+#define EPS   (0.01)
 
 /*Push photon routine*/
 #define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}

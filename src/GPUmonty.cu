@@ -1269,7 +1269,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
                         err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
                 }
         } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
-
         FAST_CPY(K, Kcon);
 
 		gcov_func(X, Gcov);
