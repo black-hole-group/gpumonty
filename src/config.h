@@ -33,7 +33,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e31)
+#define WEIGHT_MIN	(1e31)
 
 /*for stop criterium*/
 #define RMAX	100. //Define the maximum radius up to track the photon
@@ -43,7 +43,7 @@
 #define RMIN 0.01;
 
 /*HAMR switch for model shared functions*/
-#define HAMR (0)
+#define HAMR (1)
 
 
 /* spectral bin parameters */
@@ -62,9 +62,9 @@
 
 /*Compton cross section calculation */
 #define MINW      1.e-12       // Minimum weight in the table
-#define MAXW      1.e10        // Maximum weight in the table
-#define MINT      1.e-10       // Minimum temperature
-#define MAXT      1.e10        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
+#define MAXW      1.e6        // Maximum weight in the table
+#define MINT      1.e-4      // Minimum temperature
+#define MAXT      1.e4        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
 #define NW        220          // Number of weight steps for table
 #define NT        80           // Number of temperature steps
 #define HOTCROSS  "./table/hotcross.dat" // Name of the table file
@@ -81,8 +81,8 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.e6)/*In solar UNITs*/
-#define M_UNIT (4.e19) /*Find this based on the rho_scale parameter for HAMR sims*/
+#define MBH (10)/*In solar UNITs*/
+#define M_UNIT (3.e10) /*Find this based on the rho_scale parameter for HAMR sims*/
 
 
 

@@ -111,3 +111,8 @@ We got to change EPS when we are dealing with different grids. This seems to wor
 
 REMEMBER TO ENABLE SCATTERING ALLOCATIONS ONCE TEST IS DONE
 The error in the high frequencies is related to the size of the bin
+
+nvcc -o RNG RNG.cu -I/home/pedro/gsl/include -L/home/pedro/gsl/lib -lgsl -lgslcblas -lm -lcuda
+Error in scattering is due to dtauscatt values!
+The error seems to be provenient from this.
+The error does not seem to come from gpu_alpha_inv_scatt value;

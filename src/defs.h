@@ -15,7 +15,6 @@ double a;
 double R0, Rin, Rh, Rout, Rms;
 double hslope;
 double startx[NDIM], stopx[NDIM], dx[NDIM];
-
 //double dlE, lE0;
 double gam;
 double dMsim;

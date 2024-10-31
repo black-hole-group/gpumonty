@@ -224,7 +224,7 @@ __host__ __device__ double linear_interp_F(double K)
 {
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
-	dlK = 1/dlK;
+	dlK = 1./dlK;
 	double result;
 	#ifdef __CUDA_ARCH__
 	double * Ftable;

@@ -4,7 +4,6 @@
 /*GLOBAL VARIABLES*/
 /*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just
 do not edit with multiple threads, unless we know what we are doing*/
-
 __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 
 struct of_scattering{
@@ -223,7 +222,6 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-
 	report_spectrum(gen_superph, spect, filename);
 	cudaFree(d_spect);
 	cudaFree(generated_photons_arr); 
@@ -237,7 +235,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139; //* global_index + time;
+	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	//r_MT[global_index] = seedRand(seed);
 	/*This is how we'll split things between blocks and threads*/
@@ -357,7 +355,9 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
 		printf("Interval going from %llu to %llu in round %d\n", round_num_scat_init, round_num_scat_end, n);
+
 	}
+	
 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += N_BLOCKS * N_THREADS)){
 		GPU_track_super_photon(&ph[a], d_spect, d_p, d_table_ptr, scat_ofphoton, n);
 		atomicAdd(&scattering_counter, 1);
@@ -776,7 +776,7 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
-
+__device__ int var_switch = 0;
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat)
 {
 	int bound_flag;
@@ -793,6 +793,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+	double first_scatti;
 
 	/* quality control */
 	if (isnan(ph->X[0]) ||
@@ -840,6 +841,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		dKi[2] = ph->dKdlam[2];
 		dKi[3] = ph->dKdlam[3];
 		E0 = ph->E0s;
+		first_scatti = alpha_scatti;
+
 
 		/* evaluate stepsize */
 		dl = GPU_stepsize(ph->X, ph->K);
@@ -911,9 +914,9 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				bi = bf;
 
 			}
-			x1 = -log( GPU_monty_rand());
-			php.w = ph->w / bias;
 
+			x1 = -log(GPU_monty_rand());
+			php.w = ph->w / bias;
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
@@ -963,7 +966,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				GPU_get_fluid_params(ph->X, Gcov, &Ne, &Thetae,
 						 &B, Ucon, Ucov, Bcon,
 						 Bcov, d_p);
-
 				if (Ne > 0.) {
 					GPU_scatter_super_photon(ph, &php, Ne,
 							     Thetae, B,
@@ -972,22 +974,31 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
-					int my_local_index = 0;
-					if(round_scat > 0){
-						for(int cum_sum = 0; cum_sum <= round_scat -1; cum_sum++){
-							my_local_index += d_num_scat_phs[cum_sum];
+					if(php.w > 0){
+						if(php.E * ME * CL * CL/HPL > 1e21){
+							// Print the initial values
+								printf("Initial values:\n");
+								printf("Xi[0], Xi[1], Xi[2], Xi[3]: %g %g %g %g\n", Xi[0], Xi[1], Xi[2], Xi[3]);
+								printf("Ki[0], Ki[1], Ki[2], Ki[3]: %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
+								printf("dKi[0], dKi[1], dKi[2], dKi[3]: %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
+								printf("E0: %g\n", E0);
+								printf("First_scatti = %g, scattf = %g\n", first_scatti, alpha_scattf);
 						}
-							my_local_index += atomicAdd(&d_num_scat_phs[round_scat], 1);
-					}
-					else{
-						my_local_index = atomicAdd(&d_num_scat_phs[0], 1);
-					}
-					memcpy(&scat_ofphoton[my_local_index], &php, sizeof(struct of_photon));
+						int my_local_index = 0;
+						if(round_scat > 0){
+							for(int cum_sum = 0; cum_sum <= round_scat -1; cum_sum++){
+								my_local_index += d_num_scat_phs[cum_sum];
+							}
+								my_local_index += atomicAdd(&d_num_scat_phs[round_scat], 1);
+						}
+						else{
+							my_local_index = atomicAdd(&d_num_scat_phs[0], 1);
+						}
+						memcpy(&scat_ofphoton[my_local_index], &php, sizeof(struct of_photon));
 
-					if(scat_ofphoton[my_local_index].w != php.w){
-						printf("In GPU_track_super_photon, both weights should be the same! (%le, %le), %d\n", scat_ofphoton[my_local_index].w, php.w, my_local_index);
-					}else if(scat_ofphoton[my_local_index].w == 0){
-						printf("In GPU_track_super_photon, weight equals 0!, %d, %le, %le\n", my_local_index, ph->X[1], php.w);
+						if(scat_ofphoton[my_local_index].w != php.w){
+							printf("In GPU_track_super_photon, both weights should be the same! (%le, %le), %d\n", scat_ofphoton[my_local_index].w, php.w, my_local_index);
+						}
 					}
 				}
 				theta =
@@ -1028,16 +1039,17 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
-			// printf(
-			// 	"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-			// 	ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-			// 	bias);
+			printf(
+				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
+				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
+				bias);
 			break;
 		}
 	}
 
 // 	/* accumulate result in spectrum on escape */
-	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
+	if(1){
+	//if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		 GPU_record_super_photon(ph, d_spect);
 	}
 	/* done! */
@@ -1137,6 +1149,7 @@ __device__ double GPU_bias_func(double Te, double w)
 		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
 	#else
+		return 1;
 		max = 0.5 * w / WEIGHT_MIN;
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
@@ -1144,11 +1157,12 @@ __device__ double GPU_bias_func(double Te, double w)
 			100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
 					(avg_num_scatt + 2));
 
+		//bias = 100. * Te * Te/(d_bias_norm * d_max_tau_scatt);
+
 		if (bias < TP_OVER_TE)
 			bias = TP_OVER_TE;
 		if (bias > max)
 			bias = max;
-		//printf("bias = %le\n", bias);	
 		return bias / TP_OVER_TE;
 	#endif
 }
@@ -1189,7 +1203,7 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 	double idlx1, idlx2, idlx3;
 	#if(HAMR)
 		double x2_normal, stopx2_normal;
-		x2_normal = (1 + X[2])/2;
+		x2_normal = (1. + X[2])/2.;
 		stopx2_normal = 1.; 
 		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
 	#elif(SPHERE_TEST)
@@ -1461,6 +1475,7 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 	GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
 
 	php->E = php->E0s = -tmpK[0];
+
 	php->L = tmpK[3];
 	php->tau_abs = 0.;
 	php->tau_scatt = 0.;
@@ -1845,15 +1860,41 @@ __device__ double GPU_klein_nishina(double a, double ap)
 
 	return (kn);
 }
-__device__ void generate_random_direction(double * x, double *y, double *z) {
-	int tid =  blockIdx.x * blockDim.x + threadIdx.x;
-    double u = curand_normal(&my_curand_state[tid]);
-    double v = curand_normal(&my_curand_state[tid]);
-    double w = curand_normal(&my_curand_state[tid]);
-    double length = sqrt(u*u + v*v + w*w);
-    *x = u / length;
-    *y = v / length;
-    *z = w / length;
+// __device__ void generate_random_direction(double * x, double *y, double *z) {
+//     double u = GPU_monty_rand();
+//     double v = GPU_monty_rand();
+//     double w = GPU_monty_rand();
+//     double length = sqrt(u*u + v*v + w*w);
+//     *x = u / length;
+//     *y = v / length;
+//     *z = w / length;
+// }
+
+__device__ void generate_random_direction(double *x, double *y, double *z)
+{
+	double s, a;
+
+	/* This is a variant of the algorithm for computing a random point
+	* on the unit sphere; the algorithm is suggested in Knuth, v2,
+	* 3rd ed, p136; and attributed to Robert E Knop, CACM, 13 (1970),
+	* 326.
+	*/
+
+	/* Begin with the polar method for getting x,y inside a unit circle
+	*/
+	do
+	{
+		*x = -1 + 2 * GPU_monty_rand();
+		*y = -1 + 2 * GPU_monty_rand();
+		s = (*x) * (*x) + (*y) * (*y);
+	}
+	while (s > 1.0);
+
+	*z = -1 + 2 * s;              /* z uniformly distributed from -1 to 1 */
+	a = 2 * sqrt (1 - s);         /* factor to adjust x,y so that x^2+y^2
+									* is equal to 1-z^2 */
+	*x *= a;
+	*y *= a;
 }
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]){
 	double interp;
@@ -1893,7 +1934,6 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
     	ix2 = (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph->X[2] / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
 	#endif
     if (ix2 < 0 || ix2 >= N_THBINS){
-		//printf("Ix2 = %d\n", ix2);
         return;
 	}
 

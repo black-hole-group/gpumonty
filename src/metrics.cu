@@ -263,7 +263,10 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 }
 
 
-
+// __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon[][NDIM])
+// {
+//   invert_matrix( gcov, gcon );
+// }
 
 __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon[][NDIM])
 {
@@ -275,13 +278,12 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
     gcon[1][1] = 1.;
     gcon[2][2] = 1./gcov[2][2];
     gcov[3][3] = 1/gcov[3][3];
-	//sincos(th, &sth, &cth);
+	sincos(th, &sth, &cth);
 	#else
 		double sth, cth, irho2;
 		double r, th;
 		double hfac;
-		/* required by broken math.h */
-		//void sincos(double in, double *sth, double *cth);
+
 
 		DLOOP gcon[k][l] = 0.;
 		bl_coord(X, &r, &th);
@@ -301,11 +303,11 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 
 		irho2 = 1. / (r * r + bhspin *bhspin * cth * cth);
 
-		// transformation for Kerr-Schild -> modified Kerr-Schild 
+		//transformation for Kerr-Schild -> modified Kerr-Schild 
 		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
 
 		#if(HAMR)
-		hfac = 1.;
+		hfac = M_PI;
 		#endif
 
 		gcon[0][0] = -1. - 2. * r * irho2;

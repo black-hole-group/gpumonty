@@ -200,7 +200,6 @@ __device__ int GPU_record_criterion(struct of_photon *ph)
 	const double X1max = log(RMAX);
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
 	if (ph->X[1] > X1max)
 		return (1);
 

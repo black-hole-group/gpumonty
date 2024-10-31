@@ -8,6 +8,7 @@
         "math.h": "c",
         "decs.h": "c",
         "stdio.h": "c",
-        "random": "cpp"
+        "random": "cpp",
+        "limits": "cpp"
     }
 }
