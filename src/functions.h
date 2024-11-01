@@ -66,7 +66,7 @@ __device__  void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, 
 /*track super photon and its dependencies*/
 __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int max_partition_ph);
-__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat);
+__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index);
 
 __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n);
 //__device__ void GPU_track_super_photon(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum* d_spect, struct of_scattering * survivor_photon_properties, struct of_photon * survivor_photon, int * local_recursive_index, int  * is_recursive, struct of_photon * scattered_photon);

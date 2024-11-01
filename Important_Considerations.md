@@ -116,3 +116,8 @@ nvcc -o RNG RNG.cu -I/home/pedro/gsl/include -L/home/pedro/gsl/lib -lgsl -lgslcb
 Error in scattering is due to dtauscatt values!
 The error seems to be provenient from this.
 The error does not seem to come from gpu_alpha_inv_scatt value;
+problem does not seem related to sample or due to push_photon function (i substituted push_photon original and still got the same thing, also, 
+i'm using the same initial photons)
+Always 304593 photons scattered! Great, now I just need to figure out which ones aren't scattered in grmonty (see if it's always scattered the same amount, then figure out why those aren't scattered when compared to mine!)
+
+for grmonty its 157077, always!!! Great, now I gotta figure out which ones are going inside gpumonty, and why they aren't in grmonty.
