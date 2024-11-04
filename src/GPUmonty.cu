@@ -59,6 +59,17 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
 	cudaDeviceSetLimit(cudaLimitStackSize, 8000);
 
+
+
+
+	// Identifying GPU:
+ 	int device_id;
+    cudaGetDevice(&device_id);  // Get the current device ID
+
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, device_id);  // Get properties of the current device
+
+    printf("Current GPU in use: %s\n", prop.name);  // Print the GPU name
 	// Set the printf FIFO size limit
 	//cudaDeviceSetLimit(cudaLimitPrintfFifoSize, 1024 * 1024 * 5000);
 
