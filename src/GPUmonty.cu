@@ -105,8 +105,6 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	}
     size_t required_mem ;
 	required_mem = gen_superph * sizeof(struct of_photon);
-	//considering that 1 photon in 100 are going to scatter
-	//CHANGE LATER THIS MEANS NO SCATTERING IS ALLOCATED
 	required_mem += MAX_LAYER_SCA *  gen_superph/1 * sizeof(struct of_photon);
 	if (required_mem > free_mem) {
 		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
@@ -120,7 +118,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		superph_per_batch = gen_superph/batch_divisions;
 		required_mem = superph_per_batch * sizeof(struct of_photon);
 		//CHANGE LATER THIS MEANS NO SCATTERING IS ALLOCATED
-		required_mem += MAX_LAYER_SCA * superph_per_batch * sizeof(struct of_photon);
+		required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
 		// Track the number of divisions
 		batch_divisions++;
 	}
@@ -150,7 +148,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 	
 		gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
 		//In here, we consider a maximum of 8 scattering layers and each photon can scatter.
-		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA *  instant_photon_number* sizeof(struct of_photon))); 
+		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * instant_photon_number* sizeof(struct of_photon))); 
 		
 
 		fprintf(stderr, "Sampling the photons!\n");
@@ -159,6 +157,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "in GPU_sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
+			fprintf(stderr, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
 			exit(1);
 		}
 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
@@ -167,15 +166,16 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number);
 		cudaDeviceSynchronize();
+		cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "in GPU_track %s\n", cudaGetErrorString(cudaStatus));
+			fprintf(stderr, "number of scattered photons: %llu out of %llu", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
 			exit(1);
 		}
 		cudaFree(initial_photon_states);
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-		cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 		printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
 		/*Now, I create the array that will withhold all the information about the scattered photons*/
 		printf("Solving the scattered photons...\n");
@@ -914,8 +914,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-
-			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+			if(0){
+			//if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
@@ -975,6 +975,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 						return;
 					}
 					if(php.w > 0){
+						atomicAdd(&d_N_scatt, (round_scat + 1));
 						int my_local_index = 0;
 						if(round_scat > 0){
 							for(int cum_sum = 0; cum_sum <= round_scat -1; cum_sum++){
@@ -1139,6 +1140,7 @@ __device__ double GPU_bias_func(double Te, double w)
 		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
 	#else
+		return 1;
 		max = 0.5 * w / WEIGHT_MIN;
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
@@ -2026,7 +2028,7 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
 	}
 
     atomicAdd(&d_N_superph_recorded, 1);
-    atomicAdd(&d_N_scatt, ph->nscatt);
+    //atomicAdd(&d_N_scatt, ph->nscatt);
 
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dNdlE), ph->w);
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dEdlE), ph->w * ph->E);

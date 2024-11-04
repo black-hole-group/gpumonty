@@ -121,3 +121,6 @@ i'm using the same initial photons)
 Always 304593 photons scattered! Great, now I just need to figure out which ones aren't scattered in grmonty (see if it's always scattered the same amount, then figure out why those aren't scattered when compared to mine!)
 
 for grmonty its 157077, always!!! Great, now I gotta figure out which ones are going inside gpumonty, and why they aren't in grmonty.
+
+
+use make BUILD_TYPE=debug for debugging and make for release

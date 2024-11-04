@@ -1,5 +1,4 @@
 # Model name
-#so far harm_model, hamr_model and sphere_model
 MODEL_DIR = $(SRC_DIR)/hamr_model
 
 # Directories
@@ -13,19 +12,34 @@ CUDA_INCLUDE = -I$(CUDA_PATH)/include
 CUDA_LIB = -L$(CUDA_PATH)/lib64
 
 # Compiler flags
-NVCCFLAGS = -arch=compute_60 -code=lto_60 -rdc=true --ptxas-options="-dlcm=cg -O3" --maxrregcount=255 -Xcompiler="-fopenmp -lgomp"
-NVCCFLAGS += -I/home/pedro/gsl/include -O3
-NVCCFLAGS += -I$(MODEL_DIR)  # Add model directory to the include path
+ARCH = compute_60
+CODE = sm_60
+CODE_LTO = lto_60
+
+
+# Debug and release flags
+DEBUG_FLAGS = -G -code=$(CODE)
+RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
+
+NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --ptxas-options="-dlcm=cg" --maxrregcount=255 \
+                   -Xcompiler="-fopenmp -lgomp" -I/home/pedro/gsl/include -I$(MODEL_DIR)
+
+NVCCFLAGS_DEBUG = $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
+NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)
+
+# Choose build type (default: release)
+BUILD_TYPE ?= release
+ifeq ($(BUILD_TYPE),debug)
+    NVCCFLAGS = $(NVCCFLAGS_DEBUG)
+else
+    NVCCFLAGS = $(NVCCFLAGS_RELEASE)
+endif
 
 # Linker flags
-LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp
-LDFLAGS += -L/home/pedro/gsl/lib -lgsl -lgslcblas
-LDFLAGS += -lm -lstdc++
+LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L/home/pedro/gsl/lib -lgsl -lgslcblas -lm -lstdc++
 
-# Source files
+# Source and object files
 CUDA_SRC = $(wildcard $(SRC_DIR)/*.cu) $(wildcard $(MODEL_DIR)/*.cu)
-
-# Object files
 OBJS = $(patsubst $(SRC_DIR)/%.cu,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.cu)) \
        $(patsubst $(MODEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(wildcard $(MODEL_DIR)/*.cu))
 
@@ -37,7 +51,7 @@ EXECUTABLE = gpumonty
 
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
-	$(NVCC) -arch=compute_60 -gencode arch=compute_60,code=sm_60 -dlto -o $@ $(OBJS) $(LDFLAGS)
+	$(NVCC) -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
 
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)

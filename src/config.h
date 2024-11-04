@@ -64,7 +64,7 @@
 #define MINW      1.e-12       // Minimum weight in the table
 #define MAXW      1.e6        // Maximum weight in the table
 #define MINT      1.e-4      // Minimum temperature
-#define MAXT      1.e10        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
+#define MAXT      1.e4        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
 #define NW        220          // Number of weight steps for table
 #define NT        80           // Number of temperature steps
 #define HOTCROSS  "./table/hotcross.dat" // Name of the table file
@@ -81,8 +81,8 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (6.2e19)/*In solar UNITs*/
-#define M_UNIT (3.e50) /*Find this based on the rho_scale parameter for HAMR sims*/
+#define MBH (10)/*In solar UNITs*/
+#define M_UNIT (3.e10) /*Find this based on the rho_scale parameter for HAMR sims*/
 
 
 
@@ -179,7 +179,9 @@
 #define TMIN (THETAE_MIN)
 #define TMAX (1.e2)
 
-
+/*This define the numbers of scatterins per photon. This is just an approximate to allocate memory, if you don't know, just leave it equal 1.*/
+/*If this number is very large and you are still getting invalid memory access, it means that something is wrong with bias, prob*/
+#define SCATTERINGS_PER_PHOTON (1) 
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data

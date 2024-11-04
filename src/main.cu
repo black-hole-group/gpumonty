@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
 	const char *spect_file_name = argv[3];
 
 	if (argc < 3) {
-		fprintf(stderr, "usage: grmonty Ns infilename M_unit\n");
+		fprintf(stderr, "usage: gpumonty, Ns, path_to_data, filename\n");
+		fprintf(stderr, "example: ./gpumonty 8000000 ./data/SANE_0.9.bin SANE.spec \n");
 		exit(0);
 	}
 	sscanf(argv[1], "%lf", &Ntot);
