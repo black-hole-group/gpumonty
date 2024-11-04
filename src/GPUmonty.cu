@@ -925,8 +925,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-			if(0){
-			//if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+			//if(0){
+			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
