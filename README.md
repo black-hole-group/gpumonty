@@ -1,55 +1,37 @@
-# GRMONTY: A Relativistic Monte Carlo Code
+# GPUMONTY: A GPU-Accelerated Relativistic Monte Carlo Code
 
-GRMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in Dolence et al. 2009 Astrophysical Journal Supplement.
+GPUMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in Dolence et al. 2009 Astrophysical Journal Supplement.
 
-## Getting Started
+## Running the code
 The code is written in C and parallelized using Nvidia's Graphical Processing Unit (GPU) language [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/) and is configured to use input files from the HARM ([Gammie et al. 2003](https://arxiv.org/abs/astro-ph/0301509)) and H-AMR ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)) codes. 
 
 - Before compiling: 
 
-Code utilizes the [GNU scientific library(GSL)](https://www.gnu.org/software/gsl/) in the C portion of the code. Locate the gsl and cuda paths in your computer (if necessary) and modify the variables ```CUDA_PATH``` and ```GSL_PATH```  in the makefile.
+1) Code utilizes the [GNU scientific library(GSL)](https://www.gnu.org/software/gsl/) in the C portion of the code. Locate the gsl and cuda paths in your computer (if necessary) and modify the variables ```CUDA_PATH``` and ```GSL_PATH```  in the makefile.
+2) You need to identify the compute capability of the GPU you are using. This can be found in the [NVIDIA website](https://developer.nvidia.com/cuda-gpus). Then, you got to properly change the number in the ```ARCH```, ```CODE``` and ```CODE_LTO```.
+3) You also need to identify the model you want to use for your data. In the ```MODEL_DIR``` variable of the makefile, change its path to the location of the model you want to use. 
 
-You also need to identify the model you want to use for your data. In the ```MODEL_DIR``` variable of the makefile, change its path to the location of the model you want to use. 
+After you have changed all these things, compile with by typing ```make```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
 
+- Code parameters
+  
+The file called ```config.h``` holds many of code parameters by means of pre-compiled variables, adjust the variables as you need. ```N_BLOCKS``` will set the number of blocks that will compose the GPU grid and ```N_THREADS``` is the number of threads per block. You may need to change parameters.
+In case you are running H-AMR (```#define HAMR (1)```) or SPHERE_TEST (```#define SPHERE_TEST (1)```), enable the proper switches in the ```config.h``` file as well as modify the model in the makefile.
 
-## H-AMR Branch
+- Run the code
 
-This branch of GRMONTY has been modified to work with data from the H-AMR code ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)). To use H-AMR data, a notebook is provided to convert H-AMR's dump files into a binary file with the components ordered appropriately for GRMONTY.
-
-### H-AMR Data
-
-We utilize a notebook to convert H-AMR's dump files into a binary file with the correct component order for GRMONTY. An example file, `HAMR_GRMONTY_DUMP323.bin`, is provided for a 2D simulation with dimensions $(256 \times 256)$ in $r - \theta$ dimensions. We do not provide the notebook for this conversion yet. To run the code to read H-AMR data, switch on the corresponding flags in `decs.h`: 
-
-``` #define HAMR (0)```
-   
-If you want to run 3D data, please also activate the switch:
-
-``` #define HAMR3D (1)```
-   
-Note that both switches must be activated for H-AMR 3D data.
-
-### Changes in the Code
-Several modifications have been made to handle H-AMR data. Changes include adjustments to the conversion functions for spatial coordinates, differences in the correlation formula, and modifications in handling $x_1, x_2,$ and $x_3$ coordinates. Therefore, we use different functions to calculate:
-
-* Gcov $(g_{\mu\nu})$ and Gcon $(g^{\mu \nu})$ components are calculated in functions ```gcov_func_hamr``` and ```gcon_func_hamr```
-* $x_1, x_2$ and $x_3$ coordinates based on the cell indexes in function ```coord_hamr```
-All the declarations are in harm_model.h file.
-
-The pointers ```p``` and ```geom```  used to be declared as nested arrays but we changed them by flattening the 3-dimensional spatial indexes into a 1-dimensional array with a 3D index, like this:
-```p[NPRIM][i][j][k] -> p[NPRIM][SPATIAL_INDEX3D(i,j,k)]``` and also ```geom[i][j] -> geom[SPATIAL_INDEX2D(i,j)]```.
-
-The M_unit is now set in code instead of an argument to main. You should change it in config.h precompiled variable ```#define M_UNIT```.
-
-## Setting GPU resources
-Number of blocks and number of threads per block can be set in ```gpu_header.h```, basically that's where all the functions used in GPU_grmonty.cu are are declared. Before compiling the code, check your gpu's compute capability in order to compile it right. You should modify -arch=compute_xx and -code=sm_xx in ```makefile```.
-
-## Run the Code
-In order to compile the code, you should have cudatoolkit, gcc compiler and GNU Scientific Library (GSL) installed. If necessary, change your ```CUDA_PATH``` and GSL ```include``` and ```lib``` folder path in makefile. Compile the code by using ```make```. I don't think we are using openmp right now in the code, so there isn't a need to set the number of CPU threads. After the compilation, there should be an executable called gpumonty. To run this, use command line below
-
+The command follows a simple structure of the arguments (```N_s```, ```path_to_data```, ```Name of the output file```). An example is given by
 ```
-./grmonty 50000 ./data/dump019 gpumonty_spec
+./gpumonty 50000 ./data/dump019 gpumonty_spec.spec
 ```
-The first argument is regarding the $N_s$ parameter as described by the original [paper](https://arxiv.org/abs/0909.0708). The second is the directory of the data file. The last argument is the name of the output file.
+
+-Analyze the output
+
+Inside the python files, we have a notebook to guide you on how to open, extract and plot the spectrum in python. Each index in the nuLnu array is related to one of the theta_bins.
+
+## Possible errors
+
+- Invalid memory location in GPU_track kernel. This happens when too many photons are scattered, therefore the gpu does not have enough memory to account for all of the scattered photons and ends up crashing. This is most likely caused by the bias function, which depending on how it is written, it can develop a cascade effect where the scattering grows exponentially. This is brieffly discussed in [Dolence et al. 2009](https://arxiv.org/pdf/0909.0708). Remember that you can modify the size of the memory allocation for scattering photons by changing ```#define SCATTERINGS_PER_PHOTON``` in config.h file. This defines the size of the scattering memory allocation by saying that total_number_of_scatterings = SCATTERINGS_PER_PHOTON * number_of_generated_photons.
 
 # LICENSE 
 
