@@ -20,7 +20,6 @@ double gam;
 double dMsim;
 double Thetae_unit;
 double max_tau_scatt, Ladv, dMact, bias_norm;
-
 /*Model Dependent*/
 double *****econ;
 double *****ecov;
@@ -57,6 +56,7 @@ __device__ double d_hslope = 0;
 __device__ double d_R0 = 0;
 __device__ int total_sca = 0;
 __device__ unsigned long long tracking_counter_sampling = 0;
+__device__ unsigned long long d_number_of_geodesics = 0;
 
 /** data structures **/
 struct of_photon {

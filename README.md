@@ -3,7 +3,14 @@
 GRMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in Dolence et al. 2009 Astrophysical Journal Supplement.
 
 ## Getting Started
-The code is written in C and parallelized using Nvidia's Graphical Processing Unit (GPU) language [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/) and is configured to use input files from the HARM ([Gammie et al. 2003](https://arxiv.org/abs/astro-ph/0301509)) /H-AMR ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)) codes. 
+The code is written in C and parallelized using Nvidia's Graphical Processing Unit (GPU) language [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/) and is configured to use input files from the HARM ([Gammie et al. 2003](https://arxiv.org/abs/astro-ph/0301509)) and H-AMR ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)) codes. 
+
+- Before compiling: 
+
+Code utilizes the [GNU scientific library(GSL)](https://www.gnu.org/software/gsl/) in the C portion of the code. Locate the gsl and cuda paths in your computer (if necessary) and modify the variables ```CUDA_PATH``` and ```GSL_PATH```  in the makefile.
+
+You also need to identify the model you want to use for your data. In the ```MODEL_DIR``` variable of the makefile, change its path to the location of the model you want to use. 
+
 
 ## H-AMR Branch
 

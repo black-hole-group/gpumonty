@@ -1,4 +1,4 @@
-# Model name
+# Model name (hamr_model, harm_model, sphere_model)
 MODEL_DIR = $(SRC_DIR)/hamr_model
 
 # Directories
@@ -11,6 +11,9 @@ NVCC = $(CUDA_PATH)/bin/nvcc
 CUDA_INCLUDE = -I$(CUDA_PATH)/include
 CUDA_LIB = -L$(CUDA_PATH)/lib64
 
+#GSL setup
+GSL_PATH ?= /home/pedro/gsl
+
 # Compiler flags
 ARCH = compute_60
 CODE = sm_60
@@ -22,7 +25,7 @@ DEBUG_FLAGS = -G -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
 NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --ptxas-options="-dlcm=cg" --maxrregcount=255 \
-                   -Xcompiler="-fopenmp -lgomp" -I/home/pedro/gsl/include -I$(MODEL_DIR)
+                   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR)
 
 NVCCFLAGS_DEBUG = $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
 NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)
@@ -36,7 +39,7 @@ else
 endif
 
 # Linker flags
-LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L/home/pedro/gsl/lib -lgsl -lgslcblas -lm -lstdc++
+LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++
 
 # Source and object files
 CUDA_SRC = $(wildcard $(SRC_DIR)/*.cu) $(wildcard $(MODEL_DIR)/*.cu)

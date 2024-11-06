@@ -174,9 +174,11 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 		fprintf(stderr, "Photon sampling process completed!\n");
 
+
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		GPU_track<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number);
 		cudaDeviceSynchronize();
+
 		cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 
 		cudaStatus = cudaGetLastError();
@@ -186,6 +188,8 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 			exit(1);
 		}
 		cudaFree(initial_photon_states);
+
+
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 		printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
 		/*Now, I create the array that will withhold all the information about the scattered photons*/
@@ -193,7 +197,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		int n = 1;
 		bool quit_flag_sca = false;
 		unsigned long long scatterings_performed = 0;
-		while(!quit_flag_sca && n <= MAX_LAYER_SCA){
+		while(!quit_flag_sca && n < MAX_LAYER_SCA){
 			printf("Starting round %d\n", n);
 			GPU_track_scat<<<N_BLOCKS,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, d_spect, scat_ofphoton, n);
 			cudaDeviceSynchronize();
@@ -1151,7 +1155,7 @@ __device__ double GPU_bias_func(double Te, double w)
 		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
 	#else
-		return 1;
+		//return 1;
 		max = 0.5 * w / WEIGHT_MIN;
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
