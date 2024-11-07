@@ -103,7 +103,8 @@ __host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 		return 0.;
 
 	j_fac = Ne * Bmag * Thetae * Thetae / K2;
-	printf("Ne = %le, B = %le, Thetae = %le, K2 = %le, F_eval = %le, value = %le\n", Ne, Bmag, Thetae, K2, F_eval(Thetae, Bmag, nu),JCST * j_fac * F_eval(Thetae, Bmag, nu));
+	printf("K2 = %.12e, \n", K2);
+	printf("F_eval = %.12e, j_fac = %.12e, JCST = %.12e \n", F_eval(Thetae, Bmag, nu), j_fac, JCST);
 	return JCST * j_fac * F_eval(Thetae, Bmag, nu);
 }
 
@@ -167,7 +168,8 @@ __host__ void init_emiss_tables(void)
 				    1000, GSL_INTEG_GAUSS61, w, &result,
 				    &err);
 		F[k] = log(4 * M_PI * result);
-		//printf("K = %lf, result = %lf, table = %lf\n", K, result, log(4 * M_PI * result));
+		if(k < 10)
+		printf("K = %.12f, result = %.12f, table = %.12f\n", K, result, log(4 * M_PI * result));
 	}
 	gsl_integration_workspace_free(w);
 
@@ -265,6 +267,6 @@ __host__ __device__ double linear_interp_K2(double Thetae)
 	di = (lT - d_lT_min) * d_dlT;
 	i = (int) di;
 	di = di - i;
-
+	//printf("di = %le, i = %d, result = %le\n", di, i, exp((1. - di) * bessel_table[i] + di * bessel_table[i + 1]));
 	return exp((1. - di) * bessel_table[i] + di * bessel_table[i + 1]);
 }

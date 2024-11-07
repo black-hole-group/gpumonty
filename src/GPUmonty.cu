@@ -789,7 +789,8 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 
 
-
+__device__ int switchup = 0;
+__device__ int global_indexphoton = 0;
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index)
 {
@@ -807,7 +808,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
-
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -838,8 +838,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	bi = GPU_bias_func(Thetae, ph->w);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
-	while(0){
-	//while (!GPU_stop_criterion(ph)) {
+	//while(0){
+	while (!GPU_stop_criterion(ph)) {
 
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -862,6 +862,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 		/* step the geodesic */
 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
+		
 
 		if (GPU_stop_criterion(ph))
 			break;
@@ -931,7 +932,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-			//if(0){
+
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 
 				if (isnan(php.w) || isinf(php.w)) {
@@ -944,21 +945,16 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				/* Apply absorption until scattering event */
 				dtau_abs *= frac;
 				if (dtau_abs > 100){
+					printf("They are getting here 1 = %le\n", nu);
 					return;	/* This photon has been absorbed before scattering */
 				}
 				dtau_scatt *= frac;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau_abs < 1.e-3){
-					ph->w *=
-					    (1. -
-					     dtau / 24. * (24. -
-							   dtau * (12. -
-								   dtau *
-								   (4. -
-								    dtau))));
+					ph->w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
 				}
 				else{
-						ph->w *= exp(-dtau); 
+					ph->w *= exp(-dtau); 
 				}
 				/* Interpolate position and wave vector to scattering event */
 
@@ -1031,13 +1027,14 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			} else {
 				if (dtau_abs > 100){
+					printf("They are getting here 2 = %le\n", nu);
 					return;	/* This photon has been absorbed */
 				}
 				ph->tau_abs += dtau_abs;
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 				if (dtau < 1.e-3){
-					ph->w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
+						ph->w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
 				}else{
 						ph->w *= exp(-dtau); 
 				}
@@ -1055,10 +1052,9 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			break;
 		}
 	}
-
 // 	/* accumulate result in spectrum on escape */
-	if(1){
-	//if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
+	//if(1){
+	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		 GPU_record_super_photon(ph, d_spect);
 	}
 	/* done! */

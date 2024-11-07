@@ -33,7 +33,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e-6)
+#define WEIGHT_MIN	(0)
 
 /*for stop criterium*/
 #define RMAX	1. //Define the maximum radius up to track the photon
@@ -55,8 +55,8 @@
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 1800
-#define N_EBINS 1800
+#define N_ESAMP 2500
+#define N_EBINS 5000
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
