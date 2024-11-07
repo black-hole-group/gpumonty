@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 	int quit_flag;
 	struct of_photon ph = {0}; 
 	const char *spect_file_name = argv[3];
+	
 
 	if (argc < 3) {
 		fprintf(stderr, "usage: gpumonty, Ns, path_to_data, filename\n");
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
     launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
 	end = clock();
     printf("Time spent running the full code: %f seconds. Ntot = %d\n", ((double)(end - start)) / CLOCKS_PER_SEC, Ns);
+	int_jnu(1e13, 100., 1., 1e12);
 
 	return (0);
 
@@ -173,6 +175,15 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
 		L * LSUN / (dMact * M_UNIT * CL * CL / T_UNIT),
 		L * LSUN / (Ladv * M_UNIT * CL * CL / T_UNIT),
 		max_tau_scatt);
+	for (j = 0; j < N_THBINS; j++) {
+	/* convert accumulated photon number in each bin 
+			to \nu L_\nu, in units of Lsun */
+		dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+
+		/* factor of 2 accounts for folding around equator */
+		dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+		fprintf(stderr, "dOmega for thetabin (%d) = %le\n",j,dOmega);
+	}
 	fprintf(stderr, "\n");
 	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
 	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);

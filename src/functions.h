@@ -114,6 +114,8 @@ __host__ __device__ double bessi1(double xbess);
 __host__ __device__ double bessk0(double xbess);
 __host__ __device__ double bessk1(double xbess);
 __host__ __device__ double bessk2(double xbess);
+__host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu);
+
 __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, double theta);
 __device__ double GPU_Bnu_inv(double nu, double Thetae);
 __host__ __device__ double total_compton_cross_lkup(double w, double thetae, double * d_table_ptr);

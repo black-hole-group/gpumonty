@@ -278,9 +278,8 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
     gcon[1][1] = 1.;
     gcon[2][2] = 1./gcov[2][2];
     gcov[3][3] = 1/gcov[3][3];
-	sincos(th, &sth, &cth);
 	#else
-		double sth, cth, irho2;
+		double irho2;
 		double r, th;
 		double hfac;
 
@@ -400,24 +399,24 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 {
 	#if(SPHERE_TEST)
-		  	double r1, th;
+		double r1, th;
 		r1 = X[1];
 		th = X[2];
 
 		for (int i = 0; i < NDIM; i++)
 				for (int j = 0; j < NDIM; j++)
 						for (int k = 0; k < NDIM; k++)
-							conn[i][j][k] = 0.;
+							lconn[i][j][k] = 0.;
 		/*Taken from https://arxiv.org/pdf/0904.4184*/
-		conn[1][2][2] = -r1;
-		conn[2][3][3] = - sin(th) * cos(th);
-		conn[1][3][3] = - r1 * pow(sin(th), 2.);
-		conn[3][1][3] = 1./r1;
-		conn[3][3][1] = 1./r1;
-		conn[2][2][1] = 1./r1; 
-		conn[2][1][2] = 1./r1; 
-		conn[3][2][3] = 1/tan(th);
-		conn[3][3][2] = 1/tan(th);
+		lconn[1][2][2] = -r1;
+		lconn[2][3][3] = - sin(th) * cos(th);
+		lconn[1][3][3] = - r1 * pow(sin(th), 2.);
+		lconn[3][1][3] = 1./r1;
+		lconn[3][3][1] = 1./r1;
+		lconn[2][2][1] = 1./r1; 
+		lconn[2][1][2] = 1./r1; 
+		lconn[3][2][3] = 1/tan(th);
+		lconn[3][3][2] = 1/tan(th);
 
 	#else
 

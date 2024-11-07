@@ -67,9 +67,9 @@ __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double
 
 	nuc = EE * B / (2. * M_PI * ME * CL);
 	sth = sin(theta);
-	#if(SPHERE_TEST)
-	sth = 1;
-	#endif
+	// #if(SPHERE_TEST)
+	// sth = 1;
+	// #endif
 	nus = (2. / 9.) * nuc * Thetae * Thetae * sth;
 	if (nu > 1.e12 * nus)
 		return (0.);
@@ -85,7 +85,7 @@ __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double
 #undef CST
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-double int_jnu(double Ne, double Thetae, double Bmag, double nu)
+__host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/
@@ -103,7 +103,7 @@ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 		return 0.;
 
 	j_fac = Ne * Bmag * Thetae * Thetae / K2;
-
+	printf("Ne = %le, B = %le, Thetae = %le, K2 = %le, F_eval = %le, value = %le\n", Ne, Bmag, Thetae, K2, F_eval(Thetae, Bmag, nu),JCST * j_fac * F_eval(Thetae, Bmag, nu));
 	return JCST * j_fac * F_eval(Thetae, Bmag, nu);
 }
 
@@ -115,14 +115,14 @@ double jnu_integrand(double th, void *params)
 
 	double K = *(double *) params;
 	double sth = sin(th);
-	#if(SPHERE_TEST)
-	sth = 1;
-	#endif
+	// #if(SPHERE_TEST)
+	// sth = 1;
+	// #endif
 	double x = K / sth;
 
 	if (sth < 1.e-150 || x > 2.e8)
 		return 0.;
-
+	//fprintf(stderr, "sth = %le, x = %le, Inside jnu_integrand = %le\n",sth, x, sth *  sth * pow(sqrt(x) + CST * pow(x, 1. / 6.), 2.) * exp(-pow(x, 1. / 3.)) );
 	return sth * sth * pow(sqrt(x) + CST * pow(x, 1. / 6.),
 			       2.) * exp(-pow(x, 1. / 3.));
 }
@@ -167,6 +167,7 @@ __host__ void init_emiss_tables(void)
 				    1000, GSL_INTEG_GAUSS61, w, &result,
 				    &err);
 		F[k] = log(4 * M_PI * result);
+		//printf("K = %lf, result = %lf, table = %lf\n", K, result, log(4 * M_PI * result));
 	}
 	gsl_integration_workspace_free(w);
 
@@ -222,6 +223,7 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 
 __host__ __device__ double linear_interp_F(double K)
 {
+	//K = 160.75741686406892;
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
 	dlK = 1./dlK;
@@ -242,6 +244,7 @@ __host__ __device__ double linear_interp_F(double K)
 	result = exp((1. - di) * Ftable[i] + di * Ftable[i + 1]);
 	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
 	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
+	//printf("linear_interp = %le, %le, %lf, %d\n", result, K, di, i);
 	return result;
 }
 __host__ __device__ double linear_interp_K2(double Thetae)

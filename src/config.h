@@ -22,7 +22,7 @@
 #define N_THREADS 256
 
 /* Range of superphoton frequencies */
-#define NUMIN 1.e9
+#define NUMIN 1.e7
 #define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
@@ -33,29 +33,30 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1e31)
+#define WEIGHT_MIN	(1.e-6)
 
 /*for stop criterium*/
-#define RMAX	100. //Define the maximum radius up to track the photon
+#define RMAX	1. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 //RMIN for sphere model only
 #define RMIN 0.01;
 
 /*HAMR switch for model shared functions*/
-#define HAMR (1)
-
+#define HAMR (0)
+/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
+#define SPHERE_TEST (1)
 
 /* spectral bin parameters */
-#define	dlE (0.25) //Size of the energy bin
+#define	dlE (0.01) //Size of the energy bin
 //#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
 #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
 
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 200
-#define N_EBINS 200
+#define N_ESAMP 1800
+#define N_EBINS 1800
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
@@ -81,8 +82,8 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (10)/*In solar UNITs*/
-#define M_UNIT (3.e10) /*Find this based on the rho_scale parameter for HAMR sims*/
+#define MBH (6.77e-6)/*In solar UNITs*/
+#define M_UNIT (1.) /*Find this based on the rho_scale parameter for HAMR sims*/
 
 
 
@@ -201,6 +202,3 @@
 
 /*track super photon max number of steps*/
 #define MAXNSTEP (1280000)
-
-/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (0)

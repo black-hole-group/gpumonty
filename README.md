@@ -31,6 +31,7 @@ Inside the python files, we have a notebook to guide you on how to open, extract
 
 ## Possible errors
 
+- Can't open file/Invalid
 - Invalid memory location in GPU_track kernel. This happens when too many photons are scattered, therefore the gpu does not have enough memory to account for all of the scattered photons and ends up crashing. This is most likely caused by the bias function, which depending on how it is written, it can develop a cascade effect where the scattering grows exponentially. This is brieffly discussed in [Dolence et al. 2009](https://arxiv.org/pdf/0909.0708). Remember that you can modify the size of the memory allocation for scattering photons by changing ```#define SCATTERINGS_PER_PHOTON``` in config.h file. This defines the size of the scattering memory allocation by saying that total_number_of_scatterings = SCATTERINGS_PER_PHOTON * number_of_generated_photons.
 
 # LICENSE 

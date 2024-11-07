@@ -585,6 +585,7 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
 
+
 	if (isnan(*B)){
 		//printf("i = %d, j = %d, k = %d\n", i, j, k);
 		printf( "VdotV = %le\n", VdotV);
@@ -837,7 +838,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	bi = GPU_bias_func(Thetae, ph->w);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
-	while (!GPU_stop_criterion(ph)) {
+	while(0){
+	//while (!GPU_stop_criterion(ph)) {
 
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -1055,7 +1057,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	}
 
 // 	/* accumulate result in spectrum on escape */
-	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
+	if(1){
+	//if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		 GPU_record_super_photon(ph, d_spect);
 	}
 	/* done! */
@@ -1213,7 +1216,7 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 		stopx2_normal = 1.; 
 		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
 	#elif(SPHERE_TEST)
-		dlx2 = EPS * X[2]/(fabs(K[2] + SMALL));
+		dlx2 = EPS * GSL_MIN(X[2], d_stopx[2] - X[2]) /(fabs(K[2] + SMALL));
 	#else
 		dlx2 = EPS * GSL_MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	#endif
