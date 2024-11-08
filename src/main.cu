@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
     launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
 	end = clock();
     printf("Time spent running the full code: %f seconds. Ntot = %d\n", ((double)(end - start)) / CLOCKS_PER_SEC, Ns);
-	printf("%.12e\n", int_jnu(1e13, 100, 1, 1e12));
 
 	return (0);
 

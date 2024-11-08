@@ -336,6 +336,10 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 	}
 	
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	if(nz == 0){
+		printf("%d, %d, %d, (%le, %le, %le, %le, %le, %le)\n",i,j,*n2gen, d_geom[SPATIAL_INDEX2D(i,j)].g, Ne,  Bmag,  Thetae,  ninterp,  K2);
+
+	}
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -436,8 +440,6 @@ unsigned long long photons_processed_sofar){
 		k = zone_index % d_N3;
 		j = (zone_index/d_N3) % d_N2;
 		i = (zone_index/(d_N2 * d_N3));
-
-		//printf("zone_index = %d %d, photon_index = %llu, %d\n", i,j, photon_index, dummy);
 
 		/*Sample all the photons generated in GPU_init_zone*/
 		GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov);
@@ -808,6 +810,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+	double w0i = ph->w;
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -838,6 +841,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	bi = GPU_bias_func(Thetae, ph->w);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
+
 	//while(0){
 	while (!GPU_stop_criterion(ph)) {
 
@@ -855,7 +859,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		dKi[2] = ph->dKdlam[2];
 		dKi[3] = ph->dKdlam[3];
 		E0 = ph->E0s;
-
 
 		/* evaluate stepsize */
 		dl = GPU_stepsize(ph->X, ph->K);
@@ -945,7 +948,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				/* Apply absorption until scattering event */
 				dtau_abs *= frac;
 				if (dtau_abs > 100){
-					printf("They are getting here 1 = %le\n", nu);
 					return;	/* This photon has been absorbed before scattering */
 				}
 				dtau_scatt *= frac;
@@ -1027,7 +1029,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			} else {
 				if (dtau_abs > 100){
-					printf("They are getting here 2 = %le\n", nu);
 					return;	/* This photon has been absorbed */
 				}
 				ph->tau_abs += dtau_abs;
@@ -1052,6 +1053,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			break;
 		}
 	}
+
 // 	/* accumulate result in spectrum on escape */
 	//if(1){
 	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){

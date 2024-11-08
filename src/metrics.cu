@@ -277,7 +277,7 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
     gcon[0][0] = -1.;
     gcon[1][1] = 1.;
     gcon[2][2] = 1./gcov[2][2];
-    gcov[3][3] = 1/gcov[3][3];
+    gcov[3][3] = 1./gcov[3][3];
 	#else
 		double irho2;
 		double r, th;
@@ -400,9 +400,7 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 {
 	#if(SPHERE_TEST)
 		double r1, th;
-		r1 = X[1];
-		th = X[2];
-
+		bl_coord(X, &r1, &th);
 		for (int i = 0; i < NDIM; i++)
 				for (int j = 0; j < NDIM; j++)
 						for (int k = 0; k < NDIM; k++)

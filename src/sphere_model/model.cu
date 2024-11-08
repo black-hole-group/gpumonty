@@ -2,6 +2,7 @@
 #include "model.h"
 
 
+
 __host__ void check_scan_error(int scan_output, int number_of_arguments ) {
 	if(scan_output == EOF)fprintf(stderr, "error reading HARM header\n");
 	else if(scan_output != number_of_arguments){
@@ -199,7 +200,11 @@ __host__ void init_data(char *fname)
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
 __device__ int GPU_record_criterion(struct of_photon *ph)
 {
+	#if(exponential_coordinates)
+	const double X1max = log(RMAX);
+	#else
 	const double X1max = RMAX;
+	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
 	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
@@ -216,9 +221,13 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 	double wmin, X1max, X1min;
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
+	#if(exponential_coordinates)
+	X1min = log(RMIN);
+	X1max = log(RMAX);
+	#else
 	X1min = RMIN;
-	X1max = RMAX;	/* this is coordinate and simulation
-				   specific: stop at large distance */
+	X1max = RMAX;	/* this is coordinate and simulation specific: stop at large distance */
+	#endif				   
 
 	if (ph->X[1] < X1min)
 	return 1;
@@ -300,15 +309,19 @@ __host__ __device__ void coord(int i, int j, double *X)
 __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 {
 	int k, l;
+	double r,th;
 	/* required by broken math.h */
 	//void sincos(double th, double *sth, double *cth);
-
+	bl_coord(X, &r, &th);
 	DLOOP gcov[k][l] = 0.;
 	/*Flat space in spherical coordinates for the test*/							
 	gcov[0][0] = -1.;
 	gcov[1][1] = 1.;
-	gcov[2][2] = pow(X[1], 2.);
-	gcov[3][3] = pow(X[1] * sin(X[2]), 2.);
+	gcov[2][2] = pow(r, 2.);
+	gcov[3][3] = pow(r * sin(th), 2.);
+	#if(exponential_coordinates)
+		gcov[1][1] *= r * r;
+	#endif
 
 }
 
@@ -324,8 +337,12 @@ __host__ double dOmega_func(double x2i, double x2f)
 /* return boyer-lindquist coordinate of point */
 __host__ __device__ void bl_coord(double *X, double *r, double *th)
 {
-	*r = X[1];
-	*th = X[2];
-
+	#if(exponential_coordinates)
+		*r = exp(X[1]);
+		*th = X[2];
+	#else
+		*r = X[1];
+		*th = X[2];
+	#endif
 	return;
 }

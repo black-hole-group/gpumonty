@@ -1,5 +1,5 @@
 
-
+#define exponential_coordinates (1)
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
