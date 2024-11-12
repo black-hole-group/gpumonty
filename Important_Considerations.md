@@ -31,86 +31,38 @@ To profile it with ncu:
 ncu -f -o report_ncu_3 time ./grmonty 500 ./data/dump019 4.e19
 
 
+10^4
+GRMONTY:
+real	0m9.028s
+GPUMonty:
+real	0m1.000s
 
-Latest tests with optimization:
-using (176 x 256) threads:
+10^5
+GRMONTY:
+real	0m79.571s
+GPUMonty:
+real	0m4.625s
 
-50.000 photon parameter:
-GPU:
-N_superph_made: 1036195
-N_superph_recorded: 324931
-real    0m1.829s
+10^6
+GRMONTY:
+real 780.09s
+GPUMonty:
+real 40.82s
 
-CPU:
-N_superph_made: 805973
-N_superph_recorded: 338323
-real    0m2.932s
+1e7
+GRMONTY:
+real 7951.27
+GPUmonty:
 
-150.000 photon_parameter:
-GPU:
-N_superph_made: 3108567
-N_superph_recorded: 976862
-real    0m3.659s
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pedro/gsl/lib
 
-CPU:
-N_superph_made: 2417743
-N_superph_recorded: 1017090
-real    0m7.283s
+gld_efficiency, warp_execution_efficiency
 
-350.000 photon_parameter:
-GPU:
-N_superph_made: 7253185
-N_superph_recorded: 2267559
-real    0m7.174s
+data:
+96.22% generate
+99.78%
 
-CPU:
-N_superph_made: 5641245
-N_superph_recorded: 2367496
-real    0m16.140s
 
-750.000 photon_parameter:
-GPU:
-N_superph_made: 15542463
-N_superph_recorded: 4871364
-real    0m14.372s
-
-CPU:
-N_superph_made: 12088621
-N_superph_recorded: 5052572
-real    0m33.416s
-
-1.500.000 photon_parameter:
-GPU:
-N_superph_made: 31084992
-N_superph_recorded: 9679602
-real    0m27.790s
-
-CPU:
-N_superph_made: 24177075
-N_superph_recorded: 10093335
-real    1m8.503s
-
-2.000.000 photon_parameter:
-GPU:
-N_superph_made: 41446542
-N_superph_recorded: 12969870
-real    0m36.645s
-
-CPU:
-N_superph_made: 32236260
-N_superph_recorded: 13456522
-real    1m32.065s
-
-Time spent running the full code: 10.799421 seconds. Ntot = 150000
-Time spent running the full code: 44.711290 seconds. Ntot = 750000
-Time spent running the full code: 58.753125 seconds. Ntot = 1000000
-Time spent running the full code: 1143.118472 seconds. Ntot = 100000000 //in the same file
-Time spent running the full code: 1210.156004 seconds. Ntot = 100000000 // with dlto. it took an extra 67 seconds 1 min and 7 seconds longer
-Time spent running the full code: 6116.992129 seconds. Ntot = 100000000
-We got to change EPS when we are dealing with different grids. This seems to work with the low end part of the optically thick sphere
-
-REMEMBER TO ENABLE SCATTERING ALLOCATIONS ONCE TEST IS DONE
-The error in the high frequencies is related to the size of the bin
 
 nvcc -o RNG RNG.cu -I/home/pedro/gsl/include -L/home/pedro/gsl/lib -lgsl -lgslcblas -lm -lcuda
 Error in scattering is due to dtauscatt values!
@@ -124,3 +76,4 @@ for grmonty its 157077, always!!! Great, now I gotta figure out which ones are g
 
 
 use make BUILD_TYPE=debug for debugging and make for release
+

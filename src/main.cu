@@ -5,8 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-	clock_t start, end;
-    start = clock();
+	time_t starttime = time(NULL);
 
 	double Ntot;
 	int quit_flag;
@@ -35,8 +34,8 @@ int main(int argc, char *argv[])
 	fflush(stderr);
 
     launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
-	end = clock();
-    printf("Time spent running the full code: %f seconds. Ntot = %d\n", ((double)(end - start)) / CLOCKS_PER_SEC, Ns);
+    printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
+	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", Ns, N_BLOCKS, N_THREADS);
 
 	return (0);
 

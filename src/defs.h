@@ -57,6 +57,8 @@ __device__ double d_R0 = 0;
 __device__ int total_sca = 0;
 __device__ unsigned long long tracking_counter_sampling = 0;
 __device__ unsigned long long d_number_of_geodesics = 0;
+__device__ unsigned long long sc_ph_next = 0;
+__device__ unsigned long long sc_ph_current= 0;
 
 /** data structures **/
 struct of_photon {
@@ -77,6 +79,7 @@ struct of_photon {
 	double E0s;
 	int nscatt;
 };
+
 
 
 struct of_geom {

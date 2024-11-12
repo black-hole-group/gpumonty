@@ -80,7 +80,8 @@ do not edit with multiple threads, unless we know what we are doing*/
 	extern __device__ double d_R0;
 	extern __device__ int total_sca;
 	extern __device__ unsigned long long tracking_counter_sampling;
-
+	extern __device__ unsigned long long sc_ph_next;
+	extern __device__ unsigned long long sc_ph_current;
 #endif
 
 #ifndef CPUGLOBALS

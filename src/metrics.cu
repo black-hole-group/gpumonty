@@ -282,7 +282,7 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 		double irho2;
 		double r, th;
 		double hfac;
-
+		double sth, cth;
 
 		DLOOP gcon[k][l] = 0.;
 		bl_coord(X, &r, &th);
@@ -417,8 +417,7 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 		lconn[3][3][2] = 1/tan(th);
 
 	#else
-
-	double r1, r2, r3, r4, sx, cx;
+	double r1, r2, r3, r4;
 	double th, dthdx2, dthdx22, d2thdx22, sth, cth, sth2, cth2, sth4,
 	    cth4, s2th, c2th;
 	double a2, a3, a4, rho2, irho2, rho22, irho22, rho23, irho23,
@@ -433,9 +432,7 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 	r3 = r2 * r1;
 	r4 = r3 * r1;
 
-	//sincos(2. * M_PI * X[2], &sx, &cx);
-	sx = sin(2 * M_PI * X[2]);
-	cx = cos(2 * M_PI * X[2]);
+
 	/* HARM-2D MKS */
 	#if(HAMR)
 		double x2_mod;
@@ -444,6 +441,9 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 		dthdx2 = M_PI * (1./2.);
 		d2thdx22 = 0;
 	#else
+	double sx, cx;
+	sx = sin(2 * M_PI * X[2]);
+	cx = cos(2 * M_PI * X[2]);
 	th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
 	dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
 	d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;

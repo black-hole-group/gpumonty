@@ -4,4 +4,7 @@ callgrind.out*
 *.txt
 HAMR_GRMONTY_DUMP300_3D.bin
 HAMR_GRMONTY_DUMP110_thin.bin
+MAD_*
+SPHERE_TEST_THICK
 dump900
+
