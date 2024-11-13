@@ -153,7 +153,7 @@ __host__ void init_data(char *fname)
 		check_scan_error(fread(&Ucov[2], double_size, 1, fp), 1);
 		//fprintf(stderr, "Ucov2[%d, %d] = %le\n", i, j, Ucov[2]);
 		check_scan_error(fread(&Ucov[3], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
+		// //fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
 		// check_scan_error(fread(&Bcon[0], double_size, 1, fp), 1);
 		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[0]);
 		// check_scan_error(fread(&Bcon[1], double_size, 1, fp), 1);

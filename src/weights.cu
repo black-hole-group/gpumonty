@@ -58,7 +58,6 @@ void init_weight_table(void)
 	for (i = 0; i <= N_ESAMP; i++){
 		wgt[i] = log(sum[i] / (HPL * Ns));
 	}
-
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 

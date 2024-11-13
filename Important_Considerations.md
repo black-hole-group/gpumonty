@@ -33,47 +33,56 @@ ncu -f -o report_ncu_3 time ./grmonty 500 ./data/dump019 4.e19
 
 10^4
 GRMONTY:
-real	0m9.028s
+real	2.35
 GPUMonty:
-real	0m1.000s
-
+real	2.46
 10^5
 GRMONTY:
-real	0m79.571s
+real	6.41
 GPUMonty:
-real	0m4.625s
+real	4.40
+
 
 10^6
 GRMONTY:
-real 780.09s
+real 43.20
 GPUMonty:
-real 40.82s
+real 9.74
+
 
 1e7
 GRMONTY:
-real 7951.27
+real 424.24
 GPUmonty:
+    76.24
+#fez 4 grmonty
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pedro/gsl/lib
+==558094== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "Quadro GP100 (0)"
+    Kernel: GPU_track(of_photon*, double*, double*, of_spectrum*, of_photon*, int, int)
+          4                             flop_count_dp   Floating Point Operations(Double Precision)  2.1092e+10  1.1384e+12  3.2358e+11
+          4                             flop_count_sp   Floating Point Operations(Single Precision)   455917968  2.4855e+10  7066167016
+    Kernel: GPU_track_scat(of_photon*, double*, double*, of_spectrum*, of_photon*, int, int)
+         18                             flop_count_dp   Floating Point Operations(Double Precision)           0  1.6444e+11  1.2828e+10
+         18                             flop_count_sp   Floating Point Operations(Single Precision)           0  3611195045   281153543
+    Kernel: GPU_generate_photons(of_geom*, double*, long, __int64*, double*)
+          1                             flop_count_dp   Floating Point Operations(Double Precision)   568966672   568966672   568966672
+          1                             flop_count_sp   Floating Point Operations(Single Precision)    18239522    18239522    18239522
+    Kernel: GPU_sample_photons_batch(of_photon*, of_geom*, double*, __int64*, double*, int, __int64, __int64*)
+          4                             flop_count_dp   Floating Point Operations(Double Precision)  1.9669e+10  2.9225e+10  2.2621e+10
+          4                             flop_count_sp   Floating Point Operations(Single Precision)   747165432  1002162858   825891245
+root@terminator:/home/pedro/gpumonty# /usr/local/cuda-12.4/bin/nvprof --metrics flop_dp_efficiency ./gpumonty 1e7 ./data/MAD_0.9_new.bin MADnvprofmake
 
-gld_efficiency, warp_execution_efficiency
+metrics used:
+flop_dp_efficiency
+sm_efficiency
+
 
 data:
 96.22% generate
 99.78%
-
-
-
-nvcc -o RNG RNG.cu -I/home/pedro/gsl/include -L/home/pedro/gsl/lib -lgsl -lgslcblas -lm -lcuda
-Error in scattering is due to dtauscatt values!
-The error seems to be provenient from this.
-The error does not seem to come from gpu_alpha_inv_scatt value;
-problem does not seem related to sample or due to push_photon function (i substituted push_photon original and still got the same thing, also, 
-i'm using the same initial photons)
-Always 304593 photons scattered! Great, now I just need to figure out which ones aren't scattered in grmonty (see if it's always scattered the same amount, then figure out why those aren't scattered when compared to mine!)
-
-for grmonty its 157077, always!!! Great, now I gotta figure out which ones are going inside gpumonty, and why they aren't in grmonty.
-
 
 use make BUILD_TYPE=debug for debugging and make for release
 
