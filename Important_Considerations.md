@@ -55,6 +55,13 @@ GRMONTY:
 real 424.24
 GPUmonty:
     76.24
+
+
+1e8
+GRMONTY:
+real 4164.30
+GPUmonty:
+754.35
 #fez 4 grmonty
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pedro/gsl/lib
