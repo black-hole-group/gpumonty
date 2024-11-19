@@ -40,7 +40,7 @@
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 //RMIN for sphere model only
-#define RMIN 0.01
+#define RMIN 1e-8
 
 /*HAMR switch for model shared functions*/
 #define HAMR (0)
@@ -48,15 +48,15 @@
 #define SPHERE_TEST (1)
 
 /* spectral bin parameters */
-#define	dlE (0.25) //Size of the energy bin
+#define	dlE (0.01) //Size of the energy bin
 //#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
-#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+#define lE0	(log(1.e-13)) //Minimum energy of the energy bin
 
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 200
-#define N_EBINS 200
+#define N_ESAMP 2000
+#define N_EBINS 2000
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6

@@ -23,62 +23,219 @@ __host__ void init_storage(void)
 }
 
 
-__host__ void init_data(char *fname)
-{
-	FILE *fp;
-	double x[4];
-	double rp, hp, V, dV, two_temp_gam;
-	int i, j, k;
+// __host__ void init_data(char *fname)
+// {
+// 	FILE *fp;
+// 	double x[4];
+// 	double rp, hp, V, dV, two_temp_gam;
+// 	int i, j, k;
 
-	/* header variables not used except locally */
-	double t, a, gam;
-	double r, h, gdet;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
-	int int_size = sizeof(int);
-	int double_size = sizeof(double);
+// 	/* header variables not used except locally */
+// 	double t, a, gam;
+// 	double r, h, gdet;
+// 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+// 	int int_size = sizeof(int);
+// 	int double_size = sizeof(double);
 
-	fp = fopen(fname, "r");
+// 	fp = fopen(fname, "r");
 
-	if (fp == NULL) {
-		fprintf(stderr, "can't open sim data file\n");
-		exit(1);
-	} else {
-		fprintf(stderr, "successfully opened %s\n", fname);
-	}
+// 	if (fp == NULL) {
+// 		fprintf(stderr, "can't open sim data file\n");
+// 		exit(1);
+// 	} else {
+// 		fprintf(stderr, "successfully opened %s\n", fname);
+// 	}
 
-	/* get standard HARM header */
-    check_scan_error(fread(&t, sizeof(double), 1, fp), 1);
-	check_scan_error(fread(&N1, int_size, 1, fp), 1);
-    check_scan_error(fread(&N2, int_size, 1, fp), 1);
-    check_scan_error(fread(&N3, int_size, 1, fp), 1);
-	check_scan_error(fread(&startx[1], double_size, 1, fp), 1);
-	check_scan_error(fread(&startx[2], double_size, 1, fp), 1);
-	check_scan_error(fread(&startx[3], double_size, 1, fp), 1);
-	check_scan_error(fread(&dx[1], double_size, 1, fp), 1);
-	check_scan_error(fread(&dx[2], double_size, 1, fp), 1);
-	check_scan_error(fread(&dx[3], double_size, 1, fp), 1);
-	check_scan_error(fread(&a, double_size, 1, fp), 1);
-	check_scan_error(fread(&gam, double_size, 1, fp), 1);
-	R0 = 0;
-	hslope = 0;
-	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
+// 	/* get standard HARM header */
+//     check_scan_error(fread(&t, sizeof(double), 1, fp), 1);
+// 	check_scan_error(fread(&N1, int_size, 1, fp), 1);
+//     check_scan_error(fread(&N2, int_size, 1, fp), 1);
+//     check_scan_error(fread(&N3, int_size, 1, fp), 1);
+// 	check_scan_error(fread(&startx[1], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&startx[2], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&startx[3], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&dx[1], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&dx[2], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&dx[3], double_size, 1, fp), 1);
+// 	check_scan_error(fread(&a, double_size, 1, fp), 1);
+// 	check_scan_error(fread(&gam, double_size, 1, fp), 1);
+// 	R0 = 0;
+// 	hslope = 0;
+// 	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
 
 
 	
 
-	/* nominal non-zero values for axisymmetric simulations */
+// 	/* nominal non-zero values for axisymmetric simulations */
+// 	startx[0] = 0.;
+// 	startx[3] = 0.;
+// 	stopx[0] = 1.;
+// 	stopx[1] = startx[1] + N1 * dx[1];
+// 	stopx[2] = startx[2] + N2 * dx[2];
+// 	stopx[3] = 2. * M_PI;
+
+// 	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
+// 		stopx[1], startx[2], stopx[2]);
+
+// 	dx[0] = 1.;
+// 	dx[3] = 2. * M_PI;
+
+// 	/* Allocate storage for all model size dependent variables */
+// 	init_storage();
+
+// 	two_temp_gam =
+// 	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
+// 		   gam);
+// 	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+// 	printf("Thetae_unit = %le\n", Thetae_unit);
+
+// 	dMact = 0.;
+// 	Ladv = 0.;
+// 	bias_norm = 0.;
+// 	V = 0.;
+// 	dV = dx[1] * dx[2] * dx[3];
+// 	for (k = 0; k < N1 * N2 * N3; k++) {
+// 		// z = 0;
+// 		j = k % N2;
+// 		i = (k - j) / N2;
+// 		check_scan_error(fread(&x[1], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "x1[%d, %d] = %le\n", i, j, x[1]);
+// 		check_scan_error(fread(&x[2], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "x2[%d, %d] = %le\n", i, j, x[2]);
+// 		check_scan_error(fread(&r, double_size, 1, fp), 1);
+// 		//fprintf(stderr, "r[%d, %d] = %le\n", i, j, r);
+// 		check_scan_error(fread(&h, double_size, 1, fp), 1);
+// 		//fprintf(stderr, "h[%d, %d] = %le\n", i, j, h);
+
+// 		//fprintf(stderr,"Outside X[1] = %le, X[2] = %le, X[3] = %le \n", x[1], x[2], x[3]);
+
+// 		/* check that we've got the coordinate parameters right */
+// 		bl_coord(x, &rp, &hp);
+// 		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
+// 			fprintf(stderr, "grid setup error\n");
+// 			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
+// 				rp, r, hp, h);
+// 			fprintf(stderr, "X1 = %g, X2 = %g\n", x[1], x[2]);
+// 			fprintf(stderr,
+// 				"edit R0, hslope, compile, and continue\n");
+// 			exit(1);
+// 		}
+
+// 		check_scan_error(fread(&p[NPRIM_INDEX(KRHO,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "rho[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(KRHO,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(UU,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "UU[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(UU,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(U1,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "U1[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U1,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(U2,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "U2[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U2,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(U3,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "U3[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U3,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(B1,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "B1[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B1,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(B2,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "B2[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B2,k)]);
+// 		check_scan_error(fread(&p[NPRIM_INDEX(B3,k)], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "B3[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B3,k)]);
+// 		check_scan_error(fread(&Ucon[0], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+// 		check_scan_error(fread(&Ucon[1], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon1[%d, %d] = %le\n", i, j, Ucon[1]);
+// 		check_scan_error(fread(&Ucon[2], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon2[%d, %d] = %le\n", i, j, Ucon[2]);
+// 		check_scan_error(fread(&Ucon[3], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon3[%d, %d] = %le\n", i, j, Ucon[3]);
+// 		check_scan_error(fread(&Ucov[0], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucov0[%d, %d] = %le\n", i, j, Ucov[0]);
+// 		check_scan_error(fread(&Ucov[1], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucov1[%d, %d] = %le\n", i, j, Ucov[1]);
+// 		check_scan_error(fread(&Ucov[2], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucov2[%d, %d] = %le\n", i, j, Ucov[2]);
+// 		check_scan_error(fread(&Ucov[3], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
+// 		check_scan_error(fread(&Bcon[0], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[0]);
+// 		check_scan_error(fread(&Bcon[1], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[1]);
+// 		check_scan_error(fread(&Bcon[2], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[2]);
+// 		check_scan_error(fread(&Bcon[3], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[3]);
+// 		check_scan_error(fread(&Bcov[0], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+// 		check_scan_error(fread(&Bcov[1], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+// 		check_scan_error(fread(&Bcov[2], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+// 		check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
+// 		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+// 		check_scan_error(fread(&gdet, double_size, 1, fp), 1);
+// 		// if(p[NPRIM_INDEX(KRHO,k)] != 0){
+// 		// 	V += dV * gdet;
+// 		// 	bias_norm +=
+// 		//     dV * gdet * pow((gam - 1)* p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)], 2.);
+// 		// }
+// 		V += dV * gdet;
+// 		bias_norm += dV * gdet * pow(p[NPRIM_INDEX(UU,k)]/ p[NPRIM_INDEX(KRHO,k)] * Thetae_unit, 2.);
+// 		/* check accretion rate */
+// 		if (i <= 20)
+// 			dMact += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(KRHO,k)] * Ucon[1];
+// 			Ladv += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucon[0];
+// 	}
+// 	bias_norm /= V;
+// 	//bias_norm = V/bias_norm;
+// 	bias_norm = 0.0/0.0; //producing a nan
+// 	fprintf(stderr, "bias_norm = %le, V = %le\n", bias_norm, V);
+// 	dMact *= dx[3] * dx[2];
+// 	dMact /= 21.;
+// 	Ladv *= dx[3] * dx[2];
+// 	Ladv /= 21.;
+// 	fprintf(stderr, "Ladv = %le, dMact = %le\n", Ladv, dMact);
+
+//     fclose(fp);
+// }
+
+__host__ void init_data(char *fname)
+{
+	double Rin = log(1.e-2);
+	double Rout = log(2.);
+	double th_in = 0.01;
+	double th_out = M_PI;
+	double two_temp_gam, V, dV;
+	double r, h;
+	double x[4];
+	double sphere_radius = 1.;
+	double Ne_value, B_value, thetae_value;
+	double gdet;
+	int i,j,k;
+
+	/*sphere parameters*/
+	gam = 13./9.;
+	a = 0.;
+	Ne_value = 1.e20/NE_UNIT; /*in 1/cm^3*/
+	B_value = 1./B_UNIT; /*in G*/
+	thetae_value = 100.;
+
+	/*grid parameters*/
+	N1 = 16256;
+	N2 = 1024;
+	N3 = 1;
+	dx[1] = (Rout - Rin)/N1;
+	dx[2] = (th_out - th_in)/N2;
+	dx[3] =  2 * M_PI;
 	startx[0] = 0.;
+	startx[1] = Rin;
+	startx[2] = th_in;
 	startx[3] = 0.;
 	stopx[0] = 1.;
 	stopx[1] = startx[1] + N1 * dx[1];
 	stopx[2] = startx[2] + N2 * dx[2];
-	stopx[3] = 2. * M_PI;
+	stopx[3] = startx[3] + N3 * dx[3];
+	R0 = 0;
+	hslope = 0;
 
-	fprintf(stderr, "Sim range x1, x2:  %g %g, %g %g\n", startx[1],
-		stopx[1], startx[2], stopx[2]);
-
-	dx[0] = 1.;
-	dx[3] = 2. * M_PI;
+	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
+	fprintf(stderr, "startX (%le, %le), stopX(%le, %le)\n", startx[1], startx[2], stopx[1], stopx[2]);
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -98,101 +255,34 @@ __host__ void init_data(char *fname)
 		// z = 0;
 		j = k % N2;
 		i = (k - j) / N2;
-		check_scan_error(fread(&x[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "x1[%d, %d] = %le\n", i, j, x[1]);
-		check_scan_error(fread(&x[2], double_size, 1, fp), 1);
-		//fprintf(stderr, "x2[%d, %d] = %le\n", i, j, x[2]);
-		check_scan_error(fread(&r, double_size, 1, fp), 1);
-		//fprintf(stderr, "r[%d, %d] = %le\n", i, j, r);
-		check_scan_error(fread(&h, double_size, 1, fp), 1);
-		//fprintf(stderr, "h[%d, %d] = %le\n", i, j, h);
+		x[1] = startx[1] + i * dx[1];
+		x[2] = startx[2] + i * dx[2];
 
-		//fprintf(stderr,"Outside X[1] = %le, X[2] = %le, X[3] = %le \n", x[1], x[2], x[3]);
+		bl_coord(x, &r, &h);
 
-		/* check that we've got the coordinate parameters right */
-		bl_coord(x, &rp, &hp);
-		if (fabs(rp - r) > 1.e-5 * rp || fabs(hp - h) > 1.e-5) {
-			fprintf(stderr, "grid setup error\n");
-			fprintf(stderr, "rp,r,hp,h: %g %g %g %g\n",
-				rp, r, hp, h);
-			fprintf(stderr, "X1 = %g, X2 = %g\n", x[1], x[2]);
-			fprintf(stderr,
-				"edit R0, hslope, compile, and continue\n");
-			exit(1);
+		if(r < sphere_radius){
+			p[NPRIM_INDEX(KRHO,k)] = Ne_value;
+			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
+			#if(exponential_coordinates)
+				p[NPRIM_INDEX(B1,k)] = B_value * cos(h)/r ;
+			#else
+				p[NPRIM_INDEX(B1,k)] = B_value * cos(h);
+			#endif
+			p[NPRIM_INDEX(B2,k)] = - B_value * sin(h)/r;
+		}else{
+			p[NPRIM_INDEX(KRHO,k)] = 0.;
+			p[NPRIM_INDEX(UU,k)] = 0.;
+			p[NPRIM_INDEX(B1,k)] = 0.;
+			p[NPRIM_INDEX(B2,k)] = 0.;
+
 		}
-
-		check_scan_error(fread(&p[NPRIM_INDEX(KRHO,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "rho[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(KRHO,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(UU,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "UU[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(UU,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(U1,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "U1[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U1,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(U2,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "U2[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U2,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(U3,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "U3[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(U3,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(B1,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "B1[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B1,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(B2,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "B2[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B2,k)]);
-		check_scan_error(fread(&p[NPRIM_INDEX(B3,k)], double_size, 1, fp), 1);
-		//fprintf(stderr, "B3[%d, %d] = %le\n", i, j, p[NPRIM_INDEX(B3,k)]);
-		check_scan_error(fread(&Ucon[0], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		check_scan_error(fread(&Ucon[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon1[%d, %d] = %le\n", i, j, Ucon[1]);
-		check_scan_error(fread(&Ucon[2], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon2[%d, %d] = %le\n", i, j, Ucon[2]);
-		check_scan_error(fread(&Ucon[3], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon3[%d, %d] = %le\n", i, j, Ucon[3]);
-		check_scan_error(fread(&Ucov[0], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucov0[%d, %d] = %le\n", i, j, Ucov[0]);
-		check_scan_error(fread(&Ucov[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucov1[%d, %d] = %le\n", i, j, Ucov[1]);
-		check_scan_error(fread(&Ucov[2], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucov2[%d, %d] = %le\n", i, j, Ucov[2]);
-		check_scan_error(fread(&Ucov[3], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
-		check_scan_error(fread(&Bcon[0], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[0]);
-		check_scan_error(fread(&Bcon[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[1]);
-		check_scan_error(fread(&Bcon[2], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[2]);
-		check_scan_error(fread(&Bcon[3], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[3]);
-		check_scan_error(fread(&Bcov[0], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		check_scan_error(fread(&Bcov[1], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		check_scan_error(fread(&Bcov[2], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
-		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		check_scan_error(fread(&gdet, double_size, 1, fp), 1);
-		// if(p[NPRIM_INDEX(KRHO,k)] != 0){
-		// 	V += dV * gdet;
-		// 	bias_norm +=
-		//     dV * gdet * pow((gam - 1)* p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)], 2.);
-		// }
-		V += dV * gdet;
-		bias_norm += dV * gdet * pow(p[NPRIM_INDEX(UU,k)]/ p[NPRIM_INDEX(KRHO,k)] * Thetae_unit, 2.);
-		/* check accretion rate */
-		if (i <= 20)
-			dMact += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(KRHO,k)] * Ucon[1];
-			Ladv += gdet * dx[2] * dx[3] * p[NPRIM_INDEX(UU,k)] * Ucon[1] * Ucon[0];
+		p[NPRIM_INDEX(B3,k)] = 0.;
+		p[NPRIM_INDEX(U1,k)] = 0.;
+		p[NPRIM_INDEX(U2,k)] = 0.;
+		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	bias_norm /= V;
-	//bias_norm = V/bias_norm;
-	bias_norm = 0.0/0.0; //producing a nan
+	bias_norm = 0.0/0.0; //producing a nan so we don't account for scattering
 	fprintf(stderr, "bias_norm = %le, V = %le\n", bias_norm, V);
-	dMact *= dx[3] * dx[2];
-	dMact /= 21.;
-	Ladv *= dx[3] * dx[2];
-	Ladv /= 21.;
-	fprintf(stderr, "Ladv = %le, dMact = %le\n", Ladv, dMact);
-
-    fclose(fp);
 }
 
 
@@ -222,15 +312,15 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
 	#if(exponential_coordinates)
-	X1min = log(RMIN);
+	//X1min = log(RMIN);
 	X1max = log(RMAX);
 	#else
-	X1min = RMIN;
+	//X1min = RMIN;
 	X1max = RMAX;	/* this is coordinate and simulation specific: stop at large distance */
 	#endif				   
 
-	if (ph->X[1] < X1min)
-	return 1;
+	// if (ph->X[1] < X1min)
+	// return 1;
 
 
 	if (ph->X[1] > X1max) {
