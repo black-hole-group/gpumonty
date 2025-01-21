@@ -39,18 +39,17 @@ void init_weight_table(void)
 		for (i = 0; i < N1; i++)
 			for (j = 0; j < N2; j++)
 				for (k = 0; k < N3; k++){
-					get_fluid_zone(i, j, k, &Ne, &Thetae, &B,
-							Ucon, Bcon, geom, p);
-					if (Ne == 0. || Thetae < THETAE_MIN)
-						continue;
-					K2 = K2_eval(Thetae);
-					fac =
-						(JCST * Ne * B * Thetae * Thetae /
-						K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
-					for (l = lstart; l < lend; l++){
-						sum[l] +=
-							fac * F_eval(Thetae, B, nu[l]);	
-				}
+						get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
+						if (Ne == 0. || Thetae < THETAE_MIN)
+							continue;
+						K2 = K2_eval(Thetae);
+						fac =
+							(JCST * Ne * B * Thetae * Thetae /
+							K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
+						for (l = lstart; l < lend; l++){
+							sum[l] +=
+								fac * F_eval(Thetae, B, nu[l]);	
+						}
 			}
 #pragma omp barrier
 	}
@@ -67,8 +66,68 @@ void init_weight_table(void)
 #undef JCST
 
 
+void init_weight_table_blackbody(void)
+{
+    int i, j, k, l;
+    double ThetaS = 1.e-8;
+    double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
+    double temperature = ThetaS * ME * CL * CL / KBOL;
+    
+    fprintf(stderr, "Building weight table for blackbody photons\n");
+    fflush(stderr);
+
+    /* Set up frequency grid */
+    double lnu_min = log(NUMIN);
+    double lnu_max = log(NUMAX);
+    double dlnu = (lnu_max - lnu_min) / N_ESAMP; // This is Δln ν
+
+    /* Initialize arrays */
+    for (i = 0; i <= N_ESAMP; i++) {
+        sum[i] = 0.0;
+        nu[i] = exp(i * dlnu + lnu_min);
+    }
+
+    /* Volume element factor √(-g)ΔtΔ³x */
+    double dt = 1.0; // Time step
+    double volume_element = dt * dx[1] * dx[2] * dx[3] * L_UNIT * L_UNIT * L_UNIT;
+
+    /* Sequential computation of emission */
+    for (i = 0; i < N1; i++) {
+        for (j = 0; j < N2; j++) {
+            for (k = 0; k < N3; k++) {
+                /* Get metric determinant */
+                double g = geom[SPATIAL_INDEX2D(i, j)].g;
+
+                /* Calculate emission for each frequency */
+                for (l = 0; l <= N_ESAMP; l++) {
+                    /* Planck function for photon number density (this is dS¹) */
+                    double dS = 8.0 * M_PI * HPL * nu[l] * nu[l] * nu[l] / 
+                                (CL * CL * CL) * 1.0 / (exp(HPL * nu[l] / (KBOL * temperature)) - 1.0);
+
+                    /* Add to sum with proper weight formula components */
+                    sum[l] += g * volume_element * dlnu * dS;
+                }
+            }
+        }
+    }
+
+    /* Calculate final weights */
+    for (i = 0; i <= N_ESAMP; i++) {
+        wgt[i] = log(sum[i] / (HPL * Ns)); // Ns is Nsuper in your notation
+    }
+
+    fprintf(stderr, "done.\n\n");
+    fflush(stderr);
+    return;
+}
+
+
 __host__ void init_nint_table(void)
 {
+	/*
+	This function represents the integral of the solid angle averaged emissivity
+	over frequency.
+	*/
 
 	int i, j;
 	double Bmag, dn;

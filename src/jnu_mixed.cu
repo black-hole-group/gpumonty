@@ -53,11 +53,32 @@ classical thermal synchrotron limit
 good for Thetae > 1
 
 */
+#if(SCATTERING_TEST)
+__host__ __device__ double jnu_bnu(double nu, double Thetae)
+{
 
+	double x;
+
+	x = HPL * nu / (ME * CL * CL * Thetae);
+
+	if (x < 1.e-3){	/* Taylor expand */
+		return ((2. * HPL / (CL * CL)) /
+			(x / 24. * (24. + x * (12. + x * (4. + x)))));
+	}
+	else{
+		return ((2. * HPL * nu * nu * nu / (CL * CL)) / (exp(x) - 1.));
+	}
+}
+#endif
 #define CST 1.88774862536	/* 2^{11/12} */
+
 __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
+	#if(SCATTERING_TEST)
+	return jnu_bnu(nu, Thetae);
+
+	#else
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
 
 	if (Thetae < THETAE_MIN)
@@ -79,6 +100,7 @@ __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double
 	    exp(-xp1);
 
 	return (j);
+	#endif
 }
 #undef CST
 
@@ -142,6 +164,7 @@ __host__ void init_emiss_tables(void)
 	gsl_function func;
 	gsl_integration_workspace *w;
 
+
 	func.function = &jnu_integrand;
 	func.params = &K;
 
@@ -173,7 +196,7 @@ __host__ void init_emiss_tables(void)
 		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T));
 
 	}
-
+	
 	/* Avoid doing divisions later */
 	dlK = 1. / dlK;
 	dlT = 1. / dlT;
@@ -199,9 +222,11 @@ __host__ __device__ double K2_eval(double Thetae)
 #define KFAC	(9*M_PI*ME*CL/EE)
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 {
-
+	#if(SCATTERING_TEST)
+		return planck_function(nu);
+	#else
 	double K, x;
-
+	
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
 	if (K > KMAX) {
 		return 0.;
@@ -212,6 +237,7 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 	} else {
 		return linear_interp_F(K);
 	}
+	#endif
 }
 
 

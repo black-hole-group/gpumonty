@@ -191,6 +191,9 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
 		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
 		ideal_nblocks = ceil(instant_photon_number/N_THREADS);
+		if(ideal_nblocks == 0){
+			ideal_nblocks = 1;
+		}
 
 
 		gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
@@ -336,12 +339,41 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
-		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
+		//GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
+		GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, 1e-8, d_dx, d_Ns);
 		generated_photons_arr[a] = generated_photons;
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
 	}
 	return;
+}
+
+__host__ __device__ double planck_function(double nu) {
+	double theta_s = 1e-8;
+    // Convert dimensionless temperature Ts to physical temperature
+    double T = theta_s * ME * CL * CL/HPL;  // Temperature in Kelvin (me*c^2/k = 511000 K)
+    
+    // Calculate x = h*nu/(k*T)
+    double x = HPL * nu / (KBOL * T);
+    
+    // Prevent overflow in exponential
+    if (x > 700.0) {
+		printf("It's overflowing probably\n");
+        return 0.0;
+    }
+    
+    // Calculate Planck spectrum: 2h*nu^3/c^2 * 1/(exp(h*nu/kT) - 1)
+    double prefactor = 2.0 * HPL * nu * nu * nu / (CL * CL);
+    double denominator = exp(x) - 1.0;
+    
+    // Handle numerical issues for very small x
+    if (x < 1e-8) {
+        return prefactor * (1.0/x);  // Rayleigh-Jeans limit
+    }
+    
+    // Return photon number spectrum (not energy spectrum)
+    // Convert from energy density to photon number density by dividing by h*nu
+    return prefactor/ denominator;
 }
 
 __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
@@ -363,45 +395,45 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		return;
 	}
 
-	lbth = log(Bmag * Thetae * Thetae);
+		lbth = log(Bmag * Thetae * Thetae);
 
-	dl = (lbth - lb_min) / dlb;
-	l = (int) dl;
-	dl = dl - l;
-	if (l < 0) {
-		*dnmax = 0.;
-		*n2gen = 0.;
-		return;
-	} else if (l >= NINT) {
-		printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
-		ninterp = 0.;
-		*dnmax = 0.;
-		for (l = 0; l <= N_ESAMP; l++) {
-			dn = F_eval(Thetae, Bmag,
-				    exp(j * dlnu +
-					lnu_min)) / (exp(d_wgt[l]) +
-						     1.e-100);
-			if (dn > *dnmax)
-				*dnmax = dn;
-			ninterp += dlnu * dn;
-		}
-		ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT
-		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-		    * 1. / HPL;
-
-	} else {
-		if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
+		dl = (lbth - lb_min) / dlb;
+		l = (int) dl;
+		dl = dl - l;
+		if (l < 0) {
+			*dnmax = 0.;
+			*n2gen = 0.;
+			return;
+		} else if (l >= NINT) {
+			printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
 			ninterp = 0.;
 			*dnmax = 0.;
-		} else {
-			ninterp =
-			    exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
+			for (l = 0; l <= N_ESAMP; l++) {
+				dn = F_eval(Thetae, Bmag,
+						exp(l * dlnu +
+						lnu_min)) / (exp(d_wgt[l]) +
+								1.e-100);
+				if (dn > *dnmax)
+					*dnmax = dn;
+				ninterp += dlnu * dn;
+			}
+			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT
+				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
+				* 1. / HPL;
 
-			*dnmax =
-			    exp((1. - dl) * d_dndlnu_max[l] +
-				dl * d_dndlnu_max[l + 1]);
+		} else {
+			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
+				ninterp = 0.;
+				*dnmax = 0.;
+			} else {
+				ninterp =
+					exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
+
+				*dnmax =
+					exp((1. - dl) * d_dndlnu_max[l] +
+					dl * d_dndlnu_max[l + 1]);
+			}
 		}
-	}
 
 	K2 = K2_eval(Thetae);
 	if (K2 == 0.) {
@@ -410,11 +442,8 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 		return;
 	}
 	
-	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
-	// if(nz == 0){
-	// 	printf("%d, %d, %d, (%le, %le, %le, %le, %le, %le)\n",i,j,*n2gen, d_geom[SPATIAL_INDEX2D(i,j)].g, Ne,  Bmag,  Thetae,  ninterp,  K2);
+		double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 
-	// }
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -435,6 +464,74 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 
 	return;
 }
+
+__device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
+                                          struct of_geom *d_geom, double ThetaS, 
+                                          double *d_dx, int d_Ns_par) 
+{
+    // Constants
+    const double h = HPL;  // Planck constant
+    const double c = CL;    // Speed of light
+    const double kb = KBOL;   // Boltzmann constant
+    
+    // Frequency sampling parameters
+    const double lnu_min = log(NUMIN);
+    const double lnu_max = log(NUMAX);
+    const double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
+    
+    // Initialize variables
+    double ninterp = 0.0;
+    *dnmax = 0.0;
+    
+	double temperature = ThetaS * ME * CL * CL / kb;
+    
+	// get fluid zone radius
+	double X1 = d_startx[1] + (i+0.5)*d_dx[1];
+	double r = exp(X1) * L_UNIT;
+	//only emit photons at r lower than 1
+	if (r > 1){
+		*n2gen = 0;
+		*dnmax = 0;
+		return;
+	}
+
+    // Integrate over frequency to get total number of photons
+    for (int l = 0; l <= N_ESAMP; l++) {
+        double nu = exp(l * dlnu + lnu_min);
+        
+        // Planck function (photons per frequency per volume)
+        double dn = 8.0 *  M_PI * nu * nu * nu / (c * c) * (1./(exp(h * nu/(kb * temperature)) - 1.0))/(exp(d_wgt[l]) + 1e-100);
+        
+        // Track maximum for importance sampling
+        if (dn > *dnmax) {
+            *dnmax = dn;
+        }
+        
+        // Integrate over frequency
+        ninterp += dlnu * dn;
+    }
+    
+    // Scale by volume element
+    double volume = d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT;
+    double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * ninterp * volume;
+    
+    // Safety check for unreasonably large photon numbers
+    if (nz > d_Ns_par * log(NUMAX/NUMIN)) {
+        printf("Warning: Too many photons in zone (%d,%d): nz=%le, gdet = %le, T=%le K, NUMAX = %le, max = %le, dnmax = %le\n", 
+               i, j, nz, d_geom[SPATIAL_INDEX2D(i,j)].g, temperature, NUMAX, d_Ns_par * log(NUMAX/NUMIN), *dnmax);
+        *n2gen = 0.;
+        *dnmax = 0.;
+        return;
+    }
+    
+    // Probabilistic rounding for fractional photons
+    if (fmod(nz, 1.0) > GPU_monty_rand()) {
+        *n2gen = (int)(nz) + 1;
+    } else {
+        *n2gen = (int)(nz);
+    }
+}
+
 
 __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n, int number_of_threads){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -530,11 +627,24 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 
 	/* Sample from superphoton distribution in current simulation zone */
 
-	do {
-		nu = exp(GPU_monty_rand() * Nln + lnu_min);
-		weight = GPU_linear_interp_weight(nu);
-	} while (GPU_monty_rand() >
-		 (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+	#ifdef SCATTERING_TEST
+		double conditioner, test;
+		double ThetaS = 1.e-8;
+		double temperature = ThetaS * ME * CL * CL / KBOL;
+		do {
+			nu = exp(GPU_monty_rand() * Nln + lnu_min);
+			weight = GPU_linear_interp_weight(nu);
+			conditioner = 8.0 *  M_PI * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
+			test = GPU_monty_rand();
+
+		} while (test >  conditioner);
+	#else
+		do {
+			nu = exp(GPU_monty_rand() * Nln + lnu_min);
+			weight = GPU_linear_interp_weight(nu);
+		} while (GPU_monty_rand() >
+			(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+	#endif
 
 	ph[ph_arr_index].w = weight;
 
@@ -654,7 +764,7 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 
 
 	if (isnan(*B)){
-		//printf("i = %d, j = %d, k = %d\n", i, j, k);
+		printf("i = %d, j = %d, k = %d\n", i, j, k);
 		printf( "VdotV = %le\n", VdotV);
 		printf( "Vfac = %lf\n", Vfac);
 		for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
@@ -858,6 +968,7 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 __device__ int switchup = 0;
 __device__ int global_indexphoton = 0;
+__device__ int flag = 0;
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition)
 {
@@ -875,6 +986,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
+	int local_flag = 0;
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -905,7 +1017,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	bi = GPU_bias_func(Thetae, ph->w);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
-
+	
 	//while(0){
 	while (!GPU_stop_criterion(ph)) {
 		/* Save initial position/wave vector */
@@ -930,8 +1042,9 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
 		
 
-		if (GPU_stop_criterion(ph))
+		if (GPU_stop_criterion(ph)){
 			break;
+		}
 
 		/* allow photon to interact with matter, */
 		gcov_func(ph->X, Gcov);
@@ -998,7 +1111,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 
 				if (isnan(php.w) || isinf(php.w)) {
@@ -1015,12 +1127,16 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				}
 				dtau_scatt *= frac;
 				dtau = dtau_abs + dtau_scatt;
-				if (dtau_abs < 1.e-3){
-					ph->w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-				}
-				else{
-					ph->w *= exp(-dtau); 
-				}
+
+				//Do not include absorption in the scattering test
+				#ifndef SCATTERING_TEST
+					if (dtau_abs < 1.e-3){
+						ph->w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					}
+					else{
+						ph->w *= exp(-dtau); 
+					}
+				#endif
 				/* Interpolate position and wave vector to scattering event */
 
 				GPU_push_photon(Xi, Ki, dKi, dl * frac, &E0,
@@ -1097,11 +1213,15 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				ph->tau_abs += dtau_abs;
 				ph->tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
-				if (dtau < 1.e-3){
-						ph->w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
-				}else{
-						ph->w *= exp(-dtau); 
-				}
+
+				//Do not include absorption in the scattering test
+				#ifndef SCATTERING_TEST
+					if (dtau < 1.e-3){
+							ph->w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
+					}else{
+							ph->w *= exp(-dtau); 
+					}
+				#endif
 			}
 		}
 
@@ -1110,9 +1230,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		/* signs that something's wrong w/ the integration */
 		if (nstep > MAXNSTEP) {
 			printf(
-				"X1,X2,K1,K2,bias: %g %g %g %g %g\n",
-				ph->X[1], ph->X[2], ph->K[1], ph->K[2],
-				bias);
+				"X1,X2,K1,K2, nu, bias,: %g, %g, %g, %g, %g, %g\n",
+				ph->X[1], ph->X[2], ph->K[1], ph->K[2], nu, bias);
 			break;
 		}
 	}
@@ -1202,6 +1321,13 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+	#if(SPHERE_TEST)
+	if (*B != 1){
+		*B = 1;
+	}
+	#endif
+	//printf("Ne = %le, Thetae = %le, B = %le, Ucon: (%le, %le, %le, %le), Bcon: (%le, %le, %le, %le)\n", *Ne, *Thetae, *B, Ucon[0], Ucon[1], Ucon[2], Ucon[3], 
+	//Bcon[0], Bcon[1], Bcon[2], Bcon[3]);
 }
 
 
@@ -1276,8 +1402,6 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 		x2_normal = (1. + X[2])/2.;
 		stopx2_normal = 1.; 
 		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
-	#elif(SPHERE_TEST)
-		dlx2 = EPS * GSL_MIN(X[2], d_stopx[2] - X[2]) /(fabs(K[2] + SMALL));
 	#else
 		dlx2 = EPS * GSL_MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	#endif
@@ -1386,8 +1510,143 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 // 	/* done! */
 // }
 
-// // //This one below is from gpu_monty
 
+/*Runge kutta 4th order*/
+// __device__ void GPU_push_photon(double X[], double K[], double dK[], double dl, double * E0, int n)
+// {
+
+// 	int k;
+// 	double lconn[NDIM][NDIM][NDIM];
+// 	double Kt[NDIM], Xt[NDIM];
+// 	double f1x[NDIM], f2x[NDIM], f3x[NDIM], f4x[NDIM];
+// 	double f1k[NDIM], f2k[NDIM], f3k[NDIM], f4k[NDIM];
+// 	double dl_2 = 0.5 * dl;
+
+// 	for (k = 0; k < NDIM; k++)
+// 		f1x[k] = K[k];
+
+// 	GPU_get_connection(X, lconn);
+
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		f1k[k] =
+// 		    -2. * (K[0] *
+// 			   (lconn[k][0][1] * K[1] + lconn[k][0][2] * K[2] +
+// 			    lconn[k][0][3] * K[3]) +
+// 			   K[1] * (lconn[k][1][2] * K[2] +
+// 				   lconn[k][1][3] * K[3]) +
+// 			   lconn[k][2][3] * K[2] * K[3]
+// 		    );
+
+// 		f1k[k] -=
+// 		    (lconn[k][0][0] * K[0] * K[0] +
+// 		     lconn[k][1][1] * K[1] * K[1] +
+// 		     lconn[k][2][2] * K[2] * K[2] +
+// 		     lconn[k][3][3] * K[3] * K[3]
+// 		    );
+// 	}
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl_2 * f1k[k];
+// 		f2x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl_2 * f1x[k];
+// 	}
+
+// 	GPU_get_connection(Xt, lconn);
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		f2k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k][0][1] * Kt[1] +
+// 			    lconn[k][0][2] * Kt[2] +
+// 			    lconn[k][0][3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k][1][2] * Kt[2] +
+// 				    lconn[k][1][3] * Kt[3]) +
+// 			   lconn[k][2][3] * Kt[2] * Kt[3]
+// 		    );
+
+// 		f2k[k] -=
+// 		    (lconn[k][0][0] * Kt[0] * Kt[0] +
+// 		     lconn[k][1][1] * Kt[1] * Kt[1] +
+// 		     lconn[k][2][2] * Kt[2] * Kt[2] +
+// 		     lconn[k][3][3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl_2 * f2k[k];
+// 		f3x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl_2 * f2x[k];
+// 	}
+
+// 	GPU_get_connection(Xt, lconn);
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		f3k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k][0][1] * Kt[1] +
+// 			    lconn[k][0][2] * Kt[2] +
+// 			    lconn[k][0][3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k][1][2] * Kt[2] +
+// 				    lconn[k][1][3] * Kt[3]) +
+// 			   lconn[k][2][3] * Kt[2] * Kt[3]
+// 		    );
+
+// 		f3k[k] -=
+// 		    (lconn[k][0][0] * Kt[0] * Kt[0] +
+// 		     lconn[k][1][1] * Kt[1] * Kt[1] +
+// 		     lconn[k][2][2] * Kt[2] * Kt[2] +
+// 		     lconn[k][3][3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		Kt[k] = K[k] + dl * f3k[k];
+// 		f4x[k] = Kt[k];
+// 		Xt[k] = X[k] + dl * f3x[k];
+// 	}
+
+// 	GPU_get_connection(Xt, lconn);
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		f4k[k] =
+// 		    -2. * (Kt[0] *
+// 			   (lconn[k][0][1] * Kt[1] +
+// 			    lconn[k][0][2] * Kt[2] +
+// 			    lconn[k][0][3] * Kt[3]) +
+// 			   Kt[1] * (lconn[k][1][2] * Kt[2] +
+// 				    lconn[k][1][3] * Kt[3]) +
+// 			   lconn[k][2][3] * Kt[2] * Kt[3]
+// 		    );
+
+// 		f4k[k] -=
+// 		    (lconn[k][0][0] * Kt[0] * Kt[0] +
+// 		     lconn[k][1][1] * Kt[1] * Kt[1] +
+// 		     lconn[k][2][2] * Kt[2] * Kt[2] +
+// 		     lconn[k][3][3] * Kt[3] * Kt[3]
+// 		    );
+// 	}
+
+// 	for (k = 0; k < NDIM; k++) {
+// 		X[k] +=
+// 		    0.166666666666667 * dl * (f1x[k] +
+// 					      2. * (f2x[k] + f3x[k]) +
+// 					      f4x[k]);
+// 		K[k] +=
+// 		    0.166666666666667 * dl * (f1k[k] +
+// 					      2. * (f2k[k] + f3k[k]) +
+// 					      f4k[k]);
+// 	}
+
+// 	GPU_init_dKdlam(X, K, dK);
+
+// 	/* done */
+// }
+
+
+
+
+// // //This one below is from gpu_monty
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],  double dl,
 	double *E0, int n)
 {
@@ -1524,8 +1783,8 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 // 			}
 // 		}while(condition);
 // 		*E0 = E1;
-//         // *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-//         //        Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
+//         *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
+//                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
 
 // 		/* done! */
 // }

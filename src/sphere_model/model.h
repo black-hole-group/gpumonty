@@ -1,5 +1,32 @@
 
+
 #define exponential_coordinates (1)
+/* Range of superphoton frequencies */
+#define NUMIN 1.e8
+#define NUMAX 1.e15
+
+/*This indicates the minimum of thetae = kTe/(mec^2)*/
+#define THETAE_MIN	0.3
+#define THETAE_MAX 1000.
+
+/*Ratio of proton temperature to electron temperature*/
+#define TP_OVER_TE	(3.)
+
+/*Define the minimum weight of the superphoton to be considered*/
+#define WEIGHT_MIN	(0)
+
+/*for stop criterium*/
+#define RMAX	(1000./L_UNIT) //Define the maximum radius up to track the photon
+#define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
+
+//RMIN for sphere model only
+#define RMIN (1e-2/L_UNIT)
+
+#define HAMR (0)
+
+/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
+#define SPHERE_TEST (1)
+
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);

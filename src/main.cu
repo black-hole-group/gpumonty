@@ -59,6 +59,11 @@ __host__ void init_model(char *args[])
 	fprintf(stderr, "initializing geometry...\n");
 	fflush(stderr);
 	init_geometry();
+
+	if(isinf(geom[SPATIAL_INDEX2D(0,0)].gcov[3][3])){
+		fprintf(stderr, "Negative determinant of the metric at the origin. Exiting...\n");
+		exit(0);
+	}
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
@@ -69,8 +74,8 @@ __host__ void init_model(char *args[])
 	init_emiss_tables();
 
 	/* make table for superphoton weights */
-	init_weight_table();
-
+	//init_weight_table();
+	init_weight_table_blackbody();
 	/* make table for quick evaluation of ns_zone */
 	init_nint_table();
 
@@ -85,20 +90,43 @@ __host__ void init_geometry()
 		for (j = 0; j < N2; j++) {
 			for (k = 0; k < N3; k++) {
 
-			/* zone-centered */
-			coord(i, j, X);
-			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
+				/* zone-centered */
+				coord(i, j, X);
+				gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
+				if(isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[3][3])){
+					geom[SPATIAL_INDEX2D(i,j)].gcov[3][3] = 0.;
+					printf("setting it to 0 = %le\n", geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
+				}
 
+				geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
 
-			geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
-
-
-			gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
+				gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
+				if (isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[0][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[0][1]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[0][2]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[1][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[1][1]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[1][2]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[2][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[2][1]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[2][2]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].g) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[0][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[0][1]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[0][2]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[1][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[1][1]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[1][2]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[2][0]) || isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[2][1]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcon[2][2]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[0][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[0][1]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[0][2]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[1][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[1][1]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[1][2]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[2][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[2][1]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[2][2]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].g) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[0][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[0][1]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[0][2]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[1][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[1][1]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[1][2]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[2][0]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[2][1]) ||
+					isinf(geom[SPATIAL_INDEX2D(i,j)].gcon[2][2]) ||
+					isnan(geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]) || isinf(geom[SPATIAL_INDEX2D(i,j)].gcov[3][3])) {
+					double r, th;
+					bl_coord(X, &r, &th);
+					fprintf(stderr, "spherical coordinates = %g %g\n", r, th);
+					fprintf(stderr, "Invalid geometry at coordinates (%d, %d)\n", i, j);
+					fprintf(stderr, "X values: %g %g %g %g\n", X[0], X[1], X[2], X[3]);
+					fprintf(stderr, "gcov = %g, %g, %g, %g\n", geom[SPATIAL_INDEX2D(i,j)].gcov[0][0], geom[SPATIAL_INDEX2D(i,j)].gcov[1][1], geom[SPATIAL_INDEX2D(i,j)].gcov[2][2], geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
+					fprintf(stderr, "should be: %g, %g, %g, %g\n", 1., r * r, r*r, r * r * sin(th) * sin(th));
+				}
 			}
 		}
 	}
-	//here:
-	/* done! */
 }
 
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename)

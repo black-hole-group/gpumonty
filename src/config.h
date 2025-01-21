@@ -21,31 +21,7 @@
 #define N_BLOCKS 1792//176
 #define N_THREADS 256 //256
 
-/* Range of superphoton frequencies */
-#define NUMIN 1.e7
-#define NUMAX 1.e16
 
-/*This indicates the minimum of thetae = kTe/(mec^2)*/
-#define THETAE_MIN	0.3
-#define THETAE_MAX 1000.
-
-/*Ratio of proton temperature to electron temperature*/
-#define TP_OVER_TE	(3.)
-
-/*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
-
-/*for stop criterium*/
-#define RMAX	1. //Define the maximum radius up to track the photon
-#define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
-
-//RMIN for sphere model only
-#define RMIN 1e-8
-
-/*HAMR switch for model shared functions*/
-#define HAMR (0)
-/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (1)
 
 /* spectral bin parameters */
 #define	dlE (0.01) //Size of the energy bin
@@ -65,7 +41,7 @@
 #define MINW      1.e-12       // Minimum weight in the table
 #define MAXW      1.e6        // Maximum weight in the table
 #define MINT      1.e-4      // Minimum temperature
-#define MAXT      1.e4        // Maximum temperature //changed from 1e10 to 1e20 to hamr data
+#define MAXT      1.e4        // Maximum temperature 
 #define NW        220          // Number of weight steps for table
 #define NT        80           // Number of temperature steps
 #define HOTCROSS  "./table/hotcross.dat" // Name of the table file
@@ -82,7 +58,7 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (6.77e-6)/*In solar UNITs*/
+#define MBH (4.2e6)/*In solar UNITs*/
 #define M_UNIT (1.) /*Find this based on the rho_scale parameter for HAMR sims*/
 
 
@@ -193,7 +169,7 @@
 #define MAX_LAYER_SCA (8)
 
 /*for stepsize*/
-#define EPS   (0.04)
+#define EPS (0.04)
 
 /*Push photon routine*/
 #define FAST_CPY(in,out) {out[0] = in[0]; out[1] = in[1]; out[2] = in[2]; out[3] = in[3];}

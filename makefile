@@ -1,5 +1,5 @@
 # Model name (hamr_model, harm_model, sphere_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+MODEL_DIR = $(SRC_DIR)/scattering_model
 
 # Directories
 SRC_DIR = src

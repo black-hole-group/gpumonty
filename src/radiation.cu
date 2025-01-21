@@ -15,6 +15,7 @@ __device__ double GPU_Bnu_inv(double nu, double Thetae)
 	}
 }
 
+
 __device__ double GPU_jnu_inv(double nu, double Thetae, double Ne, double B, double theta)
 {
 	double j;
@@ -37,7 +38,9 @@ __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double 
 		     double theta)
 {
 	double j, bnu;
-
+	#if(SPHERE_TEST)
+	theta = 1;
+	#endif
 	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta);
 	bnu = GPU_Bnu_inv(nu, Thetae);
 	if (j > 0){

@@ -23,6 +23,7 @@ __host__ void init_storage(void)
 }
 
 
+
 // __host__ void init_data(char *fname)
 // {
 // 	FILE *fp;
@@ -197,16 +198,19 @@ __host__ void init_storage(void)
 
 __host__ void init_data(char *fname)
 {
-	double Rin = log(1.e-2);
-	double Rout = log(2.);
-	double th_in = 0.01;
+	double Rin = 1.e-2/L_UNIT;
+	double Rout = 10000./L_UNIT;
+	#if(exponential_coordinates)
+	Rin = log(Rin);
+	Rout = log(Rout);
+	#endif
+	double th_in = 0.0001;
 	double th_out = M_PI;
-	double two_temp_gam, V, dV;
+	double two_temp_gam;
 	double r, h;
 	double x[4];
-	double sphere_radius = 1.;
+	double sphere_radius = 1./ L_UNIT;
 	double Ne_value, B_value, thetae_value;
-	double gdet;
 	int i,j,k;
 
 	/*sphere parameters*/
@@ -217,8 +221,8 @@ __host__ void init_data(char *fname)
 	thetae_value = 100.;
 
 	/*grid parameters*/
-	N1 = 16256;
-	N2 = 1024;
+	N1 = 8128;
+	N2 = 128;
 	N3 = 1;
 	dx[1] = (Rout - Rin)/N1;
 	dx[2] = (th_out - th_in)/N2;
@@ -249,14 +253,12 @@ __host__ void init_data(char *fname)
 	dMact = 0.;
 	Ladv = 0.;
 	bias_norm = 0.;
-	V = 0.;
-	dV = dx[1] * dx[2] * dx[3];
 	for (k = 0; k < N1 * N2 * N3; k++) {
 		// z = 0;
 		j = k % N2;
 		i = (k - j) / N2;
 		x[1] = startx[1] + i * dx[1];
-		x[2] = startx[2] + i * dx[2];
+		x[2] = startx[2] + j * dx[2];
 
 		bl_coord(x, &r, &h);
 
@@ -282,7 +284,7 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
 	bias_norm = 0.0/0.0; //producing a nan so we don't account for scattering
-	fprintf(stderr, "bias_norm = %le, V = %le\n", bias_norm, V);
+	fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 
 
@@ -312,15 +314,16 @@ __device__ int GPU_stop_criterion(struct of_photon *ph)
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
 	#if(exponential_coordinates)
-	//X1min = log(RMIN);
+	X1min = log(RMIN);
 	X1max = log(RMAX);
 	#else
-	//X1min = RMIN;
+	X1min = RMIN;
 	X1max = RMAX;	/* this is coordinate and simulation specific: stop at large distance */
 	#endif				   
 
-	// if (ph->X[1] < X1min)
-	// return 1;
+	//printf("X1: %le, X1max:%le\n", ph->X[1], X1max);
+	if (ph->X[1] < X1min)
+	return 1;
 
 
 	if (ph->X[1] > X1max) {
@@ -407,11 +410,28 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	/*Flat space in spherical coordinates for the test*/							
 	gcov[0][0] = -1.;
 	gcov[1][1] = 1.;
-	gcov[2][2] = pow(r, 2.);
-	gcov[3][3] = pow(r * sin(th), 2.);
+	gcov[2][2] = r * r;
+	if(th == 0){
+		gcov[3][3] = 0.;
+	}else{
+		gcov[3][3] = r * r * sin(th) * sin(th);
+	}
+
 	#if(exponential_coordinates)
-		gcov[1][1] *= r * r;
+		gcov[1][1] = r * r;
 	#endif
+
+	//if gcov is inf or is nan, print out the coordinates
+	if(isnan(gcov[0][0]) || isnan(gcov[1][1]) || isnan(gcov[2][2]) || isnan(gcov[3][3])){
+		printf("Inside gcov_func, NaN quantity!\n");
+		printf("r = %le, th = %le\n", r, th);
+		printf("gcov[0][0] = %le, gcov[1][1] = %le, gcov[2][2] = %le, gcov[3][3] = %le\n", gcov[0][0], gcov[1][1], gcov[2][2], gcov[3][3]);
+	}
+	if(isinf(gcov[0][0]) || isinf(gcov[1][1]) || isinf(gcov[2][2]) || isinf(gcov[3][3])){
+		printf("Inside gcov_func, infinity quantity\n");
+		printf("r = %le, th = %le\n", r, th);
+		printf("gcov[0][0] = %le, gcov[1][1] = %le, gcov[2][2] = %le, gcov[3][3] = %le\n", gcov[0][0], gcov[1][1], gcov[2][2], gcov[3][3]);
+	}
 
 }
 
@@ -427,6 +447,7 @@ __host__ double dOmega_func(double x2i, double x2f)
 /* return boyer-lindquist coordinate of point */
 __host__ __device__ void bl_coord(double *X, double *r, double *th)
 {
+	
 	#if(exponential_coordinates)
 		*r = exp(X[1]);
 		*th = X[2];

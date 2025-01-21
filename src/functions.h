@@ -49,6 +49,8 @@ __device__ static double GPU_linear_interp_weight(double nu);
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu);
 __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
+__host__ __device__ double planck_function(double nu);
+
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
                                 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
                                 double Ecov[NDIM][NDIM]);
@@ -80,6 +82,11 @@ __device__ double GPU_get_fluid_nu(double X[4], double K[4], double Ucov[NDIM]);
 __device__ double GPU_alpha_inv_scatt(double nu, double Thetae, double Ne, double * d_table_ptr);
 __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double B,
                                     double theta);
+
+__device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
+                                          struct of_geom *d_geom, double ThetaS, 
+                                          double *d_dx, int d_Ns_par);
+
 __device__ double GPU_bias_func(double Te, double w);
 __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[]);
 __device__ double GPU_stepsize(double X[NDIM], double K[NDIM]);
@@ -132,6 +139,7 @@ __host__ double gdet_func(double gcov[][NDIM]);
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 __host__ void init_hotcross(void);
 __host__ void init_weight_table(void);
+__host__ void init_weight_table_blackbody(void);
 __host__ void init_emiss_tables(void);
 __host__ void init_nint_table(void);
 __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, double * p, const char * filename);
