@@ -222,9 +222,6 @@ __host__ __device__ double K2_eval(double Thetae)
 #define KFAC	(9*M_PI*ME*CL/EE)
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 {
-	#if(SCATTERING_TEST)
-		return planck_function(nu);
-	#else
 	double K, x;
 	
 	K = KFAC * nu / (Bmag * Thetae * Thetae);
@@ -237,7 +234,6 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 	} else {
 		return linear_interp_F(K);
 	}
-	#endif
 }
 
 

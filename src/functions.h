@@ -49,7 +49,6 @@ __device__ static double GPU_linear_interp_weight(double nu);
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu);
 __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
                                 double theta);
-__host__ __device__ double planck_function(double nu);
 
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
                                 double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],

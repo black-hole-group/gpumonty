@@ -13,22 +13,26 @@ double gdet_func(double gcov[][NDIM])
 //   #if(SPHERE_TEST)
 //     return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
 //   #else
-  double d;
-	int k, l, signum;
-	if (gsl_gcov == NULL) {
-		gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
-		gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
-		perm = gsl_permutation_alloc(NDIM);
-	}
 
-	DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
+  #ifdef SCATTERING_TEST
+    return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
+  #else
+    double d;
+    int k, l, signum;
+    if (gsl_gcov == NULL) {
+      gsl_gcov = gsl_matrix_alloc(NDIM, NDIM);
+      gsl_gcon = gsl_matrix_alloc(NDIM, NDIM);
+      perm = gsl_permutation_alloc(NDIM);
+    }
 
-	gsl_linalg_LU_decomp(gsl_gcov, perm, &signum);
+    DLOOP gsl_matrix_set(gsl_gcov, k, l, gcov[k][l]);
 
-	d = gsl_linalg_LU_det(gsl_gcov, signum);
+    gsl_linalg_LU_decomp(gsl_gcov, perm, &signum);
 
-	return (sqrt(fabs(d)));
-  //#endif
+    d = gsl_linalg_LU_det(gsl_gcov, signum);
+
+    return (sqrt(fabs(d)));
+  #endif
 }
 
 __host__  __device__ int LU_decompose( double A[][NDIM], int permute[] )

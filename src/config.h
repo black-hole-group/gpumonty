@@ -58,7 +58,7 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.2e6)/*In solar UNITs*/
+#define MBH (4.2e2)/*In solar UNITs*/
 #define M_UNIT (1.) /*Find this based on the rho_scale parameter for HAMR sims*/
 
 

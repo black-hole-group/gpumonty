@@ -198,18 +198,33 @@ __host__ void init_storage(void)
 
 __host__ void init_data(char *fname)
 {
-	double Rin = 1.e-2/L_UNIT;
-	double Rout = 10000./L_UNIT;
+
+	/*Resolution*/
+	N1 = 1024;
+	N2 = 128;
+	N3 = 1;
+	
+	double Rin = 0.01/L_UNIT;
+	double Rout = 1.e4/L_UNIT;
 	#if(exponential_coordinates)
-	Rin = log(Rin);
-	Rout = log(Rout);
+	double Xin = log(Rin);
+	double Xout = log(Rout);
+	#else
+	double Xin = Rin;
+	double Xout = Rout;
 	#endif
+	double sphere_radius = 1./ L_UNIT;
+	double sphere_x = log(sphere_radius);
+
+	//This way sphere_r index i = 10;
+	int r_index = 200;
+	Xin = (r_index * Xout/N1 - sphere_x) * N1/(r_index - N1);
+
 	double th_in = 0.0001;
 	double th_out = M_PI;
 	double two_temp_gam;
 	double r, h;
 	double x[4];
-	double sphere_radius = 1./ L_UNIT;
 	double Ne_value, B_value, thetae_value;
 	int i,j,k;
 
@@ -221,14 +236,12 @@ __host__ void init_data(char *fname)
 	thetae_value = 100.;
 
 	/*grid parameters*/
-	N1 = 1024;
-	N2 = 128;
-	N3 = 1;
-	dx[1] = (Rout - Rin)/N1;
+	dx[1] = (Xout - Xin)/N1;
+	printf("X_calc =%le, sphere_x = %le\n", (Xin + r_index * dx[1]), sphere_x);
 	dx[2] = (th_out - th_in)/N2;
 	dx[3] =  2 * M_PI;
 	startx[0] = 0.;
-	startx[1] = Rin;
+	startx[1] = Xin;
 	startx[2] = th_in;
 	startx[3] = 0.;
 	stopx[0] = 1.;
@@ -264,7 +277,7 @@ __host__ void init_data(char *fname)
 
 		bl_coord(x, &r, &h);
 
-		p[NPRIM_INDEX(KRHO,k)] = tau/((Rout - sphere_radius)* L_UNIT * SIGMA_THOMSON);
+		p[NPRIM_INDEX(KRHO,k)] = tau/((exp(Rout) - (sphere_radius))* L_UNIT * SIGMA_THOMSON) * 1/NE_UNIT;
 		p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
 		#if(exponential_coordinates)
 			p[NPRIM_INDEX(B1,k)] = 0.;
@@ -277,7 +290,7 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U2,k)] = 0.;
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	bias_norm = 100000; //producing a nan so we don't account for scattering
+	bias_norm = 1.e18; 
 	fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 
@@ -405,11 +418,7 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[0][0] = -1.;
 	gcov[1][1] = 1.;
 	gcov[2][2] = r * r;
-	if(th == 0){
-		gcov[3][3] = 0.;
-	}else{
-		gcov[3][3] = r * r * sin(th) * sin(th);
-	}
+	gcov[3][3] = r * r * sin(th) * sin(th);
 
 	#if(exponential_coordinates)
 		gcov[1][1] = r * r;

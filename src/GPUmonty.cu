@@ -348,33 +348,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	return;
 }
 
-__host__ __device__ double planck_function(double nu) {
-	double theta_s = 1e-8;
-    // Convert dimensionless temperature Ts to physical temperature
-    double T = theta_s * ME * CL * CL/HPL;  // Temperature in Kelvin (me*c^2/k = 511000 K)
-    
-    // Calculate x = h*nu/(k*T)
-    double x = HPL * nu / (KBOL * T);
-    
-    // Prevent overflow in exponential
-    if (x > 700.0) {
-		printf("It's overflowing probably\n");
-        return 0.0;
-    }
-    
-    // Calculate Planck spectrum: 2h*nu^3/c^2 * 1/(exp(h*nu/kT) - 1)
-    double prefactor = 2.0 * HPL * nu * nu * nu / (CL * CL);
-    double denominator = exp(x) - 1.0;
-    
-    // Handle numerical issues for very small x
-    if (x < 1e-8) {
-        return prefactor * (1.0/x);  // Rayleigh-Jeans limit
-    }
-    
-    // Return photon number spectrum (not energy spectrum)
-    // Convert from energy density to photon number density by dividing by h*nu
-    return prefactor/ denominator;
-}
+
 
 __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
 {
@@ -485,22 +459,29 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
     
 	double temperature = ThetaS * ME * CL * CL / kb;
     
-	// get fluid zone radius
-	double X1 = d_startx[1] + (i+0.5)*d_dx[1];
-	double r = exp(X1) * L_UNIT;
-	//only emit photons at r lower than 1
-	if (r > 1){
+	if (i != 200){
 		*n2gen = 0;
 		*dnmax = 0;
 		return;
 	}
+	// //only emit photons at r equal 1 cm
+	// double x1_sphere_radius = log(1./L_UNIT);
+	// double x1 = d_startx[1] + i * d_dx[1];
 
+	// //if x1 is between the sphere radius and the sphere radius - dx1, emit photons
+	// //also if x1 is between the sphere radius and the sphere radius + dx1, emit photons
+	// if (x1 < x1_sphere_radius - d_dx[1] || x1 > x1_sphere_radius + d_dx[1]){
+	// 	*n2gen = 0;
+	// 	*dnmax = 0;
+	// 	return;
+	// }
+	// double proportional_factor = fabs(x1 - x1_sphere_radius)/(d_dx[1]);
     // Integrate over frequency to get total number of photons
     for (int l = 0; l <= N_ESAMP; l++) {
         double nu = exp(l * dlnu + lnu_min);
         
         // Planck function (photons per frequency per volume)
-        double dn = 8.0 *  M_PI * nu * nu * nu / (c * c) * (1./(exp(h * nu/(kb * temperature)) - 1.0))/(exp(d_wgt[l]) + 1e-100);
+        double dn = (M_PI) * 2 * nu * nu * nu / (c * c) * (1./(exp(h * nu/(kb * temperature)) - 1.0))/(exp(d_wgt[l]) + 1.e-100);
         
         // Track maximum for importance sampling
         if (dn > *dnmax) {
@@ -512,17 +493,18 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
     }
     
     // Scale by volume element
-    double volume = d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT;
-    double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * ninterp * volume;
+	double gdet_area = sqrt(d_geom[SPATIAL_INDEX2D(i,j)].gcov[2][2] * d_geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
+    double area = d_dx[2] * d_dx[3] * L_UNIT * L_UNIT;
+    double nz = gdet_area * ninterp * area;
     
-    // Safety check for unreasonably large photon numbers
-    if (nz > d_Ns_par * log(NUMAX/NUMIN)) {
-        printf("Warning: Too many photons in zone (%d,%d): nz=%le, gdet = %le, T=%le K, NUMAX = %le, max = %le, dnmax = %le\n", 
-               i, j, nz, d_geom[SPATIAL_INDEX2D(i,j)].g, temperature, NUMAX, d_Ns_par * log(NUMAX/NUMIN), *dnmax);
-        *n2gen = 0.;
-        *dnmax = 0.;
-        return;
-    }
+    // // Safety check for unreasonably large photon numbers
+    // if (nz > d_Ns_par * log(NUMAX/NUMIN)) {
+    //     printf("Warning: Too many photons in zone (%d,%d): nz=%le, gdet = %le, T=%le K, NUMAX = %le, max = %le, dnmax = %le\n", 
+    //            i, j, nz, d_geom[SPATIAL_INDEX2D(i,j)].g, temperature, NUMAX, d_Ns_par * log(NUMAX/NUMIN), *dnmax);
+    //     *n2gen = 0.;
+    //     *dnmax = 0.;
+    //     return;
+    // }
     
     // Probabilistic rounding for fractional photons
     if (fmod(nz, 1.0) > GPU_monty_rand()) {
@@ -634,7 +616,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 		do {
 			nu = exp(GPU_monty_rand() * Nln + lnu_min);
 			weight = GPU_linear_interp_weight(nu);
-			conditioner = 8.0 *  M_PI * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
+			conditioner = (M_PI) * 2.0 * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
 			test = GPU_monty_rand();
 
 		} while (test >  conditioner);
@@ -1081,17 +1063,18 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			/* scattering optical depth along step */
 			if (bound_flag || nu < 0.) {
 				dtau_scatt =
-				    0.5 * alpha_scatti * dtauK * dl;
+					0.5 * (alpha_scatti) * dtauK * dl;
 				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
-				alpha_scatti = alpha_absi = 0.;
 				bias = 0.;
 				bi = 0.;
 			} else {
 				alpha_scattf =
 				    GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+
 				dtau_scatt =
 				    0.5 * (alpha_scatti +
 					   alpha_scattf) * dtauK * dl;
+
 				alpha_scatti = alpha_scattf;
 				/* absorption optical depth along step */
 				alpha_absf =
@@ -1111,7 +1094,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
-			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+
+			//printf("bias = %le, dtau_scatt = %le, bias * dtau_scatt = %le, x1 = %le, php.w = %le\n", bias, dtau_scatt, bias * dtau_scatt, x1, php.w);
+			if(0){
+			//if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
@@ -1350,7 +1336,7 @@ __device__ double GPU_bias_func(double Te, double w)
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
 		bias =
-			1/1000. * 100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
+			100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
 					(avg_num_scatt + 2));
 
 		//bias = Te * Te/(d_bias_norm * d_max_tau_scatt * 2.);

@@ -70,6 +70,7 @@ void init_weight_table_blackbody(void)
 {
     int i, j, k, l;
     double ThetaS = 1.e-8;
+	int lstart, lend, myid, nthreads;
     double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
     double temperature = ThetaS * ME * CL * CL / KBOL;
     
@@ -87,35 +88,47 @@ void init_weight_table_blackbody(void)
         nu[i] = exp(i * dlnu + lnu_min);
     }
 
-    /* Volume element factor √(-g)ΔtΔ³x */
+    /* Volume element factor √(-g)ΔtΔ²x */
     double dt = 1.0; // Time step
-    double volume_element = dt * dx[1] * dx[2] * dx[3] * L_UNIT * L_UNIT * L_UNIT;
+    double area_element = dt * dx[2] * dx[3] * L_UNIT * L_UNIT;
 
     /* Sequential computation of emission */
-    for (i = 0; i < N1; i++) {
-        for (j = 0; j < N2; j++) {
-            for (k = 0; k < N3; k++) {
-                /* Get metric determinant */
-                double g = geom[SPATIAL_INDEX2D(i, j)].g;
+    //I'm setting i = 100 as R = 1/L_UNIT
+	i = 200;
+	#pragma omp parallel private(i,j,k, l, lstart, lend,myid,nthreads)
+	{
+		nthreads = omp_get_num_threads();
+		myid = omp_get_thread_num();
+		lstart = myid * (N_ESAMP / nthreads);
+		lend = (myid + 1) * (N_ESAMP / nthreads);
+		if (myid == nthreads - 1)
+			lend = N_ESAMP + 1;
+		
+		for (j = 0; j < N2; j++) {
+			for (k = 0; k < N3; k++) {
+				
+				/* Get metric determinant for area*/
+				double g = sqrt(geom[SPATIAL_INDEX2D(i, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
 
-                /* Calculate emission for each frequency */
-                for (l = 0; l <= N_ESAMP; l++) {
-                    /* Planck function for photon number density (this is dS¹) */
-                    double dS = 8.0 * M_PI * HPL * nu[l] * nu[l] * nu[l] / 
-                                (CL * CL * CL) * 1.0 / (exp(HPL * nu[l] / (KBOL * temperature)) - 1.0);
+				/* Calculate emission for each frequency */
+				for (l = lstart; l < lend; l++){	
+					double dS = (M_PI) * 2.0 * HPL * nu[l] * nu[l] * nu[l] / 
+								(CL * CL) * 1.0 / (exp(HPL * nu[l] / (KBOL * temperature)) - 1.0);
 
-                    /* Add to sum with proper weight formula components */
-                    sum[l] += g * volume_element * dlnu * dS;
-                }
-            }
-        }
-    }
+					/* Add to sum with proper weight formula components */
+					sum[l] += g * area_element * dlnu * dS;
+				}
+			}
+		}
+
+		#pragma omp barrier
+	}
 
     /* Calculate final weights */
-    for (i = 0; i <= N_ESAMP; i++) {
-        wgt[i] = log(sum[i] / (HPL * Ns)); // Ns is Nsuper in your notation
-    }
-
+#pragma omp parallel for schedule(static) private(i)
+	for (i = 0; i <= N_ESAMP; i++){
+		wgt[i] = log(sum[i] / (HPL * Ns));
+	}
     fprintf(stderr, "done.\n\n");
     fflush(stderr);
     return;
