@@ -340,7 +340,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
 		//GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
-		GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, 1e-8, d_dx, d_Ns);
+		GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
 		generated_photons_arr[a] = generated_photons;
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
@@ -440,7 +440,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 }
 
 __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
-                                          struct of_geom *d_geom, double ThetaS, 
+                                          struct of_geom *d_geom, 
                                           double *d_dx, int d_Ns_par) 
 {
     // Constants
@@ -456,14 +456,15 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
     // Initialize variables
     double ninterp = 0.0;
     *dnmax = 0.0;
-    
-	double temperature = ThetaS * ME * CL * CL / kb;
+    double ThetaS = 1e-8;
+	double temperature =  1e-8* ME * CL * CL / kb;
     
 	if (i != 200){
 		*n2gen = 0;
 		*dnmax = 0;
 		return;
 	}
+	//Change i to consider the whole volume of the cloud
 	// //only emit photons at r equal 1 cm
 	// double x1_sphere_radius = log(1./L_UNIT);
 	// double x1 = d_startx[1] + i * d_dx[1];
@@ -497,6 +498,11 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
     double area = d_dx[2] * d_dx[3] * L_UNIT * L_UNIT;
     double nz = gdet_area * ninterp * area;
     
+	//print all the quantities to calculate nz
+	printf("gdet = %le, ninterp = %le, area = %le, nz = %le\n", gdet_area, ninterp, area, nz);
+
+
+
     // // Safety check for unreasonably large photon numbers
     // if (nz > d_Ns_par * log(NUMAX/NUMIN)) {
     //     printf("Warning: Too many photons in zone (%d,%d): nz=%le, gdet = %le, T=%le K, NUMAX = %le, max = %le, dnmax = %le\n", 
@@ -1095,10 +1101,12 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			x1 = -log(GPU_monty_rand());
 			php.w = ph->w / bias;
 
-			//printf("bias = %le, dtau_scatt = %le, bias * dtau_scatt = %le, x1 = %le, php.w = %le\n", bias, dtau_scatt, bias * dtau_scatt, x1, php.w);
-			if(0){
-			//if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
-
+			#ifdef SCATTERING_TEST
+			dtau_abs = 0;
+			dtau_scatt = 1e-4;
+			#endif
+			//if (0){
+			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
 						"w isnan in track_super_photon: Ne, bias, ph->w, php.w  %g, %g, %g, %g\n",
@@ -1140,6 +1148,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				ph->dKdlam[2] = dKi[2];
 				ph->dKdlam[3] = dKi[3];
 				ph->E0s = E0;
+				
 
 				/* Get plasma parameters at new position */
 				gcov_func(ph->X, Gcov);
@@ -1307,13 +1316,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
-	#if(SPHERE_TEST)
-	if (*B != 1){
-		*B = 1;
-	}
-	#endif
-	//printf("Ne = %le, Thetae = %le, B = %le, Ucon: (%le, %le, %le, %le), Bcon: (%le, %le, %le, %le)\n", *Ne, *Thetae, *B, Ucon[0], Ucon[1], Ucon[2], Ucon[3], 
-	//Bcon[0], Bcon[1], Bcon[2], Bcon[3]);
+
 }
 
 
@@ -1322,13 +1325,12 @@ __device__ double GPU_bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
 
-	#if(0)
+	#if(1)
 		max = 0.5 * w / WEIGHT_MIN;
 		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
 		if (bias > max){
 			bias = max;
 		}
-		//printf("bias = %le, %le, %le, %le, %le\n", bias, d_bias_norm, Te, d_max_tau_scatt, max);
 		return bias;
 	#else
 		//return 1;

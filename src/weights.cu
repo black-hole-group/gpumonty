@@ -93,7 +93,7 @@ void init_weight_table_blackbody(void)
     double area_element = dt * dx[2] * dx[3] * L_UNIT * L_UNIT;
 
     /* Sequential computation of emission */
-    //I'm setting i = 100 as R = 1/L_UNIT
+    //I'm setting i = 200 as R = 1/L_UNIT
 	i = 200;
 	#pragma omp parallel private(i,j,k, l, lstart, lend,myid,nthreads)
 	{

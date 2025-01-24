@@ -2,7 +2,7 @@
 
 #define exponential_coordinates (1)
 /* Range of superphoton frequencies */
-#define NUMIN 1.e6
+#define NUMIN 1.e8
 #define NUMAX 1.e22
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
@@ -13,10 +13,10 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
+#define WEIGHT_MIN	(1.e6)
 
 /*for stop criterium*/
-#define RMAX	(10000./L_UNIT) //Define the maximum radius up to track the photon
+#define RMAX	(1.e5/L_UNIT) //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 //RMIN for sphere model only

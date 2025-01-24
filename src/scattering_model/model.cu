@@ -205,7 +205,7 @@ __host__ void init_data(char *fname)
 	N3 = 1;
 	
 	double Rin = 0.01/L_UNIT;
-	double Rout = 1.e4/L_UNIT;
+	double Rout = 1.e5/L_UNIT;
 	#if(exponential_coordinates)
 	double Xin = log(Rin);
 	double Xout = log(Rout);
@@ -233,7 +233,7 @@ __host__ void init_data(char *fname)
 	a = 0.;
 	Ne_value = 1.e20/NE_UNIT; /*in 1/cm^3*/
 	B_value = 1./B_UNIT; /*in G*/
-	thetae_value = 100.;
+	thetae_value = 4.;
 
 	/*grid parameters*/
 	dx[1] = (Xout - Xin)/N1;
@@ -277,7 +277,7 @@ __host__ void init_data(char *fname)
 
 		bl_coord(x, &r, &h);
 
-		p[NPRIM_INDEX(KRHO,k)] = tau/((exp(Rout) - (sphere_radius))* L_UNIT * SIGMA_THOMSON) * 1/NE_UNIT;
+		p[NPRIM_INDEX(KRHO,k)] = tau/(((Rout) - (sphere_radius))* L_UNIT * SIGMA_THOMSON) * 1/NE_UNIT;
 		p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
 		#if(exponential_coordinates)
 			p[NPRIM_INDEX(B1,k)] = 0.;
@@ -290,7 +290,7 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U2,k)] = 0.;
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	bias_norm = 1.e18; 
+	bias_norm = 1.; 
 	fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 

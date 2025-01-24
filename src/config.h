@@ -24,15 +24,15 @@
 
 
 /* spectral bin parameters */
-#define	dlE (0.01) //Size of the energy bin
+#define	dlE (0.1) //Size of the energy bin
 //#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
 #define lE0	(log(1.e-13)) //Minimum energy of the energy bin
 
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 2000
-#define N_EBINS 2000
+#define N_ESAMP 400
+#define N_EBINS 400
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6

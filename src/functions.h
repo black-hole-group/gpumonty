@@ -83,7 +83,7 @@ __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double 
                                     double theta);
 
 __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
-                                          struct of_geom *d_geom, double ThetaS, 
+                                          struct of_geom *d_geom,  
                                           double *d_dx, int d_Ns_par);
 
 __device__ double GPU_bias_func(double Te, double w);
