@@ -82,7 +82,7 @@ __device__ double GPU_alpha_inv_scatt(double nu, double Thetae, double Ne, doubl
 __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double B,
                                     double theta);
 
-__device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
+__device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long long *n2gen, double *dnmax, 
                                           struct of_geom *d_geom,  
                                           double *d_dx, int d_Ns_par);
 

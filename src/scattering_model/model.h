@@ -3,7 +3,7 @@
 #define exponential_coordinates (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e22
+#define NUMAX 1.e14
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3

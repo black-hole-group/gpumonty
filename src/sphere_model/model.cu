@@ -259,7 +259,6 @@ __host__ void init_data(char *fname)
 		i = (k - j) / N2;
 		x[1] = startx[1] + i * dx[1];
 		x[2] = startx[2] + j * dx[2];
-
 		bl_coord(x, &r, &h);
 
 		if(r < sphere_radius){

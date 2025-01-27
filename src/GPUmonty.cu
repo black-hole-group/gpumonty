@@ -324,7 +324,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 }
 
 __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, unsigned long long * generated_photons_arr, double * dnmax_arr){
-	int generated_photons;
+	unsigned long long generated_photons;
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -439,7 +439,7 @@ __device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, s
 	return;
 }
 
-__device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, double *dnmax, 
+__device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long long *n2gen, double *dnmax, 
                                           struct of_geom *d_geom, 
                                           double *d_dx, int d_Ns_par) 
 {
@@ -464,7 +464,6 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
 		*dnmax = 0;
 		return;
 	}
-	//Change i to consider the whole volume of the cloud
 	// //only emit photons at r equal 1 cm
 	// double x1_sphere_radius = log(1./L_UNIT);
 	// double x1 = d_startx[1] + i * d_dx[1];
@@ -478,6 +477,7 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
 	// }
 	// double proportional_factor = fabs(x1 - x1_sphere_radius)/(d_dx[1]);
     // Integrate over frequency to get total number of photons
+
     for (int l = 0; l <= N_ESAMP; l++) {
         double nu = exp(l * dlnu + lnu_min);
         
@@ -492,15 +492,11 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
         // Integrate over frequency
         ninterp += dlnu * dn;
     }
-    
+    i = d_N1 - 1;
     // Scale by volume element
 	double gdet_area = sqrt(d_geom[SPATIAL_INDEX2D(i,j)].gcov[2][2] * d_geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
     double area = d_dx[2] * d_dx[3] * L_UNIT * L_UNIT;
     double nz = gdet_area * ninterp * area;
-    
-	//print all the quantities to calculate nz
-	printf("gdet = %le, ninterp = %le, area = %le, nz = %le\n", gdet_area, ninterp, area, nz);
-
 
 
     // // Safety check for unreasonably large photon numbers
@@ -514,9 +510,9 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, int *n2gen, doub
     
     // Probabilistic rounding for fractional photons
     if (fmod(nz, 1.0) > GPU_monty_rand()) {
-        *n2gen = (int)(nz) + 1;
+        *n2gen = (unsigned long long)(nz) + 1;
     } else {
-        *n2gen = (int)(nz);
+        *n2gen = (unsigned long long)(nz);
     }
 }
 
@@ -997,7 +993,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	gcov_func(ph->X, Gcov);
 	GPU_get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
 			 Bcov, d_p);
-
 	theta = GPU_get_bk_angle(ph->X, ph->K, Ucov, Bcov, B);
 	nu = GPU_get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
@@ -1099,12 +1094,13 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			}
 
 			x1 = -log(GPU_monty_rand());
-			php.w = ph->w / bias;
+			php.w =  ph->w / bias;
 
-			#ifdef SCATTERING_TEST
-			dtau_abs = 0;
-			dtau_scatt = 1e-4;
-			#endif
+			// #ifdef SCATTERING_TEST
+			// dtau_abs = 0;
+			// klein_nishina = GPU_kappa_es();
+			// dtau_scatt = Ne * klein_nishina * dl;
+			// #endif
 			//if (0){
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
@@ -1324,10 +1320,11 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 __device__ double GPU_bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
-
-	#if(1)
+	return 3.;
+	#if(0)
 		max = 0.5 * w / WEIGHT_MIN;
 		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
+		//printf("bias = %le, dbiasnorm * ... = %le\n", bias, d_bias_norm * Te * Te/d_max_tau_scatt);
 		if (bias > max){
 			bias = max;
 		}
@@ -1338,7 +1335,8 @@ __device__ double GPU_bias_func(double Te, double w)
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
 		bias =
-			100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
+		//factor of 100 became 4.
+			4. * Te * Te / (d_bias_norm * d_max_tau_scatt *
 					(avg_num_scatt + 2));
 
 		//bias = Te * Te/(d_bias_norm * d_max_tau_scatt * 2.);
@@ -1347,6 +1345,7 @@ __device__ double GPU_bias_func(double Te, double w)
 			bias = TP_OVER_TE;
 		if (bias > max)
 			bias = max;
+		//printf("bias = %le, max = %le, avg_num_scatt = %le\n", bias, max, avg_num_scatt);
 		return bias / TP_OVER_TE;
 	#endif
 }
@@ -1778,14 +1777,12 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 // }
 
 
-
 __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM])
 {
 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
 	int k;
 
 	/* quality control */
-
 	if (isnan(ph->K[1])) {
 		printf("scatter: bad input photon, the program should exit itself\n");
 		//exit(0);
@@ -2126,14 +2123,22 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 
 	/* unit vector 1 for scattering coordinate system is
 	   oriented along initial photon wavevector */
-	v0x = ke[1] / ke[0];
-	v0y = ke[2] / ke[0];
-	v0z = ke[3] / ke[0];
+	// v0x = ke[1] / ke[0];
+	// v0y = ke[2] / ke[0];
+	// v0z = ke[3] / ke[0];
 
+	// Explicitly compute kemag instead of using ke[0] to ensure that photon
+  	// is created normalized and doesn't inherit light cone errors from the
+  	// original superphoton
+	double kemag = sqrt(ke[1]*ke[1] + ke[2]*ke[2] + ke[3]*ke[3]);
+	v0x = ke[1]/kemag;
+	v0y = ke[2]/kemag;
+	v0z = ke[3]/kemag;
+	
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
 	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction(&n0x, &n0y, &n0z);
+	generate_random_direction(&n0x, &n0y, &n0z); /*This currently matches gsl function used*/
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -2268,15 +2273,7 @@ __device__ double GPU_klein_nishina(double a, double ap)
 
 	return (kn);
 }
-// __device__ void generate_random_direction(double * x, double *y, double *z) {
-//     double u = GPU_monty_rand();
-//     double v = GPU_monty_rand();
-//     double w = GPU_monty_rand();
-//     double length = sqrt(u*u + v*v + w*w);
-//     *x = u / length;
-//     *y = v / length;
-//     *z = w / length;
-// }
+
 
 __device__ void generate_random_direction(double *x, double *y, double *z)
 {
