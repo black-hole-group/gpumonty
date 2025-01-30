@@ -83,7 +83,7 @@ void init_weight_table_blackbody(void)
     double dlnu = (lnu_max - lnu_min) / N_ESAMP; // This is Δln ν
 
     /* Initialize arrays */
-    for (i = 0; i <= N_ESAMP; i++) {
+    for (int i = 0; i <= N_ESAMP; i++) {
         sum[i] = 0.0;
         nu[i] = exp(i * dlnu + lnu_min);
     }
@@ -94,9 +94,7 @@ void init_weight_table_blackbody(void)
 
     /* Sequential computation of emission */
     //I'm setting i = 200 as R = 1./L_UNIT
-	i = 200;
-	i = N1 - 1;
-	#pragma omp parallel private(i,j,k, l, lstart, lend,myid,nthreads)
+	#pragma omp parallel private(i, j,k, l, lstart, lend,myid,nthreads)
 	{
 		nthreads = omp_get_num_threads();
 		myid = omp_get_thread_num();
@@ -104,12 +102,14 @@ void init_weight_table_blackbody(void)
 		lend = (myid + 1) * (N_ESAMP / nthreads);
 		if (myid == nthreads - 1)
 			lend = N_ESAMP + 1;
-		
+		int index = N1 - 1;
+		// //index = 200;
+		//printf("index = %d\n", index);
 		for (j = 0; j < N2; j++) {
 			for (k = 0; k < N3; k++) {
 				
 				/* Get metric determinant for area*/
-				double g = 1.e15 * sqrt(geom[SPATIAL_INDEX2D(i, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
+				double g = 2.e2 * sqrt(geom[SPATIAL_INDEX2D(index, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(index,j)].gcov[3][3]);
 
 				/* Calculate emission for each frequency */
 				for (l = lstart; l < lend; l++){	
@@ -129,7 +129,7 @@ void init_weight_table_blackbody(void)
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++){
 		wgt[i] = log(sum[i] / (HPL * Ns));
-		//printf("wgt[%d] = %e\n", i, wgt[i]);
+		printf("wgt[%d] = %e\n", i, wgt[i]);
 	}
     fprintf(stderr, "done.\n\n");
     fflush(stderr);

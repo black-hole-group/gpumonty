@@ -235,8 +235,8 @@ __host__ void init_data(char *fname)
 	/*sphere parameters*/
 	gam = 13./9.;
 	a = 0.;
-	Ne_value = 1.e20/NE_UNIT; /*in 1/cm^3*/
-	B_value = 1./B_UNIT; /*in G*/
+	//Ne_value = 1.e20/NE_UNIT; /*in 1/cm^3*/
+	//B_value = 1./B_UNIT; /*in G*/
 	thetae_value = 4.;
 
 	/*grid parameters*/
@@ -270,7 +270,6 @@ __host__ void init_data(char *fname)
 	Ladv = 0.;
 	bias_norm = 0.;
 	double tau = 1.e-4;
-	double thetae = 4.;
 	for (k = 0; k < N1 * N2 * N3; k++) {
 		// z = 0;
 		j = k % N2;
@@ -278,12 +277,14 @@ __host__ void init_data(char *fname)
 		x[1] = startx[1] + i * dx[1];
 		x[2] = startx[2] + j * dx[2];
 		bl_coord(x, &r, &h);
-		if(k == 0){
-			fprintf(stderr, "x1 = %le, x2 = %le\n", x[1], x[2]);
-			printf("startx[1] = %le, startx[2] = %le\n", startx[1], startx[2]);
+		if(r > sphere_radius){
+			p[NPRIM_INDEX(KRHO,k)] = tau/(((Rout) - (sphere_radius))* L_UNIT * SIGMA_THOMSON) * 1/NE_UNIT;
+			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
+		}else{
+			p[NPRIM_INDEX(KRHO,k)] = 0.;
+			p[NPRIM_INDEX(UU,k)] = 0.;
 		}
-		p[NPRIM_INDEX(KRHO,k)] = tau/(((Rout) - (sphere_radius))* L_UNIT * SIGMA_THOMSON) * 1/NE_UNIT;
-		p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
+
 		p[NPRIM_INDEX(B1,k)] = 0.;
 		p[NPRIM_INDEX(B2,k)] = 0.;
 		p[NPRIM_INDEX(B3,k)] = 0.;

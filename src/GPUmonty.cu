@@ -457,7 +457,7 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long lo
     double ninterp = 0.0;
     *dnmax = 0.0;
     double ThetaS = 1e-8;
-	double temperature =  1e-8* ME * CL * CL / kb;
+	double temperature =  ThetaS* ME * CL * CL / kb;
     
 	if (i != 200){
 		*n2gen = 0;
@@ -663,13 +663,11 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 		}
 		GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
 	}
-
 	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph[ph_arr_index].K);
 	K_tetrad[0] *= -1.;
 	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
 
 	ph[ph_arr_index].E = ph[ph_arr_index].E0 = ph[ph_arr_index].E0s = -tmpK[0];
-
 	ph[ph_arr_index].L = tmpK[3];
 	ph[ph_arr_index].tau_scatt = 0.;
 	ph[ph_arr_index].tau_abs = 0.;
@@ -710,6 +708,7 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 	double thetaeUnit = Thetae_unit;
 
 	#endif
+
 	*Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
 	*Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * thetaeUnit;
 
@@ -746,6 +745,12 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
 
+	#if SCATTERING_TEST
+		*Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
+		*Thetae = 4.;
+		*B = 0;
+		return;
+	#endif
 
 	if (isnan(*B)){
 		printf("i = %d, j = %d, k = %d\n", i, j, k);
@@ -950,9 +955,6 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 
 
-__device__ int switchup = 0;
-__device__ int global_indexphoton = 0;
-__device__ int flag = 0;
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition)
 {
@@ -970,7 +972,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
 	    Bcov[NDIM];
 	int nstep = 0;
-	int local_flag = 0;
 	/* quality control */
 	if (isnan(ph->X[0]) ||
 	    isnan(ph->X[1]) ||
@@ -1096,11 +1097,13 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			x1 = -log(GPU_monty_rand());
 			php.w =  ph->w / bias;
 
-			// #ifdef SCATTERING_TEST
-			// dtau_abs = 0;
-			// klein_nishina = GPU_kappa_es();
-			// dtau_scatt = Ne * klein_nishina * dl;
-			// #endif
+			#ifdef SCATTERING_TEST
+			dtau_abs = 0;
+			//klein_nishina = GPU_kappa_es();
+			//dtau_scatt *= 1e-4;
+			//dtau_scatt = 1e-4 * Ne * nu * SIGMA_THOMSON * dl * dtauK;
+			//dtau_scatt = 1./2. * GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr) * dl * dtauK;
+			#endif
 			//if (0){
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
@@ -1256,6 +1259,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 		return;
 	}
+
 	// Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
 	//Xtoij(X, &i, &j, del);
 	GPU_Xtoijk(X, &i, &j, &k, del);
@@ -1313,6 +1317,13 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
+	#if SCATTERING_TEST
+		*Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
+		*Thetae = 4.;
+		*B = 0;
+		return;
+	#endif
+
 }
 
 
@@ -1320,15 +1331,14 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 __device__ double GPU_bias_func(double Te, double w)
 {
 	double bias, max, avg_num_scatt;
-	return 3.;
-	#if(0)
+	#if(1)
 		max = 0.5 * w / WEIGHT_MIN;
 		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
 		//printf("bias = %le, dbiasnorm * ... = %le\n", bias, d_bias_norm * Te * Te/d_max_tau_scatt);
 		if (bias > max){
 			bias = max;
 		}
-		return bias;
+		return 1e-12 * bias;
 	#else
 		//return 1;
 		max = 0.5 * w / WEIGHT_MIN;

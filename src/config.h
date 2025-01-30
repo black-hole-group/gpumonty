@@ -158,7 +158,7 @@
 
 /*This define the numbers of scatterins per photon. This is just an approximate to allocate memory, if you don't know, just leave it equal 1.*/
 /*If this number is very large and you are still getting invalid memory access, it means that something is wrong with bias, prob*/
-#define SCATTERINGS_PER_PHOTON (5) 
+#define SCATTERINGS_PER_PHOTON (100) 
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
