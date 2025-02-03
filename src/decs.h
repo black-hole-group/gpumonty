@@ -82,6 +82,8 @@ do not edit with multiple threads, unless we know what we are doing*/
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ unsigned long long sc_ph_next;
 	extern __device__ unsigned long long sc_ph_current;
+	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
+
 #endif
 
 #ifndef CPUGLOBALS
@@ -114,7 +116,7 @@ do not edit with multiple threads, unless we know what we are doing*/
 	extern double dMsim;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
-
+	
 
 	extern gsl_rng *r;
 

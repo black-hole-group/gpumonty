@@ -50,6 +50,9 @@ __host__ void init_model(char *args[])
 	fprintf(stderr, "L,T,M: %g %g %g\n", L_UNIT, T_UNIT, M_UNIT);
 	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_UNIT, U_UNIT, B_UNIT);
 	max_tau_scatt = (6. * L_UNIT) * RHO_UNIT * 0.4;
+	#ifdef SCATTERING_TEST
+		max_tau_scatt = 1.e-2;
+	#endif
 	fprintf(stderr, "Initial max_tau_scatt: %g\n", max_tau_scatt);
 
 
@@ -74,8 +77,8 @@ __host__ void init_model(char *args[])
 	init_emiss_tables();
 
 	/* make table for superphoton weights */
-	//init_weight_table();
-	init_weight_table_blackbody();
+	init_weight_table();
+	//init_weight_table_blackbody();
 	/* make table for quick evaluation of ns_zone */
 	init_nint_table();
 

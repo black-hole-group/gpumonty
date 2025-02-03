@@ -292,7 +292,7 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U2,k)] = 0.;
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	bias_norm = 1.e3; 
+	bias_norm =1./4. * 1./4.; 
 	fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 

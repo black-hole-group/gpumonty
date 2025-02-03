@@ -153,23 +153,23 @@ __host__ void init_data(char *fname)
 		check_scan_error(fread(&Ucov[2], double_size, 1, fp), 1);
 		//fprintf(stderr, "Ucov2[%d, %d] = %le\n", i, j, Ucov[2]);
 		check_scan_error(fread(&Ucov[3], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
-		// check_scan_error(fread(&Bcon[0], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[0]);
-		// check_scan_error(fread(&Bcon[1], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[1]);
-		// check_scan_error(fread(&Bcon[2], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[2]);
-		// check_scan_error(fread(&Bcon[3], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[3]);
-		// check_scan_error(fread(&Bcov[0], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		// check_scan_error(fread(&Bcov[1], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		// check_scan_error(fread(&Bcov[2], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
-		// check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
-		// //fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+		//fprintf(stderr, "Ucov3[%d, %d] = %le\n", i, j, Ucov[3]);
+		check_scan_error(fread(&Bcon[0], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[0]);
+		check_scan_error(fread(&Bcon[1], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[1]);
+		check_scan_error(fread(&Bcon[2], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[2]);
+		check_scan_error(fread(&Bcon[3], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Bcon[3]);
+		check_scan_error(fread(&Bcov[0], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+		check_scan_error(fread(&Bcov[1], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+		check_scan_error(fread(&Bcov[2], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
+		check_scan_error(fread(&Bcov[3], double_size, 1, fp), 1);
+		//fprintf(stderr, "Ucon0[%d, %d] = %le\n", i, j, Ucon[0]);
 		check_scan_error(fread(&gdet, double_size, 1, fp), 1);
 		bias_norm += dV * gdet * pow(p[NPRIM_INDEX(UU,k)] / p[NPRIM_INDEX(KRHO,k)] * Thetae_unit, 2.);
         V += dV * gdet;
@@ -307,6 +307,9 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	#else
 	double bhspin = a;
 	#endif
+	if(bhspin == 0.0){
+		printf("bhspin is zero\n");
+	}
 	sth = sin(th);
 	cth = cos(th);
 	s2 = sth * sth;

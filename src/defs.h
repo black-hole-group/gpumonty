@@ -39,6 +39,7 @@ double nint[NINT + 1];
 double K2[N_ESAMP + 1];
 double dndlnu_max[NINT + 1];
 
+__device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 
 __device__ double d_table[NW + 1][NT + 1];
 

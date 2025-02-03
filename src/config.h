@@ -24,15 +24,15 @@
 
 
 /* spectral bin parameters */
-#define	dlE (0.1) //Size of the energy bin
+#define	dlE (0.25) //Size of the energy bin
 //#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
-#define lE0	(log(1.e-13)) //Minimum energy of the energy bin
+#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
 
 
 /*Number of energy bins (I don't quite know the difference between the two)*/
 //Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 400
-#define N_EBINS 400
+#define N_ESAMP 200
+#define N_EBINS 200
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
@@ -58,15 +58,15 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.2e2)/*In solar UNITs*/
-#define M_UNIT (1.) /*Find this based on the rho_scale parameter for HAMR sims*/
-
-
+#define MBH (10)/*In solar UNITs*/
+//#define RHO_UNIT (3.e-6) /* UNIT of density*/
+//#define M_UNIT (RHO_UNIT * L_UNIT * L_UNIT * L_UNIT) /*Find this based on the rho_scale parameter for HAMR sims*/
+#define M_UNIT (3.e10)
+#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 
 /*Units based off the mass of the blackhole and the Unit of mass*/
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
 #define T_UNIT (L_UNIT/CL) /*UNIT of time*/
-#define RHO_UNIT (M_UNIT / pow(L_UNIT, 3)) /* UNIT of density*/
 #define U_UNIT (RHO_UNIT * CL * CL) /*UNITy of energy density*/
 #define B_UNIT (CL * sqrt(4. * M_PI * RHO_UNIT)) /*Unit of magnetig field*/
 #define NE_UNIT (RHO_UNIT/(MP + ME)) /*Unit of electron density*/
@@ -158,7 +158,7 @@
 
 /*This define the numbers of scatterins per photon. This is just an approximate to allocate memory, if you don't know, just leave it equal 1.*/
 /*If this number is very large and you are still getting invalid memory access, it means that something is wrong with bias, prob*/
-#define SCATTERINGS_PER_PHOTON (100) 
+#define SCATTERINGS_PER_PHOTON (1) 
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
@@ -166,7 +166,7 @@
 #define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
-#define MAX_LAYER_SCA (4)
+#define MAX_LAYER_SCA (8)
 
 /*for stepsize*/
 #define EPS (0.04)
@@ -178,3 +178,6 @@
 
 /*track super photon max number of steps*/
 #define MAXNSTEP (1280000)
+
+/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
+#define SPHERE_TEST (0)

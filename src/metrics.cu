@@ -10,13 +10,13 @@ gsl_permutation *perm;
 /* assumes gcov has been set first; returns determinant */
 double gdet_func(double gcov[][NDIM])
 {
-//   #if(SPHERE_TEST)
-//     return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
-//   #else
+  #ifdef SPHERE_TEST
+    return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
+  #endif
 
   #ifdef SCATTERING_TEST
     return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
-  #else
+  #endif
     double d;
     int k, l, signum;
     if (gsl_gcov == NULL) {
@@ -32,7 +32,6 @@ double gdet_func(double gcov[][NDIM])
     d = gsl_linalg_LU_det(gsl_gcov, signum);
 
     return (sqrt(fabs(d)));
-  #endif
 }
 
 __host__  __device__ int LU_decompose( double A[][NDIM], int permute[] )
@@ -275,7 +274,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon[][NDIM])
 {
 	int k, l;
-	#if(SPHERE_TEST)
+	#ifdef SPHERE_TEST
 	DLOOP gcon[k][l] = 0.;
 	/*Flat space in spherical coordinates for the test*/
 
@@ -320,7 +319,8 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 		//transformation for Kerr-Schild -> modified Kerr-Schild 
 		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
 
-		#if(HAMR)
+		#ifdef HAMR
+    printf("HAMR not supported\n");
 		hfac = M_PI;
 		#endif
 

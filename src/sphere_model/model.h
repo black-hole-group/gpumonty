@@ -22,7 +22,6 @@
 //RMIN for sphere model only
 #define RMIN (1e-2/L_UNIT)
 
-#define HAMR (0)
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)

@@ -62,7 +62,7 @@ __host__ __device__ double linear_interp_K2(double Thetae);
 __host__ __device__ double K2_eval(double Thetae);
 __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM]);
 __device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM]);
-__device__  void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
+__device__  void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par);
 
 /*track super photon and its dependencies*/
 __device__ void GPU_copy_survivor(struct of_scattering * survivor, int bound_flag, double dtau_scatt, double d_tau_abs, double dtau, double bi, double bf, double alpha_scatti, double alpha_scattf, double alpha_absi, double alpha_absf, double dl, double x1, double nu, double Thetae, double Ne, double B, double theta, double dtauK, double frac, double bias, double Xi[], double Ki[], double dKi[], double E0, double Gcov[][NDIM], double Ucon[], double Ucov[], double Bcon[], double Bcov[], int nstep, struct of_photon * ph);
@@ -86,7 +86,7 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long lo
                                           struct of_geom *d_geom,  
                                           double *d_dx, int d_Ns_par);
 
-__device__ double GPU_bias_func(double Te, double w);
+__device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[]);
 __device__ double GPU_stepsize(double X[NDIM], double K[NDIM]);
 __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM],
@@ -99,7 +99,6 @@ __device__ double GPU_sample_y_distr(double Thetae);
 __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e);
 __device__ double GPU_sample_mu_distr(double beta_e);
 __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4]);
-__device__ double generate_chi_square(int df);
 __device__ double chi_square(int df);
 __device__ void GPU_boost(double v[4], double u[4], double vp[4]);
 __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int arraySize, unsigned long long photon_index);

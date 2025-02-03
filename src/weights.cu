@@ -109,7 +109,7 @@ void init_weight_table_blackbody(void)
 			for (k = 0; k < N3; k++) {
 				
 				/* Get metric determinant for area*/
-				double g = 2.e2 * sqrt(geom[SPATIAL_INDEX2D(index, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(index,j)].gcov[3][3]);
+				double g = sqrt(geom[SPATIAL_INDEX2D(index, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(index,j)].gcov[3][3]);
 
 				/* Calculate emission for each frequency */
 				for (l = lstart; l < lend; l++){	
@@ -129,7 +129,6 @@ void init_weight_table_blackbody(void)
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++){
 		wgt[i] = log(sum[i] / (HPL * Ns));
-		printf("wgt[%d] = %e\n", i, wgt[i]);
 	}
     fprintf(stderr, "done.\n\n");
     fflush(stderr);

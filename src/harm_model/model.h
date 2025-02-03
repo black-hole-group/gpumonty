@@ -14,16 +14,11 @@
 #define WEIGHT_MIN	(0)
 
 /*for stop criterium*/
-#define RMAX	1.e3 //Define the maximum radius up to track the photon
+#define RMAX	100 //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
-//RMIN for sphere model only
-#define RMIN (1.e-2)
 
-/*HAMR switch for model shared functions*/
-#define HAMR (0)
-/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (1)
+
 
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS

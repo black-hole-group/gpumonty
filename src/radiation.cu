@@ -38,7 +38,7 @@ __device__ double GPU_alpha_inv_abs(double nu, double Thetae, double Ne, double 
 		     double theta)
 {
 	double j, bnu;
-	#if(SPHERE_TEST)
+	#ifdef SPHERE_TEST
 	theta = 1;
 	#endif
 	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta);

@@ -4,7 +4,6 @@
 /*GLOBAL VARIABLES*/
 /*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just
 do not edit with multiple threads, unless we know what we are doing*/
-__device__ curandState my_curand_state[1792 * N_THREADS]; // Array of curandState structures
 
 struct of_scattering{
 	int bound_flag;
@@ -339,8 +338,8 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
-		//GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
-		GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
+		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
+		//GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
 		generated_photons_arr[a] = generated_photons;
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
@@ -350,7 +349,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 
 
-__device__ void GPU_init_zone(int i, int j, int k, int * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
+__device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
@@ -684,17 +683,6 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 
 
 
-__device__ void GPU_init_monty_rand(int seed) {
-    int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    curand_init(seed, tid, 0, &my_curand_state[tid]);
-}
-
-__device__ double GPU_monty_rand() {
-	int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    return curand_uniform_double(&my_curand_state[tid]);
-}
-
-
 
 __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
 		    double Ucon[NDIM], double Bcon[NDIM], struct of_geom * d_geom, double * d_p)
@@ -745,7 +733,7 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
 
-	#if SCATTERING_TEST
+	#ifdef SCATTERING_TEST
 		*Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
 		*Thetae = 4.;
 		*B = 0;
@@ -988,7 +976,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		return;
 	}
 
-	dtauK = L_UNIT / (ME * CL * CL / HPL);
+	dtauK = 2 * M_PI * L_UNIT / (ME * CL * CL / HPL);
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -998,7 +986,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	nu = GPU_get_fluid_nu(ph->X, ph->K, Ucov);
 	alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
 	alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta);
-	bi = GPU_bias_func(Thetae, ph->w);
+	bi = GPU_bias_func(Thetae, ph->w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
 	
@@ -1065,18 +1053,17 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 			/* scattering optical depth along step */
 			if (bound_flag || nu < 0.) {
 				dtau_scatt =
-					0.5 * (alpha_scatti) * dtauK * dl;
+					0.5 * alpha_scatti * dtauK * dl;
 				dtau_abs = 0.5 * alpha_absi * dtauK * dl;
+				alpha_scatti = alpha_absi = 0.;
 				bias = 0.;
 				bi = 0.;
 			} else {
 				alpha_scattf =
 				    GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-
 				dtau_scatt =
 				    0.5 * (alpha_scatti +
 					   alpha_scattf) * dtauK * dl;
-
 				alpha_scatti = alpha_scattf;
 				/* absorption optical depth along step */
 				alpha_absf =
@@ -1088,7 +1075,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 				alpha_absi = alpha_absf;
 
-				bf = GPU_bias_func(Thetae, ph->w);
+				bf = GPU_bias_func(Thetae, ph->w, round_scat);
 				bias = 0.5 * (bi + bf);
 				bi = bf;
 
@@ -1096,15 +1083,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			x1 = -log(GPU_monty_rand());
 			php.w =  ph->w / bias;
-
-			#ifdef SCATTERING_TEST
-			dtau_abs = 0;
-			//klein_nishina = GPU_kappa_es();
-			//dtau_scatt *= 1e-4;
-			//dtau_scatt = 1e-4 * Ne * nu * SIGMA_THOMSON * dl * dtauK;
-			//dtau_scatt = 1./2. * GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr) * dl * dtauK;
-			#endif
-			//if (0){
+			//if(0){
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
 				if (isnan(php.w) || isinf(php.w)) {
 					printf(
@@ -1195,7 +1174,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 					    GPU_alpha_inv_abs(nu, Thetae, Ne,
 							  B, theta);
 				}
-				bi = GPU_bias_func(Thetae, ph->w);
+				bi = GPU_bias_func(Thetae, ph->w, round_scat);
 
 				ph->tau_abs += dtau_abs;
 				ph->tau_scatt += dtau_scatt;
@@ -1317,7 +1296,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 	*B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
 		  Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
-	#if SCATTERING_TEST
+	#ifdef SCATTERING_TEST
 		*Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
 		*Thetae = 4.;
 		*B = 0;
@@ -1328,25 +1307,26 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 
 
-__device__ double GPU_bias_func(double Te, double w)
+__device__ double GPU_bias_func(double Te, double w, int round_scatt)
 {
 	double bias, max, avg_num_scatt;
-	#if(1)
+	#if(0)
 		max = 0.5 * w / WEIGHT_MIN;
-		bias = MAX(1, d_bias_norm * Te * Te/d_max_tau_scatt);
-		//printf("bias = %le, dbiasnorm * ... = %le\n", bias, d_bias_norm * Te * Te/d_max_tau_scatt);
+		//bias = Te * Te /(5. *d_max_tau_scatt);
+		bias = fmax(1., d_bias_norm * Te * Te/d_max_tau_scatt);
+
 		if (bias > max){
 			bias = max;
 		}
-		return 1e-12 * bias;
+
+		return bias;
 	#else
-		//return 1;
+		return 1;
 		max = 0.5 * w / WEIGHT_MIN;
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
 		bias =
-		//factor of 100 became 4.
-			4. * Te * Te / (d_bias_norm * d_max_tau_scatt *
+			100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
 					(avg_num_scatt + 2));
 
 		//bias = Te * Te/(d_bias_norm * d_max_tau_scatt * 2.);
@@ -1394,7 +1374,7 @@ __device__ double GPU_stepsize(double X[NDIM], double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
-	#if(HAMR)
+	#ifdef HAMR
 		double x2_normal, stopx2_normal;
 		x2_normal = (1. + X[2])/2.;
 		stopx2_normal = 1.; 
@@ -1879,8 +1859,8 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 	}
 
 	if (php->K[0] < 0) {
-		printf("K0, K0p, Kp, P[0]: %g %g %g %g\n",
-			K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
+		// printf("K0, K0p, Kp, P[0]: %g %g %g %g\n",
+		// 	K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
 		php->w = 0.;
 		return;
 	}
@@ -2007,7 +1987,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
-	phi = GPU_monty_rand() * 2. * M_PI;	/* orient uniformly */
+	phi = GPU_monty_rand() * 2. * M_PI;	/* orient uniformly */  
 	sphi = sin(phi);
 	cphi = cos(phi);
 	cth = mu;
@@ -2065,13 +2045,13 @@ __device__ double GPU_sample_y_distr(double Thetae)
 	do {
 		x1 = GPU_monty_rand();
 		if (x1 < pi_3) {
-			x = generate_chi_square( 3);
+			x = chi_square(3);
 		} else if (x1 < pi_3 + pi_4) {
-			x = generate_chi_square( 4);
+			x = chi_square(4);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = generate_chi_square( 5);
+			x = chi_square(5);
 		} else {
-			x = generate_chi_square( 6);
+			x = chi_square(6);
 		}
 
 		/* this translates between defn of distr in
@@ -2087,18 +2067,7 @@ __device__ double GPU_sample_y_distr(double Thetae)
 	} while (x2 >= prob);
 	return (y);
 }
-__device__ double generate_chi_square(int df) {
-        return chi_square( df);
-}
-__device__ double chi_square(int df) {
-	int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    double sum = 0.0f;
-    for (int i = 0; i < df; ++i) {
-        double normal_variate = curand_normal(&my_curand_state[tid]);
-        sum += normal_variate * normal_variate;
-    }
-    return sum;
-}
+
 __device__ double GPU_sample_mu_distr(double beta_e)
 {
 	double mu, x1, det;
@@ -2120,7 +2089,6 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
-
 	GPU_boost(k, p, ke);
 	if (ke[0] > 1.e-4) {
 		k0p = GPU_sample_klein_nishina( ke[0]);
@@ -2284,33 +2252,6 @@ __device__ double GPU_klein_nishina(double a, double ap)
 	return (kn);
 }
 
-
-__device__ void generate_random_direction(double *x, double *y, double *z)
-{
-	double s, a;
-
-	/* This is a variant of the algorithm for computing a random point
-	* on the unit sphere; the algorithm is suggested in Knuth, v2,
-	* 3rd ed, p136; and attributed to Robert E Knop, CACM, 13 (1970),
-	* 326.
-	*/
-
-	/* Begin with the polar method for getting x,y inside a unit circle
-	*/
-	do
-	{
-		*x = -1 + 2 * GPU_monty_rand();
-		*y = -1 + 2 * GPU_monty_rand();
-		s = (*x) * (*x) + (*y) * (*y);
-	}
-	while (s > 1.0);
-
-	*z = -1 + 2 * s;              /* z uniformly distributed from -1 to 1 */
-	a = 2 * sqrt (1 - s);         /* factor to adjust x,y so that x^2+y^2
-									* is equal to 1-z^2 */
-	*x *= a;
-	*y *= a;
-}
 __device__ double GPU_interp_scalar(double *var, int mmenemonics, int i, int j, int k, double coeff[8]){
 	double interp;
 
@@ -2341,7 +2282,7 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
 
 	d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph->tau_scatt);
     // Bin in x2 coordinate
-	#if(HAMR)
+	#ifdef HAMR
 		dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
 		ix2 = ((ph->X[2]) < 0) ? (int)((1 +ph->X[2]) / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
 	#else
