@@ -53,7 +53,7 @@ classical thermal synchrotron limit
 good for Thetae > 1
 
 */
-#if(SCATTERING_TEST)
+#ifdef SCATTERING_TEST
 __host__ __device__ double jnu_bnu(double nu, double Thetae)
 {
 
@@ -75,7 +75,7 @@ __host__ __device__ double jnu_bnu(double nu, double Thetae)
 __host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
 		 double theta)
 {
-	#if(SCATTERING_TEST)
+	#ifdef SCATTERING_TEST
 	return jnu_bnu(nu, Thetae);
 
 	#else
@@ -188,6 +188,7 @@ __host__ void init_emiss_tables(void)
 		//if(k < 10)
 		//printf("K = %.12f, result = %.12f, table = %.12f\n", K, result, log(4 * M_PI * result));
 	}
+
 	gsl_integration_workspace_free(w);
 
 	/*  build table for quick evaluation of the bessel function K2 for emissivity */
@@ -241,7 +242,6 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 
 __host__ __device__ double linear_interp_F(double K)
 {
-	//K = 160.75741686406892;
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
 	dlK = 1./dlK;
@@ -262,7 +262,6 @@ __host__ __device__ double linear_interp_F(double K)
 	result = exp((1. - di) * Ftable[i] + di * Ftable[i + 1]);
 	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
 	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
-	//printf("linear_interp = %le, %le, %lf, %d\n", result, K, di, i);
 	return result;
 }
 __host__ __device__ double linear_interp_K2(double Thetae)

@@ -320,7 +320,6 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
 
 		#ifdef HAMR
-    printf("HAMR not supported\n");
 		hfac = M_PI;
 		#endif
 
@@ -358,272 +357,272 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 // 	DLOOP gcon[k][l] = gsl_matrix_get(gsl_gcon, k, l);
 // }
 
-#define DEL (1.e-7)
-__device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
-{
-	/* required by broken math.h */
-	//void sincos(double th, double *sth, double *cth);
-	// #if(SPHERE_TEST)
-  	// double r1, th;
-	// 	r1 = X[1];
-	// 	th = X[2];
-
-	// 	for (int i = 0; i < NDIM; i++)
-	// 			for (int j = 0; j < NDIM; j++)
-	// 					for (int k = 0; k < NDIM; k++)
-	// 						conn[i][j][k] = 0.;
-	// 	/*Taken from https://arxiv.org/pdf/0904.4184*/
-	// 	conn[1][2][2] = -r1;
-	// 	conn[2][3][3] = - sin(th) * cos(th);
-	// 	conn[1][3][3] = - r1 * pow(sin(th), 2.);
-	// 	conn[3][1][3] = 1./r1;
-	// 	conn[3][3][1] = 1./r1;
-	// 	conn[2][2][1] = 1./r1; 
-	// 	conn[2][1][2] = 1./r1; 
-	// 	conn[3][2][3] = 1/tan(th);
-	// 	conn[3][3][2] = 1/tan(th);
-	// #else
-    double tmp[NDIM][NDIM][NDIM];
-    double Xh[NDIM], Xl[NDIM];
-    double gcon[NDIM][NDIM];
-    double gcov[NDIM][NDIM];
-    double gh[NDIM][NDIM];
-    double gl[NDIM][NDIM];
-
-    gcov_func(X, gcov);
-    gcon_func(X, gcov, gcon);
-
-    // take partial derivatives of metric
-    for (int k = 0; k < NDIM; k++) {
-      for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
-      for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
-      Xh[k] += DEL;
-      Xl[k] -= DEL;
-      gcov_func(Xh, gh);
-      gcov_func(Xl, gl);
-
-      for (int i = 0; i < NDIM; i++){
-        for (int j = 0; j < NDIM; j++){
-          conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
-        }
-      }
-    }
-
-    // Rearrange to find \Gamma_{ijk}
-    for (int i = 0; i < NDIM; i++)
-      for (int j = 0; j < NDIM; j++)
-        for (int k = 0; k < NDIM; k++)
-          tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
-
-    // G_{ijk} -> G^i_{jk}
-    for (int i = 0; i < NDIM; i++) {
-      for (int j = 0; j < NDIM; j++) {
-        for (int k = 0; k < NDIM; k++) {
-          conn[i][j][k] = 0.;
-          for (int l = 0; l < NDIM; l++) 
-            conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
-        }
-      }
-    }
-  //#endif
-}
-#undef DEL
-
-
-// __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
+// #define DEL (1.e-7)
+// __device__ void GPU_get_connection(double X[NDIM], double conn[NDIM][NDIM][NDIM])
 // {
-// 	#if(SPHERE_TEST)
-// 		double r1, th;
-// 		bl_coord(X, &r1, &th);
-// 		for (int i = 0; i < NDIM; i++)
-// 				for (int j = 0; j < NDIM; j++)
-// 						for (int k = 0; k < NDIM; k++)
-// 							lconn[i][j][k] = 0.;
-// 		/*Taken from https://arxiv.org/pdf/0904.4184*/
-// 		lconn[1][2][2] = -r1;
-// 		lconn[2][3][3] = - sin(th) * cos(th);
-// 		lconn[1][3][3] = - r1 * pow(sin(th), 2.);
-// 		lconn[3][1][3] = 1./r1;
-// 		lconn[3][3][1] = 1./r1;
-// 		lconn[2][2][1] = 1./r1; 
-// 		lconn[2][1][2] = 1./r1; 
-// 		lconn[3][2][3] = 1/tan(th);
-// 		lconn[3][3][2] = 1/tan(th);
-
-// 	#else
-// 	double r1, r2, r3, r4;
-// 	double th, dthdx2, dthdx22, d2thdx22, sth, cth, sth2, cth2, sth4,
-// 	    cth4, s2th, c2th;
-// 	double a2, a3, a4, rho2, irho2, rho22, irho22, rho23, irho23,
-// 	    irho23_dthdx2;
-// 	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
-// 	    a4cth4;
 // 	/* required by broken math.h */
 // 	//void sincos(double th, double *sth, double *cth);
+// 	// #if(SPHERE_TEST)
+//   	// double r1, th;
+// 	// 	r1 = X[1];
+// 	// 	th = X[2];
 
-// 	r1 = exp(X[1]);
-// 	r2 = r1 * r1;
-// 	r3 = r2 * r1;
-// 	r4 = r3 * r1;
+// 	// 	for (int i = 0; i < NDIM; i++)
+// 	// 			for (int j = 0; j < NDIM; j++)
+// 	// 					for (int k = 0; k < NDIM; k++)
+// 	// 						conn[i][j][k] = 0.;
+// 	// 	/*Taken from https://arxiv.org/pdf/0904.4184*/
+// 	// 	conn[1][2][2] = -r1;
+// 	// 	conn[2][3][3] = - sin(th) * cos(th);
+// 	// 	conn[1][3][3] = - r1 * pow(sin(th), 2.);
+// 	// 	conn[3][1][3] = 1./r1;
+// 	// 	conn[3][3][1] = 1./r1;
+// 	// 	conn[2][2][1] = 1./r1; 
+// 	// 	conn[2][1][2] = 1./r1; 
+// 	// 	conn[3][2][3] = 1/tan(th);
+// 	// 	conn[3][3][2] = 1/tan(th);
+// 	// #else
+//     double tmp[NDIM][NDIM][NDIM];
+//     double Xh[NDIM], Xl[NDIM];
+//     double gcon[NDIM][NDIM];
+//     double gcov[NDIM][NDIM];
+//     double gh[NDIM][NDIM];
+//     double gl[NDIM][NDIM];
 
+//     gcov_func(X, gcov);
+//     gcon_func(X, gcov, gcon);
 
-// 	/* HARM-2D MKS */
-// 	#if(HAMR)
-// 		double x2_mod;
-// 		x2_mod = (X[2] + 1.)/2.;
-// 		th = M_PI * x2_mod;
-// 		dthdx2 = M_PI * (1./2.);
-// 		d2thdx22 = 0;
-// 	#else
-// 	double sx, cx;
-// 	sx = sin(2 * M_PI * X[2]);
-// 	cx = cos(2 * M_PI * X[2]);
-// 	th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
-// 	dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
-// 	d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
-// 	#endif
-// 	dthdx22 = dthdx2 * dthdx2;
+//     // take partial derivatives of metric
+//     for (int k = 0; k < NDIM; k++) {
+//       for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
+//       for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
+//       Xh[k] += DEL;
+//       Xl[k] -= DEL;
+//       gcov_func(Xh, gh);
+//       gcov_func(Xl, gl);
 
-// 	//sincos(th, &sth, &cth);
-// 	sth = sin(th);
-// 	cth = cos(th);
-// 	sth2 = sth * sth;
-// 	r1sth2 = r1 * sth2;
-// 	sth4 = sth2 * sth2;
-// 	cth2 = cth * cth;
-// 	cth4 = cth2 * cth2;
-// 	s2th = 2. * sth * cth;
-// 	c2th = 2 * cth2 - 1.;
+//       for (int i = 0; i < NDIM; i++){
+//         for (int j = 0; j < NDIM; j++){
+//           conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+//         }
+//       }
+//     }
 
-// 	a2 = d_a * d_a;
-// 	a2sth2 = a2 * sth2;
-// 	a2cth2 = a2 * cth2;
-// 	a3 = a2 * d_a;
-// 	a4 = a3 * d_a;
-// 	a4cth4 = a4 * cth4;
+//     // Rearrange to find \Gamma_{ijk}
+//     for (int i = 0; i < NDIM; i++)
+//       for (int j = 0; j < NDIM; j++)
+//         for (int k = 0; k < NDIM; k++)
+//           tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
 
-// 	rho2 = r2 + a2cth2;                
-// 	rho22 = rho2 * rho2;
-// 	rho23 = rho22 * rho2;
-// 	irho2 = 1. / rho2;
-// 	irho22 = irho2 * irho2;
-// 	irho23 = irho22 * irho2;
-// 	irho23_dthdx2 = irho23 / dthdx2;
-
-// 	fac1 = r2 - a2cth2;
-// 	fac1_rho23 = fac1 * irho23;
-// 	fac2 = a2 + 2 * r2 + a2 * c2th;
-// 	fac3 = a2 + r1 * (-2. + r1);
-
-// 	lconn[0][0][0] = 2. * r1 * fac1_rho23;
-// 	lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
-// 	lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
-// 	// printf("a2 = %le\n", a2);
-// 	// printf("r1 = %le\n", r1);
-// 	// printf("irho22 = %le\n", irho22);
-// 	// printf("s2th = %le\n", s2th);
-// 	// printf("dthdx2 = %le\n", dthdx2);
-
-// 	lconn[0][0][3] = -2. * d_a * r1sth2 * fac1_rho23;
-
-// 	//lconn[0][1][0] = lconn[0][0][1];
-// 	lconn[0][1][1] = 2. * r2 * (r4 + r1 * fac1 - a4cth4) * irho23;
-// 	lconn[0][1][2] = -a2 * r2 * s2th * dthdx2 * irho22;
-// 	lconn[0][1][3] =
-// 	    d_a * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
-
-// 	//lconn[0][2][0] = lconn[0][0][2];
-// 	//lconn[0][2][1] = lconn[0][1][2];
-// 	lconn[0][2][2] = -2. * r2 * dthdx22 * irho2;
-// 	lconn[0][2][3] = a3 * r1sth2 * s2th * dthdx2 * irho22;
-// 	//lconn[0][3][0] = lconn[0][0][3];
-// 	//lconn[0][3][1] = lconn[0][1][3];
-// 	//lconn[0][3][2] = lconn[0][2][3];
-// 	lconn[0][3][3] =
-// 	    2. * r1sth2 * (-r1 * rho22 + a2sth2 * fac1) * irho23;
-
-// 	lconn[1][0][0] = fac3 * fac1 / (r1 * rho23);
-// 	lconn[1][0][1] = fac1 * (-2. * r1 + a2sth2) * irho23;
-// 	lconn[1][0][2] = 0.;
-// 	lconn[1][0][3] = -d_a * sth2 * fac3 * fac1 / (r1 * rho23);
-
-// 	//lconn[1][1][0] = lconn[1][0][1];
-// 	lconn[1][1][1] =
-// 	    (r4 * (-2. + r1) * (1. + r1) +
-// 	     a2 * (a2 * r1 * (1. + 3. * r1) * cth4 + a4cth4 * cth2 +
-// 		   r3 * sth2 + r1 * cth2 * (2. * r1 + 3. * r3 -
-// 					    a2sth2))) * irho23;
-// 	lconn[1][1][2] = -a2 * dthdx2 * s2th / fac2;
-// 	lconn[1][1][3] =
-// 	    d_a * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
-// 			a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
-
-// 	//lconn[1][2][0] = lconn[1][0][2];
-// 	//lconn[1][2][1] = lconn[1][1][2];
-// 	lconn[1][2][2] = -fac3 * dthdx22 * irho2;
-// 	lconn[1][2][3] = 0.;
-
-// 	//lconn[1][3][0] = lconn[1][0][3];
-// 	//lconn[1][3][1] = lconn[1][1][3];
-// 	//lconn[1][3][2] = lconn[1][2][3];
-// 	lconn[1][3][3] =
-// 	    -fac3 * sth2 * (r1 * rho22 - a2 * fac1 * sth2) / (r1 * rho23);
-
-// 	lconn[2][0][0] = -a2 * r1 * s2th * irho23_dthdx2;
-// 	lconn[2][0][1] = r1 * lconn[2][0][0];
-// 	lconn[2][0][2] = 0.;
-// 	lconn[2][0][3] = d_a * r1 * (a2 + r2) * s2th * irho23_dthdx2;
-
-// 	//lconn[2][1][0] = lconn[2][0][1];
-// 	lconn[2][1][1] = r2 * lconn[2][0][0];
-// 	lconn[2][1][2] = r2 * irho2;
-// 	lconn[2][1][3] =
-// 	    (d_a * r1 * cth * sth *
-// 	     (r3 * (2. + r1) +
-// 	      a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 +
-// 		    2 * r1sth2))) * irho23_dthdx2;
-
-// 	//lconn[2][2][0] = lconn[2][0][2];
-// 	//lconn[2][2][1] = lconn[2][1][2];
-// 	lconn[2][2][2] =
-// 	    -a2 * cth * sth * dthdx2 * irho2 + d2thdx22 / dthdx2;
-
-// 	lconn[2][2][3] = 0.;
-
-// 	//lconn[2][3][0] = lconn[2][0][3];
-// 	//lconn[2][3][1] = lconn[2][1][3];
-// 	//lconn[2][3][2] = lconn[2][2][3];
-// 	lconn[2][3][3] =
-// 	    -cth * sth * (rho23 +
-// 			  a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) +
-// 			  2. * r1 * a4 * sth4) * irho23_dthdx2;
-
-// 	lconn[3][0][0] = d_a * fac1_rho23;
-// 	lconn[3][0][1] = r1 * lconn[3][0][0];
-// 	lconn[3][0][2] = -2. * d_a * r1 * cth * dthdx2 / (sth * rho22);
-// 	lconn[3][0][3] = -a2sth2 * fac1_rho23;
-
-// 	//lconn[3][1][0] = lconn[3][0][1];
-// 	lconn[3][1][1] = d_a * r2 * fac1_rho23;
-// 	lconn[3][1][2] =
-// 	    -2 * d_a * r1 * (a2 + 2 * r1 * (2. + r1) +
-// 			   a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
-// 	lconn[3][1][3] = r1 * (r1 * rho22 - a2sth2 * fac1) * irho23;
-
-// 	//lconn[3][2][0] = lconn[3][0][2];
-// 	//lconn[3][2][1] = lconn[3][1][2];
-// 	lconn[3][2][2] = -d_a * r1 * dthdx22 * irho2;
-// 	lconn[3][2][3] =
-// 	    dthdx2 * (0.25 * fac2 * fac2 * cth / sth +
-// 		      a2 * r1 * s2th) * irho22;
-
-// 	//lconn[3][3][0] = lconn[3][0][3];
-// 	//lconn[3][3][1] = lconn[3][1][3];
-// 	//lconn[3][3][2] = lconn[3][2][3];
-// 	lconn[3][3][3] = (-d_a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
-// 	#endif
-
+//     // G_{ijk} -> G^i_{jk}
+//     for (int i = 0; i < NDIM; i++) {
+//       for (int j = 0; j < NDIM; j++) {
+//         for (int k = 0; k < NDIM; k++) {
+//           conn[i][j][k] = 0.;
+//           for (int l = 0; l < NDIM; l++) 
+//             conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+//         }
+//       }
+//     }
+//   //#endif
 // }
+// #undef DEL
+
+
+__device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
+{
+	#ifdef SPHERE_TEST
+		double r1, th;
+		bl_coord(X, &r1, &th);
+		for (int i = 0; i < NDIM; i++)
+				for (int j = 0; j < NDIM; j++)
+						for (int k = 0; k < NDIM; k++)
+							lconn[i][j][k] = 0.;
+		/*Taken from https://arxiv.org/pdf/0904.4184*/
+		lconn[1][2][2] = -r1;
+		lconn[2][3][3] = - sin(th) * cos(th);
+		lconn[1][3][3] = - r1 * pow(sin(th), 2.);
+		lconn[3][1][3] = 1./r1;
+		lconn[3][3][1] = 1./r1;
+		lconn[2][2][1] = 1./r1; 
+		lconn[2][1][2] = 1./r1; 
+		lconn[3][2][3] = 1/tan(th);
+		lconn[3][3][2] = 1/tan(th);
+
+	#else
+	double r1, r2, r3, r4;
+	double th, dthdx2, dthdx22, d2thdx22, sth, cth, sth2, cth2, sth4,
+	    cth4, s2th, c2th;
+	double a2, a3, a4, rho2, irho2, rho22, irho22, rho23, irho23,
+	    irho23_dthdx2;
+	double fac1, fac1_rho23, fac2, fac3, a2cth2, a2sth2, r1sth2,
+	    a4cth4;
+	/* required by broken math.h */
+	//void sincos(double th, double *sth, double *cth);
+
+	r1 = exp(X[1]);
+	r2 = r1 * r1;
+	r3 = r2 * r1;
+	r4 = r3 * r1;
+
+
+	/* HARM-2D MKS */
+	#if(HAMR)
+		double x2_mod;
+		x2_mod = (X[2] + 1.)/2.;
+		th = M_PI * x2_mod;
+		dthdx2 = M_PI * (1./2.);
+		d2thdx22 = 0;
+	#else
+	double sx, cx;
+	sx = sin(2 * M_PI * X[2]);
+	cx = cos(2 * M_PI * X[2]);
+	th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
+	dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
+	d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
+	#endif
+	dthdx22 = dthdx2 * dthdx2;
+
+	//sincos(th, &sth, &cth);
+	sth = sin(th);
+	cth = cos(th);
+	sth2 = sth * sth;
+	r1sth2 = r1 * sth2;
+	sth4 = sth2 * sth2;
+	cth2 = cth * cth;
+	cth4 = cth2 * cth2;
+	s2th = 2. * sth * cth;
+	c2th = 2 * cth2 - 1.;
+
+	a2 = d_a * d_a;
+	a2sth2 = a2 * sth2;
+	a2cth2 = a2 * cth2;
+	a3 = a2 * d_a;
+	a4 = a3 * d_a;
+	a4cth4 = a4 * cth4;
+
+	rho2 = r2 + a2cth2;                
+	rho22 = rho2 * rho2;
+	rho23 = rho22 * rho2;
+	irho2 = 1. / rho2;
+	irho22 = irho2 * irho2;
+	irho23 = irho22 * irho2;
+	irho23_dthdx2 = irho23 / dthdx2;
+
+	fac1 = r2 - a2cth2;
+	fac1_rho23 = fac1 * irho23;
+	fac2 = a2 + 2 * r2 + a2 * c2th;
+	fac3 = a2 + r1 * (-2. + r1);
+
+	lconn[0][0][0] = 2. * r1 * fac1_rho23;
+	lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
+	lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
+	// printf("a2 = %le\n", a2);
+	// printf("r1 = %le\n", r1);
+	// printf("irho22 = %le\n", irho22);
+	// printf("s2th = %le\n", s2th);
+	// printf("dthdx2 = %le\n", dthdx2);
+
+	lconn[0][0][3] = -2. * d_a * r1sth2 * fac1_rho23;
+
+	//lconn[0][1][0] = lconn[0][0][1];
+	lconn[0][1][1] = 2. * r2 * (r4 + r1 * fac1 - a4cth4) * irho23;
+	lconn[0][1][2] = -a2 * r2 * s2th * dthdx2 * irho22;
+	lconn[0][1][3] =
+	    d_a * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
+
+	//lconn[0][2][0] = lconn[0][0][2];
+	//lconn[0][2][1] = lconn[0][1][2];
+	lconn[0][2][2] = -2. * r2 * dthdx22 * irho2;
+	lconn[0][2][3] = a3 * r1sth2 * s2th * dthdx2 * irho22;
+	//lconn[0][3][0] = lconn[0][0][3];
+	//lconn[0][3][1] = lconn[0][1][3];
+	//lconn[0][3][2] = lconn[0][2][3];
+	lconn[0][3][3] =
+	    2. * r1sth2 * (-r1 * rho22 + a2sth2 * fac1) * irho23;
+
+	lconn[1][0][0] = fac3 * fac1 / (r1 * rho23);
+	lconn[1][0][1] = fac1 * (-2. * r1 + a2sth2) * irho23;
+	lconn[1][0][2] = 0.;
+	lconn[1][0][3] = -d_a * sth2 * fac3 * fac1 / (r1 * rho23);
+
+	//lconn[1][1][0] = lconn[1][0][1];
+	lconn[1][1][1] =
+	    (r4 * (-2. + r1) * (1. + r1) +
+	     a2 * (a2 * r1 * (1. + 3. * r1) * cth4 + a4cth4 * cth2 +
+		   r3 * sth2 + r1 * cth2 * (2. * r1 + 3. * r3 -
+					    a2sth2))) * irho23;
+	lconn[1][1][2] = -a2 * dthdx2 * s2th / fac2;
+	lconn[1][1][3] =
+	    d_a * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
+			a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
+
+	//lconn[1][2][0] = lconn[1][0][2];
+	//lconn[1][2][1] = lconn[1][1][2];
+	lconn[1][2][2] = -fac3 * dthdx22 * irho2;
+	lconn[1][2][3] = 0.;
+
+	//lconn[1][3][0] = lconn[1][0][3];
+	//lconn[1][3][1] = lconn[1][1][3];
+	//lconn[1][3][2] = lconn[1][2][3];
+	lconn[1][3][3] =
+	    -fac3 * sth2 * (r1 * rho22 - a2 * fac1 * sth2) / (r1 * rho23);
+
+	lconn[2][0][0] = -a2 * r1 * s2th * irho23_dthdx2;
+	lconn[2][0][1] = r1 * lconn[2][0][0];
+	lconn[2][0][2] = 0.;
+	lconn[2][0][3] = d_a * r1 * (a2 + r2) * s2th * irho23_dthdx2;
+
+	//lconn[2][1][0] = lconn[2][0][1];
+	lconn[2][1][1] = r2 * lconn[2][0][0];
+	lconn[2][1][2] = r2 * irho2;
+	lconn[2][1][3] =
+	    (d_a * r1 * cth * sth *
+	     (r3 * (2. + r1) +
+	      a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 +
+		    2 * r1sth2))) * irho23_dthdx2;
+
+	//lconn[2][2][0] = lconn[2][0][2];
+	//lconn[2][2][1] = lconn[2][1][2];
+	lconn[2][2][2] =
+	    -a2 * cth * sth * dthdx2 * irho2 + d2thdx22 / dthdx2;
+
+	lconn[2][2][3] = 0.;
+
+	//lconn[2][3][0] = lconn[2][0][3];
+	//lconn[2][3][1] = lconn[2][1][3];
+	//lconn[2][3][2] = lconn[2][2][3];
+	lconn[2][3][3] =
+	    -cth * sth * (rho23 +
+			  a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) +
+			  2. * r1 * a4 * sth4) * irho23_dthdx2;
+
+	lconn[3][0][0] = d_a * fac1_rho23;
+	lconn[3][0][1] = r1 * lconn[3][0][0];
+	lconn[3][0][2] = -2. * d_a * r1 * cth * dthdx2 / (sth * rho22);
+	lconn[3][0][3] = -a2sth2 * fac1_rho23;
+
+	//lconn[3][1][0] = lconn[3][0][1];
+	lconn[3][1][1] = d_a * r2 * fac1_rho23;
+	lconn[3][1][2] =
+	    -2 * d_a * r1 * (a2 + 2 * r1 * (2. + r1) +
+			   a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
+	lconn[3][1][3] = r1 * (r1 * rho22 - a2sth2 * fac1) * irho23;
+
+	//lconn[3][2][0] = lconn[3][0][2];
+	//lconn[3][2][1] = lconn[3][1][2];
+	lconn[3][2][2] = -d_a * r1 * dthdx22 * irho2;
+	lconn[3][2][3] =
+	    dthdx2 * (0.25 * fac2 * fac2 * cth / sth +
+		      a2 * r1 * s2th) * irho22;
+
+	//lconn[3][3][0] = lconn[3][0][3];
+	//lconn[3][3][1] = lconn[3][1][3];
+	//lconn[3][3][2] = lconn[3][2][3];
+	lconn[3][3][3] = (-d_a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
+	#endif
+
+}
 
 __host__ __device__ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
 {

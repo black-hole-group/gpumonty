@@ -232,6 +232,7 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		}else{
 			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, instant_partition);
 		}		
+
 		cudaDeviceSynchronize();
 		cudaEventRecord(stop);
 		cudaEventSynchronize(stop); // Wait for stop event to be recorded
@@ -406,6 +407,7 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 					exp((1. - dl) * d_dndlnu_max[l] +
 					dl * d_dndlnu_max[l + 1]);
 			}
+
 		}
 
 	K2 = K2_eval(Thetae);
@@ -415,8 +417,7 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 		return;
 	}
 	
-		double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
-
+	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -976,7 +977,9 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		return;
 	}
 
-	dtauK = 2 * M_PI * L_UNIT / (ME * CL * CL / HPL);
+	dtauK = L_UNIT / (ME * CL * CL / HPL);
+
+	
 
 	/* Initialize opacities */
 	gcov_func(ph->X, Gcov);
@@ -991,6 +994,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
 	
 	//while(0){
+
 	while (!GPU_stop_criterion(ph)) {
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -1023,6 +1027,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		GPU_get_fluid_params(ph->X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
 				 Bcon, Bcov, d_p);
 
+		
+				 
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
 			bound_flag = 0;
@@ -1210,8 +1216,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	}
 
 // 	/* accumulate result in spectrum on escape */
-	//if(1){
-	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
+	if(1){
+	//if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		 GPU_record_super_photon(ph, d_spect);
 	}
 	/* done! */

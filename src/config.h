@@ -178,6 +178,3 @@
 
 /*track super photon max number of steps*/
 #define MAXNSTEP (1280000)
-
-/*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
-#define SPHERE_TEST (0)
