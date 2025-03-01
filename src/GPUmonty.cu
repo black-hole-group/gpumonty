@@ -1638,6 +1638,7 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
         double Gcov[NDIM][NDIM];
         double dl_2, err;
         int i, k, iter;
+		double 
 
         if (X[1] < d_startx[1]) return;
 
