@@ -330,6 +330,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
+	curandState localState = my_curand_state[global_index]; 
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide d_N1 * d_N2 * d_N3 between blocks*/
 	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
@@ -339,7 +340,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
-		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns);
+		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, localState);
 		//GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
 		generated_photons_arr[a] = generated_photons;
 		dnmax_arr[a] = dnmax;
@@ -350,7 +351,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 
 
-__device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par)
+__device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par, curandState localState)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
@@ -427,7 +428,7 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 		*n2gen = 0.;
 		*dnmax = 0.;
 	}else{
-		if (fmod(nz, 1.) > GPU_monty_rand()) {
+		if (fmod(nz, 1.) > curand_uniform_double(&localState)) {
 			*n2gen = (int) (nz) + 1;
 		} else {
 			*n2gen = (int) (nz);
@@ -441,7 +442,7 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 
 __device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long long *n2gen, double *dnmax, 
                                           struct of_geom *d_geom, 
-                                          double *d_dx, int d_Ns_par) 
+                                          double *d_dx, int d_Ns_par, curandState localState) 
 {
     // Constants
     const double h = HPL;  // Planck constant
@@ -509,7 +510,7 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long lo
     // }
     
     // Probabilistic rounding for fractional photons
-    if (fmod(nz, 1.0) > GPU_monty_rand()) {
+    if (fmod(nz, 1.0) > curand_uniform_double(&localState)) {
         *n2gen = (unsigned long long)(nz) + 1;
     } else {
         *n2gen = (unsigned long long)(nz);
@@ -520,7 +521,7 @@ __device__ void GPU_init_blackbody_photons(int i, int j, int k, unsigned long lo
 __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n, int number_of_threads){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long round_num_scat_init = 0;
-
+	curandState localState = my_curand_state[global_index];
 
 	for (int cum_sum = 0; cum_sum <= n -2; cum_sum++){
 		round_num_scat_init += d_num_scat_phs[cum_sum]; 
@@ -533,7 +534,7 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 	}
 	
 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
-		GPU_track_super_photon(&ph[a], d_spect, d_p, d_table_ptr, scat_ofphoton, n, a,0);
+		GPU_track_super_photon(&ph[a], d_spect, d_p, d_table_ptr, scat_ofphoton, n, a,0, localState);
 		atomicAdd(&scattering_counter, 1);
 	}
 }
@@ -544,6 +545,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
 	double percentage;
 	unsigned long long photon_index = 0;
 	int n = 1;
+	curandState localState = my_curand_state[global_index];
 	/*track each photon we created along its geodesic*/
 
     while (true) {
@@ -554,7 +556,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
         if (photon_index >= max_partition_ph) break;
 
         // Track the photon
-        GPU_track_super_photon(&ph[photon_index], d_spect, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, instant_partition);
+        GPU_track_super_photon(&ph[photon_index], d_spect, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, instant_partition, localState);
 
         // Progress indicator
         if (global_index == 0) {
@@ -575,6 +577,7 @@ unsigned long long photons_processed_sofar, unsigned long long * index_to_ijk){
 	int zone_index = 0;
 	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
 	int past_zone = (d_N1 * d_N2 * d_N3);
+	curandState localState = my_curand_state[blockIdx.x * blockDim.x + threadIdx.x];
 
 	while (true) {
 		photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
@@ -588,13 +591,13 @@ unsigned long long photons_processed_sofar, unsigned long long * index_to_ijk){
 		i = (zone_index/(d_N2 * d_N3));
 
 		/*Sample all the photons generated in GPU_init_zone*/
-		GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov);
+		GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, localState);
 		past_zone = zone_index;
 	}
 }
 
 __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, unsigned long long ph_arr_index,
-double (*Econ)[NDIM], double (*Ecov)[NDIM])
+double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState)
 {
 /* Set all initial superphoton attributes */
 	int l;
@@ -616,17 +619,17 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 		double ThetaS = 1.e-8;
 		double temperature = ThetaS * ME * CL * CL / KBOL;
 		do {
-			nu = exp(GPU_monty_rand() * Nln + lnu_min);
+			nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
 			weight = GPU_linear_interp_weight(nu);
 			conditioner = (M_PI) * 2.0 * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
-			test = GPU_monty_rand();
+			test = curand_uniform_double(&localState);
 
 		} while (test >  conditioner);
 	#else
 		do {
-			nu = exp(GPU_monty_rand() * Nln + lnu_min);
+			nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
 			weight = GPU_linear_interp_weight(nu);
-		} while (GPU_monty_rand() >
+		} while (curand_uniform_double(&localState) >
 			(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 	#endif
 
@@ -636,13 +639,13 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM])
 	bool do_condition;
 	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 	do {
-		cth = 2. * GPU_monty_rand() - 1.;
+		cth = 2. * curand_uniform_double(&localState) - 1.;
 		th = acos(cth);
-		do_condition = GPU_monty_rand() > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
+		do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
 	} while (do_condition);
 
 	sth = sqrt(1. - cth * cth);
-	phi = 2. * M_PI * GPU_monty_rand();
+	phi = 2. * M_PI * curand_uniform_double(&localState);
 	cphi = cos(phi);
 	sphi = sin(phi);
 
@@ -945,7 +948,7 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
-__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition)
+__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition, curandState localState)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;
@@ -995,7 +998,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	
 	//while(0){
 
-	while (!GPU_stop_criterion(ph)) {
+	while (!GPU_stop_criterion(ph, localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
 		Xi[1] = ph->X[1];
@@ -1018,7 +1021,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		GPU_push_photon(ph->X, ph->K, ph->dKdlam, dl, &(ph->E0s), 0);
 		
 
-		if (GPU_stop_criterion(ph)){
+		if (GPU_stop_criterion(ph, localState)){
 			break;
 		}
 
@@ -1087,7 +1090,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 
 			}
 
-			x1 = -log(GPU_monty_rand());
+			x1 = -log(curand_uniform_double(&localState));
 			php.w =  ph->w / bias;
 			//if(0){
 			if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
@@ -1143,7 +1146,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 					GPU_scatter_super_photon(ph, &php, Ne,
 							     Thetae, B,
 							     Ucon, Bcon,
-							     Gcov);
+							     Gcov, localState);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
@@ -1638,7 +1641,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
         double Gcov[NDIM][NDIM];
         double dl_2, err;
         int i, k, iter;
-		double 
 
         if (X[1] < d_startx[1]) return;
 
@@ -1774,7 +1776,7 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 // }
 
 
-__device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM])
+__device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon *php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState localState)
 {
 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
 	int k;
@@ -1837,11 +1839,11 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 	}
 
 	/* find the electron that we collided with */
-	GPU_sample_electron_distr_p( K_tetrad, P, Thetae);
+	GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
 
 	/* given electron momentum P, find the new
 	   photon momentum Kp */
-	GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p);
+	GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
 
 
 	/* transform back to coordinate frame */
@@ -1905,7 +1907,7 @@ __device__ void GPU_coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM]
 		K_tetrad[k] = Ecov[k][0] * K[0] + Ecov[k][1] * K[1] +Ecov[k][2] * K[2] + Ecov[k][3] * K[3];
 	}
 }
-__device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae)
+__device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState localState)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, cth, x1, n0dotv0, v0, v1;
@@ -1915,8 +1917,8 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	double v2x, v2y, v2z;
 	int sample_cnt = 0;
 	do {
-		GPU_sample_beta_distr( Thetae, &gamma_e, &beta_e);
-		mu = GPU_sample_mu_distr( beta_e);
+		GPU_sample_beta_distr( Thetae, &gamma_e, &beta_e, localState);
+		mu = GPU_sample_mu_distr( beta_e, localState);
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -1946,7 +1948,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 						   log(1. + 2. * K));
 		}
 
-		x1 = GPU_monty_rand();
+		x1 = curand_uniform_double(&localState);
 
 		sample_cnt++;
 
@@ -1972,7 +1974,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	/* pick zero-angle for coordinate system */
 	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction( &n0x, &n0y, &n0z);
+	generate_random_direction( &n0x, &n0y, &n0z, localState);
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* second unit vector */
@@ -1994,7 +1996,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	/* now resolve new momentum vector along unit vectors 
 	   and create a four-vector $p$ */
-	phi = GPU_monty_rand() * 2. * M_PI;	/* orient uniformly */  
+	phi = curand_uniform_double(&localState) * 2. * M_PI;	/* orient uniformly */  
 	sphi = sin(phi);
 	cphi = cos(phi);
 	cth = mu;
@@ -2018,12 +2020,12 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	return;
 }
-__device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e)
+__device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState localState)
 {
 	double y;
 
 	/* checked */
-	y = GPU_sample_y_distr( Thetae);
+	y = GPU_sample_y_distr( Thetae, localState);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -2032,7 +2034,7 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
 	return;
 
 }
-__device__ double GPU_sample_y_distr(double Thetae)
+__device__ double GPU_sample_y_distr(double Thetae, curandState localState)
 {
 
 	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
@@ -2050,22 +2052,22 @@ __device__ double GPU_sample_y_distr(double Thetae)
 	pi_5 /= S_3;
 	pi_6 /= S_3;
 	do {
-		x1 = GPU_monty_rand();
+		x1 = curand_uniform_double(&localState);
 		if (x1 < pi_3) {
-			x = chi_square(3);
+			x = chi_square(3, localState);
 		} else if (x1 < pi_3 + pi_4) {
-			x = chi_square(4);
+			x = chi_square(4, localState);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = chi_square(5);
+			x = chi_square(5, localState);
 		} else {
-			x = chi_square(6);
+			x = chi_square(6, localState);
 		}
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
 		y = sqrt(x / 2);
 
-		x2 = GPU_monty_rand();
+		x2 = curand_uniform_double(&localState);
 		num = sqrt(1. + 0.5 * Thetae * y * y);
 		den = (1. + y * sqrt(0.5 * Thetae));
 
@@ -2075,18 +2077,18 @@ __device__ double GPU_sample_y_distr(double Thetae)
 	return (y);
 }
 
-__device__ double GPU_sample_mu_distr(double beta_e)
+__device__ double GPU_sample_mu_distr(double beta_e, curandState localState)
 {
 	double mu, x1, det;
 
-	x1 = GPU_monty_rand();
+	x1 = curand_uniform_double(&localState);
 	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
 	if (det < 0.)
 		printf("det < 0  %g %g\n\n", beta_e, x1);
 	mu = (1. - sqrt(det)) / beta_e;
 	return (mu);
 }
-__device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4])
+__device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4], curandState localState)
 {
 	double ke[4], kpe[4];
 	double k0p;
@@ -2098,11 +2100,11 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	   ke == photon momentum in elecron frame */
 	GPU_boost(k, p, ke);
 	if (ke[0] > 1.e-4) {
-		k0p = GPU_sample_klein_nishina( ke[0]);
+		k0p = GPU_sample_klein_nishina( ke[0], localState);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
-		cth = GPU_sample_thomson();
+		cth = GPU_sample_thomson(localState);
 	}
 	sth = sqrt(fabs(1. - cth * cth));
 
@@ -2123,7 +2125,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	/* randomly pick zero-angle for scattering coordinate system.
 	   There's undoubtedly a better way to do this. */
 	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction(&n0x, &n0y, &n0z); /*This currently matches gsl function used*/
+	generate_random_direction(&n0x, &n0y, &n0z, localState); /*This currently matches gsl function used*/
 	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
 	/* unit vector 2 */
@@ -2146,7 +2148,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	/* solve for orientation of scattered photon */
 
 	/* find phi for new photon */
-	phi = 2. * M_PI * GPU_monty_rand();	
+	phi = 2. * M_PI * curand_uniform_double(&localState);	
 	sphi = sin(phi);
 	cphi = cos(phi);
 
@@ -2211,20 +2213,20 @@ __device__ void GPU_boost(double v[4], double u[4], double vp[4])
 	    (1. + n3 * n3 * gm1) * v[3];
 
 }
-__device__ double GPU_sample_thomson()
+__device__ double GPU_sample_thomson(curandState localState)
 {
 	double x1, x2;
 
 	do {
 
-		x1 = 2. * GPU_monty_rand() - 1.;
-		x2 = (3. / 4.) * GPU_monty_rand();
+		x1 = 2. * curand_uniform_double(&localState) - 1.;
+		x2 = (3. / 4.) * curand_uniform_double(&localState);
 
 	} while (x2 >= (3. / 8.) * (1. + x1 * x1));
 
 	return (x1);
 }
-__device__ double GPU_sample_klein_nishina(double k0)
+__device__ double GPU_sample_klein_nishina(double k0, curandState localState)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	int n = 0;
@@ -2236,12 +2238,12 @@ __device__ double GPU_sample_klein_nishina(double k0)
 	do {
 
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * GPU_monty_rand();
+		k0p_tent = k0pmin + (k0pmax - k0pmin) * curand_uniform_double(&localState);
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
-		x1 *= GPU_monty_rand();
+		x1 *= curand_uniform_double(&localState);
 
 		n++;
 

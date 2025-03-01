@@ -15,9 +15,9 @@ CUDA_LIB = -L$(CUDA_PATH)/lib64
 GSL_PATH ?= /home/pedro/gsl
 
 # Compiler flags
-ARCH = compute_60
-CODE = sm_60
-CODE_LTO = lto_60
+ARCH = compute_80
+CODE = sm_80
+CODE_LTO = lto_80
 
 
 # Debug and release flags
