@@ -228,9 +228,9 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, instant_partition);
+			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, max_block_number);
 		}else{
-			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, instant_partition);
+			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, ideal_nblocks);
 		}		
 
 		cudaDeviceSynchronize();
@@ -248,6 +248,17 @@ __host__ void launch_loop(struct of_photon ph, int quit_flag, time_t time, doubl
 			fprintf(stderr, "number of scattered photons: %llu out of %llu", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
 			exit(1);
 		}
+		
+		// if(ideal_nblocks > max_block_number){
+		// 	GPU_record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
+		// }else{
+		// 	GPU_record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
+		// }			
+		// cudaStatus = cudaGetLastError();
+		// if (cudaStatus != cudaSuccess) {
+		// 	fprintf(stderr, "in GPU_record %s\n", cudaGetErrorString(cudaStatus));
+		// 	exit(1);
+		// }
 		cudaFree(initial_photon_states);
 
 
@@ -328,7 +339,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 	double dnmax;
 	int i, j, k;
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139 * global_index + time;
+	int seed = 139;//139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 	/*This is how we'll split things between blocks and threads*/
@@ -540,7 +551,30 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 }
 
 
-__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int max_partition_ph, int instant_partition){
+__global__ void GPU_record(struct of_photon * ph, struct of_spectrum * d_spect, unsigned long long  max_partition_ph, int nblocks)
+{
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	/*track each photon we created along its geodesic*/
+	if(global_index == 0){
+		printf("Number of photons processed %llu\n", tracking_counter);
+	}
+	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
+
+		if(ph[a].record && GPU_record_criterion(&ph[a]))
+		GPU_record_super_photon(&ph[a], d_spect);
+	}
+}
+
+
+// __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton,
+// 	 unsigned long long max_partition_ph, int nblocks){ 
+//     int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+//     curandState localState = my_curand_state[global_index];
+// 	GPU_track_super_photon_mod(ph, d_spect, d_p, d_table_ptr, scat_ofphoton, 0, localState, max_partition_ph);
+// }
+
+
+__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, unsigned long long max_partition_ph, int nblocks){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	double percentage;
 	unsigned long long photon_index = 0;
@@ -556,7 +590,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
         if (photon_index >= max_partition_ph) break;
 
         // Track the photon
-        GPU_track_super_photon(&ph[photon_index], d_spect, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, instant_partition, localState);
+        GPU_track_super_photon(&ph[photon_index], d_spect, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, 0, localState);
 
         // Progress indicator
         if (global_index == 0) {
@@ -948,6 +982,328 @@ __device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][
 
 
 /*THIS SECTION HAS BEEN RESERVED FOR TRACK_SUPER_PHOTON FUNCTION AND ITS DEPENDENCIES	*/
+
+__device__ void GPU_track_super_photon_mod(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton,
+	int round_scat, curandState localState, unsigned long long max_partition_ph)
+{
+   int bound_flag;
+   double dtau_scatt, dtau_abs, dtau;
+   double bi, bf;
+   double alpha_scatti, alpha_scattf;
+   double alpha_absi, alpha_absf;
+   double dl, x1;
+   double nu, Thetae, Ne, B, theta;
+   struct of_photon php;
+   double dtauK, frac;
+   double bias = 0.;
+   double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
+   double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM],
+	   Bcov[NDIM];
+   int nstep = 0;
+
+   dtauK = L_UNIT / (ME * CL * CL / HPL);
+
+
+   unsigned long long photon_index =  atomicAdd(&tracking_counter, 1) - 1;
+   if (photon_index > max_partition_ph) return;
+   ph[photon_index].record = 0;
+
+
+   /* Initialize opacities */
+   gcov_func(ph[photon_index].X, Gcov);
+   GPU_get_fluid_params(ph[photon_index].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+			Bcov, d_p);
+   theta = GPU_get_bk_angle(ph[photon_index].X, ph[photon_index].K, Ucov, Bcov, B);
+   nu = GPU_get_fluid_nu(ph[photon_index].X, ph[photon_index].K, Ucov);
+   alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+   alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta);
+   bi = GPU_bias_func(Thetae, ph[photon_index].w, round_scat);
+   /* Initialize dK/dlam */
+   GPU_init_dKdlam(ph[photon_index].X, ph[photon_index].K, ph[photon_index].dKdlam);
+   
+   //while(0){
+   while (true) {
+	   if(GPU_stop_criterion(&ph[photon_index], localState) || ph[photon_index].record == -1){
+		   if(ph[photon_index].record == 0) ph[photon_index].record = 1;
+		   photon_index = atomicAdd(&tracking_counter, 1) - 1;
+		   if (photon_index > max_partition_ph) return;
+		   nstep = 0;
+
+
+		   ph[photon_index].record = 0;
+		   gcov_func(ph[photon_index].X, Gcov);
+		   GPU_get_fluid_params(ph[photon_index].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+				   Bcov, d_p);
+		   theta = GPU_get_bk_angle(ph[photon_index].X,ph[photon_index].K, Ucov, Bcov, B);
+		   nu = GPU_get_fluid_nu(ph[photon_index].X,ph[photon_index].K, Ucov);
+		   alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+		   alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta);
+		   bi = GPU_bias_func(Thetae, ph[photon_index].w, round_scat);
+		   /* Initialize dK/dlam */
+		   GPU_init_dKdlam(ph[photon_index].X, ph[photon_index].K, ph[photon_index].dKdlam);
+	   }
+	   /* Save initial position/wave vector */
+	   Xi[0] = ph[photon_index].X[0];
+	   Xi[1] = ph[photon_index].X[1];
+	   Xi[2] = ph[photon_index].X[2];
+	   Xi[3] = ph[photon_index].X[3];
+	   Ki[0] = ph[photon_index].K[0];
+	   Ki[1] = ph[photon_index].K[1];
+	   Ki[2] = ph[photon_index].K[2];
+	   Ki[3] = ph[photon_index].K[3];
+	   dKi[0] = ph[photon_index].dKdlam[0];
+	   dKi[1] = ph[photon_index].dKdlam[1];
+	   dKi[2] = ph[photon_index].dKdlam[2];
+	   dKi[3] = ph[photon_index].dKdlam[3];
+	   E0 = ph[photon_index].E0s;
+
+	   /* evaluate stepsize */
+	   dl = GPU_stepsize(ph[photon_index].X, ph[photon_index].K);
+
+	   /* step the geodesic */
+	   GPU_push_photon(ph[photon_index].X, ph[photon_index].K, ph[photon_index].dKdlam, dl, &(ph[photon_index].E0s), 0);
+
+
+	   while(GPU_stop_criterion(&ph[photon_index], localState)){
+		   ph[photon_index].record = 1;
+		   photon_index = atomicAdd(&tracking_counter, 1) - 1;
+		   if (photon_index > max_partition_ph) return;
+		   ph[photon_index].record = 0;
+		   nstep = 0;
+
+		   gcov_func(ph[photon_index].X, Gcov);
+		   GPU_get_fluid_params(ph[photon_index].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
+				   Bcov, d_p);
+		   theta = GPU_get_bk_angle(ph[photon_index].X,ph[photon_index].K, Ucov, Bcov, B);
+		   nu = GPU_get_fluid_nu(ph[photon_index].X,ph[photon_index].K, Ucov);
+		   alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+		   alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta);
+		   bi = GPU_bias_func(Thetae, ph[photon_index].w, round_scat);
+		   /* Initialize dK/dlam */
+		   GPU_init_dKdlam(ph[photon_index].X, ph[photon_index].K, ph[photon_index].dKdlam);
+
+		   /*get the photon to the same location of the warp in the loop*/
+		   Xi[0] = ph[photon_index].X[0];
+		   Xi[1] = ph[photon_index].X[1];
+		   Xi[2] = ph[photon_index].X[2];
+		   Xi[3] = ph[photon_index].X[3];
+		   Ki[0] = ph[photon_index].K[0];
+		   Ki[1] = ph[photon_index].K[1];
+		   Ki[2] = ph[photon_index].K[2];
+		   Ki[3] = ph[photon_index].K[3];
+		   dKi[0] = ph[photon_index].dKdlam[0];
+		   dKi[1] = ph[photon_index].dKdlam[1];
+		   dKi[2] = ph[photon_index].dKdlam[2];
+		   dKi[3] = ph[photon_index].dKdlam[3];
+		   E0 = ph[photon_index].E0s;
+
+		   /* evaluate stepsize */
+		   dl = GPU_stepsize(ph[photon_index].X, ph[photon_index].K);
+
+		   /* step the geodesic */
+		   GPU_push_photon(ph[photon_index].X, ph[photon_index].K, ph[photon_index].dKdlam, dl, &(ph[photon_index].E0s), 0);
+	   }
+
+	   /* allow photon to interact with matter, */
+	   gcov_func(ph[photon_index].X, Gcov);
+	   GPU_get_fluid_params(ph[photon_index].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
+				Bcon, Bcov, d_p);
+
+	   
+				
+	   if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
+
+		   bound_flag = 0;
+		   bound_flag = (Ne == 0);
+
+		   if (!bound_flag) {
+			   theta =
+				   GPU_get_bk_angle(ph[photon_index].X, ph[photon_index].K, Ucov, Bcov,
+						B);
+			   nu = GPU_get_fluid_nu(ph[photon_index].X, ph[photon_index].K, Ucov);
+			   if (isnan(nu)) {
+				   printf(
+					   "isnan nu: track_super_photon dl,E0 %g %g\n",
+					   dl, E0);
+				   printf(
+					   "Xi, %g %g %g %g\n", Xi[0],
+					   Xi[1], Xi[2], Xi[3]);
+				   printf(
+					   "Ki, %g %g %g %g\n", Ki[0],
+					   Ki[1], Ki[2], Ki[3]);
+				   printf(
+					   "dKi, %g %g %g %g\n",
+					   dKi[0], dKi[1], dKi[2],
+					   dKi[3]);
+			   }
+		   }
+
+		   /* scattering optical depth along step */
+		   if (bound_flag || nu < 0.) {
+			   dtau_scatt =
+				   0.5 * alpha_scatti * dtauK * dl;
+			   dtau_abs = 0.5 * alpha_absi * dtauK * dl;
+			   alpha_scatti = alpha_absi = 0.;
+			   bias = 0.;
+			   bi = 0.;
+		   } else {
+			   alpha_scattf =
+				   GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+			   dtau_scatt =
+				   0.5 * (alpha_scatti +
+					  alpha_scattf) * dtauK * dl;
+			   alpha_scatti = alpha_scattf;
+			   /* absorption optical depth along step */
+			   alpha_absf =
+				   GPU_alpha_inv_abs(nu, Thetae, Ne, B,
+						 theta);
+			   dtau_abs =
+				   0.5 * (alpha_absi +
+					  alpha_absf) * dtauK * dl;
+
+			   alpha_absi = alpha_absf;
+
+			   bf = GPU_bias_func(Thetae, ph[photon_index].w, round_scat);
+			   bias = 0.5 * (bi + bf);
+			   bi = bf;
+
+		   }
+
+		   x1 = -log(curand_uniform_double(&localState));
+		   php.w =  ph[photon_index].w / bias;
+		   if (bias * dtau_scatt > x1 && php.w > WEIGHT_MIN) {
+			   if (isnan(php.w) || isinf(php.w)) {
+				   printf(
+					   "w isnan in track_super_photon: Ne, bias, ph[photon_index].w, php.w  %g, %g, %g, %g\n",
+					   Ne, bias, ph[photon_index].w, php.w);
+			   }
+			   frac = x1 / (bias * dtau_scatt);
+
+			   /* Apply absorption until scattering event */
+			   dtau_abs *= frac;
+			   if (dtau_abs > 100){
+				   ph[photon_index].record = -1;
+			   }
+			   else{
+				   dtau_scatt *= frac;
+				   dtau = dtau_abs + dtau_scatt;
+
+				   //Do not include absorption in the scattering test
+				   #ifndef SCATTERING_TEST
+					   if (dtau_abs < 1.e-3){
+						   ph[photon_index].w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					   }
+					   else{
+						   ph[photon_index].w *= exp(-dtau); 
+					   }
+				   #endif
+				   /* Interpolate position and wave vector to scattering event */
+
+				   GPU_push_photon(Xi, Ki, dKi, dl * frac, &E0,
+						   0);
+				   ph[photon_index].X[0] = Xi[0];
+				   ph[photon_index].X[1] = Xi[1];
+				   ph[photon_index].X[2] = Xi[2];
+				   ph[photon_index].X[3] = Xi[3];
+				   ph[photon_index].K[0] = Ki[0];
+				   ph[photon_index].K[1] = Ki[1];
+				   ph[photon_index].K[2] = Ki[2];
+				   ph[photon_index].K[3] = Ki[3];
+				   ph[photon_index].dKdlam[0] = dKi[0];
+				   ph[photon_index].dKdlam[1] = dKi[1];
+				   ph[photon_index].dKdlam[2] = dKi[2];
+				   ph[photon_index].dKdlam[3] = dKi[3];
+				   ph[photon_index].E0s = E0;
+				   
+
+				   /* Get plasma parameters at new position */
+				   gcov_func(ph[photon_index].X, Gcov);
+				   GPU_get_fluid_params(ph[photon_index].X, Gcov, &Ne, &Thetae,
+						   &B, Ucon, Ucov, Bcon,
+						   Bcov, d_p);
+				   if (Ne > 0.) {
+					   GPU_scatter_super_photon(&ph[photon_index], &php, Ne,
+								   Thetae, B,
+								   Ucon, Bcon,
+								   Gcov, localState);
+					   if (ph[photon_index].w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+						   return;
+					   }
+					   if(php.w > 0){
+						   atomicAdd(&d_N_scatt, (round_scat + 1));
+						   int my_local_index = 0;
+						   if(round_scat > 0){
+							   for(int cum_sum = 0; cum_sum <= round_scat -1; cum_sum++){
+								   my_local_index += d_num_scat_phs[cum_sum];
+							   }
+								   my_local_index += atomicAdd(&d_num_scat_phs[round_scat], 1);
+						   }
+						   else{
+							   my_local_index = atomicAdd(&d_num_scat_phs[0], 1);
+						   }
+						   memcpy(&scat_ofphoton[my_local_index], &php, sizeof(struct of_photon));
+
+						   if(scat_ofphoton[my_local_index].w != php.w){
+							   printf("In GPU_track_super_photon, both weights should be the same! (%le, %le), %d\n", scat_ofphoton[my_local_index].w, php.w, my_local_index);
+						   }
+					   }
+				   }
+				   theta =
+					   GPU_get_bk_angle(ph[photon_index].X, ph[photon_index].K, Ucov, Bcov,
+						   B);
+				   nu = GPU_get_fluid_nu(ph[photon_index].X, ph[photon_index].K, Ucov);
+				   if (nu < 0.) {
+					   alpha_scatti = alpha_absi = 0.;
+				   } else {
+					   alpha_scatti =
+						   GPU_alpha_inv_scatt(nu, Thetae,
+								   Ne, d_table_ptr);
+					   alpha_absi =
+						   GPU_alpha_inv_abs(nu, Thetae, Ne,
+							   B, theta);
+				   }
+				   bi = GPU_bias_func(Thetae, ph[photon_index].w, round_scat);
+
+				   ph[photon_index].tau_abs += dtau_abs;
+				   ph[photon_index].tau_scatt += dtau_scatt;
+			   }
+		   } else {
+			   if (dtau_abs > 100){
+				   ph[photon_index].record = -1;
+			   }
+			   else{
+				   ph[photon_index].tau_abs += dtau_abs;
+				   ph[photon_index].tau_scatt += dtau_scatt;
+				   dtau = dtau_abs + dtau_scatt;
+   
+				   //Do not include absorption in the scattering test
+				   #ifndef SCATTERING_TEST
+					   if (dtau < 1.e-3){
+							   ph[photon_index].w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
+					   }else{
+							   ph[photon_index].w *= exp(-dtau); 
+					   }
+				   #endif
+			   }
+		   }
+	   }
+
+	   nstep++;
+
+	   /* signs that something's wrong w/ the integration */
+	   if (nstep > MAXNSTEP) {
+		   printf(
+			   "X1,X2,K1,K2, nu, bias,: %g, %g, %g, %g, %g, %g\n",
+			   ph[photon_index].X[1], ph[photon_index].X[2], ph[photon_index].K[1], ph[photon_index].K[2], nu, bias);
+		   ph[photon_index].record = -1;
+	   }
+   }
+
+   return;
+}
+
+
+
 __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition, curandState localState)
 {
 	int bound_flag;
@@ -996,8 +1352,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(ph->X, ph->K, ph->dKdlam);
 	
-	//while(0){
-
 	while (!GPU_stop_criterion(ph, localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = ph->X[0];
@@ -1219,8 +1573,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 	}
 
 // 	/* accumulate result in spectrum on escape */
-	if(1){
-	//if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
+	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
 		 GPU_record_super_photon(ph, d_spect);
 	}
 	/* done! */
@@ -1330,7 +1683,7 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 
 		return bias;
 	#else
-		return 1;
+		//return 1;
 		max = 0.5 * w / WEIGHT_MIN;
 
 		avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);

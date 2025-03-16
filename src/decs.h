@@ -23,6 +23,7 @@ struct of_photon {
 	double E0;
 	double E0s;
 	int nscatt;
+	int record;
 };
 
 

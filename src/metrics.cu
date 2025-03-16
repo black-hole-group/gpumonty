@@ -467,7 +467,7 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 
 
 	/* HARM-2D MKS */
-	#if(HAMR)
+	#ifdef HAMR
 		double x2_mod;
 		x2_mod = (X[2] + 1.)/2.;
 		th = M_PI * x2_mod;

@@ -58,10 +58,10 @@
 
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (10)/*In solar UNITs*/
+#define MBH (4.e6)/*In solar UNITs*/
 //#define RHO_UNIT (3.e-6) /* UNIT of density*/
 //#define M_UNIT (RHO_UNIT * L_UNIT * L_UNIT * L_UNIT) /*Find this based on the rho_scale parameter for HAMR sims*/
-#define M_UNIT (3.e10)
+#define M_UNIT (4.e19)
 #define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 
 /*Units based off the mass of the blackhole and the Unit of mass*/
