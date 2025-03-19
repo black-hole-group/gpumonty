@@ -1,4 +1,7 @@
 #include "decs.h"
+#include "radiation.h"
+#include "jnu_mixed.h"
+#include "hotcross.h"
 __device__ double GPU_Bnu_inv(double nu, double Thetae)
 {
 

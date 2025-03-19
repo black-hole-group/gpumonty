@@ -31,4 +31,9 @@ __host__ __device__ void coord(int i, int j, double *X);
 __host__ __device__ void gcov_func(double *X, double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(double *X, double *r, double *th);
+__host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
+    double Ucon[NDIM], double Bcon[NDIM], struct of_geom * d_geom, double * d_p);
+__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
+__device__ double GPU_bias_func(double Te, double w, int round_scatt);
+__device__ void GPU_record_super_photon(struct of_photon *ph, struct of_spectrum* d_spect);
 #endif

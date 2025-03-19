@@ -1,5 +1,5 @@
 #include "decs.h"
-
+#include "curand.h"
 __device__ void GPU_init_monty_rand(int seed) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, tid, 0, &my_curand_state[tid]);

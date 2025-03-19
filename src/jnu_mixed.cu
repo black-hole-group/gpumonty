@@ -41,8 +41,8 @@
 
 
 #include "decs.h"
+#include "jnu_mixed.h"
 
-#pragma omp threadprivate(r)
 /* 
 
 "mixed" emissivity formula 

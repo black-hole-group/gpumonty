@@ -1,6 +1,7 @@
 /*This should be passed to every file*/
+#include "weights.h"
 #include "decs.h"
-
+#include "jnu_mixed.h"
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(void)
 {
@@ -178,4 +179,20 @@ __host__ void init_nint_table(void)
 	}
 
 	return;
+}
+
+
+__device__ double GPU_linear_interp_weight(double nu)
+{
+	int i;
+	double di, lnu;
+	double lnu_max = log(NUMAX);
+	double lnu_min = log(NUMIN);
+	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
+	lnu = log(nu);
+
+	di = (lnu - lnu_min) / dlnu;
+	i = (int) di;
+	di = di - i;
+	return exp((1. - di) * d_wgt[i] + di * d_wgt[i + 1]);
 }

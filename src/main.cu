@@ -1,15 +1,17 @@
 #include "defs.h"
 #include "functions.h"
 #include "model.h"
-
-
+#include "weights.h"
+#include "metrics.h"
+#include "jnu_mixed.h"
+#include "hotcross.h"
+__host__ void init_model(char *args[]);
+__host__ void init_geometry();
 int main(int argc, char *argv[])
 {
 	time_t starttime = time(NULL);
 
 	double Ntot;
-	int quit_flag;
-	struct of_photon ph = {0}; 
 	const char *spect_file_name = argv[3];
 	
 
@@ -28,12 +30,11 @@ int main(int argc, char *argv[])
 	/** main loop **/
 	N_superph_recorded = 0;
 	N_scatt = 0;
-	quit_flag = 0;
 
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    launch_loop(ph, quit_flag, time(NULL), p, spect_file_name);
+    mainFlowControl(time(NULL), p, spect_file_name);
     printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
 	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", Ns, N_BLOCKS, N_THREADS);
 

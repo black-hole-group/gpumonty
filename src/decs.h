@@ -26,6 +26,21 @@ struct of_photon {
 	int record;
 };
 
+struct of_scattering{
+	int bound_flag;
+	double dtau_scatt, dtau_abs, dtau;
+	double bi, bf;
+	double alpha_scatti, alpha_scattf;
+	double alpha_absi, alpha_absf;
+	double dl, x1;
+	double nu, Thetae, Ne, B, theta;
+	double dtauK, frac;
+	double bias;
+	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
+	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+	int nstep;
+};
+
 
 struct of_geom {
 	double gcon[NDIM][NDIM];

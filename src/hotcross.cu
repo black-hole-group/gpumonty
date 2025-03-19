@@ -41,6 +41,7 @@
 
 
 #include "decs.h"
+#include "hotcross.h"
 /* 
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -282,7 +283,7 @@ __host__ __device__ double hc_klein_nishina(double we)
 
 
 /*Bessel0 function defined as Numerical Recipes book*/
-__device__ double bessi0(double xbess)
+__host__ __device__ double bessi0(double xbess)
 {
     double ax, ans;
     double y;
