@@ -2,7 +2,7 @@
 Summary of the file: This file contain memory related functions that are used in the GPU code.
 */
 #include "decs.h"
-
+#include "Kernels.h"
 
 __host__ void transferGlobalVariables(){
 	/*

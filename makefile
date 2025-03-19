@@ -58,10 +58,13 @@ $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)
-	$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
+	@echo "Compiling $< ..."
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
 
 $(BUILD_DIR)/%.o: $(MODEL_DIR)/%.cu $(INCS) | $(BUILD_DIR)
-	$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
+	@echo "Compiling $< ..."
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
+
 
 # Create build directory
 $(BUILD_DIR):

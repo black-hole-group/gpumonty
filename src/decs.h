@@ -1,6 +1,5 @@
 
 #include "config.h"
-#include "functions.h"
 #include "model.h"
 
 
