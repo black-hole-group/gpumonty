@@ -5,7 +5,7 @@
 #include "compton.h"
 #include "metrics.h"
 
-__device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum * d_spect, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition, curandState localState)
+__device__ void GPU_track_super_photon(struct of_photon *ph , double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int round_scat, int photon_index, int instant_partition, curandState localState)
 {
 	int bound_flag;
 	double dtau_scatt, dtau_abs, dtau;

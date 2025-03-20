@@ -139,6 +139,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		if(ideal_nblocks > max_block_number){
 			GPU_sample_photons_batch<<<max_block_number,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
 		}else{
+			if (ideal_nblocks == 0)
+			ideal_nblocks = 1;
 			GPU_sample_photons_batch<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
 		}
 		cudaDeviceSynchronize();
@@ -162,9 +164,11 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, max_block_number);
+			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number);
 		}else{
-			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, d_spect, scat_ofphoton, instant_photon_number, ideal_nblocks);
+			if (ideal_nblocks == 0)
+			ideal_nblocks = 1;
+			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks);
 		}		
 
 		cudaDeviceSynchronize();
@@ -185,6 +189,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		if(ideal_nblocks > max_block_number){
 			GPU_record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
 		}else{
+			if (ideal_nblocks == 0)
+			ideal_nblocks = 1;
 			GPU_record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
 		}			
 		cudaStatus = cudaGetLastError();
@@ -206,12 +212,12 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			ideal_nblocks = ceil(num_scat_phs[n-1]/N_THREADS);
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
-				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, d_spect, scat_ofphoton, n, max_block_number * N_THREADS);
+				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS);
 			}else{
 				if (ideal_nblocks == 0)
 					ideal_nblocks = 1;
 
-				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, d_spect, scat_ofphoton, n, ideal_nblocks * N_THREADS);
+				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS);
 			}
 			cudaDeviceSynchronize();
 			cudaEventRecord(stop);
@@ -227,6 +233,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			if(ideal_nblocks > max_block_number){
 				GPU_record_scattering<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_spect, instant_photon_number, max_block_number, n);
 			}else{
+				if (ideal_nblocks == 0)
+				ideal_nblocks = 1;
 				GPU_record_scattering<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_spect, instant_photon_number, ideal_nblocks, n);
 			}			
 			cudaStatus = cudaGetLastError();
@@ -394,7 +402,7 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 }
 
 
-__global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n, int number_of_threads){
+__global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int n, int number_of_threads){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long round_num_scat_init = 0;
 	curandState localState = my_curand_state[global_index];
@@ -414,7 +422,7 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 		gcov_func(ph[a].X, Gcov);
 		GPU_get_fluid_params(ph[a].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 		GPU_scatter_super_photon(&ph[a], &ph[a], Ne, Thetae, B, Ucon, Bcon, Gcov, localState);
-		GPU_track_super_photon(&ph[a], d_spect, d_p, d_table_ptr, scat_ofphoton, n, a,0, localState);
+		GPU_track_super_photon(&ph[a], d_p, d_table_ptr, scat_ofphoton, n, a,0, localState);
 		atomicAdd(&scattering_counter, 1);
 	}
 	my_curand_state[global_index] = localState;
@@ -458,7 +466,7 @@ __global__ void GPU_record(struct of_photon * ph, struct of_spectrum * d_spect, 
 
 
 
-__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, unsigned long long max_partition_ph, int nblocks){
+__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, unsigned long long max_partition_ph, int nblocks){
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	double percentage;
 	unsigned long long photon_index = 0;
@@ -475,7 +483,7 @@ __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_
         if (photon_index >= max_partition_ph) break;
 		local_ph = ph[photon_index];
         // Track the photon
-        GPU_track_super_photon(&local_ph, d_spect, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, 0, localState);
+        GPU_track_super_photon(&local_ph, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, 0, localState);
 
 		ph[photon_index] = local_ph;
         // Progress indicator

@@ -171,3 +171,4 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 
 	return (unsigned long long)(tot_nph/(*batch_divisions));
 }
+
