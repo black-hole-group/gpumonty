@@ -555,14 +555,7 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
         return;
     }
 
-	/*TODO: FIX RACE CONDITION BY USING https://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf slide 7
-	taken from https://stackoverflow.com/questions/16785263/cuda-multiple-threads-writing-to-a-shared-variable*/
-    // if (ph->tau_scatt > d_max_tau_scatt) {
-    //    d_max_tau_scatt = ph->tau_scatt;
-    // }
-
 	d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph->tau_scatt);
-    // Bin in x2 coordinate
 	#ifdef HAMR
 		dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
 		ix2 = ((ph->X[2]) < 0) ? (int)((1 +ph->X[2]) / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
@@ -592,9 +585,9 @@ __device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectru
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X1iav), ph->w * ph->X1i);
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X2isq), ph->w * (ph->X2i * ph->X2i));
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X3fsq), ph->w * (ph->X[3] * ph->X[3]));
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].ne0),  ph->w * (ph->ne0));
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].b0), ph->w * (ph->b0));
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].thetae0),ph->w * (ph->thetae0));
+	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].ne0),  ph->w * (ph->ne0));
+	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].b0), ph->w * (ph->b0));
+	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].thetae0),ph->w * (ph->thetae0));
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nscatt),  ph->nscatt);
 	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nph), 1);
 }

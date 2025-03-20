@@ -21,10 +21,10 @@ CODE_LTO = lto_80
 
 
 # Debug and release flags
-DEBUG_FLAGS = -G -code=$(CODE)
+DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
-NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --ptxas-options="-dlcm=cg" --maxrregcount=255\
+NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --ptxas-options="-dlcm=cg" --maxrregcount=32\
                    -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR)
 
 NVCCFLAGS_DEBUG = $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
@@ -54,7 +54,9 @@ EXECUTABLE = gpumonty
 
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
-	$(NVCC) -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
+	@echo "Linking libraries and building $(EXECUTABLE) executable..."
+	@$(NVCC) -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
+
 
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)

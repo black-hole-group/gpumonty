@@ -62,25 +62,7 @@ __device__ unsigned long long sc_ph_next = 0;
 __device__ unsigned long long sc_ph_current= 0;
 
 /** data structures **/
-struct of_photon {
-	double X[NDIM];
-	double K[NDIM];
-	double dKdlam[NDIM];
-	double w;
-	double E;
-	double L;
-	double X1i;
-	double X2i;
-	double tau_abs;
-	double tau_scatt;
-	double ne0;
-	double thetae0;
-	double b0;
-	double E0;
-	double E0s;
-	int nscatt;
-	int record;
-};
+
 
 
 
@@ -100,18 +82,9 @@ struct of_spectrum {
 	double X3fsq;
 	double tau_abs;
 	double tau_scatt;
-	double ne0;
-	double thetae0;
-	double b0;
 	double E0;
 };
 
-struct of_grid {
-	struct of_spectrum spec[N_EBINS];
-	double th, phi;
-	int nlist;
-	int *in;
-};
 
 
 

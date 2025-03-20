@@ -11,33 +11,16 @@ struct of_photon {
 	double dKdlam[NDIM];
 	double w;
 	double E;
-	double L;
 	double X1i;
 	double X2i;
 	double tau_abs;
 	double tau_scatt;
-	double ne0;
-	double thetae0;
-	double b0;
 	double E0;
 	double E0s;
 	int nscatt;
-	int record;
-};
-
-struct of_scattering{
-	int bound_flag;
-	double dtau_scatt, dtau_abs, dtau;
-	double bi, bf;
-	double alpha_scatti, alpha_scattf;
-	double alpha_absi, alpha_absf;
-	double dl, x1;
-	double nu, Thetae, Ne, B, theta;
-	double dtauK, frac;
-	double bias;
-	double Xi[NDIM], Ki[NDIM], dKi[NDIM], E0;
-	double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
-	int nstep;
+	// double Ucon0[NDIM];
+	// double Bcon0[NDIM];
+	// double Gcov0[NDIM][NDIM];
 };
 
 
@@ -57,23 +40,9 @@ struct of_spectrum {
 	double X3fsq;
 	double tau_abs;
 	double tau_scatt;
-	double ne0;
-	double thetae0;
-	double b0;
 	double E0;
 };
 
-struct of_grid {
-	struct of_spectrum spec[N_EBINS];
-	double th, phi;
-	int nlist;
-	int *in;
-};
-
-
-/*GLOBAL VARIABLES*/
-/*We need to be carefull with global variables that are modified by multiple threads at a time. We can use global variables, but just
-do not edit with multiple threads, unless we know what we are doing*/
 
 #ifndef GPUGLOBALS
 #define GPUGLOBALS

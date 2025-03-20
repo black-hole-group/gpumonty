@@ -86,7 +86,7 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 				 Bcon, Bcov, d_p);
 
 		
-				 
+		
 		if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 
 			bound_flag = 0;
@@ -198,10 +198,10 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 						 &B, Ucon, Ucov, Bcon,
 						 Bcov, d_p);
 				if (Ne > 0.) {
-					GPU_scatter_super_photon(ph, &php, Ne,
-							     Thetae, B,
-							     Ucon, Bcon,
-							     Gcov, localState);
+					// GPU_scatter_super_photon(ph, &php, Ne,
+					// 		     Thetae, B,
+					// 		     Ucon, Bcon,
+					// 		     Gcov, localState);
 					if (ph->w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
@@ -217,8 +217,8 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 						else{
 							my_local_index = atomicAdd(&d_num_scat_phs[0], 1);
 						}
-						memcpy(&scat_ofphoton[my_local_index], &php, sizeof(struct of_photon));
-
+						memcpy(&scat_ofphoton[my_local_index], ph, sizeof(struct of_photon));
+						scat_ofphoton[my_local_index].w = php.w;
 						if(scat_ofphoton[my_local_index].w != php.w){
 							printf("In GPU_track_super_photon, both weights should be the same! (%le, %le), %d\n", scat_ofphoton[my_local_index].w, php.w, my_local_index);
 						}
@@ -273,10 +273,6 @@ __device__ void GPU_track_super_photon(struct of_photon *ph, struct of_spectrum 
 		}
 	}
 
-// 	/* accumulate result in spectrum on escape */
-	if ( GPU_record_criterion(ph) && nstep < MAXNSTEP){
-		 GPU_record_super_photon(ph, d_spect);
-	}
 	/* done! */
 	return;
 }

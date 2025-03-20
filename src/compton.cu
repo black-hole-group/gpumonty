@@ -108,20 +108,20 @@ __device__ void GPU_scatter_super_photon(struct of_photon *ph, struct of_photon 
 
 	php->E = php->E0s = -tmpK[0];
 
-	php->L = tmpK[3];
+	//php->L = tmpK[3];
 	php->tau_abs = 0.;
 	php->tau_scatt = 0.;
-	php->b0 = B;
+	// php->b0 = B;
 
-	php->X1i = ph->X[1];
-	php->X2i = ph->X[2];
-	php->X[0] = ph->X[0];
-	php->X[1] = ph->X[1];
-	php->X[2] = ph->X[2];
-	php->X[3] = ph->X[3];
-	php->ne0 = Ne;
-	php->thetae0 = Thetae;
-	php->E0 = ph->E;
+	// php->X1i = ph->X[1];
+	// php->X2i = ph->X[2];
+	// php->X[0] = ph->X[0];
+	// php->X[1] = ph->X[1];
+	// php->X[2] = ph->X[2];
+	// php->X[3] = ph->X[3];
+	// php->ne0 = Ne;
+	// php->thetae0 = Thetae;
+	//php->E0 = ph->E;
 	php->nscatt = ph->nscatt + 1;
 
 	return;

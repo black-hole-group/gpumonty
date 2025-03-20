@@ -1,5 +1,5 @@
 /*
-Declarations of the Kenels.cu file functions
+Declarations of the kernels.cu file functions
 */
 
 #ifndef KERNELS_H
@@ -9,6 +9,7 @@ __global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_ge
 __global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, unsigned long long max_partition_ph, int nblocks);
 __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_spectrum * d_spect, struct of_photon * scat_ofphoton, int n, int number_of_threads);
 __global__ void GPU_record(struct of_photon * ph, struct of_spectrum * d_spect, unsigned long long  max_partition_ph, int nblocks);
+__global__ void GPU_record_scattering(struct of_photon * ph, struct of_spectrum * d_spect, unsigned long long  max_partition_ph, int nblocks, int n);
 __device__ void GPU_make_super_photon(struct of_photon *ph, int *quit_flag, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * n2gen);
 __device__ int GPU_get_zone(int *i, int *j, int *k, double *dnmax, struct of_geom *d_geom, double *d_p, int * zi, int d_Ns_par, int * zone_flag);
 __device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState);

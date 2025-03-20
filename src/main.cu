@@ -1,5 +1,5 @@
 #include "defs.h"
-#include "Kernels.h"
+#include "kernels.h"
 #include "model.h"
 #include "weights.h"
 #include "metrics.h"
