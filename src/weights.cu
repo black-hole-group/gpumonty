@@ -182,7 +182,7 @@ __host__ void init_nint_table(void)
 }
 
 
-__device__ double GPU_linear_interp_weight(double nu)
+__device__ double GPU_linear_interp_weight(const double nu)
 {
 	int i;
 	double di, lnu;

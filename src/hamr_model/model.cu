@@ -253,8 +253,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*i < 0) {
 		*i = 0;
 		del[1] = 0.;
-	} else if (*i > d_N1 - 2) {
-		*i = d_N1 - 2;
+	} else if (*i > N1 - 2) {
+		*i = N1 - 2;
 		del[1] = 1.;
 	} else {
 		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
@@ -263,8 +263,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*j < 0) {
 		*j = 0;
 		del[2] = 0.;
-	} else if (*j > d_N2 - 2) {
-		*j = d_N2 - 2;
+	} else if (*j > N2 - 2) {
+		*j = N2 - 2;
 		del[2] = 1.;
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2]; //fractional displacement of the center of the grid cell

@@ -16,9 +16,10 @@ __host__ void init_data(char *fname)
 {
     FILE *fp;
     double x[4];
+    double a;
     double rp, hp, V, dV, two_temp_gam;
     int i, j, k;
-
+    int N1_local, N2_local, N3_local;
     /* header variables not used except locally */
     double t, tf, cour, DTd, DTl, DTi, dt;
     int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
@@ -36,8 +37,8 @@ __host__ void init_data(char *fname)
 
     /* get standard HARM header */
     if (fscanf(fp, "%lf", &t) != 1 ||
-        fscanf(fp, "%d", &N1) != 1 ||
-        fscanf(fp, "%d", &N2) != 1 ||
+        fscanf(fp, "%d", &N1_local) != 1 ||
+        fscanf(fp, "%d", &N2_local) != 1 ||
         fscanf(fp, "%lf", &startx[1]) != 1 ||
         fscanf(fp, "%lf", &startx[2]) != 1 ||
         fscanf(fp, "%lf", &dx[1]) != 1 ||
@@ -66,7 +67,20 @@ __host__ void init_data(char *fname)
         exit(1);
     }
 
-    N3 = 1;
+    N3_local = 1;
+    if(N1_local != N1 || N2_local != N2 || N3_local != N3){
+        fprintf(stderr, "Code resolution does not match the simulation data resolution\n");
+        fprintf(stderr, "Code resolution: %d, %d, %d\n", N1_local, N2_local, N3_local);
+        fprintf(stderr, "Simulation resolution: %d, %d, %d\n", N1, N2, N3);
+        fprintf(stderr, "Change macros in model.h file");
+        exit(1);
+    }
+    if (a != BHSPIN){
+        fprintf(stderr, "BH spin does not match the simulation data BH spin\n");
+        fprintf(stderr, "Code BH spin: %lf, Simulation BH spin: %lf\n", BHSPIN, a);
+        fprintf(stderr, "Change macros in model.h file");
+        exit(1);
+    }
     fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
     fprintf(stderr, "hslope = %le\n", hslope);
 
@@ -111,7 +125,6 @@ __host__ void init_data(char *fname)
             fclose(fp);
             exit(1);
         }
-
         if (fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf", 
                    &p[NPRIM_INDEX(KRHO,k)],
                    &p[NPRIM_INDEX(UU,k)],
@@ -125,6 +138,8 @@ __host__ void init_data(char *fname)
             fclose(fp);
             exit(1);
         }
+        //B1 at cell i, j, k
+        //if 
 
         if (fscanf(fp, "%lf", &divb) != 1 ||
             fscanf(fp, "%lf %lf %lf %lf", &Ucon[0], &Ucon[1], &Ucon[2], &Ucon[3]) != 4 ||
@@ -163,13 +178,13 @@ __host__ void init_data(char *fname)
 
 
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
-__device__ int GPU_record_criterion(struct of_photon *ph)
+__device__ int GPU_record_criterion(double X1)
 {
 	const double X1max = log(RMAX);
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
 	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
-	if (ph->X[1] > X1max)
+	if (X1 > X1max)
 		return (1);
 
 	else
@@ -177,7 +192,7 @@ __device__ int GPU_record_criterion(struct of_photon *ph)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
+__device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 {
 	double wmin, X1min, X1max;
 
@@ -188,24 +203,24 @@ __device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
 				   specific: stop at large distance */
 
 
-	if (ph->X[1] < X1min)
+	if (X1 < X1min)
 		return 1;
 
-	if (ph->X[1] > X1max) {
-		if (ph->w < wmin) {
+	if (X1 > X1max) {
+		if (*w < wmin) {
 			if (curand_uniform_double(&localState)<= 1. / ROULETTE) {
-				ph->w *= ROULETTE;
+				*w = *w *  ROULETTE;
 			} else
-				ph->w = 0.;
+				*w = 0.;
 		}
 		return 1;
 	}
 
-	if (ph->w < wmin) {
+	if (*w < wmin) {
 		if (curand_uniform_double(&localState) <= 1. / ROULETTE) {
-			ph->w *= ROULETTE;
+			*w = *w * ROULETTE;
 		} else {
-			ph->w = 0.;
+			*w = 0.;
 			return 1;
 		}
 	}
@@ -217,13 +232,13 @@ __device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 
-	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000) - 1000;
-	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000) - 1000;
+	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000.) - 1000;
+	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000.) - 1000;
 	if (*i < 0) {
 		*i = 0;
 		del[1] = 0.;
-	} else if (*i > d_N1 - 2) {
-		*i = d_N1 - 2;
+	} else if (*i > N1 - 2) {
+		*i = N1 - 2;
 		del[1] = 1.;
 	} else {
 		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
@@ -232,8 +247,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*j < 0) {
 		*j = 0;
 		del[2] = 0.;
-	} else if (*j > d_N2 - 2) {
-		*j = d_N2 - 2;
+	} else if (*j > N2 - 2) {
+		*j = N2 - 2;
 		del[2] = 1.;
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2]; //fractional displacement of the center of the grid cell
@@ -263,7 +278,7 @@ __host__ __device__ void coord(int i, int j, double *X)
 
 	return;
 }
-__host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
+__host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 {
 	int k, l;
 	double sth, cth, s2, rho2;
@@ -275,11 +290,9 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	DLOOP gcov[k][l] = 0.;
 	bl_coord(X, &r, &th);
 	#ifdef __CUDA_ARCH__
-	double bhspin = d_a;
 	double radius0 = d_R0;
 	double theta_slope = d_hslope;
 	#else
-	double bhspin = a;
 	double radius0 = R0;
 	double theta_slope = hslope;
 	#endif
@@ -288,7 +301,7 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
-	rho2 = r * r + bhspin * bhspin * cth * cth;
+	rho2 = r * r + BHSPIN * BHSPIN * cth * cth;
 
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
@@ -298,18 +311,18 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 
 	gcov[0][0] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[0][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[0][3] = (-2. * bhspin * r * s2 / rho2) * tfac * pfac;
+	gcov[0][3] = (-2. * BHSPIN * r * s2 / rho2) * tfac * pfac;
 
 	gcov[1][0] = gcov[0][1];
 	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-bhspin * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1][3] = (-BHSPIN * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
 
 	gcov[2][2] = rho2 * hfac * hfac;
 
 	gcov[3][0] = gcov[0][3];
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
-	    s2 * (rho2 + bhspin*bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+	    s2 * (rho2 + BHSPIN*BHSPIN * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -325,14 +338,13 @@ __host__ double dOmega_func(double x2i, double x2f)
 }
 
 /* return boyer-lindquist coordinate of point */
-__host__ __device__ void bl_coord(double *X, double *r, double *th)
+__host__ __device__ void bl_coord(const double *X, double *r, double *th)
 {
   #ifdef __CUDA_ARCH__
-  double theta_slope = d_hslope;
+  const double theta_slope = d_hslope;
   #else
-  double theta_slope = hslope;
+  const double theta_slope = hslope;
   #endif
-	//fprintf(stderr,"X[1] = %le, X[2] = %le, X[3] = %le \n", X[1], X[2], X[3]);
 	*r = exp(X[1]);
 	*th = M_PI * X[2] + ((1. - theta_slope) / 2.) * sin(2. * M_PI * X[2]);
 
@@ -340,8 +352,8 @@ __host__ __device__ void bl_coord(double *X, double *r, double *th)
 }
 
 
-__host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double *Thetae, double *B,
-    double Ucon[NDIM], double Bcon[NDIM], struct of_geom * d_geom, double * d_p)
+__host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,
+    double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *  d_geom, const double *  d_p)
 {
     int l, m;
     double Ucov[NDIM], Bcov[NDIM];
@@ -415,7 +427,7 @@ __host__ __device__ void get_fluid_zone(int i, int j, int k, double *Ne, double 
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
-    double Bcov[NDIM], double * d_p)
+    double Bcov[NDIM], cudaTextureObject_t d_p)
 {
     int i, j, k;
     double del[NDIM];
@@ -438,30 +450,30 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     //Xtoijk(X, &i, &j, &k, del);
 
     //Calculate the coeficient of displacement
-    coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
-    coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
-    coeff[2] = (1. - del[1]) * del[2] * del[3];
-    coeff[3] = del[1] * del[2] * del[3];
-    coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
-    coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
-    coeff[6] = del[1] * (1. - del[2]) * del[3];
-    coeff[7] = del[1] * del[2] * (1. - del[3]);
+    // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
+    // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
+    // coeff[2] = (1. - del[1]) * del[2] * del[3];
+    // coeff[3] = del[1] * del[2] * del[3];
+    // coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
+    // coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
+    // coeff[6] = del[1] * (1. - del[2]) * del[3];
+    // coeff[7] = del[1] * del[2] * (1. - del[3]);
 
 
 
     //interpolate based on the displacement
-    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, coeff);
-    uu = GPU_interp_scalar(d_p, UU, i, j, k, coeff);
+    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
+    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
     *Ne = rho * NE_UNIT;
     *Thetae = uu / rho * d_thetae_unit;
 
-    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, coeff);
-    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, coeff);
-    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, coeff);
+    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
+    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
+    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
 
-    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, coeff);
-    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, coeff);
-    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, coeff);
+    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
+    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
+    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
 
     gcon_func(X, gcov, gcon);
 
@@ -546,48 +558,53 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 
 
 
-__device__ void GPU_record_super_photon(struct of_photon *ph , struct of_spectrum* d_spect) {
+__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
     double lE, dx2;
-    int iE, ix2;
+    int iE, ix2, index;
 
-    if (isnan(ph->w) || isnan(ph->E)) {
-        printf("record isnan: %g %g\n", ph->w, ph->E);
+    if (isnan(ph.w[photon_index]) || isnan(ph.E[photon_index])) {
+        printf("record isnan: %g %g\n", ph.w[photon_index], ph.E[photon_index]);
         return;
     }
 
-	d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph->tau_scatt);
-	#ifdef HAMR
-		dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
-		ix2 = ((ph->X[2]) < 0) ? (int)((1 +ph->X[2]) / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
-	#else
-	    dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
-    	ix2 = (ph->X[2] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph->X[2] / dx2) : (int)((d_stopx[2] - ph->X[2]) / dx2);
-	#endif
-    if (ix2 < 0 || ix2 >= N_THBINS){
+    d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
+
+    #ifdef HAMR
+        dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
+        ix2 = ((ph.X2[photon_index]) < 0) ? (int)((1 + ph.X2[photon_index]) / dx2) : (int)((d_stopx[2] - ph.X2[photon_index]) / dx2);
+    #else
+        dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
+        ix2 = (ph.X2[photon_index] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph.X2[photon_index] / dx2) : (int)((d_stopx[2] - ph.X2[photon_index]) / dx2);
+    #endif
+
+    if (ix2 < 0 || ix2 >= N_THBINS) {
         return;
-	}
+    }
 
     // Get energy bin
-    lE = log(ph->E);
+    lE = log(ph.E[photon_index]);
     iE = (int)((lE - lE0) / dlE + 2.5) - 2;
 
-    if (iE < 0 || iE >= N_EBINS){
-	    return;
-	}
+    if (iE < 0 || iE >= N_EBINS) {
+        return;
+    }
+
+    // Calculate the index once
+    index = ix2 * N_EBINS + iE;
 
     atomicAdd(&d_N_superph_recorded, 1);
-    //atomicAdd(&d_N_scatt, ph->nscatt);
+    //atomicAdd(&d_N_scatt, ph.nscatt[photon_index]);
 
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dNdlE), ph->w);
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].dEdlE), ph->w * ph->E);
-    atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].tau_abs), ph->w * ph->tau_abs);
-    atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].tau_scatt), ph->w * ph->tau_scatt);
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X1iav), ph->w * ph->X1i);
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X2isq), ph->w * (ph->X2i * ph->X2i));
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].X3fsq), ph->w * (ph->X[3] * ph->X[3]));
-	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].ne0),  ph->w * (ph->ne0));
-	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].b0), ph->w * (ph->b0));
-	// atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].thetae0),ph->w * (ph->thetae0));
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nscatt),  ph->nscatt);
-	atomicAdd(&(d_spect[(ix2 * N_EBINS) + iE].nph), 1);
+    atomicAdd(&(d_spect[index].dNdlE), ph.w[photon_index]);
+    atomicAdd(&(d_spect[index].dEdlE), ph.w[photon_index] * ph.E[photon_index]);
+    atomicAdd(&(d_spect[index].tau_abs), ph.w[photon_index] * ph.tau_abs[photon_index]);
+    atomicAdd(&(d_spect[index].tau_scatt), ph.w[photon_index] * ph.tau_scatt[photon_index]);
+    atomicAdd(&(d_spect[index].X1iav), ph.w[photon_index] * ph.X1i[photon_index]);
+    atomicAdd(&(d_spect[index].X2isq), ph.w[photon_index] * (ph.X2i[photon_index] * ph.X2i[photon_index]));
+    atomicAdd(&(d_spect[index].X3fsq), ph.w[photon_index] * (ph.X3[photon_index] * ph.X3[photon_index]));
+    // atomicAdd(&(d_spect[index].ne0),  ph.w[photon_index] * (ph.ne0[photon_index]));
+    // atomicAdd(&(d_spect[index].b0), ph.w[photon_index] * (ph.b0[photon_index]));
+    // atomicAdd(&(d_spect[index].thetae0), ph.w[photon_index] * (ph.thetae0[photon_index]));
+    atomicAdd(&(d_spect[index].nscatt), ph.nscatt[photon_index]);
+    atomicAdd(&(d_spect[index].nph), 1);
 }

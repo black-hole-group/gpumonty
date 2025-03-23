@@ -3,6 +3,83 @@ Summary of the file: This file contain memory related functions that are used in
 */
 #include "decs.h"
 #include "kernels.h"
+#include "memory.h"
+
+
+__host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cudaArray_t * cuArray) {	
+	const int nw = N1; //r
+	const int nx = NPRIM; //Nvar
+	const int ny = N3; //phi
+	const int nz = N2; //th
+	float *dPf = (float *)malloc(nx * ny * nz * nw * sizeof(float));
+	for (int i = 0; i < nx * ny * nz * nw; i++) {
+		dPf[i] = (float)dP[i];
+	}
+	cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
+	cudaMalloc3DArray(cuArray, &channelDesc, make_cudaExtent(nx * ny, nz, nw), 0);
+	cudaMemcpy3DParms copyParams = {0};
+
+	copyParams.srcPtr   = make_cudaPitchedPtr((void *) dPf, nx * ny * sizeof(float), nx * ny, nz);
+	copyParams.dstArray = *cuArray;
+	copyParams.extent   = make_cudaExtent(nx * ny, nz, nw);
+	copyParams.kind     = cudaMemcpyHostToDevice;	
+	CHECK_CUDA_ERROR(cudaMemcpy3D(&copyParams));
+	//cudaMemcpy3D(&copyParams);
+	//Array creation End
+
+	cudaResourceDesc    texRes;
+	memset(&texRes, 0, sizeof(texRes));
+	texRes.resType = cudaResourceTypeArray;
+	texRes.res.array.array  = *cuArray;
+	cudaTextureDesc     texDescr;
+	memset(&texDescr, 0, sizeof(texDescr));
+	texDescr.normalizedCoords = false ;
+	texDescr.filterMode = cudaFilterModePoint;
+	texDescr.addressMode[0] = cudaAddressModeClamp;   // clamp
+	texDescr.addressMode[1] = cudaAddressModeClamp;
+	texDescr.addressMode[2] = cudaAddressModeClamp;
+	texDescr.readMode = cudaReadModeElementType;
+	CHECK_CUDA_ERROR(cudaCreateTextureObject(texObj, &texRes, &texDescr, NULL));
+	return;
+}
+__host__ void createTableTextureObj(cudaTextureObject_t * texObj, double table[][NT + 1], const int width, const int height, cudaArray_t * cuArray) {	
+	float float_table[height][width];
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			float_table[i][j] = (float)table[i][j];
+		}
+	}
+
+
+    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
+    CHECK_CUDA_ERROR(cudaMallocArray(cuArray, &channelDesc, width, height));
+
+	// Copy data from host to device
+    size_t spitch = width * sizeof(float);
+    CHECK_CUDA_ERROR(cudaMemcpy2DToArray(*cuArray, 0, 0, float_table, spitch, 
+                                         width * sizeof(float), height, 
+                                         cudaMemcpyHostToDevice));
+	
+	// Specify texture object parameters
+    struct cudaResourceDesc resDesc;
+    memset(&resDesc, 0, sizeof(resDesc));
+    resDesc.resType = cudaResourceTypeArray;
+    resDesc.res.array.array = *cuArray;
+	 // Specify texture description parameters
+	 struct cudaTextureDesc texDesc;
+	 memset(&texDesc, 0, sizeof(texDesc));
+	 texDesc.addressMode[0] = cudaAddressModeClamp;
+	 texDesc.addressMode[1] = cudaAddressModeClamp;
+	 texDesc.filterMode = cudaFilterModeLinear;
+	 texDesc.readMode = cudaReadModeElementType;
+	 texDesc.normalizedCoords = 0;  // Using non-normalized coordinates
+ 
+	 // Create texture object
+	 CHECK_CUDA_ERROR(cudaCreateTextureObject(texObj, &resDesc, &texDesc, NULL));
+	 // Destroy texture object and free CUDA array
+	 //CHECK_CUDA_ERROR(cudaFreeArray(cuArray));
+}
+
 
 __host__ void transferGlobalVariables(){
 	/*
@@ -30,9 +107,6 @@ __host__ void transferGlobalVariables(){
 
 	*/
     cudaMemcpyToSymbol(d_Ns, &Ns, sizeof(int));
-	cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
-    cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
-    cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
     cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double));
 
 	if(hslope > 0)
@@ -40,7 +114,6 @@ __host__ void transferGlobalVariables(){
 	
 	cudaMemcpyToSymbol(d_startx, &startx, NDIM * sizeof(double));
 	cudaMemcpyToSymbol(d_stopx, &stopx, NDIM * sizeof(double));
-	cudaMemcpyToSymbol(d_a, &a, sizeof(double));
 	cudaMemcpyToSymbol(d_thetae_unit, &Thetae_unit, sizeof(double));
 	cudaMemcpyToSymbol(d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double));
 	cudaMemcpyToSymbol(d_F, &F, (N_ESAMP + 1) * sizeof(double));
@@ -172,3 +245,62 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	return (unsigned long long)(tot_nph/(*batch_divisions));
 }
 
+__host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long size) {
+    gpuErrchk(cudaMalloc(&(ph->X0), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->X1), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->X2), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->X3), size * sizeof(double)));
+    
+    gpuErrchk(cudaMalloc(&(ph->K0), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->K1), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->K2), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->K3), size * sizeof(double)));
+    
+    gpuErrchk(cudaMalloc(&(ph->dKdlam0), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->dKdlam1), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->dKdlam2), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->dKdlam3), size * sizeof(double)));
+
+    gpuErrchk(cudaMalloc(&(ph->w), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->E), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->X1i), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->X2i), size * sizeof(double)));
+    
+    gpuErrchk(cudaMalloc(&(ph->tau_abs), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->tau_scatt), size * sizeof(double)));
+    
+    gpuErrchk(cudaMalloc(&(ph->E0), size * sizeof(double)));
+    gpuErrchk(cudaMalloc(&(ph->E0s), size * sizeof(double)));
+    
+    gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
+}
+
+__host__ void freePhotonData(struct of_photonSOA * ph){
+	gpuErrchk(cudaFree(ph->X0));
+	gpuErrchk(cudaFree(ph->X1));
+	gpuErrchk(cudaFree(ph->X2));
+	gpuErrchk(cudaFree(ph->X3));
+	
+	gpuErrchk(cudaFree(ph->K0));
+	gpuErrchk(cudaFree(ph->K1));
+	gpuErrchk(cudaFree(ph->K2));
+	gpuErrchk(cudaFree(ph->K3));
+	
+	gpuErrchk(cudaFree(ph->dKdlam0));
+	gpuErrchk(cudaFree(ph->dKdlam1));
+	gpuErrchk(cudaFree(ph->dKdlam2));
+	gpuErrchk(cudaFree(ph->dKdlam3));
+
+	gpuErrchk(cudaFree(ph->w));
+	gpuErrchk(cudaFree(ph->E));
+	gpuErrchk(cudaFree(ph->X1i));
+	gpuErrchk(cudaFree(ph->X2i));
+	
+	gpuErrchk(cudaFree(ph->tau_abs));
+	gpuErrchk(cudaFree(ph->tau_scatt));
+	
+	gpuErrchk(cudaFree(ph->E0));
+	gpuErrchk(cudaFree(ph->E0s));
+	
+	gpuErrchk(cudaFree(ph->nscatt));
+}

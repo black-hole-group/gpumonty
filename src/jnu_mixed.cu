@@ -72,8 +72,8 @@ __host__ __device__ double jnu_bnu(double nu, double Thetae)
 #endif
 #define CST 1.88774862536	/* 2^{11/12} */
 
-__host__ __device__ double jnu_synch(double nu, double Ne, double Thetae, double B,
-		 double theta)
+__host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
+		 const double theta)
 {
 	#ifdef SCATTERING_TEST
 	return jnu_bnu(nu, Thetae);
@@ -111,8 +111,8 @@ __host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
  * frequency nu in cgs										*/
 
 	double j_fac, K2;
-	double F_eval(double Thetae, double B, double nu);
-	double K2_eval(double Thetae);
+	double F_eval(const double Thetae, const double B, const double nu);
+	double K2_eval(const double Thetae);
 
 
 	if (Thetae < THETAE_MIN)
@@ -209,7 +209,7 @@ __host__ void init_emiss_tables(void)
 
 /* rapid evaluation of K_2(1/\Thetae) */
 
-__host__ __device__ double K2_eval(double Thetae)
+__host__ __device__ double K2_eval(const double Thetae)
 {
 
 	if (Thetae < THETAE_MIN)
@@ -221,7 +221,7 @@ __host__ __device__ double K2_eval(double Thetae)
 }
 
 #define KFAC	(9*M_PI*ME*CL/EE)
-__host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
+__host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu)
 {
 	double K, x;
 	
@@ -240,7 +240,7 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu)
 
 
 
-__host__ __device__ double linear_interp_F(double K)
+__host__ __device__ double linear_interp_F(const double K)
 {
 	double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
@@ -264,7 +264,7 @@ __host__ __device__ double linear_interp_F(double K)
 	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
 	return result;
 }
-__host__ __device__ double linear_interp_K2(double Thetae)
+__host__ __device__ double linear_interp_K2(const double Thetae)
 {
 	#ifdef __CUDA_ARCH__
 	double * bessel_table;

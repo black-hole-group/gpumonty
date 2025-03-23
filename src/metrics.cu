@@ -1,4 +1,5 @@
 #include "decs.h"
+#include "model.h"
 /* 
 	In this file, given gcov_func in the model, we can calculate the gcon, gdet and also the connection terms.
 */
@@ -302,10 +303,8 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 		bl_coord(X, &r, &th);
 
 	#ifdef __CUDA_ARCH__
-	double bhspin = d_a;
 	double thetaslope = d_hslope;
 	#else
-	double bhspin = a;
 	double thetaslope = hslope;
 	#endif
 
@@ -314,7 +313,7 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 
 		sth = fabs(sth) + SMALL;
 
-		irho2 = 1. / (r * r + bhspin *bhspin * cth * cth);
+		irho2 = 1. / (r * r + BHSPIN *BHSPIN * cth * cth);
 
 		//transformation for Kerr-Schild -> modified Kerr-Schild 
 		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
@@ -327,8 +326,8 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 		gcon[0][1] = 2. * irho2;
 
 		gcon[1][0] = gcon[0][1];
-		gcon[1][1] = irho2 * (r * (r - 2.) + bhspin * bhspin) / (r * r);
-		gcon[1][3] = bhspin * irho2 / r;
+		gcon[1][1] = irho2 * (r * (r - 2.) + BHSPIN * BHSPIN) / (r * r);
+		gcon[1][3] = BHSPIN * irho2 / r;
 
 		gcon[2][2] = irho2 / (hfac * hfac);
 
@@ -429,7 +428,7 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
 // #undef DEL
 
 
-__device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
+__device__ void GPU_get_connection(const double X[4], double lconn[4][4][4])
 {
 	#ifdef SPHERE_TEST
 		double r1, th;
@@ -494,11 +493,11 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 	s2th = 2. * sth * cth;
 	c2th = 2 * cth2 - 1.;
 
-	a2 = d_a * d_a;
+	a2 = BHSPIN * BHSPIN;
 	a2sth2 = a2 * sth2;
 	a2cth2 = a2 * cth2;
-	a3 = a2 * d_a;
-	a4 = a3 * d_a;
+	a3 = a2 * BHSPIN;
+	a4 = a3 * BHSPIN;
 	a4cth4 = a4 * cth4;
 
 	rho2 = r2 + a2cth2;                
@@ -517,36 +516,25 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 	lconn[0][0][0] = 2. * r1 * fac1_rho23;
 	lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
 	lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
-	// printf("a2 = %le\n", a2);
-	// printf("r1 = %le\n", r1);
-	// printf("irho22 = %le\n", irho22);
-	// printf("s2th = %le\n", s2th);
-	// printf("dthdx2 = %le\n", dthdx2);
 
-	lconn[0][0][3] = -2. * d_a * r1sth2 * fac1_rho23;
 
-	//lconn[0][1][0] = lconn[0][0][1];
+	lconn[0][0][3] = -2. * BHSPIN * r1sth2 * fac1_rho23;
+
 	lconn[0][1][1] = 2. * r2 * (r4 + r1 * fac1 - a4cth4) * irho23;
 	lconn[0][1][2] = -a2 * r2 * s2th * dthdx2 * irho22;
 	lconn[0][1][3] =
-	    d_a * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
+	    BHSPIN * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
 
-	//lconn[0][2][0] = lconn[0][0][2];
-	//lconn[0][2][1] = lconn[0][1][2];
 	lconn[0][2][2] = -2. * r2 * dthdx22 * irho2;
 	lconn[0][2][3] = a3 * r1sth2 * s2th * dthdx2 * irho22;
-	//lconn[0][3][0] = lconn[0][0][3];
-	//lconn[0][3][1] = lconn[0][1][3];
-	//lconn[0][3][2] = lconn[0][2][3];
 	lconn[0][3][3] =
 	    2. * r1sth2 * (-r1 * rho22 + a2sth2 * fac1) * irho23;
 
 	lconn[1][0][0] = fac3 * fac1 / (r1 * rho23);
 	lconn[1][0][1] = fac1 * (-2. * r1 + a2sth2) * irho23;
 	lconn[1][0][2] = 0.;
-	lconn[1][0][3] = -d_a * sth2 * fac3 * fac1 / (r1 * rho23);
+	lconn[1][0][3] = -BHSPIN * sth2 * fac3 * fac1 / (r1 * rho23);
 
-	//lconn[1][1][0] = lconn[1][0][1];
 	lconn[1][1][1] =
 	    (r4 * (-2. + r1) * (1. + r1) +
 	     a2 * (a2 * r1 * (1. + 3. * r1) * cth4 + a4cth4 * cth2 +
@@ -554,77 +542,59 @@ __device__ void GPU_get_connection(double X[4], double lconn[4][4][4])
 					    a2sth2))) * irho23;
 	lconn[1][1][2] = -a2 * dthdx2 * s2th / fac2;
 	lconn[1][1][3] =
-	    d_a * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
+	    BHSPIN * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
 			a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
 
-	//lconn[1][2][0] = lconn[1][0][2];
-	//lconn[1][2][1] = lconn[1][1][2];
 	lconn[1][2][2] = -fac3 * dthdx22 * irho2;
 	lconn[1][2][3] = 0.;
 
-	//lconn[1][3][0] = lconn[1][0][3];
-	//lconn[1][3][1] = lconn[1][1][3];
-	//lconn[1][3][2] = lconn[1][2][3];
 	lconn[1][3][3] =
 	    -fac3 * sth2 * (r1 * rho22 - a2 * fac1 * sth2) / (r1 * rho23);
 
 	lconn[2][0][0] = -a2 * r1 * s2th * irho23_dthdx2;
 	lconn[2][0][1] = r1 * lconn[2][0][0];
 	lconn[2][0][2] = 0.;
-	lconn[2][0][3] = d_a * r1 * (a2 + r2) * s2th * irho23_dthdx2;
+	lconn[2][0][3] = BHSPIN * r1 * (a2 + r2) * s2th * irho23_dthdx2;
 
-	//lconn[2][1][0] = lconn[2][0][1];
 	lconn[2][1][1] = r2 * lconn[2][0][0];
 	lconn[2][1][2] = r2 * irho2;
 	lconn[2][1][3] =
-	    (d_a * r1 * cth * sth *
+	    (BHSPIN * r1 * cth * sth *
 	     (r3 * (2. + r1) +
 	      a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 +
 		    2 * r1sth2))) * irho23_dthdx2;
 
-	//lconn[2][2][0] = lconn[2][0][2];
-	//lconn[2][2][1] = lconn[2][1][2];
 	lconn[2][2][2] =
 	    -a2 * cth * sth * dthdx2 * irho2 + d2thdx22 / dthdx2;
 
 	lconn[2][2][3] = 0.;
 
-	//lconn[2][3][0] = lconn[2][0][3];
-	//lconn[2][3][1] = lconn[2][1][3];
-	//lconn[2][3][2] = lconn[2][2][3];
 	lconn[2][3][3] =
 	    -cth * sth * (rho23 +
 			  a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) +
 			  2. * r1 * a4 * sth4) * irho23_dthdx2;
 
-	lconn[3][0][0] = d_a * fac1_rho23;
+	lconn[3][0][0] = BHSPIN * fac1_rho23;
 	lconn[3][0][1] = r1 * lconn[3][0][0];
-	lconn[3][0][2] = -2. * d_a * r1 * cth * dthdx2 / (sth * rho22);
+	lconn[3][0][2] = -2. * BHSPIN * r1 * cth * dthdx2 / (sth * rho22);
 	lconn[3][0][3] = -a2sth2 * fac1_rho23;
 
-	//lconn[3][1][0] = lconn[3][0][1];
-	lconn[3][1][1] = d_a * r2 * fac1_rho23;
+	lconn[3][1][1] = BHSPIN * r2 * fac1_rho23;
 	lconn[3][1][2] =
-	    -2 * d_a * r1 * (a2 + 2 * r1 * (2. + r1) +
+	    -2 * BHSPIN * r1 * (a2 + 2 * r1 * (2. + r1) +
 			   a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
 	lconn[3][1][3] = r1 * (r1 * rho22 - a2sth2 * fac1) * irho23;
 
-	//lconn[3][2][0] = lconn[3][0][2];
-	//lconn[3][2][1] = lconn[3][1][2];
-	lconn[3][2][2] = -d_a * r1 * dthdx22 * irho2;
+	lconn[3][2][2] = -BHSPIN * r1 * dthdx22 * irho2;
 	lconn[3][2][3] =
 	    dthdx2 * (0.25 * fac2 * fac2 * cth / sth +
 		      a2 * r1 * s2th) * irho22;
-
-	//lconn[3][3][0] = lconn[3][0][3];
-	//lconn[3][3][1] = lconn[3][1][3];
-	//lconn[3][3][2] = lconn[3][2][3];
-	lconn[3][3][3] = (-d_a * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
+	lconn[3][3][3] = (-BHSPIN * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 	#endif
 
 }
 
-__host__ __device__ void lower(double *ucon, double Gcov[NDIM][NDIM], double *ucov)
+__host__ __device__ void lower(double *ucon, const double Gcov[NDIM][NDIM], double *ucov)
 {
 
 	ucov[0] = Gcov[0][0] * ucon[0]

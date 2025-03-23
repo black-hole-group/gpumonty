@@ -9,6 +9,8 @@
         "decs.h": "c",
         "stdio.h": "c",
         "random": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "vector": "cpp",
+        "config.h": "c"
     }
 }

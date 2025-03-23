@@ -1,16 +1,7 @@
 # Model name (hamr_model, harm_model, sphere_model)
 MODEL_DIR = $(SRC_DIR)/harm_model
 
-# Directories
-SRC_DIR = src
-BUILD_DIR = build
-
-# CUDA setup
 CUDA_PATH ?= /usr/local/cuda
-NVCC = $(CUDA_PATH)/bin/nvcc
-CUDA_INCLUDE = -I$(CUDA_PATH)/include
-CUDA_LIB = -L$(CUDA_PATH)/lib64
-
 #GSL setup
 GSL_PATH ?= /home/pedro/gsl
 
@@ -19,15 +10,25 @@ ARCH = compute_80
 CODE = sm_80
 CODE_LTO = lto_80
 
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
+
+# CUDA setup
+NVCC = $(CUDA_PATH)/bin/nvcc
+CUDA_INCLUDE = -I$(CUDA_PATH)/include
+CUDA_LIB = -L$(CUDA_PATH)/lib64
+
+
 
 # Debug and release flags
 DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
-NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --ptxas-options="-dlcm=cg" --maxrregcount=32\
+NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -ftz=true -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=32\
                    -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR)
 
-NVCCFLAGS_DEBUG = $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
+NVCCFLAGS_DEBUG =  $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
 NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)
 
 # Choose build type (default: release)

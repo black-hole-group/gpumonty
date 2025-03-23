@@ -5,22 +5,66 @@
 
 
 /** data structures **/
+#define CHECK_CUDA_ERROR(call) \
+do { \
+    cudaError_t err = call; \
+    if (err != cudaSuccess) { \
+        fprintf(stderr, "CUDA error in %s at line %d: %s\n", \
+                __FILE__, __LINE__, cudaGetErrorString(err)); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+/*Cuda error function*/
+#define gpuErrchk(ans)                        \
+    {                                         \
+        gpuAssert((ans), __FILE__, __LINE__); \
+    }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort = true)
+{
+    if (code != cudaSuccess)
+    {
+        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+        if (abort)
+            exit(code);
+    }
+}
+
+// Macro to simplify cudaMemcpy calls with error checking
+#define cudaMemcpyErrorCheck(dst, src, count, kind) \
+    cudaMemcpyCheck((dst), (src), (count), (kind), __FILE__, __LINE__)
+
+// Function to handle CUDA memory copies and check for errors
+inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpyKind kind,
+                            const char *file, int line)
+{
+    cudaError_t err = cudaMemcpy(dst, src, count, kind);
+    if (err != cudaSuccess)
+    {
+        fprintf(stderr, "Error in file %s at line %d: %s\n", file, line, cudaGetErrorString(err));
+        exit(EXIT_FAILURE);
+    }
+}
+
 struct of_photon {
 	double X[NDIM];
 	double K[NDIM];
 	double dKdlam[NDIM];
-	double w;
-	double E;
-	double X1i;
-	double X2i;
-	double tau_abs;
-	double tau_scatt;
-	double E0;
-	double E0s;
+	double w, E, X1i, X2i;
+	double tau_abs, tau_scatt;
+	double E0, E0s;
 	int nscatt;
-	// double Ucon0[NDIM];
-	// double Bcon0[NDIM];
-	// double Gcov0[NDIM][NDIM];
+};
+
+struct of_photonSOA {
+    double *X0, *X1, *X2, *X3;
+    double *K0, *K1, *K2, *K3;
+    double *dKdlam0, *dKdlam1, *dKdlam2, *dKdlam3;
+    double *w, *E, *X1i, *X2i;
+    double *tau_abs, *tau_scatt;
+    double *E0, *E0s;
+    int *nscatt;
+
 };
 
 
@@ -50,9 +94,8 @@ struct of_spectrum {
 
 	extern __device__ unsigned long long photon_count;
 	extern __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
-	extern __device__ int d_N1, d_N2, d_N3, d_Ns, d_N_scatt;
-	extern __device__ double d_a, d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
-	extern __device__ unsigned long long d_number_of_geodesics;
+	extern __device__ int d_Ns, d_N_scatt;
+	extern __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
 
 
 	extern __device__ unsigned long long scattering_counter;
@@ -64,8 +107,6 @@ struct of_spectrum {
 	extern __device__ double d_R0;
 	extern __device__ int total_sca;
 	extern __device__ unsigned long long tracking_counter_sampling;
-	extern __device__ unsigned long long sc_ph_next;
-	extern __device__ unsigned long long sc_ph_current;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 
 #endif
@@ -82,7 +123,6 @@ struct of_spectrum {
 	extern struct of_spectrum spect[N_THBINS][N_EBINS];
 
 	extern struct of_geom *geom;
-	extern int N1, N2, N3, n_within_horizon;
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 	extern double table[NW + 1][NT + 1];
 
@@ -90,7 +130,6 @@ struct of_spectrum {
 	extern unsigned long long N_superph_recorded;
 
 	/* some coordinate parameters */
-	extern double a;
 	extern double R0, Rin, Rh, Rout, Rms;
 	extern double hslope;
 	extern double startx[NDIM], stopx[NDIM], dx[NDIM];
@@ -100,8 +139,5 @@ struct of_spectrum {
 	extern double dMsim;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
-	
-
-	extern gsl_rng *r;
 
 #endif

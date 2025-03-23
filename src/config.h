@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_bessel.h>
@@ -90,38 +89,18 @@
 #define SMALL	1.e-40
 
 
+//#define NPRIM_INDEX3D(i,j,k,l) (i * (N1 * N2 * N3) + ((l) + N3 * (k + N2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+//#define NPRIM_INDEX3D(i,j,k,l) ( j * (N3 * N2 * NPRIM) + k * (N3 * NPRIM) + l * NPRIM + i) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+#define NPRIM_INDEX3D(i,j,k,l) ((((j) * (N2) + (k)) * N3 + (l)) * NPRIM + (i))
 
-/* some useful macros */
-
-#ifdef __CUDA_ARCH__
-#define DIM1 d_N1
-#define DIM2 d_N2
-#define DIM3 d_N3
-#else
-#define DIM1 N1
-#define DIM2 N2
-#define DIM3 N3
-#endif
-
-
-#define NPRIM_INDEX3D(i,j,k,l) (i * (DIM1 * DIM2 * DIM3) + ((l) + DIM3 * (k + DIM2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define SPATIAL_INDEX2D(i,j) ((j + DIM2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define SPATIAL_INDEX3D(i,j,k) (k+ DIM3*(j + DIM2 * i))
-#define NPRIM_INDEX(i,j) (i * (DIM1 * DIM2 * DIM3) + j) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define SLOOP_DEVICE for(int i=0;i<DIM1;i++)for(int j = 0; j< DIM2; j++)for(int k=0; k < DIM3; k++)
+#define SPATIAL_INDEX2D(i,j) ((j + N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+#define SPATIAL_INDEX3D(i,j,k) (k+ N3*(j + N2 * i))
+//#define NPRIM_INDEX(i,j) (i * (N1 * N2 * N3) + j) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+#define NPRIM_INDEX(i, j) (j * NPRIM + i)
+#define SLOOP_DEVICE for(int i=0;i<N1;i++)for(int j = 0; j< N2; j++)for(int k=0; k < N3; k++)
 
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
-#define MYSIN(x,sx) 	{							\
-			double _xp = (x)-M_PI; 					\
-			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp)); 	\
-			sx = -_yp*(0.225*fabs(_yp)+0.775);			\
-			}
-#define MYCOS(x,cx) 	{							\
-			double _xp = (x)-THREEPI_TWO; 					\
-			_xp += (_xp<-M_PI)*2.*M_PI; 				\
-			double _yp = _xp*(FOUR_PI - FOUR_PISQ*fabs(_xp));		\
-			cx = _yp*(0.225*fabs(_yp)+0.775);			\
-			}
+
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 

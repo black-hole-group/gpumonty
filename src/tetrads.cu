@@ -3,13 +3,13 @@
 #include "metrics.h"
 
 __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
-    double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
+    const double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
     double Ecov[NDIM][NDIM])
 {
 int k, l;
 double norm;
-__device__ void GPU_normalize(double *vcon, double Gcov[4][4]);
-__device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[4][4]);
+__device__ void GPU_normalize(double *vcon, const double Gcov[4][4]);
+__device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[4][4]);
 
 /* econ/ecov index explanation:
   Econ[k][l]
@@ -114,7 +114,7 @@ for (l = 0; l < 4; l++) {
 /* done */
 
 }
-__device__ void GPU_tetrad_to_coordinate(double Econ[NDIM][NDIM], double K_tetrad[NDIM],
+__device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM],
          double K[NDIM])
 {
 int l;
@@ -127,7 +127,7 @@ for (l = 0; l < 4; l++) {
 return;
 }
 /* input and vectors are contravariant (index up) */
-__device__ void GPU_coordinate_to_tetrad(double Ecov[NDIM][NDIM], double K[NDIM], double K_tetrad[NDIM])
+__device__ void GPU_coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM])
 {
 	int k;
 
@@ -143,7 +143,7 @@ if (i == j)
 else
    return (0.);
 }
-__device__ void GPU_normalize(double *vcon, double Gcov[NDIM][NDIM])
+__device__ void GPU_normalize(double *vcon, const double Gcov[NDIM][NDIM])
 {
 int k, l;
 double norm;
@@ -159,7 +159,7 @@ for (k = 0; k < 4; k++)
 
 return;
 }
-__device__ void GPU_project_out(double *vcona, double *vconb, double Gcov[NDIM][NDIM])
+__device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[NDIM][NDIM])
 {
 
 double adotb, vconb_sq;

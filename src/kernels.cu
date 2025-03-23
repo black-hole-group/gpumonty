@@ -12,6 +12,7 @@
 #include "jnu_mixed.h"
 #include "curand.h"
 #include "track.h"
+
 __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	/*
 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
@@ -64,10 +65,19 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	double * d_p; 
     gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
     cudaMemcpyErrorCheck(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice);
-
-    double *d_table_ptr;
+	cudaTextureObject_t dPTableTexObj = 0;
+	cudaArray_t dPTableCuArray;
+	createdPTextureObj(&dPTableTexObj, p, &dPTableCuArray);
+	free(p);
+	double *d_table_ptr;
     gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
     cudaMemcpyErrorCheck(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice);
+
+
+	// cudaTextureObject_t tableTexObj = 0;
+	// cudaArray_t cuArray;
+	//createTableTextureObj(&tableTexObj, table, NT + 1, NW + 1, &cuArray);
+
 
 	struct of_geom *d_geom;
 	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
@@ -103,8 +113,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	/*Creating array of initial superphotons state*/
 	int instant_partition = 1;
 	int offset = 0;
-	struct of_photon * initial_photon_states;
-	struct of_photon * scat_ofphoton;
+	struct of_photonSOA initial_photon_states;
+	struct of_photonSOA scat_ofphoton;
 	unsigned long long num_scat_phs[MAX_LAYER_SCA];
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
@@ -130,9 +140,11 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			ideal_nblocks = 1;
 		}
 
+		allocatePhotonData(&initial_photon_states, instant_photon_number);
+		allocatePhotonData(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON *instant_photon_number);
 
-		gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
-		gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * instant_photon_number* sizeof(struct of_photon))); 
+		//gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
+		//gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * instant_photon_number* sizeof(struct of_photon))); 
 
 		fprintf(stderr, "Sampling the photons!\n");
 		cudaEventRecord(start, 0);
@@ -164,11 +176,11 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number);
+			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number);
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks);
+			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks);
 		}		
 
 		cudaDeviceSynchronize();
@@ -198,7 +210,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			fprintf(stderr, "in GPU_record %s\n", cudaGetErrorString(cudaStatus));
 			exit(1);
 		}
-		cudaFree(initial_photon_states);
+	 	freePhotonData(&initial_photon_states);
+		//cudaFree(initial_photon_states);
 
 
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
@@ -212,12 +225,12 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			ideal_nblocks = ceil(num_scat_phs[n-1]/N_THREADS);
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
-				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS);
+				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS);
 			}else{
 				if (ideal_nblocks == 0)
 					ideal_nblocks = 1;
 
-				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS);
+				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS);
 			}
 			cudaDeviceSynchronize();
 			cudaEventRecord(stop);
@@ -264,7 +277,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			exit(1);
 		}
 
-		cudaFree(scat_ofphoton);
+		freePhotonData(&scat_ofphoton);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
 		memset(num_scat_phs, 0, sizeof(num_scat_phs));
@@ -280,25 +293,31 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	cudaFree(dnmax_arr);
 	cudaFree(d_geom);
 	cudaFree(d_table_ptr);
+	//cudaFree(d_p);
     cudaFree(d_index_to_ijk);
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
+	
+	cudaDestroyTextureObject(dPTableTexObj);
+	cudaFreeArray(dPTableCuArray);
+	//CHECK_CUDA_ERROR(cudaDestroyTextureObject(tableTexObj));
+
 }
 
-__global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time_t time, unsigned long long * generated_photons_arr, double * dnmax_arr){
+__global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr){
 	unsigned long long generated_photons;
 	double dnmax;
 	int i, j, k;
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	int seed = 139;//139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 	/*This is how we'll split things between blocks and threads*/
-	/*We'll divide d_N1 * d_N2 * d_N3 between blocks*/
-	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
-		k = a % d_N3;
-		j = (a/d_N3) % d_N2;
-		i = (a/(d_N2 * d_N3));
+	/*We'll divide N1 * N2 * N3 between blocks*/
+	for(int a = global_index; a < N1 * N2 * N3; (a += N_BLOCKS * N_THREADS)){
+		k = a % N3;
+		j = (a/N3) % N2;
+		i = (a/(N2 * N3));
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
@@ -314,7 +333,7 @@ __global__ void GPU_generate_photons(struct of_geom * d_geom, double * d_p, time
 
 
 
-__device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, double *dnmax, struct of_geom * d_geom, double * d_p, int d_Ns_par, curandState localState)
+__device__ void GPU_init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState localState)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
@@ -402,8 +421,176 @@ __device__ void GPU_init_zone(int i, int j, int k, unsigned long long * n2gen, d
 }
 
 
-__global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, int n, int number_of_threads){
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph, 
+	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk){
+		int i,j,k;
+		unsigned long long photon_index = 0;
+		const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+		int zone_index = 0;
+		double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
+		int past_zone = (N1 * N2 * N3);
+		curandState localState = my_curand_state[global_index];
+	
+		while (true) {
+			photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
+			if (photon_index >= max_partition_ph){
+				break;
+			}
+	
+			zone_index = findPhotonIndex(index_to_ijk, N1 * N2 * N3, photons_processed_sofar +photon_index);
+			k = zone_index % N3;
+			j = (zone_index/N3) % N2;
+			i = (zone_index/(N2 * N3));
+	
+			/*Sample all the photons generated in GPU_init_zone*/
+			GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, localState);
+			past_zone = zone_index;
+		}
+		my_curand_state[global_index] = localState;
+	}
+	
+__device__ void GPU_sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * __restrict__ d_geom, const double * __restrict__ d_p, const int zone_flag, const unsigned long long ph_arr_index,
+double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState)
+{
+	/* Set all initial superphoton attributes */
+	int l;
+	int z = 0;
+	double K_tetrad[NDIM], tmpK[NDIM], E;
+	double th, cth, sth, phi, sphi, cphi, jmax, weight;
+	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
+	double Xarray[4] = {ph.X0[ph_arr_index], ph.X1[ph_arr_index], ph.X2[ph_arr_index], ph.X3[ph_arr_index]};
+	double Karray[4] = {ph.K0[ph_arr_index], ph.K1[ph_arr_index], ph.K2[ph_arr_index], ph.K3[ph_arr_index]};
+	coord(i, j, Xarray);
+	double lnu_min = log(NUMIN);
+	double lnu_max = log(NUMAX);
+	double Nln = lnu_max - lnu_min;
+	double nu;
+	get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+
+	/* Sample from superphoton distribution in current simulation zone */
+
+	#ifdef SCATTERING_TEST
+	double conditioner, test;
+	double ThetaS = 1.e-8;
+	double temperature = ThetaS * ME * CL * CL / KBOL;
+	do {
+		nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
+		weight = GPU_linear_interp_weight(nu);
+		conditioner = (M_PI) * 2.0 * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
+		test = curand_uniform_double(&localState);
+
+	} while (test >  conditioner);
+	#else
+	do {
+		nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
+		weight = GPU_linear_interp_weight(nu);
+	} while (curand_uniform_double(&localState) >
+		(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+	#endif
+
+	ph.w[ph_arr_index] = weight;
+
+
+	bool do_condition;
+	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+	do {
+	cth = 2. * curand_uniform_double(&localState) - 1.;
+	th = acos(cth);
+	do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
+	} while (do_condition);
+
+	sth = sqrt(1. - cth * cth);
+	phi = 2. * M_PI * curand_uniform_double(&localState);
+	cphi = cos(phi);
+	sphi = sin(phi);
+
+	E = nu * HPL / (ME * CL * CL);
+	K_tetrad[0] = E;
+	K_tetrad[1] = E * cth;
+	K_tetrad[2] = E * cphi * sth;
+	K_tetrad[3] = E * sphi * sth;
+
+	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
+	if (Bmag > 0.) {
+		for (l = 0; l < NDIM; l++)
+			bhat[l] = Bcon[l] * B_UNIT / Bmag;
+	} else {
+		for (l = 1; l < NDIM; l++)
+			bhat[l] = 0.;
+		bhat[1] = 1.;
+	}
+	GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
+	}
+	GPU_tetrad_to_coordinate(Econ, K_tetrad, Karray);
+	K_tetrad[0] *= -1.;
+	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
+
+	ph.E[ph_arr_index] = ph.E0[ph_arr_index] = ph.E0s[ph_arr_index] = -tmpK[0];
+	ph.tau_scatt[ph_arr_index] = 0.;
+	ph.tau_abs[ph_arr_index] = 0.;
+	ph.X1i[ph_arr_index] = Xarray[1];
+	ph.X2i[ph_arr_index] = Xarray[2];
+	ph.nscatt[ph_arr_index] = 0;
+	//transfer Xarray and Karray to ph
+	ph.X0[ph_arr_index] = Xarray[0];
+	ph.X1[ph_arr_index] = Xarray[1];
+	ph.X2[ph_arr_index] = Xarray[2];
+	ph.X3[ph_arr_index] = Xarray[3];
+	ph.K0[ph_arr_index] = Karray[0];
+	ph.K1[ph_arr_index] = Karray[1];
+	ph.K2[ph_arr_index] = Karray[2];
+	ph.K3[ph_arr_index] = Karray[3];
+
+	return;
+}
+	
+__global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, const int nblocks){
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	unsigned long long photon_index = 0;
+	int n = 1;
+	curandState localState = my_curand_state[global_index];
+	/*track each photon we created along its geodesic*/
+
+    while (true) {
+        // Each thread grabs the next available photon index atomically
+        photon_index = (atomicAdd(&tracking_counter, 1) - 1);
+
+        // If all photons are processed, exit the loop
+        if (photon_index >= max_partition_ph) break;
+        // Track the photon
+		
+        GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, localState);
+
+        // Progress indicator
+        if (global_index == 0) {
+            float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
+            if (percentage >= n * 10) {
+                printf("Progress: %llu%%\n", (unsigned long long)percentage);
+                n++;
+            }
+        }
+	}
+	my_curand_state[global_index] = localState;
+}
+	
+__global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks)
+{
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	/*track each photon we created along its geodesic*/
+	if(global_index == 0){
+		printf("Number of photons processed %llu\n", tracking_counter);
+	}
+	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
+
+		if(GPU_record_criterion(ph.X1[a]))
+		GPU_record_super_photon(ph, d_spect, a);
+	}
+}
+
+
+
+__global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads){
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long round_num_scat_init = 0;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
@@ -419,19 +606,23 @@ __global__ void GPU_track_scat(struct of_photon * ph, double * d_p, double * d_t
 	}
 	
 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
-		gcov_func(ph[a].X, Gcov);
-		GPU_get_fluid_params(ph[a].X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
-		GPU_scatter_super_photon(&ph[a], &ph[a], Ne, Thetae, B, Ucon, Bcon, Gcov, localState);
-		GPU_track_super_photon(&ph[a], d_p, d_table_ptr, scat_ofphoton, n, a,0, localState);
+		double X[NDIM] = {ph.X0[a], ph.X1[a], ph.X2[a], ph.X3[a]};
+		gcov_func(X, Gcov);
+		GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, localState, a);
+		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+			return;
+		}
+		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, n, a, localState);
 		atomicAdd(&scattering_counter, 1);
 	}
 	my_curand_state[global_index] = localState;
 }
 
 
-__global__ void GPU_record_scattering(struct of_photon * ph, struct of_spectrum * d_spect, unsigned long long  max_partition_ph, int nblocks, int n)
+__global__ void GPU_record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__ d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n)
 {
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long round_num_scat_init = 0;
 	/*track each photon we created along its geodesic*/
 	for (int cum_sum = 0; cum_sum < n -1; cum_sum++){
@@ -445,174 +636,7 @@ __global__ void GPU_record_scattering(struct of_photon * ph, struct of_spectrum 
 	
 	for(unsigned long long a =  round_num_scat_init + global_index; a < round_num_scat_end; (a += nblocks * N_THREADS)){
 
-		if(GPU_record_criterion(&ph[a]))
-		GPU_record_super_photon(&ph[a], d_spect);
+		if(GPU_record_criterion(ph.X1[a]))
+		GPU_record_super_photon(ph, d_spect, a);
 	}
 }
-
-__global__ void GPU_record(struct of_photon * ph, struct of_spectrum * d_spect, unsigned long long  max_partition_ph, int nblocks)
-{
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	/*track each photon we created along its geodesic*/
-	if(global_index == 0){
-		printf("Number of photons processed %llu\n", tracking_counter);
-	}
-	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
-
-		if(GPU_record_criterion(&ph[a]))
-		GPU_record_super_photon(&ph[a], d_spect);
-	}
-}
-
-
-
-__global__ void GPU_track(struct of_photon * ph, double * d_p, double * d_table_ptr, struct of_photon * scat_ofphoton, unsigned long long max_partition_ph, int nblocks){
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	double percentage;
-	unsigned long long photon_index = 0;
-	int n = 1;
-	curandState localState = my_curand_state[global_index];
-	struct of_photon local_ph;
-	/*track each photon we created along its geodesic*/
-
-    while (true) {
-        // Each thread grabs the next available photon index atomically
-        photon_index = (atomicAdd(&tracking_counter, 1) - 1);
-
-        // If all photons are processed, exit the loop
-        if (photon_index >= max_partition_ph) break;
-		local_ph = ph[photon_index];
-        // Track the photon
-        GPU_track_super_photon(&local_ph, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, 0, localState);
-
-		ph[photon_index] = local_ph;
-        // Progress indicator
-        if (global_index == 0) {
-            percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
-            if (percentage >= n * 10) {
-                printf("Progress: %llu%%\n", (unsigned long long)percentage);
-                n++;
-            }
-        }
-	}
-	my_curand_state[global_index] = localState;
-}
-
-
-__global__ void GPU_sample_photons_batch(struct of_photon *ph_init, struct of_geom * d_geom, double * d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, int max_partition_ph, 
-unsigned long long photons_processed_sofar, unsigned long long * index_to_ijk){
-	int i,j,k;
-	unsigned long long photon_index = 0;
-	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int zone_index = 0;
-	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
-	int past_zone = (d_N1 * d_N2 * d_N3);
-	curandState localState = my_curand_state[global_index];
-
-	while (true) {
-		photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
-		if (photon_index >= max_partition_ph){
-			break;
-		}
-
-		zone_index = findPhotonIndex(index_to_ijk, d_N1 * d_N2 * d_N3, photons_processed_sofar +photon_index);
-		k = zone_index % d_N3;
-		j = (zone_index/d_N3) % d_N2;
-		i = (zone_index/(d_N2 * d_N3));
-
-		/*Sample all the photons generated in GPU_init_zone*/
-		GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, localState);
-		past_zone = zone_index;
-	}
-	my_curand_state[global_index] = localState;
-}
-
-__device__ void GPU_sample_zone_photon(int i, int j, int k, double dnmax, struct of_photon *ph, struct of_geom * d_geom, double * d_p, int zone_flag, unsigned long long ph_arr_index,
-double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState)
-{
-/* Set all initial superphoton attributes */
-	int l;
-	int z = 0;
-	double K_tetrad[NDIM], tmpK[NDIM], E;
-	double th, cth, sth, phi, sphi, cphi, jmax, weight;
-	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
-	coord(i, j, ph[ph_arr_index].X);
-    double lnu_min = log(NUMIN);
-	double lnu_max = log(NUMAX);
-	double Nln = lnu_max - lnu_min;
-	double nu;
-	get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-
-	/* Sample from superphoton distribution in current simulation zone */
-
-	#ifdef SCATTERING_TEST
-		double conditioner, test;
-		double ThetaS = 1.e-8;
-		double temperature = ThetaS * ME * CL * CL / KBOL;
-		do {
-			nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
-			weight = GPU_linear_interp_weight(nu);
-			conditioner = (M_PI) * 2.0 * nu * nu * nu / (CL * CL) * (1./(exp(HPL * nu/(KBOL * temperature)) - 1.0))/(weight+ 1e-100)/dnmax;
-			test = curand_uniform_double(&localState);
-
-		} while (test >  conditioner);
-	#else
-		do {
-			nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
-			weight = GPU_linear_interp_weight(nu);
-		} while (curand_uniform_double(&localState) >
-			(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-	#endif
-
-	ph[ph_arr_index].w = weight;
-
-
-	bool do_condition;
-	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
-	do {
-		cth = 2. * curand_uniform_double(&localState) - 1.;
-		th = acos(cth);
-		do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
-	} while (do_condition);
-
-	sth = sqrt(1. - cth * cth);
-	phi = 2. * M_PI * curand_uniform_double(&localState);
-	cphi = cos(phi);
-	sphi = sin(phi);
-
-	E = nu * HPL / (ME * CL * CL);
-	K_tetrad[0] = E;
-	K_tetrad[1] = E * cth;
-	K_tetrad[2] = E * cphi * sth;
-	K_tetrad[3] = E * sphi * sth;
-
-	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
-		if (Bmag > 0.) {
-			for (l = 0; l < NDIM; l++)
-				bhat[l] = Bcon[l] * B_UNIT / Bmag;
-		} else {
-			for (l = 1; l < NDIM; l++)
-				bhat[l] = 0.;
-			bhat[1] = 1.;
-		}
-		GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
-	}
-	GPU_tetrad_to_coordinate(Econ, K_tetrad, ph[ph_arr_index].K);
-	K_tetrad[0] *= -1.;
-	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
-
-	ph[ph_arr_index].E = ph[ph_arr_index].E0 = ph[ph_arr_index].E0s = -tmpK[0];
-	//ph[ph_arr_index].L = tmpK[3];
-	ph[ph_arr_index].tau_scatt = 0.;
-	ph[ph_arr_index].tau_abs = 0.;
-	ph[ph_arr_index].X1i = ph[ph_arr_index].X[1];
-	ph[ph_arr_index].X2i = ph[ph_arr_index].X[2];
-	ph[ph_arr_index].nscatt = 0;
-	// ph[ph_arr_index].ne0 = Ne;
-	// ph[ph_arr_index].b0 = Bmag;
-	// ph[ph_arr_index].thetae0 = Thetae;
-
-	return;
-}
-
-
