@@ -43,7 +43,11 @@ void init_weight_table(void)
 						get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
 						if (Ne == 0. || Thetae < THETAE_MIN)
 							continue;
+						#ifdef __CUDA_ARCH__
+						K2 =K2_eval(Thetae, NULL);
+						#else
 						K2 = K2_eval(Thetae);
+						#endif
 						fac =
 							(JCST * Ne * B * Thetae * Thetae /
 							K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;

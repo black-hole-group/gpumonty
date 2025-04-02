@@ -12,4 +12,5 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
 __host__ void freePhotonData(struct of_photonSOA * ph);
 __host__ void createTableTextureObj(cudaTextureObject_t * texObj, double table[][NT + 1], const int width, const int height, cudaArray_t * cuArray);
 __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cudaArray_t * cuArray);
+__host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cudaArray_t * cudaArray);
 #endif

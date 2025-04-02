@@ -19,11 +19,15 @@ __device__ double GPU_Bnu_inv(const double nu, const double Thetae)
 }
 
 
-__device__ double GPU_jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta)
+__device__ double GPU_jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj)
 {
 	double j;
 
+	#ifdef __CUDA_ARCH__
+	j = jnu_synch(nu, Ne, Thetae, B, theta, besselTexObj);
+	#else
 	j = jnu_synch(nu, Ne, Thetae, B, theta);
+	#endif
 	//printf("nu = %le, Thetae = %le, Ne = %le, B = %le, result = %le\n", nu, Thetae, Ne, B, j/(nu * nu));
 	return (j / (nu * nu));
 }
@@ -38,13 +42,13 @@ __device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, cons
 }
 /* return Lorentz invariant absorption opacity */
 __device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
-		     const double theta)
+		     const double theta, cudaTextureObject_t besselTexObj)
 {
 	double j, bnu;
 	#ifdef SPHERE_TEST
 	theta = 1;
 	#endif
-	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta);
+	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta, besselTexObj);
 	bnu = GPU_Bnu_inv(nu, Thetae);
 	if (j > 0){
 		return (j / (bnu + 1.e-100));

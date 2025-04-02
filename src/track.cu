@@ -6,7 +6,7 @@
 #include "metrics.h"
 
 #define dtauK (L_UNIT / (ME * CL * CL / HPL))
-__device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int round_scat, const unsigned long long photon_index, curandState localState)
+__device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int round_scat, const unsigned long long photon_index, curandState localState, cudaTextureObject_t besselTexObj)
 {
 	double dtau_scatt, dtau_abs, dtau;
 	double bi, bf;
@@ -53,7 +53,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	theta = GPU_get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 	nu = GPU_get_fluid_nu(XArray, KArray, Ucov);
 	alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-	alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta);
+	alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
 	bi = GPU_bias_func(Thetae, w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
@@ -134,7 +134,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 				/* absorption optical depth along step */
 				alpha_absf =
 				    GPU_alpha_inv_abs(nu, Thetae, Ne, B,
-						  theta);
+						  theta, besselTexObj);
 				dtau_abs =
 				    0.5 * (alpha_absi +
 					   alpha_absf) * dtauK * dl;
@@ -149,8 +149,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 			x1 = -log(curand_uniform_double(&localState));
 			weight_scat = w / bias;
-			//if(0){
-			if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
+			if(0){
+			//if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
 				if (isnan(weight_scat) || isinf(weight_scat)) {
 					printf(
 						"w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
@@ -257,7 +257,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 							    Ne, d_table_ptr);
 					alpha_absi =
 					    GPU_alpha_inv_abs(nu, Thetae, Ne,
-							  B, theta);
+							  B, theta, besselTexObj);
 				}
 				bi = GPU_bias_func(Thetae, ph.w[photon_index], round_scat);
 

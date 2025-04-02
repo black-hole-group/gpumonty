@@ -25,7 +25,7 @@ CUDA_LIB = -L$(CUDA_PATH)/lib64
 DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
-NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -ftz=true -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=32\
+NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=32\
                    -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR)
 
 NVCCFLAGS_DEBUG =  $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)

@@ -7,11 +7,9 @@
 __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState localState, unsigned long long photon_index)
 {
 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
-	int k;
 	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], ph.K2[photon_index], ph.K3[photon_index]};
 	double KArrayphp[NDIM] = {php.K0[photon_index], php.K1[photon_index], php.K2[photon_index], php.K3[photon_index]};
 
-	/* quality control */
 	if (isnan(KArrayph[1])) {
 		printf("scatter: bad input photon, the program should exit itself\n");
 		//exit(0);
@@ -32,10 +30,10 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
 	/* note that B is in cgs but Bcon is in code units */
 	if (B > 0.) {
-		for (k = 0; k < NDIM; k++)
+		for (int k = 0; k < NDIM; k++)
 			Bhatcon[k] = Bcon[k] / (B / B_UNIT);
 	} else {
-		for (k = 0; k < NDIM; k++)
+		for (int k = 0; k < NDIM; k++)
 			Bhatcon[k] = 0.;
 		Bhatcon[1] = 1.;
 	}
@@ -146,7 +144,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	   ke == photon momentum in elecron frame */
 	GPU_boost(k, p, ke);
 	if (ke[0] > 1.e-4) {
-		k0p = GPU_sample_klein_nishina( ke[0], localState);
+		k0p = GPU_sample_klein_nishina(ke[0], localState);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
@@ -285,7 +283,6 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState localState)
 	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
 	k0pmax = k0;		/* at theta = 0 */
 	do {
-
 		/* tentative value */
 		k0p_tent = k0pmin + (k0pmax - k0pmin) * curand_uniform_double(&localState);
 
@@ -301,21 +298,31 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState localState)
 	return (k0p_tent);
 }
 
-__device__ double GPU_klein_nishina(double a, double ap)
+// __device__ double GPU_klein_nishina(const double a, const double ap)
+// {
+// 	double ch;
+// 	double kn;
+
+// 	ch = 1. + 1. / a - 1. / ap;
+// 	kn = (a / ap + ap / a - 1. + ch * ch) / (a * a);
+
+// 	return (kn);
+// }
+
+__device__  double GPU_klein_nishina(const double a, const double ap)
 {
-	double ch, kn;
-
-	ch = 1. + 1. / a - 1. / ap;
-	kn = (a / ap + ap / a - 1. + ch * ch) / (a * a);
-
-	return (kn);
+    // Aggressive inlining and direct calculation
+    const double inv_a = 1.0 / a;
+    const double inv_ap = 1.0 / ap;
+    const double ch = 1.0 + inv_a - inv_ap;
+    //return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
+	return(fma(a, inv_ap, fma(ap, inv_a, fma(ch, ch, -1.0))) / (a * a));
 }
-
 
 __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState localState)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
-	double K, sth, cth, x1, n0dotv0, v0, v1;
+	double K, sth, x1, n0dotv0, v0, v1;
 	double n0x, n0y, n0z;
 	double v0x, v0y, v0z;
 	double v1x, v1y, v1z;
@@ -323,7 +330,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	int sample_cnt = 0;
 	do {
 		GPU_sample_beta_distr( Thetae, &gamma_e, &beta_e, localState);
-		mu = GPU_sample_mu_distr( beta_e, localState);
+		mu = GPU_sample_mu_distr(beta_e, curand_uniform_double(&localState));
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -404,18 +411,18 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	phi = curand_uniform_double(&localState) * 2. * M_PI;	/* orient uniformly */  
 	sphi = sin(phi);
 	cphi = cos(phi);
-	cth = mu;
+	//mu is the cosine
 	sth = sqrt(1. - mu * mu);
 
 	p[0] = gamma_e;
 	p[1] =
-	    gamma_e * beta_e * (cth * v0x +
+	    gamma_e * beta_e * (mu * v0x +
 				sth * (cphi * v1x + sphi * v2x));
 	p[2] =
-	    gamma_e * beta_e * (cth * v0y +
+	    gamma_e * beta_e * (mu * v0y +
 				sth * (cphi * v1y + sphi * v2y));
 	p[3] =
-	    gamma_e * beta_e * (cth * v0z +
+	    gamma_e * beta_e * (mu * v0z +
 				sth * (cphi * v1z + sphi * v2z));
 
 	if (beta_e < 0) {
@@ -439,16 +446,35 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
 	return;
 
 }
-__device__ double GPU_sample_y_distr(double Thetae, curandState localState)
+
+#define SQRT_MPI_OVER4 (0.443113462726379) // sqrt(M_PI) / 4
+#define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)
+__device__ double GPU_sample_y_distr(const double Thetae, curandState localState)
 {
+	/*
+	This function samples the electron Lorentz factor gamma_e
+	from the distribution function f(gamma_e) = (1/S_3) * sum_i pi_i f_i(gamma_e)
+	where f_i(gamma_e) is the distribution function for the i-th component of the sum
 
-	double S_3, pi_3, pi_4, pi_5, pi_6, y, x1, x2, x, prob;
-	double num, den;
+	Paramaters:
+	@Thetae: dimensionless electron temperature (kbTe/mec^2)
+	@localState: curandState object for random number generation
 
-	pi_3 = sqrt(M_PI) / 4.;
-	pi_4 = sqrt(0.5 * Thetae) / 2.;
-	pi_5 = 3. * sqrt(M_PI) * Thetae / 8.;
-	pi_6 = Thetae * sqrt(0.5 * Thetae);
+	Variables:
+	@S_3: normalization constant for the distribution function
+	@pi_i: weight for the i-th component of the distribution function
+	@prob: probability of accepting the sampled gamma_e
+	@y: sampled gamma_e
+
+	*/
+
+	double S_3, pi_3, pi_4, pi_5, pi_6, prob, y;
+	double sqrt_thetae = sqrt(Thetae);
+
+	pi_3 =  SQRT_MPI_OVER4;
+	pi_4 = INV_SQRT_2 * sqrt_thetae / 2.;
+	pi_5 = 3. * SQRT_MPI_OVER4 * Thetae / 2.;
+	pi_6 = Thetae * INV_SQRT_2* sqrt_thetae;
 
 	S_3 = pi_3 + pi_4 + pi_5 + pi_6;
 
@@ -457,7 +483,9 @@ __device__ double GPU_sample_y_distr(double Thetae, curandState localState)
 	pi_5 /= S_3;
 	pi_6 /= S_3;
 	do {
-		x1 = curand_uniform_double(&localState);
+		double x;
+		double x1 = curand_uniform_double(&localState);
+		
 		if (x1 < pi_3) {
 			x = chi_square(3, localState);
 		} else if (x1 < pi_3 + pi_4) {
@@ -470,26 +498,40 @@ __device__ double GPU_sample_y_distr(double Thetae, curandState localState)
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
-		y = sqrt(x / 2);
-
-		x2 = curand_uniform_double(&localState);
-		num = sqrt(1. + 0.5 * Thetae * y * y);
-		den = (1. + y * sqrt(0.5 * Thetae));
+		y = sqrt(x / 2.);
+		double num = sqrt(1. + 0.5 * Thetae * y * y);
+		double den = (1. + y * INV_SQRT_2 *sqrt_thetae);
 
 		prob = num / den;
 
-	} while (x2 >= prob);
+	} while (curand_uniform_double(&localState) >= prob);
 	return (y);
 }
+#undef SQRT_MPI
+#undef INV_SQRT_2
 
-__device__ double GPU_sample_mu_distr(double beta_e, curandState localState)
+__device__ double GPU_sample_mu_distr(const double beta_e, double random)
 {
-	double mu, x1, det;
+	/*
+	This function samples the cosine of the scattering angle mu
+	from the distribution function f(mu) = 1 / (2 * beta_e) * (1 - mu / beta_e)
+	where mu is the cosine of the scattering angle
 
-	x1 = curand_uniform_double(&localState);
-	det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * x1;
-	if (det < 0.)
-		printf("det < 0  %g %g\n\n", beta_e, x1);
-	mu = (1. - sqrt(det)) / beta_e;
-	return (mu);
+	Paramaters:
+	@beta_e: electron velocity in units of the speed of light
+	@localState: curandState object for random number generation
+
+	Variables:
+	@mu: cosine of the scattering angle/ mu = (1. - sqrt(det)) / beta_e;
+	@x1: random number in the range [0, 1]
+	@det: determinant of the quadratic equation// 
+
+	*/
+
+	// double det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * random;
+	// if (det < 0.)
+	// 	printf("det < 0  %g\n\n", beta_e);
+	// double mu = (1. - sqrt(det)) / beta_e;
+	// return (mu);
+	return (1. - sqrt(fma(2., beta_e, fma(beta_e, beta_e, fma(-4., beta_e * random, 1.))))/beta_e);
 }
