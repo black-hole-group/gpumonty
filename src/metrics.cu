@@ -439,8 +439,8 @@ __device__ void GPU_get_connection(const double X[4], double lconn[4][4][4])
 							lconn[i][j][k] = 0.;
 		/*Taken from https://arxiv.org/pdf/0904.4184*/
 		lconn[1][2][2] = -r1;
-		lconn[2][3][3] = - sin(th) * cos(th);
 		lconn[1][3][3] = - r1 * pow(sin(th), 2.);
+		lconn[2][3][3] = - sin(th) * cos(th);
 		lconn[3][1][3] = 1./r1;
 		lconn[3][3][1] = 1./r1;
 		lconn[2][2][1] = 1./r1; 

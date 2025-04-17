@@ -22,6 +22,14 @@
 //RMIN for sphere model only
 #define RMIN (1e-2/L_UNIT)
 
+#define N1 8128
+#define N2 128
+#define N3 1
+#define BHSPIN 0
+
+#define NE_VALUE (1.e20)
+#define B_VALUE (1.)
+#define THETAE_VALUE (100.)
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)
@@ -30,12 +38,15 @@
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
 __host__ void init_data(char *fname);
-__device__ int GPU_record_criterion(struct of_photon *ph);
-__device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState);
+__device__ int GPU_record_criterion(double X1);
+__device__ int GPU_stop_criterion(double X1, double * w, curandState localState);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __host__ __device__ void coord(int i, int j, double *X);
-__host__ __device__ void gcov_func(double *X, double gcov[][NDIM]);
+__host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
-__host__ void check_scan_error(int scan_output, int number_of_arguments );
-__host__ __device__ void bl_coord(double *X, double *r, double *th);
+__host__ __device__ void bl_coord(const double *X, double *r, double *th);
+__host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
+__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], cudaTextureObject_t d_p);
+__device__ double GPU_bias_func(double Te, double w, int round_scatt);
+__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 #endif

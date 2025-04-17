@@ -42,7 +42,7 @@ __device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, cons
 }
 /* return Lorentz invariant absorption opacity */
 __device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
-		     const double theta, cudaTextureObject_t besselTexObj)
+		    double theta, cudaTextureObject_t besselTexObj)
 {
 	double j, bnu;
 	#ifdef SPHERE_TEST

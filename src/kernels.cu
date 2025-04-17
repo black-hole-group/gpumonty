@@ -518,18 +518,18 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 
 	bool do_condition;
 	#ifdef __CUDA_ARCH__
-	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2., besselTexObj);
+		jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2., besselTexObj);
 	#else
-	jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+		jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
 	#endif
 
 	do {
 	cth = 2. * curand_uniform_double(&localState) - 1.;
 	th = acos(cth);
 	#ifdef __CUDA_ARCH__
-	do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th, besselTexObj) / jmax;
+		do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th, besselTexObj) / jmax;
 	#else
-	do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
+		do_condition = curand_uniform_double(&localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
 	#endif
 	} while (do_condition);
 

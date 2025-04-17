@@ -12,14 +12,24 @@ int main(int argc, char *argv[])
 	time_t starttime = time(NULL);
 
 	double Ntot;
-	const char *spect_file_name = argv[3];
 	
-
-	if (argc < 3) {
+	#ifdef SPHERE_TEST
+	printf("%d\n", argc);
+	if (argc < 3 || argc > 3) {
+		fprintf(stderr, "usage: gpumonty, Ns, filename\n");
+		fprintf(stderr, "example: ./gpumonty 8000000 SPHERE.spec \n");
+		exit(0);
+	}
+	const char *spect_file_name = argv[2];
+	#else
+	const char *spect_file_name = argv[3];
+	if (argc < 4|| argc > 4) {
 		fprintf(stderr, "usage: gpumonty, Ns, path_to_data, filename\n");
 		fprintf(stderr, "example: ./gpumonty 8000000 ./data/SANE_0.9.bin SANE.spec \n");
 		exit(0);
 	}
+
+	#endif
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
 

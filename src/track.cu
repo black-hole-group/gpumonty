@@ -78,8 +78,15 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 		dl = GPU_stepsize(XArray, KArray);
 
 		/* step the geodesic */
+		if(KArray[1] > 1e40){
+			printf("Karray[1] is too big! %d, %le\n", nstep, KArray[1]);
+			return;
+		}
 		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &(E0s));
-		
+		if(KArray[1] > 1e40){
+			printf("Karray[1] is too big after gpu_push_photon! %le %d, %le\n", dl, nstep, KArray[1]);
+			return;
+		}
 
 		if (GPU_stop_criterion(XArray[1], &(w), localState)){
 			break;
@@ -395,35 +402,40 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
                 X[i] += Kcon[i] * dl;
         }
 
+
         GPU_get_connection(X, lconn);
 
         /* We're in a coordinate basis so take advantage of symmetry in the connection */
         iter = 0;
-        do {
-                iter++;
-                FAST_CPY(K, Kcont);
+		printf("(%d), K[1] = %le, iter = %d\n", blockDim.x * blockIdx.x + threadIdx.x, K[1], iter);
 
-                err = 0.;
-                for (k = 0; k < 4; k++) {
-					dKcon[k] = fma(-2.0, 
-						(fma(Kcont[0], 
-							fma(lconn[k][0][1], Kcont[1], 
-								fma(lconn[k][0][2], Kcont[2], 
-									lconn[k][0][3] * Kcont[3])),
-							fma(Kcont[1], 
-								fma(lconn[k][1][2], Kcont[2], 
-									lconn[k][1][3] * Kcont[3]),
-								lconn[k][2][3] * Kcont[2] * Kcont[3]))),
-						-1.0 * (fma(lconn[k][0][0], Kcont[0] * Kcont[0],
-								fma(lconn[k][1][1], Kcont[1] * Kcont[1],
-									fma(lconn[k][2][2], Kcont[2] * Kcont[2],
-										lconn[k][3][3] * Kcont[3] * Kcont[3])))));
-                        K[k] = fma(dl_2, dKcon[k], Kcon[k]);
-                        err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
-                }
+        do {
+			iter++;
+			FAST_CPY(K, Kcont);
+
+			err = 0.;
+
+			for (k = 0; k < 4; k++) {
+				dKcon[k] = fma(-2.0, 
+					(fma(Kcont[0], 
+						fma(lconn[k][0][1], Kcont[1], 
+							fma(lconn[k][0][2], Kcont[2], 
+								lconn[k][0][3] * Kcont[3])),
+						fma(Kcont[1], 
+							fma(lconn[k][1][2], Kcont[2], 
+								lconn[k][1][3] * Kcont[3]),
+							lconn[k][2][3] * Kcont[2] * Kcont[3]))),
+					-1.0 * (fma(lconn[k][0][0], Kcont[0] * Kcont[0],
+							fma(lconn[k][1][1], Kcont[1] * Kcont[1],
+								fma(lconn[k][2][2], Kcont[2] * Kcont[2],
+									lconn[k][3][3] * Kcont[3] * Kcont[3])))));
+					K[k] = fma(dl_2, dKcon[k], Kcon[k]);
+					err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
+			}
+			printf("(%d), K[1] = %le, iter = %d\nKcont[1] = (%le, %le,%le, %le)\n", blockDim.x * blockIdx.x + threadIdx.x, K[1], iter, Kcont[0],Kcont[1], Kcont[2], Kcont[3]);
+
         } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
         FAST_CPY(K, Kcon);
-
 		gcov_func(X, Gcov);
         *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
