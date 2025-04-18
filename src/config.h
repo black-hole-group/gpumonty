@@ -23,15 +23,18 @@
 
 
 /* spectral bin parameters */
-#define	dlE (0.25) //Size of the energy bin
-//#define lE0	(log(HPL * NUMIN/(ME * CL * CL))) //Minimum energy of the energy bin
-#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+#ifdef SPHERE_TEST
+    #define	dlE (0.01) //Size of the energy bin
+    #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+    #define N_ESAMP 2500
+    #define N_EBINS 5000
+#else
+    #define	dlE (0.25) //Size of the energy bin
+    #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+    #define N_ESAMP 200
+    #define N_EBINS 200
+#endif
 
-
-/*Number of energy bins (I don't quite know the difference between the two)*/
-//Calculate it by doing (int((log(NUMAX/NUMIN)/dlE)))
-#define N_ESAMP 200
-#define N_EBINS 200
 
 /*Number of theta bins, (90/6) or (180/6) in case of not folding*/
 #define N_THBINS	6
@@ -54,14 +57,6 @@
 /*Setting units for the problem*/
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
-
-
-/*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.e6)/*In solar UNITs*/
-//#define RHO_UNIT (3.e-6) /* UNIT of density*/
-//#define M_UNIT (RHO_UNIT * L_UNIT * L_UNIT * L_UNIT) /*Find this based on the rho_scale parameter for HAMR sims*/
-#define M_UNIT (4.e19)
-#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 
 /*Units based off the mass of the blackhole and the Unit of mass*/
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/

@@ -1,6 +1,6 @@
 
 
-#define exponential_coordinates (1)
+#define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e7
 #define NUMAX 1.e14

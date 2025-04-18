@@ -1,9 +1,9 @@
 
 
-#define exponential_coordinates (1)
+#define EXP_COORDS (0)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e15
+#define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -13,23 +13,29 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
+#define WEIGHT_MIN	(1e-31)
 
 /*for stop criterium*/
-#define RMAX	(1000./L_UNIT) //Define the maximum radius up to track the photon
+#define RMAX	(1./L_UNIT) //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 //RMIN for sphere model only
-#define RMIN (1e-2/L_UNIT)
+#define RMIN (1.e-2/L_UNIT)
 
-#define N1 8128
-#define N2 128
+#define N1 256
+#define N2 256
 #define N3 1
 #define BHSPIN 0
 
-#define NE_VALUE (1.e20)
+#define NE_VALUE (1.e13)
 #define B_VALUE (1.)
 #define THETAE_VALUE (100.)
+
+/*Mass of the black hole and the unit of M in order to transform to natural code units*/
+#define MBH (6.77e-6)/*In solar UNITs*/
+#define M_UNIT (1.)
+#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
+
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)

@@ -206,7 +206,7 @@ __host__ void init_data(char *fname)
 	
 	double Rin = 0.01/L_UNIT;
 	double Rout = 1.e5/L_UNIT;
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	double Xin = log(Rin);
 	double Xout = log(Rout);
 	#else
@@ -215,7 +215,7 @@ __host__ void init_data(char *fname)
 	#endif
 	double sphere_radius = 1./ L_UNIT;
 
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	double sphere_x = log(sphere_radius);
 	#else
 	double sphere_x = sphere_radius;
@@ -301,7 +301,7 @@ __host__ void init_data(char *fname)
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
 __device__ int GPU_record_criterion(struct of_photon *ph)
 {
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	const double X1max = log(RMAX);
 	#else
 	const double X1max = RMAX;
@@ -322,7 +322,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
 	double wmin, X1max, X1min;
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	X1min = log(RMIN);
 	X1max = log(RMAX);
 	#else
@@ -422,7 +422,7 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM])
 	gcov[2][2] = r * r;
 	gcov[3][3] = r * r * sin(th) * sin(th);
 
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 		gcov[1][1] = r * r;
 	#endif
 
@@ -453,7 +453,7 @@ __host__ double dOmega_func(double x2i, double x2f)
 __host__ __device__ void bl_coord(double *X, double *r, double *th)
 {
 	
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 		*r = exp(X[1]);
 		*th = X[2];
 	#else

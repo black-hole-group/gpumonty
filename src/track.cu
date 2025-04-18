@@ -78,15 +78,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 		dl = GPU_stepsize(XArray, KArray);
 
 		/* step the geodesic */
-		if(KArray[1] > 1e40){
-			printf("Karray[1] is too big! %d, %le\n", nstep, KArray[1]);
-			return;
-		}
 		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &(E0s));
-		if(KArray[1] > 1e40){
-			printf("Karray[1] is too big after gpu_push_photon! %le %d, %le\n", dl, nstep, KArray[1]);
-			return;
-		}
 
 		if (GPU_stop_criterion(XArray[1], &(w), localState)){
 			break;
@@ -156,8 +148,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 			x1 = -log(curand_uniform_double(&localState));
 			weight_scat = w / bias;
-			if(0){
-			//if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
+			if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
 				if (isnan(weight_scat) || isinf(weight_scat)) {
 					printf(
 						"w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
@@ -206,10 +197,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 						 &B, Ucon, Ucov, Bcon,
 						 Bcov, d_p);
 				if (Ne > 0.) {
-					// GPU_scatter_super_photon(ph, &php, Ne,
-					// 		     Thetae, B,
-					// 		     Ucon, Bcon,
-					// 		     Gcov, localState);
+					
 					if (w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 						return;
 					}
@@ -407,7 +395,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 
         /* We're in a coordinate basis so take advantage of symmetry in the connection */
         iter = 0;
-		printf("(%d), K[1] = %le, iter = %d\n", blockDim.x * blockIdx.x + threadIdx.x, K[1], iter);
 
         do {
 			iter++;
@@ -432,7 +419,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 					K[k] = fma(dl_2, dKcon[k], Kcon[k]);
 					err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
 			}
-			printf("(%d), K[1] = %le, iter = %d\nKcont[1] = (%le, %le,%le, %le)\n", blockDim.x * blockIdx.x + threadIdx.x, K[1], iter, Kcont[0],Kcont[1], Kcont[2], Kcont[3]);
 
         } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
         FAST_CPY(K, Kcon);

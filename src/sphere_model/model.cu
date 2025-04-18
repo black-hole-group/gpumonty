@@ -18,8 +18,8 @@ __host__ void init_storage(void)
 __host__ void init_data(char *fname)
 {
 	double Rin = 1.e-2/L_UNIT;
-	double Rout = 10000./L_UNIT;
-	#if(exponential_coordinates)
+	double Rout = 2./L_UNIT;
+	#if(EXP_COORDS)
 	Rin = log(Rin);
 	Rout = log(Rout);
 	#endif
@@ -34,9 +34,9 @@ __host__ void init_data(char *fname)
 
 	/*sphere parameters*/
 	gam = 13./9.;
-	Ne_value = 1.e20/NE_UNIT; /*in 1/cm^3*/
-	B_value = 1./B_UNIT; /*in G*/
-	thetae_value = 100.;
+	Ne_value = NE_VALUE/NE_UNIT; /*in 1/cm^3*/
+	B_value = B_VALUE/B_UNIT; /*in G*/
+	thetae_value = THETAE_VALUE;
 
 	/*grid parameters*/
 	dx[1] = (Rout - Rin)/N1;
@@ -79,7 +79,7 @@ __host__ void init_data(char *fname)
 		if(r < sphere_radius){
 			p[NPRIM_INDEX(KRHO,k)] = Ne_value;
 			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
-			#if(exponential_coordinates)
+			#if(EXP_COORDS)
 				p[NPRIM_INDEX(B1,k)] = B_value * cos(h)/r ;
 			#else
 				p[NPRIM_INDEX(B1,k)] = B_value * cos(h);
@@ -106,7 +106,7 @@ __host__ void init_data(char *fname)
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
 __device__ int GPU_record_criterion(double X1)
 {
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	const double X1max = log(RMAX);
 	#else
 	const double X1max = RMAX;
@@ -128,7 +128,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 	double wmin, X1max, X1min;
 
 	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 	X1min = log(RMIN);
 	X1max = log(RMAX);
 	#else
@@ -230,7 +230,7 @@ __host__ __device__ void gcov_func(const double *X, double gcov[][NDIM])
 		gcov[3][3] = r * r * sin(th) * sin(th);
 	}
 
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 		gcov[1][1] = r * r;
 	#endif
 
@@ -261,7 +261,7 @@ __host__ double dOmega_func(double x2i, double x2f)
 __host__ __device__ void bl_coord(const double *X, double *r, double *th)
 {
 	
-	#if(exponential_coordinates)
+	#if(EXP_COORDS)
 		*r = exp(X[1]);
 		*th = X[2];
 	#else

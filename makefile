@@ -6,9 +6,9 @@ CUDA_PATH ?= /usr/local/cuda
 GSL_PATH ?= /home/pedro/gsl
 
 # Compiler flags
-ARCH = compute_60
-CODE = sm_60
-CODE_LTO = lto_60
+ARCH = compute_75
+CODE = sm_75
+CODE_LTO = lto_75
 
 # Directories
 SRC_DIR = src
