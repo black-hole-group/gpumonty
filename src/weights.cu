@@ -173,13 +173,14 @@ __host__ void init_nint_table(void)
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
-
 		}
 		nint[i] *= dx[1] * dx[2] * dx[3] * L_UNIT * L_UNIT * L_UNIT
 		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 		    * 1. / HPL;
 		nint[i] = log(nint[i]);
 		dndlnu_max[i] = log(dndlnu_max[i]);
+		//printf("%d %e %e\n", i, nint[i], dndlnu_max[i]);
+
 	}
 
 	return;

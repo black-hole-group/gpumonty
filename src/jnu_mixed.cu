@@ -197,7 +197,6 @@ __host__ void init_emiss_tables(void)
 				    &err);
 		F[k] = log(4 * M_PI * result);
 		//if(k < 10)
-		//printf("K = %.12f, result = %.12f, table = %.12f\n", K, result, log(4 * M_PI * result));
 	}
 
 	gsl_integration_workspace_free(w);

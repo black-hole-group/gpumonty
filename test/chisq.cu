@@ -104,7 +104,7 @@ __global__ void generate_chi_squared(int df, double *d_output, unsigned long lon
     seed = seed + idx;
     GPU_init_monty_rand(seed);
 
-    curandState localstate = my_curand_state[idx];
+    curandState * localState = my_curand_state[idx];
 
 
     if (idx < NUM_SAMPLES) {

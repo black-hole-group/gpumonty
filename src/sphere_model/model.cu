@@ -17,8 +17,8 @@ __host__ void init_storage(void)
 
 __host__ void init_data(char *fname)
 {
-	double Rin = 1.e-2/L_UNIT;
-	double Rout = 2./L_UNIT;
+	double Rin = 1.e-2;
+	double Rout = 2.;
 	#if(EXP_COORDS)
 	Rin = log(Rin);
 	Rout = log(Rout);
@@ -123,7 +123,7 @@ __device__ int GPU_record_criterion(double X1)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
+__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
 {
 	double wmin, X1max, X1min;
 
@@ -141,7 +141,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 
 	if (X1 > X1max) {
 		if (*w < wmin) {
-			if (curand_uniform_double(&localState)<= 1. / ROULETTE) {
+			if (curand_uniform_double(localState)<= 1. / ROULETTE) {
 				*w = *w *  ROULETTE;
 			} else
 				*w = 0.;
@@ -150,7 +150,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 	}
 
 	if (*w < wmin) {
-		if (curand_uniform_double(&localState) <= 1. / ROULETTE) {
+		if (curand_uniform_double(localState) <= 1. / ROULETTE) {
 			*w = *w * ROULETTE;
 		} else {
 			*w = 0.;

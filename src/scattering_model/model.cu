@@ -317,7 +317,7 @@ __device__ int GPU_record_criterion(struct of_photon *ph)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
+__device__ int GPU_stop_criterion(struct of_photon *ph, curandState * localState)
 {
 	double wmin, X1max, X1min;
 
@@ -337,7 +337,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
 
 	if (ph->X[1] > X1max) {
 		if (ph->w < wmin) {
-			if (curand_uniform_double(&localState) <= 1. / ROULETTE) {
+			if (curand_uniform_double(localState) <= 1. / ROULETTE) {
 				ph->w *= ROULETTE;
 			} else
 				ph->w = 0.;
@@ -346,7 +346,7 @@ __device__ int GPU_stop_criterion(struct of_photon *ph, curandState localState)
 	}
 
 	if (ph->w < wmin) {
-		if (curand_uniform_double(&localState) <= 1. / ROULETTE) {
+		if (curand_uniform_double(localState) <= 1. / ROULETTE) {
 			ph->w *= ROULETTE;
 		} else {
 			ph->w = 0.;

@@ -33,10 +33,10 @@
     // #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
     // #define N_ESAMP 200
     // #define N_EBINS 200
-    #define	dlE (0.05) //Size of the energy bin
+    #define	dlE (0.01) //Size of the energy bin
     #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
-    #define N_ESAMP 800
-    #define N_EBINS 800
+    #define N_ESAMP 2500
+    #define N_EBINS 5000
 #endif
 
 
@@ -63,7 +63,6 @@
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
 /*Units based off the mass of the blackhole and the Unit of mass*/
-#define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
 #define T_UNIT (L_UNIT/CL) /*UNIT of time*/
 #define U_UNIT (RHO_UNIT * CL * CL) /*UNITy of energy density*/
 #define B_UNIT (CL * sqrt(4. * M_PI * RHO_UNIT)) /*Unit of magnetig field*/

@@ -35,6 +35,8 @@
 #define MBH (6.77e-6)/*In solar UNITs*/
 #define M_UNIT (1.)
 #define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
+#define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
+//#define L_UNIT (1.) /* UNIT of length*/
 
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
@@ -45,7 +47,7 @@
 __host__ void init_storage(void);
 __host__ void init_data(char *fname);
 __device__ int GPU_record_criterion(double X1);
-__device__ int GPU_stop_criterion(double X1, double * w, curandState localState);
+__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __host__ __device__ void coord(int i, int j, double *X);
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);

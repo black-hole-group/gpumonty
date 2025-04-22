@@ -192,7 +192,7 @@ __device__ int GPU_record_criterion(double X1)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
+__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
 {
 	double wmin, X1min, X1max;
 
@@ -208,7 +208,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 
 	if (X1 > X1max) {
 		if (*w < wmin) {
-			if (curand_uniform_double(&localState)<= 1. / ROULETTE) {
+			if (curand_uniform_double(localState)<= 1. / ROULETTE) {
 				*w = *w *  ROULETTE;
 			} else
 				*w = 0.;
@@ -217,7 +217,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState localState)
 	}
 
 	if (*w < wmin) {
-		if (curand_uniform_double(&localState) <= 1. / ROULETTE) {
+		if (curand_uniform_double(localState) <= 1. / ROULETTE) {
 			*w = *w * ROULETTE;
 		} else {
 			*w = 0.;
@@ -385,7 +385,6 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
     for (l = 1; l < NDIM; l++){
     Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
-    //printf("Ucon[%d] = %le, Vcon[%d] = %le, Vfac = %le, geom[0][%d] = %le\n", l, Ucon[l], l, Vcon[l], Vfac, l, d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l]);
     }
     lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
     /* Get B and Bcov */
@@ -588,7 +587,6 @@ __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectr
     if (iE < 0 || iE >= N_EBINS) {
         return;
     }
-
     // Calculate the index once
     index = ix2 * N_EBINS + iE;
 
@@ -602,9 +600,6 @@ __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectr
     atomicAdd(&(d_spect[index].X1iav), ph.w[photon_index] * ph.X1i[photon_index]);
     atomicAdd(&(d_spect[index].X2isq), ph.w[photon_index] * (ph.X2i[photon_index] * ph.X2i[photon_index]));
     atomicAdd(&(d_spect[index].X3fsq), ph.w[photon_index] * (ph.X3[photon_index] * ph.X3[photon_index]));
-    // atomicAdd(&(d_spect[index].ne0),  ph.w[photon_index] * (ph.ne0[photon_index]));
-    // atomicAdd(&(d_spect[index].b0), ph.w[photon_index] * (ph.b0[photon_index]));
-    // atomicAdd(&(d_spect[index].thetae0), ph.w[photon_index] * (ph.thetae0[photon_index]));
     atomicAdd(&(d_spect[index].nscatt), ph.nscatt[photon_index]);
     atomicAdd(&(d_spect[index].nph), 1);
 }

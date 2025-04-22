@@ -6,7 +6,7 @@
 #include "metrics.h"
 
 #define dtauK (L_UNIT / (ME * CL * CL / HPL))
-__device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int round_scat, const unsigned long long photon_index, curandState localState, cudaTextureObject_t besselTexObj)
+__device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
 {
 	double dtau_scatt, dtau_abs, dtau;
 	double bi, bf;
@@ -59,7 +59,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	bi = GPU_bias_func(Thetae, w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
-	
+	//while(0){
 	while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = XArray[0];
@@ -149,7 +149,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 			}
 
-			x1 = -log(curand_uniform_double(&localState));
+			x1 = -log(curand_uniform_double(localState));
 			weight_scat = w / bias;
 			if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
 				if (isnan(weight_scat) || isinf(weight_scat)) {

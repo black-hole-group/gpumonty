@@ -109,6 +109,15 @@ __host__ void init_geometry()
 				gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
 
 				geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
+				if (i == 0 & j == 0) {
+					printf("X = %le %le %le %le\n", X[0], X[1], X[2], X[3]);
+					printf("gcov00, gcov11, gcov22, gcov33 = %le %le %le %le\n",
+					       geom[SPATIAL_INDEX2D(i,j)].gcov[0][0],
+					       geom[SPATIAL_INDEX2D(i,j)].gcov[1][1],
+					       geom[SPATIAL_INDEX2D(i,j)].gcov[2][2],
+					       geom[SPATIAL_INDEX2D(i,j)].gcov[3][3]);
+					fprintf(stderr, "gdet at 0,0= %le\n", geom[SPATIAL_INDEX2D(i,j)].g);
+				}
 
 				gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
 
