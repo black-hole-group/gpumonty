@@ -297,7 +297,8 @@ __host__ __device__ double linear_interp_K2(const double Thetae
 	di = (lT - d_lT_min) * d_dlT;
 
 	#ifdef __CUDA_ARCH__
-	return __expf(tex1D<float>(besselTexObj, di + 0.5f));
+	//return __expf(tex1D<float>(besselTexObj, di + 0.5f));
+	bessel_table = d_K2;
 	#else
 	bessel_table = K2;
 	#endif

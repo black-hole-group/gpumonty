@@ -23,7 +23,7 @@ __host__ void init_data(char *fname)
 	Rin = log(Rin);
 	Rout = log(Rout);
 	#endif
-	double th_in = 0.0001;
+	double th_in = 0.01;
 	double th_out = M_PI;
 	double two_temp_gam;
 	double r, h;
@@ -352,7 +352,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     double del[NDIM];
     double rho, uu;
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    double gcon[NDIM][NDIM], coeff[8];
+    double gcon[NDIM][NDIM];
 
     //checks if it's within the grid
     if (X[1] < d_startx[1] ||

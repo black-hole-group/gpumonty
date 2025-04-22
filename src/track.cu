@@ -46,6 +46,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	}
 	
 
+
+
 	/* Initialize opacities */
 	gcov_func(XArray, Gcov);
 	GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
@@ -79,6 +81,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 		/* step the geodesic */
 		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &(E0s));
+		
 
 		if (GPU_stop_criterion(XArray[1], &(w), localState)){
 			break;
@@ -304,6 +307,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	ph.E0s[photon_index] = E0s;
 	ph.tau_abs[photon_index] = tau_abs;
 	ph.tau_scatt[photon_index] = tau_scatt;
+
 
 	/* done! */
 	return;

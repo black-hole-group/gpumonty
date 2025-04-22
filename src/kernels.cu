@@ -344,6 +344,8 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, localState, besselTexObj);
 		//GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
 		generated_photons_arr[a] = generated_photons;
+
+
 		dnmax_arr[a] = dnmax;
 		atomicAdd(&photon_count, generated_photons);
 	}
@@ -426,6 +428,9 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 	}
 	
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	if(i == 0 && j == 0 && k == 0){
+		printf("At zone (%d, %d, %d), nz = %le, Ne = %le, g = %le, Thetae = %le, K2 = %le, ninterp = %le, Bmag = %le\n", i, j, k, nz, Ne, d_geom[SPATIAL_INDEX2D(i,j)].g, Thetae, K2, ninterp, Bmag);
+	}
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -436,7 +441,7 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 		*dnmax = 0.;
 	}else{
 		if (fmod(nz, 1.) > curand_uniform_double(&localState)) {
-			*n2gen = (int) (nz) + 1;
+			*n2gen = (int) (nz + 1.); 
 		} else {
 			*n2gen = (int) (nz);
 		}
@@ -466,7 +471,8 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
 			k = zone_index % N3;
 			j = (zone_index/N3) % N2;
 			i = (zone_index/(N2 * N3));
-	
+
+
 			/*Sample all the photons generated in GPU_init_zone*/
 			GPU_sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, localState, besselTexObj);
 			past_zone = zone_index;
@@ -490,7 +496,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 	double lnu_max = log(NUMAX);
 	double Nln = lnu_max - lnu_min;
 	double nu;
-	get_fluid_zone(i, j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	get_fluid_zone(i,j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	/* Sample from superphoton distribution in current simulation zone */
 
@@ -506,6 +512,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 
 	} while (test >  conditioner);
 	#else
+	
 	do {
 		nu = exp(curand_uniform_double(&localState) * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
@@ -533,10 +540,13 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 	#endif
 	} while (do_condition);
 
+
+
 	sth = sqrt(1. - cth * cth);
 	phi = 2. * M_PI * curand_uniform_double(&localState);
 	cphi = cos(phi);
 	sphi = sin(phi);
+
 
 	E = nu * HPL / (ME * CL * CL);
 	K_tetrad[0] = E;
@@ -553,6 +563,8 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 			bhat[l] = 0.;
 		bhat[1] = 1.;
 	}
+
+
 	GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
 	}
 	GPU_tetrad_to_coordinate(Econ, K_tetrad, Karray);
@@ -565,15 +577,16 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState localState, cudaTextureO
 	ph.X1i[ph_arr_index] = Xarray[1];
 	ph.X2i[ph_arr_index] = Xarray[2];
 	ph.nscatt[ph_arr_index] = 0;
-	//transfer Xarray and Karray to ph
-	ph.X0[ph_arr_index] = Xarray[0];
-	ph.X1[ph_arr_index] = Xarray[1];
-	ph.X2[ph_arr_index] = Xarray[2];
-	ph.X3[ph_arr_index] = Xarray[3];
 	ph.K0[ph_arr_index] = Karray[0];
 	ph.K1[ph_arr_index] = Karray[1];
 	ph.K2[ph_arr_index] = Karray[2];
 	ph.K3[ph_arr_index] = Karray[3];
+	ph.X0[ph_arr_index] = Xarray[0];
+	ph.X1[ph_arr_index] = Xarray[1];
+	ph.X2[ph_arr_index] = Xarray[2];
+	ph.X3[ph_arr_index] = Xarray[3];
+
+
 
 	return;
 }

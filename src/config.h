@@ -29,10 +29,14 @@
     #define N_ESAMP 2500
     #define N_EBINS 5000
 #else
-    #define	dlE (0.25) //Size of the energy bin
+    // #define	dlE (0.25) //Size of the energy bin
+    // #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+    // #define N_ESAMP 200
+    // #define N_EBINS 200
+    #define	dlE (0.05) //Size of the energy bin
     #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
-    #define N_ESAMP 200
-    #define N_EBINS 200
+    #define N_ESAMP 800
+    #define N_EBINS 800
 #endif
 
 

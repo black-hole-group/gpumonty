@@ -11,6 +11,8 @@
         "random": "cpp",
         "limits": "cpp",
         "vector": "cpp",
-        "config.h": "c"
+        "config.h": "c",
+        "xiosbase": "cpp",
+        "ostream": "cpp"
     }
 }

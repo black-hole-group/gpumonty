@@ -93,3 +93,5 @@ data:
 
 use make BUILD_TYPE=debug for debugging and make for release
 
+
+#there seems to have a problem with the way the old script was placing the photons within the zones. My new script works fine, but still, the results are wobbling? what's up with that? should that be a problem with the float operations due to texture memory? I don't think so, but still, it would be nice to check. Anyway, if I have enough photons it should average the error down...
