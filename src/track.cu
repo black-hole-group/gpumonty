@@ -50,8 +50,11 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 	/* Initialize opacities */
 	gcov_func(XArray, Gcov);
-	GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon,
-			 Bcov, d_p);
+	#ifndef SPHERE_TEST
+		GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+	#else
+		GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+	#endif
 	theta = GPU_get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 	nu = GPU_get_fluid_nu(XArray, KArray, Ucov);
 	alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
@@ -59,8 +62,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	bi = GPU_bias_func(Thetae, w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
-	//while(0){
-	while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
+	while(0){
+	//while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = XArray[0];
 		Xi[1] = XArray[1];
@@ -89,8 +92,11 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 		/* allow photon to interact with matter, */
 		gcov_func(XArray, Gcov);
-		GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov,
-				 Bcon, Bcov, d_p);
+		#ifndef SPHERE_TEST
+			GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+		#else
+			GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+		#endif
 
 		
 		
@@ -196,9 +202,11 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 				/* Get plasma parameters at new position */
 				gcov_func(XArray, Gcov);
-				GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae,
-						 &B, Ucon, Ucov, Bcon,
-						 Bcov, d_p);
+				#ifndef SPHERE_TEST
+					GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+				#else
+					GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+				#endif
 				if (Ne > 0.) {
 					
 					if (w < 1.e-100) {	/* must have been a problem popping k back onto light cone */
@@ -426,6 +434,18 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 
         } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
         FAST_CPY(K, Kcon);
+		if(Kcon[1] < 1e-5){
+			// Print lconn components for k = 2 in a single print statement
+			printf("lconn[1]: \n[ [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ] ]\n, X[1] = %le, X2 = %le\n K1 = %le, K2 = %le Kcont = [%g, %g, %g, %g]\n dl = %le\n",
+				lconn[1][0][0], lconn[1][0][1], lconn[1][0][2], lconn[1][0][3],
+				lconn[1][1][0], lconn[1][1][1], lconn[1][1][2], lconn[1][1][3],
+				lconn[1][2][0], lconn[1][2][1], lconn[1][2][2], lconn[1][2][3],
+				lconn[1][3][0], lconn[1][3][1], lconn[1][3][2], lconn[1][3][3],
+				X[1], X[2],
+				Kcon[1], Kcon[2], 
+				Kcont[0], Kcont[1], Kcont[2], Kcont[3],
+			dl);
+			}
 		gcov_func(X, Gcov);
         *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);

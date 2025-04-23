@@ -283,16 +283,6 @@ __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon
     gcon[1][1] = 1./gcov[1][1];
     gcon[2][2] = 1./gcov[2][2];
     gcon[3][3] = 1./gcov[3][3];
-    //check if gcov[1][1], 2,2 ,3,3 is 0
-    if(gcov[1][1] == 0.){
-        gcon[1][1] = 0.;
-    }
-    if(gcov[2][2] == 0.){
-        gcon[2][2] = 0.;
-    }
-    if(gcov[3][3] == 0.){
-        gcon[3][3] = 0.;
-    }
 	#else
 		double irho2;
 		double r, th;

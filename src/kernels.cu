@@ -620,7 +620,7 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 		printf("Number of photons processed %llu\n", tracking_counter);
 	}
 	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
-		if(GPU_record_criterion(ph.X1[a]))
+		//if(GPU_record_criterion(ph.X1[a]))
 		GPU_record_super_photon(ph, d_spect, a);
 	}
 }
@@ -646,7 +646,11 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
 		double X[NDIM] = {ph.X0[a], ph.X1[a], ph.X2[a], ph.X3[a]};
 		gcov_func(X, Gcov);
-		GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+		#ifndef SPHERE_TEST
+			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+		#else
+			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+		#endif
 		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			return;

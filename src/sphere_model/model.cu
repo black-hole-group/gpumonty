@@ -17,18 +17,18 @@ __host__ void init_storage(void)
 
 __host__ void init_data(char *fname)
 {
-	double Rin = 1.e-2;
-	double Rout = 2.;
+	double Rin = RMIN;
+	double Rout = 2 * RMAX;
 	#if(EXP_COORDS)
 	Rin = log(Rin);
 	Rout = log(Rout);
 	#endif
-	double th_in = 0.01;
+	double th_in = 0.;
 	double th_out = M_PI;
 	double two_temp_gam;
 	double r, h;
 	double x[4];
-	double sphere_radius = 1./ L_UNIT;
+	double sphere_radius = SPHERE_RADIUS;
 	double Ne_value, B_value, thetae_value;
 	int i,j,k;
 
@@ -43,7 +43,10 @@ __host__ void init_data(char *fname)
 	dx[2] = (th_out - th_in)/N2;
 	dx[3] =  2 * M_PI;
 	startx[0] = 0.;
-	startx[1] = Rin;
+	startx[1] = 0.;
+    #if(EXP_COORDS)
+    startx[1] = Rin;
+    #endif
 	startx[2] = th_in;
 	startx[3] = 0.;
 	stopx[0] = 1.;
@@ -198,14 +201,14 @@ __host__ __device__ void coord(int i, int j, double *X)
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];
-		X[1] = d_startx[1] + (i) * d_dx[1];
-		X[2] = d_startx[2] + (j) * d_dx[2];
+		X[1] = d_startx[1] + (i + 0.5) * d_dx[1];
+		X[2] = d_startx[2] + (j + 0.5) * d_dx[2];
 		X[3] = d_startx[3];
 	#else
 		/* returns zone-centered values for coordinates */
 		X[0] = startx[0];
-		X[1] = startx[1] + (i ) * dx[1];
-		X[2] = startx[2] + (j ) * dx[2];
+		X[1] = startx[1] + (i + 0.5) * dx[1];
+		X[2] = startx[2] + (j + 0.5) * dx[2];
 		X[3] = startx[3];
 	#endif
 
@@ -224,28 +227,11 @@ __host__ __device__ void gcov_func(const double *X, double gcov[][NDIM])
 	gcov[0][0] = -1.;
 	gcov[1][1] = 1.;
 	gcov[2][2] = r * r;
-	if(th == 0){
-		gcov[3][3] = 0.;
-	}else{
-		gcov[3][3] = r * r * sin(th) * sin(th);
-	}
+	gcov[3][3] = r * r * sin(th) * sin(th);
 
 	#if(EXP_COORDS)
-		gcov[1][1] = r * r;
+		gcov[1][1] *= r * r;
 	#endif
-
-	//if gcov is inf or is nan, print out the coordinates
-	if(isnan(gcov[0][0]) || isnan(gcov[1][1]) || isnan(gcov[2][2]) || isnan(gcov[3][3])){
-		printf("Inside gcov_func, NaN quantity!\n");
-		printf("r = %le, th = %le, X[1] = %le, X[2] = %le\n", r, th, X[1], X[2]);
-		printf("gcov[0][0] = %le, gcov[1][1] = %le, gcov[2][2] = %le, gcov[3][3] = %le\n", gcov[0][0], gcov[1][1], gcov[2][2], gcov[3][3]);
-	}
-	if(isinf(gcov[0][0]) || isinf(gcov[1][1]) || isinf(gcov[2][2]) || isinf(gcov[3][3])){
-		printf("Inside gcov_func, infinity quantity\n");
-		printf("r = %le, th = %le, X[1] = %le, X[2] = %le\n", r, th, X[1], X[2]);
-		printf("gcov[0][0] = %le, gcov[1][1] = %le, gcov[2][2] = %le, gcov[3][3] = %le\n", gcov[0][0], gcov[1][1], gcov[2][2], gcov[3][3]);
-	}
-
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -271,161 +257,88 @@ __host__ __device__ void bl_coord(const double *X, double *r, double *th)
 	return;
 }
 
+__host__ __device__ void ijktoX(){
+
+}
+
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,
     double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *  d_geom, const double *  d_p)
 {
-    int l, m;
-    double Ucov[NDIM], Bcov[NDIM];
-    double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+ 
+    double X[4] = {0.};
     #ifdef __CUDA_ARCH__
-    double thetaeUnit = d_thetae_unit;
+    X[1] = d_startx[1] + (i + 0.5) * d_dx[1];
+    X[2] = d_startx[2] + (j + 0.5) * d_dx[2];
+    X[3] = d_startx[3] + (k + 0.5) * d_dx[3];
     #else
-    double thetaeUnit = Thetae_unit;
-
+    X[1] = startx[1] + (i + 0.5) * dx[1];
+    X[2] = startx[2] + (j + 0.5) * dx[2];
+    X[3] = startx[3] + (k + 0.5) * dx[3];
     #endif
 
-    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
-    *Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * thetaeUnit;
+    double gcov[NDIM][NDIM];
+    gcov_func(X, gcov);
 
-    Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
-    Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
-    Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
+    double Ucov[4] = {0.};
+    double Bcov[4] = {0.};
 
-    Vcon[1] = d_p[NPRIM_INDEX3D(U1, i, j, k)];
-    Vcon[2] = d_p[NPRIM_INDEX3D(U2, i, j, k)];
-    Vcon[3] = d_p[NPRIM_INDEX3D(U3, i, j, k)];
-
-    /* Get Ucov */
-    VdotV = 0.;
-    for (l = 1; l < NDIM; l++)
-    for (m = 1; m < NDIM; m++)
-        VdotV += d_geom[SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
-    Vfac = sqrt(-1. / d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
-    Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
-    for (l = 1; l < NDIM; l++){
-    Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
-    //printf("Ucon[%d] = %le, Vcon[%d] = %le, Vfac = %le, geom[0][%d] = %le\n", l, Ucon[l], l, Vcon[l], Vfac, l, d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l]);
-    }
-    lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
-    /* Get B and Bcov */
-    UdotBp = 0.;
-    for (l = 1; l < NDIM; l++)
-    UdotBp += Ucov[l] * Bp[l];
-    Bcon[0] = UdotBp;
-    for (l = 1; l < NDIM; l++){
-    Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
-    }
-    lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
-    *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
-
-
-    #ifdef SCATTERING_TEST
-    *Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
-    *Thetae = 4.;
-    *B = 0;
-    return;
-    #endif
-
-    if (isnan(*B)){
-    printf("i = %d, j = %d, k = %d\n", i, j, k);
-    printf( "VdotV = %le\n", VdotV);
-    printf( "Vfac = %lf\n", Vfac);
-    for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
-    for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcov[a][b]);
-    printf( "Thetae: %lf\n", *Thetae);
-    printf( "Ne: %lf\n", *Ne);
-    printf( "Bp: %lf, %lf, %lf\n", Bp[1], Bp[2], Bp[3]);
-    printf( "Vcon: %lf, %lf, %lf\n", Vcon[1], Vcon[2], Vcon[3]);
-    printf( "Bcon: %lf, %lf, %lf, %lf\n Bcov: %lf, %lf, %lf %lf\n", Bcon[0], Bcon[1], Bcon[2], Bcon[3], Bcov[0], Bcov[1], Bcov[2], Bcov[3]);
-    printf( "Ucon: %lf, %lf, %lf, %lf\n Ucov: %lf, %lf, %lf %lf\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3], Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
-    }
+    GPU_get_fluid_params(X, gcov, Ne, Thetae, B, Ucon, Ucov, Bcon, Bcov);
 }
 
 
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
-    double Bcov[NDIM], cudaTextureObject_t d_p)
+    double Bcov[NDIM])
 {
-    int i, j, k;
-    double del[NDIM];
-    double rho, uu;
-    double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    double gcon[NDIM][NDIM];
 
-    //checks if it's within the grid
-    if (X[1] < d_startx[1] ||
-    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
-
-    *Ne = 0.;
-
-    return;
-    }
-
-    // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
-    //Xtoij(X, &i, &j, del);
-    GPU_Xtoijk(X, &i, &j, &k, del);
-    //Xtoijk(X, &i, &j, &k, del);
-
-    //Calculate the coeficient of displacement
-    // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
-    // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
-    // coeff[2] = (1. - del[1]) * del[2] * del[3];
-    // coeff[3] = del[1] * del[2] * del[3];
-    // coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
-    // coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
-    // coeff[6] = del[1] * (1. - del[2]) * del[3];
-    // coeff[7] = del[1] * del[2] * (1. - del[3]);
-
-
-
-    //interpolate based on the displacement
-    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
-    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
-    *Ne = rho * NE_UNIT;
-    *Thetae = uu / rho * d_thetae_unit;
-
-    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
-    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
-    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
-
-    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
-    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
-    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
-
-    gcon_func(X, gcov, gcon);
-
-    /* Get Ucov */
-    VdotV = 0.;
-    for (i = 1; i < NDIM; i++)
-    for (j = 1; j < NDIM; j++)
-    VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
-    Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
-    Ucon[0] = -Vfac * gcon[0][0];
-    for (i = 1; i < NDIM; i++){
-    Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
-    }
-    lower(Ucon, gcov, Ucov);
-
-    /* Get B and Bcov */
-    UdotBp = 0.;
-    for (i = 1; i < NDIM; i++)
-    UdotBp += Ucov[i] * Bp[i];
-    Bcon[0] = UdotBp;
-    for (i = 1; i < NDIM; i++)
-    Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-    lower(Bcon, gcov, Bcov);
-
-    *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
-
-    #ifdef SCATTERING_TEST
-        *Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
-        *Thetae = 4.;
+    #ifdef __CUDA_ARCH__
+    if (X[1] < d_startx[1] || X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
+        *Ne = 0;
         *B = 0;
+        *Thetae = 0;
         return;
+    }
+    #else
+    if (X[1] < startx[1] || X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+        *Ne = 0;
+        *B = 0;
+        *Thetae = 0;
+        return;
+    }
     #endif
+
+    double r,th;
+    bl_coord(X, &r, &th);
+
+    if(r > SPHERE_RADIUS){
+        *Ne = 0.;
+        *Thetae = 0.;
+        *B = 0.;
+        return;
+    }
+
+    *Ne = NE_VALUE;
+    *B = B_VALUE;
+    *Thetae = THETAE_VALUE;
+
+    Ucon[0] = 1.;
+    Ucon[1] = 0.;
+    Ucon[2] = 0.;
+    Ucon[3] = 0.;
+
+    Bcon[0] = 0.;
+    Bcon[1] = B_VALUE * cos(th)/B_UNIT;
+    Bcon[2] = -B_VALUE * sin(th)/(r + 1.e-8) / B_UNIT;
+    Bcon[3] = 0.;
+
+    #if(EXP_COORDS)
+    Bcon[1] /= r;
+    #endif
+
+    lower(Ucon, gcov, Ucov);
+    lower(Bcon, gcov, Bcov);
+    return;
 }
 
 

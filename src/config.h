@@ -143,7 +143,7 @@
 #define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
-#define MAX_LAYER_SCA (8)
+#define MAX_LAYER_SCA (1)
 
 /*for stepsize*/
 #define EPS (0.04)

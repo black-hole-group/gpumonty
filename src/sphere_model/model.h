@@ -2,7 +2,7 @@
 
 #define EXP_COORDS (0)
 /* Range of superphoton frequencies */
-#define NUMIN 1.e7
+#define NUMIN 1.e8
 #define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
@@ -20,9 +20,9 @@
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
 //RMIN for sphere model only
-#define RMIN (1.e-2/L_UNIT)
+#define RMIN (0./L_UNIT)
 
-#define N1 256
+#define N1 8192
 #define N2 256
 #define N3 1
 #define BHSPIN 0
@@ -30,9 +30,10 @@
 #define NE_VALUE (1.e13)
 #define B_VALUE (1.)
 #define THETAE_VALUE (100.)
+#define SPHERE_RADIUS (1./L_UNIT)
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (6.77e-6)/*In solar UNITs*/
+#define MBH (6.770292094e-6)/*In solar UNITs*/
 #define M_UNIT (1.)
 #define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
@@ -54,7 +55,7 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], cudaTextureObject_t d_p);
+__host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
 __device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 #endif
