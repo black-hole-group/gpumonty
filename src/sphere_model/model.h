@@ -1,6 +1,6 @@
 
 
-#define EXP_COORDS (0)
+#define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
 #define NUMAX 1.e16
@@ -16,14 +16,14 @@
 #define WEIGHT_MIN	(0)
 
 /*for stop criterium*/
-#define RMAX	(1./L_UNIT) //Define the maximum radius up to track the photon
+#define RMAX	(10000./L_UNIT) //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
-
+#define R_RECORD (3000./L_UNIT)
 //RMIN for sphere model only
-#define RMIN (0./L_UNIT)
+#define RMIN (0.01/L_UNIT)
 
 #define N1 8192
-#define N2 256
+#define N2 128
 #define N3 1
 #define BHSPIN 0
 
@@ -33,7 +33,8 @@
 #define SPHERE_RADIUS (1./L_UNIT)
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (6.770292094e-6)/*In solar UNITs*/
+//#define MBH (6.770292094e-6)/*In solar UNITs*/
+#define MBH (4.2e6)
 #define M_UNIT (1.)
 #define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/

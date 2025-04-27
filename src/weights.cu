@@ -60,7 +60,7 @@ void init_weight_table(void)
 	}
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++){
-		wgt[i] = log(sum[i] / (HPL * Ns));
+		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
 	}
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
@@ -108,8 +108,7 @@ void init_weight_table_blackbody(void)
 		if (myid == nthreads - 1)
 			lend = N_ESAMP + 1;
 		int index = N1 - 1;
-		// //index = 200;
-		//printf("index = %d\n", index);
+
 		for (j = 0; j < N2; j++) {
 			for (k = 0; k < N3; k++) {
 				

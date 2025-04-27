@@ -28,7 +28,9 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	double E0s = ph.E0s[photon_index];
 	double tau_scatt = 0;
 	double tau_abs = 0;
-
+	// if (w < 1) {
+	// 	return;
+	//   }
 	/* quality control */
 	if (isnan(XArray[0]) ||
 		isnan(XArray[1]) ||
@@ -45,7 +47,18 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 		return;
 	}
 	
+	// if(photon_index == 0){
 
+	// 	XArray[0] = 1.56740147e-06;
+	// 	XArray[1] = -3.10917352e+01;
+	// 	XArray[2] = 2.41755372e+00;
+	// 	XArray[3] = 3.14159265e+00;
+	// 	KArray[0] = 1.60517582e-12;
+	// 	KArray[1] = -7.22161872e+00;
+	// 	KArray[2] = -3.82920692e+01;
+	// 	KArray[3] = 4.99233636e+01;
+	// 	w = 3.13255642e+09;
+	// }
 
 
 	/* Initialize opacities */
@@ -62,8 +75,11 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	bi = GPU_bias_func(Thetae, w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
-	while(0){
-	//while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
+	// if(photon_index == 0){
+	// 	printf("Right Below init_dkdlam (%le, %le, %le, %le)\n", dKdlamArray[0], dKdlamArray[1], dKdlamArray[2], dKdlamArray[3]);
+	// }
+	//while(0){
+	while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = XArray[0];
 		Xi[1] = XArray[1];
@@ -84,7 +100,6 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 		/* step the geodesic */
 		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &(E0s));
-		
 
 		if (GPU_stop_criterion(XArray[1], &(w), localState)){
 			break;
@@ -316,6 +331,12 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	ph.tau_abs[photon_index] = tau_abs;
 	ph.tau_scatt[photon_index] = tau_scatt;
 
+	// if(photon_index == 0){
+	// 	printf(
+	// 		"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g\n",
+	// 		XArray[0], XArray[1], XArray[2], XArray[3], KArray[0],
+	// 		KArray[1], KArray[2], KArray[3], w);
+	// }
 
 	/* done! */
 	return;
@@ -353,6 +374,7 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 	return;
 }
 
+#define MIN(A,B) (A<B?A:B)
 __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
@@ -363,10 +385,14 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 		stopx2_normal = 1.; 
 		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
 	#else
-		dlx2 = EPS * GSL_MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
+		dlx2 = EPS * MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 	#endif
 
-	dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
+	#ifdef SPHERE_TEST
+		dlx1 = EPS/(fabs(K[1]) + SMALL);
+	#else
+		dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
+	#endif
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -377,7 +403,7 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 
 	return (dl);
 }
-
+#undef MIN
 
 
 // // //This one below is from gpu_monty
@@ -434,18 +460,6 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
 
         } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
         FAST_CPY(K, Kcon);
-		if(Kcon[1] < 1e-5){
-			// Print lconn components for k = 2 in a single print statement
-			printf("lconn[1]: \n[ [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ],\n [ %g, %g, %g, %g ] ]\n, X[1] = %le, X2 = %le\n K1 = %le, K2 = %le Kcont = [%g, %g, %g, %g]\n dl = %le\n",
-				lconn[1][0][0], lconn[1][0][1], lconn[1][0][2], lconn[1][0][3],
-				lconn[1][1][0], lconn[1][1][1], lconn[1][1][2], lconn[1][1][3],
-				lconn[1][2][0], lconn[1][2][1], lconn[1][2][2], lconn[1][2][3],
-				lconn[1][3][0], lconn[1][3][1], lconn[1][3][2], lconn[1][3][3],
-				X[1], X[2],
-				Kcon[1], Kcon[2], 
-				Kcont[0], Kcont[1], Kcont[2], Kcont[3],
-			dl);
-			}
 		gcov_func(X, Gcov);
         *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
                Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);

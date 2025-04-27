@@ -385,8 +385,8 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 			*dnmax = 0.;
 			*n2gen = 0.;
 			return;
-		} else if (l >= NINT) {
-			printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
+		} else if (l >= NINT|| 1) {
+			//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
 			ninterp = 0.;
 			*dnmax = 0.;
 			for (l = 0; l <= N_ESAMP; l++) {
@@ -431,7 +431,6 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 	
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 
-	
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -442,11 +441,10 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 		*dnmax = 0.;
 	}else{
 		if (fmod(nz, 1.) > curand_uniform_double(localState)) {
-			*n2gen = (int) (nz + 1.); 
+			*n2gen = (int) (nz) + 1; 
 		} else {
 			*n2gen = (int) (nz);
 		}
-		*n2gen = (int) (nz);
 	}
 
 	return;
@@ -504,12 +502,11 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextu
 	get_fluid_zone(i,j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
 
 	/* Sample from superphoton distribution in current simulation zone */
-
 	do {
 		nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
 		weight = GPU_linear_interp_weight(nu);
 	} while (curand_uniform_double(localState) >
-		(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / (dnmax));
 
 
 	ph.w[ph_arr_index] = weight;
@@ -532,8 +529,10 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextu
 	#endif
 	} while (do_condition);
 
+
 	sth = sqrt(1. - cth * cth);
 	phi = 2. * M_PI * curand_uniform_double(localState);
+
 	cphi = cos(phi);
 	sphi = sin(phi);
 
@@ -580,6 +579,7 @@ double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextu
 
 
 
+
 	return;
 }
 	
@@ -620,7 +620,7 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 		printf("Number of photons processed %llu\n", tracking_counter);
 	}
 	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
-		//if(GPU_record_criterion(ph.X1[a]))
+		if(GPU_record_criterion(ph.X1[a]))
 		GPU_record_super_photon(ph, d_spect, a);
 	}
 }

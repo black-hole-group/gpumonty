@@ -96,6 +96,8 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 
 	nuc = EE * B / (2. * M_PI * ME * CL);
 	sth = sin(theta);
+	
+	
 
 	nus = (2. / 9.) * nuc * Thetae * Thetae * sth;
 	if (nu > 1.e12 * nus)

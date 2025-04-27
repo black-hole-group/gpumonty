@@ -18,11 +18,8 @@ __host__ void init_storage(void)
 __host__ void init_data(char *fname)
 {
 	double Rin = RMIN;
-	double Rout = 2 * RMAX;
-	#if(EXP_COORDS)
-	Rin = log(Rin);
-	Rout = log(Rout);
-	#endif
+	double Rout = RMAX;
+
 	double th_in = 0.;
 	double th_out = M_PI;
 	double two_temp_gam;
@@ -44,9 +41,6 @@ __host__ void init_data(char *fname)
 	dx[3] =  2 * M_PI;
 	startx[0] = 0.;
 	startx[1] = 0.;
-    #if(EXP_COORDS)
-    startx[1] = Rin;
-    #endif
 	startx[2] = th_in;
 	startx[3] = 0.;
 	stopx[0] = 1.;
@@ -56,8 +50,15 @@ __host__ void init_data(char *fname)
 	R0 = 0;
 	hslope = 0;
 
+    #if(EXP_COORDS)
+    startx[1] = log(Rin);
+    dx[1] = (log(Rout) - log(Rin))/N1;
+    stopx[1] = startx[1] + N1 * dx[1];
+    #endif
+
 	fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
 	fprintf(stderr, "startX (%le, %le), stopX(%le, %le)\n", startx[1], startx[2], stopx[1], stopx[2]);
+    fprintf(stderr, "dx (%le, %le)\n", dx[1], dx[2]);
 
 	/* Allocate storage for all model size dependent variables */
 	init_storage();
@@ -75,9 +76,11 @@ __host__ void init_data(char *fname)
 		// z = 0;
 		j = k % N2;
 		i = (k - j) / N2;
-		x[1] = startx[1] + i * dx[1];
-		x[2] = startx[2] + j * dx[2];
+		x[1] = startx[1] + (i + 0.5) * dx[1];
+        
+		x[2] = startx[2] + (j + 0.5) * dx[2];
 		bl_coord(x, &r, &h);
+        
 
 		if(r < sphere_radius){
 			p[NPRIM_INDEX(KRHO,k)] = Ne_value;
@@ -110,56 +113,43 @@ __host__ void init_data(char *fname)
 __device__ int GPU_record_criterion(double X1)
 {
 	#if(EXP_COORDS)
-	const double X1max = log(RMAX);
+	const double r = exp(X1);
 	#else
-	const double X1max = RMAX;
+	const double r = X1;
 	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
 	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
-	if (X1 > X1max)
+	if (r > R_RECORD){
 		return (1);
+    }else{
+        return (0);
+    }
 
-	else
-		return (0);
 
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
 {
-	double wmin, X1max, X1min;
-
-	wmin = WEIGHT_MIN;	/* stop if weight is below minimum weight */
 	#if(EXP_COORDS)
-	X1min = log(RMIN);
-	X1max = log(RMAX);
+	const double r = exp(X1);
 	#else
-	X1min = RMIN;
-	X1max = RMAX;	/* this is coordinate and simulation specific: stop at large distance */
+	const double r = X1;
 	#endif				   
-
-	if (X1 < X1min)
+    //printf("r = %le, w = %le, RMIN = %le, R_RECORD = %le\n", r, *w, RMIN, R_RECORD);
+    if(*w < WEIGHT_MIN){
+        if (curand_uniform_double(localState)<= 1. / ROULETTE) {
+            *w = *w *  ROULETTE;
+        } else{
+            *w = 0.;
+            return 1;
+        }
+    }
+	if (r < RMIN || r > R_RECORD){
 		return 1;
+    }
 
-	if (X1 > X1max) {
-		if (*w < wmin) {
-			if (curand_uniform_double(localState)<= 1. / ROULETTE) {
-				*w = *w *  ROULETTE;
-			} else
-				*w = 0.;
-		}
-		return 1;
-	}
-
-	if (*w < wmin) {
-		if (curand_uniform_double(localState) <= 1. / ROULETTE) {
-			*w = *w * ROULETTE;
-		} else {
-			*w = 0.;
-			return 1;
-		}
-	}
 
 	return (0);
 }
@@ -198,18 +188,19 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
 __host__ __device__ void coord(int i, int j, double *X)
 {
+    int k = 0;
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];
 		X[1] = d_startx[1] + (i + 0.5) * d_dx[1];
 		X[2] = d_startx[2] + (j + 0.5) * d_dx[2];
-		X[3] = d_startx[3];
+		X[3] = d_startx[3] + (k + 0.5) * d_dx[3];
 	#else
 		/* returns zone-centered values for coordinates */
 		X[0] = startx[0];
 		X[1] = startx[1] + (i + 0.5) * dx[1];
 		X[2] = startx[2] + (j + 0.5) * dx[2];
-		X[3] = startx[3];
+		X[3] = startx[3] + (k + 0.5) * dx[3];
 	#endif
 
 
@@ -400,15 +391,17 @@ __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectr
 
     d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
 
-    #ifdef HAMR
-        dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
-        ix2 = ((ph.X2[photon_index]) < 0) ? (int)((1 + ph.X2[photon_index]) / dx2) : (int)((d_stopx[2] - ph.X2[photon_index]) / dx2);
-    #else
-        dx2 = (d_stopx[2] - d_startx[2]) / (2.0 * N_THBINS);
-        ix2 = (ph.X2[photon_index] < 0.5 * (d_startx[2] + d_stopx[2])) ? (int)(ph.X2[photon_index] / dx2) : (int)((d_stopx[2] - ph.X2[photon_index]) / dx2);
-    #endif
-
+    double r, th;
+    double XArray[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
+    bl_coord(XArray, &r, &th);
+    dx2 = M_PI/2./N_THBINS;
+    if (th > M_PI/2.) {
+      ix2 = (int)( (M_PI - th) / dx2 );
+    } else {
+      ix2 = (int)( th / dx2 );
+    }
     if (ix2 < 0 || ix2 >= N_THBINS) {
+        printf("record ix2 out of bounds: %d %g\n", ix2, th);
         return;
     }
 
