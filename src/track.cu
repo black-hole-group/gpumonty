@@ -5,6 +5,17 @@
 #include "compton.h"
 #include "metrics.h"
 
+__device__ __forceinline__ double atomicMaxdouble(double *address, double val)
+{
+    unsigned long long ret = __double_as_longlong(*address);
+    while(val > __longlong_as_double(ret))
+    {
+        unsigned long long old = ret;
+        if((ret = atomicCAS((unsigned long long *)address, old, __double_as_longlong(val))) == old)
+            break;
+    }
+    return __longlong_as_double(ret);
+}
 #define dtauK (L_UNIT / (ME * CL * CL / HPL))
 __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
 {
@@ -47,19 +58,6 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 		return;
 	}
 	
-	// if(photon_index == 0){
-
-	// 	XArray[0] = 1.56740147e-06;
-	// 	XArray[1] = -3.10917352e+01;
-	// 	XArray[2] = 2.41755372e+00;
-	// 	XArray[3] = 3.14159265e+00;
-	// 	KArray[0] = 1.60517582e-12;
-	// 	KArray[1] = -7.22161872e+00;
-	// 	KArray[2] = -3.82920692e+01;
-	// 	KArray[3] = 4.99233636e+01;
-	// 	w = 3.13255642e+09;
-	// }
-
 
 	/* Initialize opacities */
 	gcov_func(XArray, Gcov);
@@ -337,7 +335,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	// 		XArray[0], XArray[1], XArray[2], XArray[3], KArray[0],
 	// 		KArray[1], KArray[2], KArray[3], w);
 	// }
-
+	if(GPU_record_criterion(ph.X1[photon_index]))
+		 atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
 	/* done! */
 	return;
 }

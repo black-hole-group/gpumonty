@@ -15,7 +15,7 @@ extern "C" {
     // Kernel to initialize the random states
     __global__ void GPU_init_monty_rand(time_t time) {
         int tid = blockIdx.x * blockDim.x + threadIdx.x;
-        int seed = 139 * tid; //* time;
+        int seed = 139 * tid * time;
         curand_init(seed, tid, 0, &my_curand_state[tid]);
     }
 

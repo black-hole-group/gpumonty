@@ -525,6 +525,12 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         return bias;
     #else
         //return 1;
+        bias = Te * Te / (5. * max_tau_scatt) * 0.01;
+        // max = 0.5 * w/1.e28
+        // if (bias > max)
+        //     bias = max;
+
+        return  1;
         max = 0.5 * w / WEIGHT_MIN;
 
         avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);

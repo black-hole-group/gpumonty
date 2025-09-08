@@ -103,8 +103,9 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U2,k)] = 0.;
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	bias_norm = 0.0/0.0; //producing a nan so we don't account for scattering
-	fprintf(stderr, "bias_norm = %le\n", bias_norm);
+	//bias_norm = 0.0/0.0; //producing a nan so we don't account for scattering
+	bias_norm = 0.0;
+    fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 
 
@@ -346,6 +347,17 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         }
 
         return bias;
+    #elif (1)
+        double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * L_UNIT;
+        //bias = Te * Te / (5. * d_max_tau_scatt) * 1e-18;
+        // bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
+        max = 0.5 * w /WEIGHT_MIN;
+        bias = (1.0 / model_tau_0 > 1.0) ? (1.0 / model_tau_0) : 1.0;
+        //return bias > max? max : bias;
+        return bias;
+        //return  bias;
+
+        //return 5.e9;
     #else
         //return 1;
         max = 0.5 * w / WEIGHT_MIN;

@@ -27,14 +27,14 @@
 #define N3 1
 #define BHSPIN 0
 
-#define NE_VALUE (1.e13)
+#define NE_VALUE (1.e15)
 #define B_VALUE (1.)
 #define THETAE_VALUE (100.)
 #define SPHERE_RADIUS (1./L_UNIT)
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 //#define MBH (6.770292094e-6)/*In solar UNITs*/
-#define MBH (4.2e6)
+#define MBH (4.1e6)
 #define M_UNIT (1.)
 #define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 #define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
@@ -59,4 +59,5 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
 __device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
+
 #endif

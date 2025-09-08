@@ -197,8 +197,9 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
 		fprintf(stderr, "dOmega for thetabin (%d) = %le\n",j,dOmega);
 	}
 	fprintf(stderr, "\n");
-	fprintf(stderr, "N_superph_made: %llu\n", N_superph_made);
-	fprintf(stderr, "N_superph_recorded: %llu\n", N_superph_recorded);
+	fprintf(stderr, "Number of superphotons made: %llu\n", N_superph_made);
+	fprintf(stderr, "Number of superphotons scattered: %llu\n", N_scatt);
+	fprintf(stderr, "Number of superphotons recorded: %llu\n", N_superph_recorded);
 	fprintf(stderr, "Data saved in %s\n", filepath);
 	fclose(fp);
 

@@ -13,7 +13,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
+#define WEIGHT_MIN	(1.e28)
 
 /*for stop criterium*/
 #define RMAX	(1.e5/L_UNIT) //Define the maximum radius up to track the photon

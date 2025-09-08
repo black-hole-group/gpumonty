@@ -4,7 +4,8 @@ gsl_integration_workspace *w;
 /*Global Variable Section*/
 /* defining declarations for global variables */
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-int Ns, N_scatt;
+int Ns;
+unsigned long long N_scatt;
 unsigned long long N_superph_recorded;
 
 /* some coordinate parameters */
@@ -41,7 +42,8 @@ __device__ double d_table[NW + 1][NT + 1];
 
 __device__ unsigned long long photon_count = 0;
 __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
-__device__ int d_Ns, d_N_scatt;
+__device__ int d_Ns;
+__device__ unsigned long long d_N_scatt;
 __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
 	
 __device__ unsigned long long scattering_counter = 0;
