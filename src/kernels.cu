@@ -215,7 +215,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "in GPU_track %s\n", cudaGetErrorString(cudaStatus));
-			fprintf(stderr, "number of scattered photons: %llu out of %llu", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
+			fprintf(stderr, "number of scattered photons: %llu out of %llu\n", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
 			exit(1);
 		}
 		
@@ -323,7 +323,6 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	
 	cudaDestroyTextureObject(dPTableTexObj);
 	cudaFreeArray(dPTableCuArray);
-	//CHECK_CUDA_ERROR(cudaDestroyTextureObject(tableTexObj));
 
 }
 
@@ -332,7 +331,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 	double dnmax;
 	int i, j, k;
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139;//139 * global_index + time;
+	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 
@@ -463,12 +462,9 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
 		int past_zone = (N1 * N2 * N3);
 		curandState localState = my_curand_state[global_index];
 		while (true) {
-			//curandState localState = my_curand_state[global_index];
 			photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
-			//photon_index = global_index;
 			if (photon_index >= max_partition_ph){
 				break;
-				//	return;
 			}
 	
 			zone_index = findPhotonIndex(index_to_ijk, N1 * N2 * N3, photons_processed_sofar +photon_index);
@@ -613,6 +609,9 @@ __global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, cons
             }
         }
 	}
+	if(global_index > N_BLOCKS * N_THREADS){
+		printf("Warning! Too many threads! Some threads are not being used!\n");
+	}
 	my_curand_state[global_index] = localState;
 }
 	
@@ -657,7 +656,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 		#endif
 		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
-			return;
+			continue;
 		}
 		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, n, a, &localState, besselTexObj);
 		atomicAdd(&scattering_counter, 1);
@@ -676,10 +675,7 @@ __global__ void GPU_record_scattering(struct of_photonSOA ph, struct of_spectrum
 	}
 	unsigned long long round_num_scat_end = round_num_scat_init + d_num_scat_phs[n-1];
 	/*track each photon we created along its geodesic*/
-	if(global_index == 0){
-		printf("Interval going from %llu to %llu in round %d\n", round_num_scat_init, round_num_scat_end, n);
-	}
-	
+
 	for(unsigned long long a =  round_num_scat_init + global_index; a < round_num_scat_end; (a += nblocks * N_THREADS)){
 
 		if(GPU_record_criterion(ph.X1[a]))

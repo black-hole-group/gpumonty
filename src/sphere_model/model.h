@@ -13,7 +13,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
+#define WEIGHT_MIN	(1e-8)
 
 /*for stop criterium*/
 #define RMAX	(10000./L_UNIT) //Define the maximum radius up to track the photon
@@ -27,7 +27,7 @@
 #define N3 1
 #define BHSPIN 0
 
-#define NE_VALUE (1.e15)
+#define NE_VALUE (1.e18)
 #define B_VALUE (1.)
 #define THETAE_VALUE (100.)
 #define SPHERE_RADIUS (1./L_UNIT)

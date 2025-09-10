@@ -17,26 +17,26 @@
 
 
 /*GPU Number of blocks and threads*/
-#define N_BLOCKS 1792//176
+#define N_BLOCKS 3456//176
 #define N_THREADS 256 //256
 
 
 
 /* spectral bin parameters */
 #ifdef SPHERE_TEST
-    #define	dlE (0.01) //Size of the energy bin
+    #define	dlE (0.06) //Size of the energy bin
     #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
-    #define N_ESAMP 2500
-    #define N_EBINS 5000
+    #define N_ESAMP 800
+    #define N_EBINS 800
 #else
     // #define	dlE (0.25) //Size of the energy bin
     // #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
     // #define N_ESAMP 200
     // #define N_EBINS 200
-    #define	dlE (0.01) //Size of the energy bin
+    #define	dlE (0.06) //Size of the energy bin
     #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
-    #define N_ESAMP 2500
-    #define N_EBINS 5000
+    #define N_ESAMP 800
+    #define N_EBINS 800
 #endif
 
 
@@ -135,7 +135,7 @@
 
 /*This define the numbers of scatterins per photon. This is just an approximate to allocate memory, if you don't know, just leave it equal 1.*/
 /*If this number is very large and you are still getting invalid memory access, it means that something is wrong with bias, prob*/
-#define SCATTERINGS_PER_PHOTON (1) 
+#define SCATTERINGS_PER_PHOTON (2) 
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
@@ -143,7 +143,7 @@
 #define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
-#define MAX_LAYER_SCA (2)
+#define MAX_LAYER_SCA (4)
 
 /*for stepsize*/
 #define EPS (0.04)

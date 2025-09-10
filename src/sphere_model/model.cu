@@ -120,7 +120,6 @@ __device__ int GPU_record_criterion(double X1)
 	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
 	if (r > R_RECORD){
 		return (1);
     }else{
@@ -349,15 +348,10 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         return bias;
     #elif (1)
         double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * L_UNIT;
-        //bias = Te * Te / (5. * d_max_tau_scatt) * 1e-18;
-        // bias = 100. * Te * Te / (bias_norm * max_tau_scatt);
-        max = 0.5 * w /WEIGHT_MIN;
-        bias = (1.0 / model_tau_0 > 1.0) ? (1.0 / model_tau_0) : 1.0;
-        //return bias > max? max : bias;
-        return bias;
-        //return  bias;
 
-        //return 5.e9;
+        max = 0.5 * w /WEIGHT_MIN;
+        bias = (model_tau_0 > 1.0) ? (model_tau_0) : 1.0;
+        return bias;
     #else
         //return 1;
         max = 0.5 * w / WEIGHT_MIN;
@@ -367,13 +361,11 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
                 (avg_num_scatt + 2));
 
-        //bias = Te * Te/(d_bias_norm * d_max_tau_scatt * 2.);
 
         if (bias < TP_OVER_TE)
         bias = TP_OVER_TE;
         if (bias > max)
         bias = max;
-        //printf("bias = %le, max = %le, avg_num_scatt = %le\n", bias, max, avg_num_scatt);
         return bias / TP_OVER_TE;
     #endif
 }

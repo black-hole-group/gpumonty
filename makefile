@@ -1,14 +1,14 @@
 # Model name (hamr_model, harm_model, sphere_model)
 MODEL_DIR = $(SRC_DIR)/sphere_model
 
-CUDA_PATH ?= /usr/local/cuda
+CUDA_PATH ?=/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/
 #GSL setup
-GSL_PATH ?= /home/pedro/gsl
+GSL_PATH ?= /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gsl-2.7.1-ytg74v2
 
 # Compiler flags
-ARCH = compute_60
-CODE = sm_60
-CODE_LTO = lto_60
+ARCH = compute_80
+CODE = sm_80
+CODE_LTO = lto_80
 
 # Directories
 SRC_DIR = src

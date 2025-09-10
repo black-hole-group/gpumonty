@@ -255,7 +255,7 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	}
     size_t required_mem ;
 	required_mem = tot_nph * sizeof(struct of_photon);
-	required_mem += MAX_LAYER_SCA *  tot_nph * sizeof(struct of_photon);
+	required_mem += MAX_LAYER_SCA *  tot_nph * SCATTERINGS_PER_PHOTON * sizeof(struct of_photon);
 	if (required_mem > free_mem) {
 		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
 		printf("Beginning equipartion of photons...\n");

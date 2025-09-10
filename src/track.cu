@@ -39,9 +39,9 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	double E0s = ph.E0s[photon_index];
 	double tau_scatt = 0;
 	double tau_abs = 0;
-	// if (w < 1) {
-	// 	return;
-	//   }
+	if (w < 1) {
+		return;
+	}
 	/* quality control */
 	if (isnan(XArray[0]) ||
 		isnan(XArray[1]) ||
@@ -73,10 +73,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	bi = GPU_bias_func(Thetae, w, round_scat);
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
-	// if(photon_index == 0){
-	// 	printf("Right Below init_dkdlam (%le, %le, %le, %le)\n", dKdlamArray[0], dKdlamArray[1], dKdlamArray[2], dKdlamArray[3]);
-	// }
-	//while(0){
+
 	while (!GPU_stop_criterion(XArray[1], &(w), localState)) {
 		/* Save initial position/wave vector */
 		Xi[0] = XArray[0];
@@ -170,14 +167,18 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 
 			x1 = -log(curand_uniform_double(localState));
 			weight_scat = w / bias;
+			
 			if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
 				if (isnan(weight_scat) || isinf(weight_scat)) {
 					printf(
 						"w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
 						Ne, bias, w, weight_scat);
 				}
-				frac = x1 / (bias * dtau_scatt);
 
+				frac = x1 / (bias * dtau_scatt);
+				// if(ph->nscatt == 1){
+				// printf("ph->w = %.6e, php.w = %.6e, bias = %.6e, dtau_scatt = %.6e, x1 = %.6e\n", ph->w, php.w, bias, dtau_scatt, x1);
+				// }
 				/* Apply absorption until scattering event */
 				dtau_abs *= frac;
 				if (dtau_abs > 100){
@@ -187,14 +188,12 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 				dtau = dtau_abs + dtau_scatt;
 
 				//Do not include absorption in the scattering test
-				#ifndef SCATTERING_TEST
-					if (dtau_abs < 1.e-3){
-						w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-					}
-					else{
-						w *= exp(-dtau); 
-					}
-				#endif
+				if (dtau_abs < 1.e-3){
+					w *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+				}
+				else{
+					w *= exp(-dtau); 
+				}
 				/* Interpolate position and wave vector to scattering event */
 
 				GPU_push_photon(Xi, Ki, dKi, dl * frac, &E0);
@@ -258,10 +257,6 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 						scat_ofphoton.tau_scatt[my_local_index] = tau_scatt;
 						scat_ofphoton.E[my_local_index] = ph.E[photon_index];
 						scat_ofphoton.nscatt[my_local_index] = ph.nscatt[photon_index];
-
-						if(scat_ofphoton.w[my_local_index] != weight_scat){
-							printf("In GPU_track_super_photon, both weights should be the same! (%le, %le), %d\n", scat_ofphoton.w[my_local_index], weight_scat, my_local_index);
-						}
 					}
 				}
 				theta =
@@ -278,7 +273,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 					    GPU_alpha_inv_abs(nu, Thetae, Ne,
 							  B, theta, besselTexObj);
 				}
-				bi = GPU_bias_func(Thetae, ph.w[photon_index], round_scat);
+				bi = GPU_bias_func(Thetae, w, round_scat);
 
 				tau_abs += dtau_abs;
 				tau_scatt += dtau_scatt;
@@ -329,14 +324,9 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	ph.tau_abs[photon_index] = tau_abs;
 	ph.tau_scatt[photon_index] = tau_scatt;
 
-	// if(photon_index == 0){
-	// 	printf(
-	// 		"X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g\n",
-	// 		XArray[0], XArray[1], XArray[2], XArray[3], KArray[0],
-	// 		KArray[1], KArray[2], KArray[3], w);
-	// }
-	if(GPU_record_criterion(ph.X1[photon_index]))
-		 atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
+
+	// if(GPU_record_criterion(ph.X1[photon_index]))
+	// 	 atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
 	/* done! */
 	return;
 }
