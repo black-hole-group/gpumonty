@@ -35,10 +35,7 @@ __device__ double GPU_jnu_inv(const double nu, const double Thetae, const double
 /* return Lorentz invariant scattering opacity */
 __device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr)
 {
-	double kappa;
-
-	kappa = GPU_kappa_es(nu, Thetae, d_table_ptr);
-	return (nu * kappa * Ne * MP);
+	return (nu * GPU_kappa_es(nu, Thetae, d_table_ptr) * Ne * MP);
 }
 /* return Lorentz invariant absorption opacity */
 __device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,

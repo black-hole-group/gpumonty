@@ -8,7 +8,7 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 {
 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
 	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], ph.K2[photon_index], ph.K3[photon_index]};
-	double KArrayphp[NDIM] = {php.K0[photon_index], php.K1[photon_index], php.K2[photon_index], php.K3[photon_index]};
+	double KArrayphp[NDIM];
 
 	if (isnan(KArrayph[1])) {
 		printf("scatter: bad input photon, the program should exit itself\n");
@@ -40,6 +40,7 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 
 	/* make local tetrad */
 	GPU_make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
+
 
 	/* transform to tetrad frame */
 	GPU_coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
@@ -73,7 +74,6 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	   photon momentum Kp */
 	GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
 
-
 	/* transform back to coordinate frame */
 	GPU_tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
 
@@ -106,6 +106,7 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	K_tetrad_p[0] *= -1.;
 	GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
 
+	php.E0[photon_index] = ph.E[photon_index];
 	php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
 	php.tau_abs[photon_index] = 0.;
 	php.tau_scatt[photon_index] = 0.;
@@ -315,8 +316,8 @@ __device__  double GPU_klein_nishina(const double a, const double ap)
     const double inv_a = 1.0 / a;
     const double inv_ap = 1.0 / ap;
     const double ch = 1.0 + inv_a - inv_ap;
-    //return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
-	return(fma(a, inv_ap, fma(ap, inv_a, fma(ch, ch, -1.0))) / (a * a));
+    return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
+	//return(fma(a, inv_ap, fma(ap, inv_a, fma(ch, ch, -1.0))) / (a * a));
 }
 
 __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState)
@@ -361,7 +362,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 		}
 
 		x1 = curand_uniform_double(localState );
-
+		
 		sample_cnt++;
 
 		if (sample_cnt > 10000000) {
@@ -528,10 +529,9 @@ __device__ double GPU_sample_mu_distr(const double beta_e, double random)
 
 	*/
 
-	// double det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * random;
-	// if (det < 0.)
-	// 	printf("det < 0  %g\n\n", beta_e);
-	// double mu = (1. - sqrt(det)) / beta_e;
-	// return (mu);
-	return (1. - sqrt(fma(2., beta_e, fma(beta_e, beta_e, fma(-4., beta_e * random, 1.))))/beta_e);
+	double det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * random;
+	if (det < 0.)
+		printf("det < 0  %g\n\n", beta_e);
+	double mu = (1. - sqrt(det)) / beta_e;
+	return (mu);
 }

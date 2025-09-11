@@ -45,7 +45,7 @@
 
 /*Compton cross section calculation */
 #define MINW      1.e-12       // Minimum weight in the table
-#define MAXW      1.e6        // Maximum weight in the table
+#define MAXW      1.e15        // Maximum weight in the table
 #define MINT      1.e-4      // Minimum temperature
 #define MAXT      1.e4        // Maximum temperature 
 #define NW        220          // Number of weight steps for table
@@ -119,7 +119,8 @@
 #define d_lminw     (log10(MINW))
 #define d_lT_min    (log(TMIN))
 #define d_dlw       (log10(MAXW / MINW) / NW)
-#define d_dlT       (1/(log(TMAX / TMIN) / (N_ESAMP)))
+#define d_dlT1       (1/(log(TMAX / TMIN) / (N_ESAMP)))
+#define d_dlT2       (log10(MAXT/MINT) / NT)
 
 
 

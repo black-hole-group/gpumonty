@@ -128,11 +128,11 @@ __host__ void init_hotcross(void)
 }
 
 
-__device__ float total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr)
+__device__ double total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr)
 {
 	int i, j;
-	float lw, lT, lcross;
-	float di, dj;
+	double lw, lT, lcross;
+	double di, dj;
 	/* cold/low-energy: just use thomson cross section */
 	if (w * thetae < 1.e-6){
 		return (SIGMA_THOMSON);
@@ -149,14 +149,16 @@ __device__ float total_compton_cross_lkup(double w, double thetae, const double 
 		lw = __log10f(w);
 		lT = __log10f(thetae);
 		i = (int) ((lw - d_lminw) / d_dlw);
-		j = (int) ((lT - d_lmint) / d_dlT);
+		j = (int) ((lT - d_lmint) / d_dlT2);
 		di = (lw - d_lminw) / d_dlw - i;
-		dj = (lT - d_lmint) / d_dlT - j;
+		dj = (lT - d_lmint) / d_dlT2 - j;
 		lcross =
 		    (1. - di) * (1. - dj) * d_table_ptr[j + (NT+1) * i] + di * (1. -
 								dj) *
 		    d_table_ptr[j + (NT+1) * (i+1)] + (1. - di) * dj * d_table_ptr[(j+1) + (NT+1) * i] +
 		    di * dj * d_table_ptr[(j+1) + (NT+1) * (i+1)];
+
+			
 		//lcross = tex2D<float>(tableTexObj, i, j);
 		if (isnan(lcross)) {
 			printf("Problem in total_compton_cross_lkup, lcross is nan!\n");	
@@ -164,7 +166,7 @@ __device__ float total_compton_cross_lkup(double w, double thetae, const double 
 				j, di, dj);
 			printf("table[i][j] = %le, table[i][j + 1] = %le, table[i +1][j] = %le, table[i+1][j+1] = %le\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)]);
 		}
-		return (powf(10., lcross));
+		return (pow(10., lcross));
 	}
 	printf("out of bounds: %g %g\n", w, thetae);
 	

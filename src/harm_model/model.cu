@@ -400,13 +400,6 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
 
-    #ifdef SCATTERING_TEST
-    *Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
-    *Thetae = 4.;
-    *B = 0;
-    return;
-    #endif
-
     if (isnan(*B)){
     printf("i = %d, j = %d, k = %d\n", i, j, k);
     printf( "VdotV = %le\n", VdotV);
@@ -500,12 +493,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
-    #ifdef SCATTERING_TEST
-        *Ne = 1.e-4/(SIGMA_THOMSON * (1.e5 - 1.));
-        *Thetae = 4.;
-        *B = 0;
-        return;
-    #endif
+
 }
 
 

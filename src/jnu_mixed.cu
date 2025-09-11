@@ -53,23 +53,7 @@ classical thermal synchrotron limit
 good for Thetae > 1
 
 */
-#ifdef SCATTERING_TEST
-__host__ __device__ double jnu_bnu(double nu, double Thetae)
-{
 
-	double x;
-
-	x = HPL * nu / (ME * CL * CL * Thetae);
-
-	if (x < 1.e-3){	/* Taylor expand */
-		return ((2. * HPL / (CL * CL)) /
-			(x / 24. * (24. + x * (12. + x * (4. + x)))));
-	}
-	else{
-		return ((2. * HPL * nu * nu * nu / (CL * CL)) / (exp(x) - 1.));
-	}
-}
-#endif
 #define CST 1.88774862536	/* 2^{11/12} */
 
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
@@ -79,10 +63,7 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 		#endif
 		)
 {
-	#ifdef SCATTERING_TEST
-	return jnu_bnu(nu, Thetae);
 
-	#else
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
 
 	if (Thetae < THETAE_MIN)
@@ -110,7 +91,6 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 	    exp(-xp1);
 
 	return (j);
-	#endif
 }
 #undef CST
 
@@ -295,7 +275,7 @@ __host__ __device__ double linear_interp_K2(const double Thetae
 	bessel_table = &di;
 
 	lT = log(Thetae);
-	di = (lT - d_lT_min) * d_dlT;
+	di = (lT - d_lT_min) * d_dlT1;
 
 	#ifdef __CUDA_ARCH__
 	//return __expf(tex1D<float>(besselTexObj, di + 0.5f));

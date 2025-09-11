@@ -39,6 +39,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 	double E0s = ph.E0s[photon_index];
 	double tau_scatt = 0;
 	double tau_abs = 0;
+
+
 	if (w < 1) {
 		return;
 	}
@@ -176,9 +178,7 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 				}
 
 				frac = x1 / (bias * dtau_scatt);
-				// if(ph->nscatt == 1){
-				// printf("ph->w = %.6e, php.w = %.6e, bias = %.6e, dtau_scatt = %.6e, x1 = %.6e\n", ph->w, php.w, bias, dtau_scatt, x1);
-				// }
+		
 				/* Apply absorption until scattering event */
 				dtau_abs *= frac;
 				if (dtau_abs > 100){
@@ -225,8 +225,8 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 						return;
 					}
 					if(weight_scat > 0){
-						atomicAdd(&d_N_scatt, (round_scat + 1));
-						int my_local_index = 0;
+						atomicAdd(&d_N_scatt, 1);
+						unsigned long long my_local_index = 0;
 						if(round_scat > 0){
 							for(int cum_sum = 0; cum_sum <= round_scat -1; cum_sum++){
 								my_local_index += d_num_scat_phs[cum_sum];
@@ -286,14 +286,11 @@ __device__ void GPU_track_super_photon(struct of_photonSOA ph , cudaTextureObjec
 				tau_scatt += dtau_scatt;
 				dtau = dtau_abs + dtau_scatt;
 
-				//Do not include absorption in the scattering test
-				#ifndef SCATTERING_TEST
-					if (dtau < 1.e-3){
-							w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
-					}else{
-							w *= exp(-dtau); 
-					}
-				#endif
+				if (dtau < 1.e-3){
+						w *= (1. -dtau / 24. * (24. -dtau * (12. - dtau *(4. -dtau)))); //taylor expansion
+				}else{
+						w *= exp(-dtau); 
+				}
 			}
 		}
 

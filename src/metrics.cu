@@ -11,13 +11,9 @@ gsl_permutation *perm;
 /* assumes gcov has been set first; returns determinant */
 double gdet_func(double gcov[][NDIM])
 {
-  #ifdef SPHERE_TEST
-    return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
-  #endif
-
-  #ifdef SCATTERING_TEST
-    return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
-  #endif
+	#ifdef SPHERE_TEST
+		return sqrt(-gcov[0][0] * gcov[1][1] * gcov[2][2] * gcov[3][3]);
+	#endif
     double d;
     int k, l, signum;
     if (gsl_gcov == NULL) {

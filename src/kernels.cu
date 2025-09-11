@@ -156,7 +156,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		}
 		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
 		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
-		ideal_nblocks = ceil(instant_photon_number/N_THREADS);
+		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
+
 		if(ideal_nblocks == 0){
 			ideal_nblocks = 1;
 		}
@@ -244,7 +245,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		unsigned long long scatterings_performed = 0;
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
 			printf("Starting round %d\n", n);
-			ideal_nblocks = ceil(num_scat_phs[n-1]/N_THREADS);
+			ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
 				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj);
@@ -331,7 +332,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 	double dnmax;
 	int i, j, k;
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139 * global_index + time;
+	int seed = 139;//139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 
@@ -596,8 +597,8 @@ __global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, cons
 
         // If all photons are processed, exit the loop
         if (photon_index >= max_partition_ph) break;
-        // Track the photon
-		
+        
+		// Track the photon
         GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, &localState, besselTexObj);
 
         // Progress indicator
@@ -643,7 +644,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 	unsigned long long round_num_scat_end = round_num_scat_init + d_num_scat_phs[n-1];
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
-		printf("Interval going from %llu to %llu in round %d\n", round_num_scat_init, round_num_scat_end, n);
+		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
 	}
 	
 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
@@ -654,6 +655,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 		#else
 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
+
 		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;

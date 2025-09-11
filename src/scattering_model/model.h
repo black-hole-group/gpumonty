@@ -24,7 +24,6 @@
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)
-#define SCATTERING_TEST (1)
 
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS

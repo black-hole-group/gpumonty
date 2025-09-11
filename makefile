@@ -1,14 +1,14 @@
 # Model name (hamr_model, harm_model, sphere_model)
 MODEL_DIR = $(SRC_DIR)/sphere_model
 
-CUDA_PATH ?=/sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/cuda-11.8.0-vfixfmc/
+CUDA_PATH ?= /usr/local/cuda
 #GSL setup
-GSL_PATH ?= /sw/spack/deltas11-2023-03/apps/linux-rhel8-zen3/gcc-11.4.0/gsl-2.7.1-ytg74v2
+GSL_PATH ?= /home/pedro/gsl
 
 # Compiler flags
-ARCH = compute_80
-CODE = sm_80
-CODE_LTO = lto_80
+ARCH = compute_60
+CODE = sm_60
+CODE_LTO = lto_60
 
 # Directories
 SRC_DIR = src
@@ -56,7 +56,7 @@ EXECUTABLE = gpumonty
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 	@echo "Linking libraries and building $(EXECUTABLE) executable..."
-	@$(NVCC) -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
+	@$(NVCC)  -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
 
 
 # Compile rule for CUDA files in both folders
