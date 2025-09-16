@@ -117,8 +117,7 @@ for (l = 0; l < 4; l++) {
 __device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM],
          double K[NDIM])
 {
-int l;
-for (l = 0; l < 4; l++) {
+for (int l = 0; l < 4; l++) {
    K[l] = Econ[0][l] * K_tetrad[0] +
        Econ[1][l] * K_tetrad[1] +
        Econ[2][l] * K_tetrad[2] + Econ[3][l] * K_tetrad[3];

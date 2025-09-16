@@ -472,51 +472,58 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 
 	}
 #else
+	
+
 	#define DEL (1.e-7)
 	__device__ void GPU_get_connection(const double X[NDIM], double lconn[NDIM][NDIM][NDIM])
 	{
-	double tmp[NDIM][NDIM][NDIM];
-	double Xh[NDIM], Xl[NDIM];
-	double gcon[NDIM][NDIM];
-	double gcov[NDIM][NDIM];
-	double gh[NDIM][NDIM];
-	double gl[NDIM][NDIM];
-
-	gcov_func(X, gcov);
-	gcon_func(X, gcov, gcon);
-
-	// take partial derivatives of metric
-	for (int k = 0; k < NDIM; k++) {
-		for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
-		for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
-		Xh[k] += DEL;
-		Xl[k] -= DEL;
-		gcov_func(Xh, gh);
-		gcov_func(Xl, gl);
-
-		for (int i = 0; i < NDIM; i++){
-		for (int j = 0; j < NDIM; j++){
-			lconn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+		double gcon[NDIM][NDIM];
+		{
+			double gcov[NDIM][NDIM];
+			gcov_func(X, gcov);
+			gcon_func(X, gcov, gcon);
 		}
-		}
-	}
-
-	// Rearrange to find \Gamma_{ijk}
-	for (int i = 0; i < NDIM; i++)
-		for (int j = 0; j < NDIM; j++)
-		for (int k = 0; k < NDIM; k++)
-			tmp[i][j][k] =  0.5 * (lconn[j][i][k] + lconn[k][i][j] - lconn[k][j][i]);
-
-	// G_{ijk} -> G^i_{jk}
-	for (int i = 0; i < NDIM; i++) {
-		for (int j = 0; j < NDIM; j++) {
+		// take partial derivatives of metric
 		for (int k = 0; k < NDIM; k++) {
-			lconn[i][j][k] = 0.;
-			for (int l = 0; l < NDIM; l++) 
-			lconn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+			double Xh[NDIM], Xl[NDIM];
+			for (int l = 0; l < NDIM; l++){
+				Xh[l] = X[l];
+				Xl[l] = X[l];
+			} 
+			Xh[k] += DEL;
+			Xl[k] -= DEL;
+			double gh[NDIM][NDIM];
+			double gl[NDIM][NDIM];
+			gcov_func(Xh, gh);
+			gcov_func(Xl, gl);
+
+			for (int i = 0; i < NDIM; i++){
+			for (int j = 0; j < NDIM; j++){
+				lconn[i][j][k] =  (gh[i][j] - gl[i][j])/(2 * DEL);
+			}
+			}
 		}
+
+		// Rearrange to find \Gamma_{ijk}
+		double tmp[NDIM][NDIM][NDIM];
+		for (int i = 0; i < NDIM; i++){
+			for (int j = 0; j < NDIM; j++){
+				for (int k = 0; k < NDIM; k++){
+					tmp[i][j][k] =  0.5 * (lconn[j][i][k] + lconn[k][i][j] - lconn[k][j][i]);
+				}
+			}
 		}
-	}
+
+		// G_{ijk} -> G^i_{jk}
+		for (int i = 0; i < NDIM; i++) {
+			for (int j = 0; j < NDIM; j++) {
+				for (int k = 0; k < NDIM; k++) {
+					lconn[i][j][k] = 0.;
+					for (int l = 0; l < NDIM; l++) 
+					lconn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+				}
+		    }
+		}
 	}
 	#undef DEL
 #endif

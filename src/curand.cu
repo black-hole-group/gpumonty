@@ -49,11 +49,11 @@ __device__ void generate_random_direction(double *x, double *y, double *z, curan
 
 __device__ double legacy_standard_exponential(curandState *  localState)
 {
-	return -log(1 - curand_uniform_double(localState));
+	return -log(1. - curand_uniform_double(localState));
 }
 
 __device__ void legacy_gauss(double* out1, double* out2, curandState * localState) {
-    double f, x1, x2, r2;
+    double x1, x2, r2;
 
     do {
         x1 = 2.0 * curand_uniform_double(localState) - 1.0;
@@ -61,59 +61,76 @@ __device__ void legacy_gauss(double* out1, double* out2, curandState * localStat
         r2 = x1 * x1 + x2 * x2;
     } while (r2 >= 1.0 || r2 == 0.0);
 
-    f = sqrt(-2.0 * log(r2) / r2);
-    *out1 = f * x1;
-    *out2 = f * x2;
+    // Reuse r2 variable to store the scaling factor
+    r2 = sqrt(-2.0 * log(r2) / r2);  // r2 now contains 'f'
+    *out1 = r2 * x1;
+    *out2 = r2 * x2;
 }
-__device__ double legacy_standard_gamma(double shape, curandState * localState) {
-	double b, c;
-	double U, V, X, Y;
 
+__device__ double legacy_standard_gamma(double shape, curandState * localState) {
 	if (shape == 1.0) {
 		return legacy_standard_exponential(localState);
 	}
 	else if (shape == 0.0) {
 		return 0.0;
-	} else if (shape < 1.0) {
+	} 
+	else if (shape < 1.0) {
+		// Small shape parameter case - scope variables to loop
+		double inv_shape = 1.0 / shape;
+		double one_minus_shape = 1.0 - shape;
+		
 		for (;;) {
-		U = curand_uniform_double(localState);
-		V = legacy_standard_exponential(localState);
-		if (U <= 1.0 - shape) {
-			X = pow(U, 1. / shape);
-			if (X <= V) {
-			return X;
-			}
-		} else {
-			Y = -log((1 - U) / shape);
-			X = pow(1.0 - shape + shape * Y, 1. / shape);
-			if (X <= (V + Y)) {
-			return X;
+			double U = curand_uniform_double(localState);
+			double V = legacy_standard_exponential(localState);
+			
+			if (U <= one_minus_shape) {
+				double X = pow(U, inv_shape);
+				if (X <= V) {
+					return X;
+				}
+			} else {
+				double Y = -log((1 - U) / shape);
+				double X = pow(one_minus_shape + shape * Y, inv_shape);
+				if (X <= (V + Y)) {
+					return X;
+				}
 			}
 		}
-		}
-	} else {
-		b = shape - 1. / 3.;
-		c = 1. / sqrt(9 * b);
+	} 
+	else {
+		// Large shape parameter case
+		double b = shape - 1. / 3.;
+		double c = 1. / sqrt(9 * b);
+		
 		double out1, out2;
+		legacy_gauss(&out1, &out2, localState);
+		double X = out1;
+		bool use_out2_next = true;
+		
 		for (;;) {
-            legacy_gauss(&out1, &out2, localState);
-            X = out1;
-		do {
-            if(X == out2){
-                legacy_gauss(&out1, &out2, localState);
-                X = out1;
-            }else{
-                X = out2;
-            }
-			V = 1.0 + c * X;
-		} while (V <= 0.0);
+			double V;
+			do {
+				if (use_out2_next && X != out2) {
+					X = out2;
+					use_out2_next = false;
+				} else {
+					legacy_gauss(&out1, &out2, localState);
+					X = out1;
+					use_out2_next = true;
+				}
+				V = 1.0 + c * X;
+			} while (V <= 0.0);
 
-		V = V * V * V;
-		U = curand_uniform_double(localState);
-		if (U < 1.0 - 0.0331 * (X * X) * (X * X))
-			return (b * V);
-		if (log(U) < 0.5 * X * X + b * (1. - V + log(V)))
-			return (b * V);
+			V = V * V * V;
+			double U = curand_uniform_double(localState);
+			double X_sq = X * X;
+			
+			if (U < 1.0 - 0.0331 * X_sq * X_sq) {
+				return (b * V);
+			}
+			if (log(U) < 0.5 * X_sq + b * (1. - V + log(V))) {
+				return (b * V);
+			}
 		}
 	}
 }

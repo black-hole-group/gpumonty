@@ -497,6 +497,85 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 }
 
 
+__device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+    double *Thetae, double *B, cudaTextureObject_t d_p)
+{
+    int i, j, k;
+    double del[NDIM];
+    double rho, uu;
+    double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+    double gcon[NDIM][NDIM], coeff[8];
+    double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+
+    //checks if it's within the grid
+    if (X[1] < d_startx[1] ||
+    X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
+
+    *Ne = 0.;
+
+    return;
+    }
+
+    // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
+    //Xtoij(X, &i, &j, del);
+    GPU_Xtoijk(X, &i, &j, &k, del);
+    //Xtoijk(X, &i, &j, &k, del);
+
+    //Calculate the coeficient of displacement
+    // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
+    // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
+    // coeff[2] = (1. - del[1]) * del[2] * del[3];
+    // coeff[3] = del[1] * del[2] * del[3];
+    // coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
+    // coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
+    // coeff[6] = del[1] * (1. - del[2]) * del[3];
+    // coeff[7] = del[1] * del[2] * (1. - del[3]);
+
+
+
+    //interpolate based on the displacement
+    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
+    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
+    *Ne = rho * NE_UNIT;
+    *Thetae = uu / rho * d_thetae_unit;
+
+    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
+    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
+    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
+
+    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
+    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
+    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
+
+    gcon_func(X, gcov, gcon);
+
+    /* Get Ucov */
+    VdotV = 0.;
+    for (i = 1; i < NDIM; i++)
+    for (j = 1; j < NDIM; j++)
+    VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+    Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
+    Ucon[0] = -Vfac * gcon[0][0];
+    for (i = 1; i < NDIM; i++){
+    Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
+    }
+    lower(Ucon, gcov, Ucov);
+
+    /* Get B and Bcov */
+    UdotBp = 0.;
+    for (i = 1; i < NDIM; i++)
+    UdotBp += Ucov[i] * Bp[i];
+    Bcon[0] = UdotBp;
+    for (i = 1; i < NDIM; i++)
+    Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
+    lower(Bcon, gcov, Bcov);
+
+    *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+
+
+}
+
 
 __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 {

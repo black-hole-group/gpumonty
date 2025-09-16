@@ -243,17 +243,25 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		int n = 1;
 		bool quit_flag_sca = false;
 		unsigned long long scatterings_performed = 0;
+
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
 			printf("Starting round %d\n", n);
 			ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
+			unsigned long long round_num_scat_init = 0;
+
+			for (int cum_sum = 0; cum_sum < n -1; cum_sum++){
+				round_num_scat_init += num_scat_phs[cum_sum]; 
+			}
+			unsigned long long round_num_scat_end = round_num_scat_init + num_scat_phs[n-1];
+			
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
-				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj);
+				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
 			}else{
 				if (ideal_nblocks == 0)
 					ideal_nblocks = 1;
 
-				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS, besselTexObj);
+				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
 			}
 			cudaDeviceSynchronize();
 			cudaEventRecord(stop);
@@ -481,105 +489,114 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
 		}
 		my_curand_state[global_index] = localState;
 }
-	
-__device__ void GPU_sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * __restrict__ d_geom, const double * __restrict__ d_p, const int zone_flag, const unsigned long long ph_arr_index,
-double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextureObject_t besselTexObj)
+
+__device__ void GPU_sample_zone_photon(const int i, const int j, const int k, const double dnmax, 
+    struct of_photonSOA ph, const struct of_geom *  d_geom, 
+    const double *  d_p, const int zone_flag, const unsigned long long ph_arr_index,
+    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextureObject_t besselTexObj)
 {
-	/* Set all initial superphoton attributes */
-	int l;
-	int z = 0;
-	double K_tetrad[NDIM], tmpK[NDIM], E;
-	double th, cth, sth, phi, sphi, cphi, jmax, weight;
-	double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM], bhat[NDIM];
-	double Xarray[4] = {ph.X0[ph_arr_index], ph.X1[ph_arr_index], ph.X2[ph_arr_index], ph.X3[ph_arr_index]};
-	double Karray[4] = {ph.K0[ph_arr_index], ph.K1[ph_arr_index], ph.K2[ph_arr_index], ph.K3[ph_arr_index]};
-	coord(i, j, Xarray);
-	double lnu_min = log(NUMIN);
-	double lnu_max = log(NUMAX);
-	double Nln = lnu_max - lnu_min;
-	double nu;
-	get_fluid_zone(i,j, z, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-
-	/* Sample from superphoton distribution in current simulation zone */
-	do {
-		nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
-		weight = GPU_linear_interp_weight(nu);
-	} while (curand_uniform_double(localState) >
-		(F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / (dnmax));
-
-
-	ph.w[ph_arr_index] = weight;
-
-
-	bool do_condition;
-	#ifdef __CUDA_ARCH__
-		jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2., besselTexObj);
-	#else
-		jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
-	#endif
-
-	do {
-	cth = 2. * curand_uniform_double(localState)- 1.;
-	th = acos(cth);
-	#ifdef __CUDA_ARCH__
-		do_condition = curand_uniform_double(localState) > jnu_synch(nu, Ne, Thetae, Bmag, th, besselTexObj) / jmax;
-	#else
-		do_condition = curand_uniform_double(localState) > jnu_synch(nu, Ne, Thetae, Bmag, th) / jmax;
-	#endif
-	} while (do_condition);
-
-
-	sth = sqrt(1. - cth * cth);
-	phi = 2. * M_PI * curand_uniform_double(localState);
-
-	cphi = cos(phi);
-	sphi = sin(phi);
-
-
-
-	E = nu * HPL / (ME * CL * CL);
-	K_tetrad[0] = E;
-	K_tetrad[1] = E * cth;
-	K_tetrad[2] = E * cphi * sth;
-	K_tetrad[3] = E * sphi * sth;
-
-	if (zone_flag) {	/* first photon created in this zone, so make the tetrad */
-		if (Bmag > 0.) {
-			for (l = 0; l < NDIM; l++)
-				bhat[l] = Bcon[l] * B_UNIT / Bmag;
-		} else {
-			for (l = 1; l < NDIM; l++)
-				bhat[l] = 0.;
-			bhat[1] = 1.;
-		}
-
-
-		GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
-	}
-
-	GPU_tetrad_to_coordinate(Econ, K_tetrad, Karray);
-	K_tetrad[0] *= -1.;
-	GPU_tetrad_to_coordinate(Ecov, K_tetrad, tmpK);
-
-	ph.E[ph_arr_index] = ph.E0[ph_arr_index] = ph.E0s[ph_arr_index] = -tmpK[0];
-	ph.tau_scatt[ph_arr_index] = 0.;
-	ph.tau_abs[ph_arr_index] = 0.;
-	ph.X1i[ph_arr_index] = Xarray[1];
-	ph.X2i[ph_arr_index] = Xarray[2];
-	ph.nscatt[ph_arr_index] = 0;
-	ph.K0[ph_arr_index] = Karray[0];
-	ph.K1[ph_arr_index] = Karray[1];
-	ph.K2[ph_arr_index] = Karray[2];
-	ph.K3[ph_arr_index] = Karray[3];
-	ph.X0[ph_arr_index] = Xarray[0];
-	ph.X1[ph_arr_index] = Xarray[1];
-	ph.X2[ph_arr_index] = Xarray[2];
-	ph.X3[ph_arr_index] = Xarray[3];
+    double nu, weight;
+    
+    // Scope 1: Initial setup and coordinate transformation
+    {
+        double Xarray[4] = {ph.X0[ph_arr_index], ph.X1[ph_arr_index], ph.X2[ph_arr_index], ph.X3[ph_arr_index]};
+        coord(i, j, Xarray);
+        // Store back immediately, don't keep Xarray alive
+        ph.X0[ph_arr_index] = Xarray[0];
+        ph.X1[ph_arr_index] = Xarray[1];
+        ph.X2[ph_arr_index] = Xarray[2];
+        ph.X3[ph_arr_index] = Xarray[3];
+    } // Xarray goes out of scope here
+    
+    // Scope 2: Get fluid properties
+    double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
+    get_fluid_zone(i, j, 0, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+    
+    // Scope 3: Sample frequency
+    {
+        const double lnu_min = log(NUMIN);
+        const double Nln = log(NUMAX) - lnu_min;
+        do {
+            nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
+            weight = GPU_linear_interp_weight(nu);
+        } while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+        ph.w[ph_arr_index] = weight;
+    } // lnu_min, Nln go out of scope
+    
+    // Scope 4: Sample angles  
+    double cth;
+    {
+        #ifdef __CUDA_ARCH__
+        const double jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2., besselTexObj);
+        #else
+        const double jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+        #endif
+		double j_th;
+        do {
+            cth = 2. * curand_uniform_double(localState) - 1.;
+            const double th = acos(cth);
+            #ifdef __CUDA_ARCH__
+            j_th = jnu_synch(nu, Ne, Thetae, Bmag, th, besselTexObj);
+            #else
+        	j_th = jnu_synch(nu, Ne, Thetae, Bmag, th);
+            #endif
+        } while (curand_uniform_double(localState) > j_th / jmax);
+    } // jmax, th, j_th go out of scope
+    
+    // Reuse arrays - use one array for both K_tetrad and final storage
+    double K_data[NDIM]; // This will serve as both K_tetrad and tmpK
+    
+    // Scope 5: Build momentum vector
+    {
+        const double sth = sqrt(1. - cth * cth);
+        const double phi = 2. * M_PI * curand_uniform_double(localState);
+        const double E = nu * HPL / (ME * CL * CL);
+        
+        K_data[0] = E;
+        K_data[1] = E * cth;
+        K_data[2] = E * cos(phi) * sth;
+        K_data[3] = E * sin(phi) * sth;
+    } // sth, phi, E go out of scope, cphi/sphi never created
+    
+    // Scope 6: Handle tetrad if needed
+    if (zone_flag) {
+        double bhat[NDIM];
+        if (Bmag > 0.) {
+            const double inv_Bmag = B_UNIT / Bmag;
+            for (int l = 0; l < NDIM; l++) {
+                bhat[l] = Bcon[l] * inv_Bmag;
+            }
+        } else {
+            bhat[0] = bhat[2] = bhat[3] = 0.;
+            bhat[1] = 1.;
+        }
+        GPU_make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
+    }
+    
+    // Scope 7: Final transformations - reuse K_data array
+    {
+        double Karray[4]; // Temporary for coordinate transformation
+        GPU_tetrad_to_coordinate(Econ, K_data, Karray);
+        
+        K_data[0] *= -1.; // Modify in place
+        GPU_tetrad_to_coordinate(Ecov, K_data, K_data); // Reuse K_data for output
 
 
+        ph.E[ph_arr_index] = ph.E0[ph_arr_index] = ph.E0s[ph_arr_index] = -K_data[0];
 
 
-	return;
+        ph.K0[ph_arr_index] = Karray[0];
+        ph.K1[ph_arr_index] = Karray[1];
+        ph.K2[ph_arr_index] = Karray[2];
+        ph.K3[ph_arr_index] = Karray[3];
+    }
+    
+    // Store final values
+    ph.tau_scatt[ph_arr_index] = 0.;
+    ph.tau_abs[ph_arr_index] = 0.;
+    ph.X1i[ph_arr_index] = ph.X1[ph_arr_index];
+    ph.X2i[ph_arr_index] = ph.X2[ph_arr_index];
+    ph.nscatt[ph_arr_index] = 0;
 }
 	
 __global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, const int nblocks, cudaTextureObject_t besselTexObj){
@@ -599,7 +616,7 @@ __global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, cons
         if (photon_index >= max_partition_ph) break;
         
 		// Track the photon
-        GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, photon_index, &localState, besselTexObj);
+        GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState, besselTexObj);
 
         // Progress indicator
         if (global_index == 0) {
@@ -631,17 +648,12 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 
 
 
-__global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj){
+__global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	unsigned long long round_num_scat_init = 0;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
 
-	for (int cum_sum = 0; cum_sum < n -1; cum_sum++){
-		round_num_scat_init += d_num_scat_phs[cum_sum]; 
-	}
-	unsigned long long round_num_scat_end = round_num_scat_init + d_num_scat_phs[n-1];
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
 		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
@@ -660,7 +672,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;
 		}
-		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, n, a, &localState, besselTexObj);
+		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, a, &localState, besselTexObj);
 		atomicAdd(&scattering_counter, 1);
 	}
 	my_curand_state[global_index] = localState;

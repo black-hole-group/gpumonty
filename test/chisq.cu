@@ -34,7 +34,6 @@ __device__ void legacy_gauss(curandState *state, double* out1, double* out2) {
 
 // Standard Gamma distribution with a given shape
 __device__ double legacy_standard_gamma(curandState * state, double shape) {
-	double b, c;
 	double U, V, X, Y;
 
 	if (shape == 1.0) {
@@ -60,6 +59,7 @@ __device__ double legacy_standard_gamma(curandState * state, double shape) {
 		}
 		}
 	} else {
+        double b, c;
 		b = shape - 1. / 3.;
 		c = 1. / sqrt(9 * b);
 		double out1, out2;

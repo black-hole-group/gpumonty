@@ -2,12 +2,12 @@
 #include"compton.h"
 #include "tetrads.h"
 #include "curand.h"
-
-
-__device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
+__device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
+	double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], 
+	double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
 {
-	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
-	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], ph.K2[photon_index], ph.K3[photon_index]};
+	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], 
+		ph.K2[photon_index], ph.K3[photon_index]};
 	double KArrayphp[NDIM];
 
 	if (isnan(KArrayph[1])) {
@@ -27,22 +27,26 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		return;
 	}
 
-	/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
-	/* note that B is in cgs but Bcon is in code units */
-	if (B > 0.) {
-		for (int k = 0; k < NDIM; k++)
-			Bhatcon[k] = Bcon[k] / (B / B_UNIT);
-	} else {
-		for (int k = 0; k < NDIM; k++)
-			Bhatcon[k] = 0.;
-		Bhatcon[1] = 1.;
+	/* make local tetrad */
+	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
+	{
+		/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
+		/* note that B is in cgs but Bcon is in code units */
+		double Bhatcon[NDIM];
+		if (B > 0.) {
+			for (int k = 0; k < NDIM; k++)
+				Bhatcon[k] = Bcon[k] / (B / B_UNIT);
+		} else {
+			for (int k = 0; k < NDIM; k++)
+				Bhatcon[k] = 0.;
+			Bhatcon[1] = 1.;
+		}
+
+		GPU_make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
 	}
 
-	/* make local tetrad */
-	GPU_make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
-
-
 	/* transform to tetrad frame */
+	double K_tetrad[NDIM];
 	GPU_coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
 
 	/* quality control */
@@ -53,7 +57,6 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		printf("%g %g %g\n", KArrayph[1], KArrayph[2], KArrayph[3]);
 		printf("%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
 		printf("%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
-		printf("%g %g %g %g\n",Bhatcon[0], Bhatcon[1], Bhatcon[2], Bhatcon[3]);
 		printf("%g %g %g %g\n", Gcov[0][0], Gcov[0][1], Gcov[0][2], Gcov[0][3]) ;
 		printf("%g %g %g %g\n", Gcov[1][0], Gcov[1][1], Gcov[1][2], Gcov[1][3]) ;
 		printf("%g %g %g %g\n", Gcov[2][0], Gcov[2][1], Gcov[2][2], Gcov[2][3]) ;
@@ -67,12 +70,16 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		return;
 	}
 
-	/* find the electron that we collided with */
-	GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
+	/* sample electron and scatter photon */
+	double K_tetrad_p[NDIM];
+	{
+		/* find the electron that we collided with */
+		double P[NDIM];
+		GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
 
-	/* given electron momentum P, find the new
-	   photon momentum Kp */
-	GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
+		/* given electron momentum P, find the new photon momentum Kp */
+		GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
+	}
 
 	/* transform back to coordinate frame */
 	GPU_tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
@@ -103,14 +110,17 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	}
 
 	/* bookkeeping */
-	K_tetrad_p[0] *= -1.;
-	GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
+	{
+		K_tetrad_p[0] *= -1.;
+		double tmpK[NDIM];
+		GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
 
-	php.E0[photon_index] = ph.E[photon_index];
-	php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
-	php.tau_abs[photon_index] = 0.;
-	php.tau_scatt[photon_index] = 0.;
-	php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
+		php.E0[photon_index] = ph.E[photon_index];
+		php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
+		php.tau_abs[photon_index] = 0.;
+		php.tau_scatt[photon_index] = 0.;
+		php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
+	}
 
 	/*update K back*/
 	php.K0[photon_index] = KArrayphp[0];
@@ -118,32 +128,148 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	php.K2[photon_index] = KArrayphp[2];
 	php.K3[photon_index] = KArrayphp[3];
 
-	//php->L = tmpK[3];
-	// php->b0 = B;
-	// php->X1i = ph->X[1];
-	// php->X2i = ph->X[2];
-	// php->X[0] = ph->X[0];
-	// php->X[1] = ph->X[1];
-	// php->X[2] = ph->X[2];
-	// php->X[3] = ph->X[3];
-	// php->ne0 = Ne;
-	// php->thetae0 = Thetae;
-	//php->E0 = ph->E;
-
 	return;
 }
+
+
+// __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
+// {
+// 	double P[NDIM], Econ[NDIM][NDIM], Ecov[NDIM][NDIM], K_tetrad[NDIM], K_tetrad_p[NDIM], Bhatcon[NDIM], tmpK[NDIM];
+// 	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], ph.K2[photon_index], ph.K3[photon_index]};
+// 	double KArrayphp[NDIM];
+
+// 	if (isnan(KArrayph[1])) {
+// 		printf("scatter: bad input photon, the program should exit itself\n");
+// 		//exit(0);
+// 	}
+
+// 	/* quality control */
+// 	if (KArrayph[0] > 1.e5 || KArrayph[0] < 0. || isnan(KArrayph[1])
+// 		|| isnan(KArrayph[0]) || isnan(KArrayph[3])) {
+// 		printf(
+// 			"normalization problem, killing superphoton: %g \n",
+// 			KArrayph[0]);
+// 		KArrayph[0] = fabs(KArrayph[0]);
+// 		printf("X1,X2: %g %g\n", ph.X1[photon_index], ph.X2[photon_index]);
+// 		ph.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
+// 	/* note that B is in cgs but Bcon is in code units */
+// 	if (B > 0.) {
+// 		for (int k = 0; k < NDIM; k++)
+// 			Bhatcon[k] = Bcon[k] / (B / B_UNIT);
+// 	} else {
+// 		for (int k = 0; k < NDIM; k++)
+// 			Bhatcon[k] = 0.;
+// 		Bhatcon[1] = 1.;
+// 	}
+
+// 	/* make local tetrad */
+// 	GPU_make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
+
+
+// 	/* transform to tetrad frame */
+// 	GPU_coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
+
+// 	/* quality control */
+// 	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
+// 		printf(
+// 			"conversion to tetrad frame problem: %g %g\n",
+// 			KArrayph[0], K_tetrad[0]);
+// 		printf("%g %g %g\n", KArrayph[1], KArrayph[2], KArrayph[3]);
+// 		printf("%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
+// 		printf("%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
+// 		printf("%g %g %g %g\n",Bhatcon[0], Bhatcon[1], Bhatcon[2], Bhatcon[3]);
+// 		printf("%g %g %g %g\n", Gcov[0][0], Gcov[0][1], Gcov[0][2], Gcov[0][3]) ;
+// 		printf("%g %g %g %g\n", Gcov[1][0], Gcov[1][1], Gcov[1][2], Gcov[1][3]) ;
+// 		printf("%g %g %g %g\n", Gcov[2][0], Gcov[2][1], Gcov[2][2], Gcov[2][3]) ;
+// 		printf("%g %g %g %g\n", Gcov[3][0], Gcov[3][1], Gcov[3][2], Gcov[3][3]) ;
+// 		printf("%g %g %g %g\n", Ecov[0][0], Ecov[0][1], Ecov[0][2], Ecov[0][3]) ;
+// 		printf("%g %g %g %g\n", Ecov[1][0], Ecov[1][1], Ecov[1][2], Ecov[1][3]) ;
+// 		printf("%g %g %g %g\n", Ecov[2][0], Ecov[2][1], Ecov[2][2], Ecov[2][3]) ;
+// 		printf("%g %g %g %g\n", Ecov[3][0], Ecov[3][1], Ecov[3][2], Ecov[3][3]) ;
+// 		printf("X1,X2: %g %g\n",ph.X1[photon_index],ph.X2[photon_index]) ;
+// 		ph.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* find the electron that we collided with */
+// 	GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
+
+// 	/* given electron momentum P, find the new
+// 	   photon momentum Kp */
+// 	GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
+
+// 	/* transform back to coordinate frame */
+// 	GPU_tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
+
+// 	/* quality control */
+// 	if (isnan(KArrayphp[1])) {
+// 		printf(
+// 			"problem with conversion to coordinate frame\n");
+// 		printf("%g %g %g %g\n", Econ[0][0], Econ[0][1],
+// 			Econ[0][2], Econ[0][3]);
+// 		printf("%g %g %g %g\n", Econ[1][0], Econ[1][1],
+// 			Econ[1][2], Econ[1][3]);
+// 		printf("%g %g %g %g\n", Econ[2][0], Econ[2][1],
+// 			Econ[2][2], Econ[2][3]);
+// 		printf("%g %g %g %g\n", Econ[3][0], Econ[3][1],
+// 			Econ[3][2], Econ[3][3]);
+// 		printf("%g %g %g %g\n", K_tetrad_p[0],
+// 			K_tetrad_p[1], K_tetrad_p[2], K_tetrad_p[3]);
+// 		php.w[photon_index] = 0;
+// 		return;
+// 	}
+
+// 	if (KArrayphp[0] < 0) {
+// 		// printf("K0, K0p, Kp, P[0]: %g %g %g %g\n",
+// 		// 	K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
+// 		php.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* bookkeeping */
+// 	K_tetrad_p[0] *= -1.;
+// 	GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
+
+// 	php.E0[photon_index] = ph.E[photon_index];
+// 	php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
+// 	php.tau_abs[photon_index] = 0.;
+// 	php.tau_scatt[photon_index] = 0.;
+// 	php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
+
+// 	/*update K back*/
+// 	php.K0[photon_index] = KArrayphp[0];
+// 	php.K1[photon_index] = KArrayphp[1];
+// 	php.K2[photon_index] = KArrayphp[2];
+// 	php.K3[photon_index] = KArrayphp[3];
+
+// 	//php->L = tmpK[3];
+// 	// php->b0 = B;
+// 	// php->X1i = ph->X[1];
+// 	// php->X2i = ph->X[2];
+// 	// php->X[0] = ph->X[0];
+// 	// php->X[1] = ph->X[1];
+// 	// php->X[2] = ph->X[2];
+// 	// php->X[3] = ph->X[3];
+// 	// php->ne0 = Ne;
+// 	// php->thetae0 = Thetae;
+// 	//php->E0 = ph->E;
+
+// 	return;
+// }
 
 __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState)
 {
 	double ke[4], kpe[4];
-	double k0p;
-	double n0x, n0y, n0z, n0dotv0, v0x, v0y, v0z, v1x, v1y, v1z, v2x,
-	    v2y, v2z, v1, dir1, dir2, dir3;
-	double cth, sth, phi, cphi, sphi;
-
+	
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
 	GPU_boost(k, p, ke);
+	
+	double k0p, cth;
 	if (ke[0] > 1.e-4) {
 		k0p = GPU_sample_klein_nishina(ke[0], localState);
 		cth = 1. - 1 / k0p + 1. / ke[0];
@@ -151,113 +277,127 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 		k0p = ke[0];
 		cth = GPU_sample_thomson(localState);
 	}
-	sth = sqrt(fabs(1. - cth * cth));
+	
+	double sth = sqrt(fabs(1. - cth * cth));
 
 	/* unit vector 1 for scattering coordinate system is
 	   oriented along initial photon wavevector */
-	// v0x = ke[1] / ke[0];
-	// v0y = ke[2] / ke[0];
-	// v0z = ke[3] / ke[0];
-
-	// Explicitly compute kemag instead of using ke[0] to ensure that photon
-  	// is created normalized and doesn't inherit light cone errors from the
-  	// original superphoton
-	double kemag = sqrt(ke[1]*ke[1] + ke[2]*ke[2] + ke[3]*ke[3]);
-	v0x = ke[1]/kemag;
-	v0y = ke[2]/kemag;
-	v0z = ke[3]/kemag;
+	double v0x, v0y, v0z;
+	{
+		// Explicitly compute kemag instead of using ke[0] to ensure that photon
+		// is created normalized and doesn't inherit light cone errors from the
+		// original superphoton
+		double kemag = sqrt(ke[1]*ke[1] + ke[2]*ke[2] + ke[3]*ke[3]);
+		v0x = ke[1]/kemag;
+		v0y = ke[2]/kemag;
+		v0z = ke[3]/kemag;
+	}
 	
-	/* randomly pick zero-angle for scattering coordinate system.
-	   There's undoubtedly a better way to do this. */
-	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction(&n0x, &n0y, &n0z, localState); /*This currently matches gsl function used*/
-	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
-
 	/* unit vector 2 */
-	v1x = n0x - (n0dotv0) * v0x;
-	v1y = n0y - (n0dotv0) * v0y;
-	v1z = n0z - (n0dotv0) * v0z;
-	v1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
-	v1x /= v1;
-	v1y /= v1;
-	v1z /= v1;
+	double v1x, v1y, v1z;
+	{
+		/* randomly pick zero-angle for scattering coordinate system.
+		   There's undoubtedly a better way to do this. */
+		double n0x, n0y, n0z;
+		generate_random_direction(&n0x, &n0y, &n0z, localState); /*This currently matches gsl function used*/
+		double n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
 
-	/* find one more unit vector using cross product;
-	   this guy is automatically normalized */
-	v2x = v0y * v1z - v0z * v1y;
-	v2y = v0z * v1x - v0x * v1z;
-	v2z = v0x * v1y - v0y * v1x;
+		v1x = n0x - (n0dotv0) * v0x;
+		v1y = n0y - (n0dotv0) * v0y;
+		v1z = n0z - (n0dotv0) * v0z;
+		double v1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+		v1x /= v1;
+		v1y /= v1;
+		v1z /= v1;
+	}
 
 	/* now resolve new momentum vector along unit vectors */
 	/* create a four-vector $p$ */
 	/* solve for orientation of scattered photon */
 
-	/* find phi for new photon */
-	phi = 2. * M_PI * curand_uniform_double(localState );	
-	sphi = sin(phi);
-	cphi = cos(phi);
 
 	p[1] *= -1.;
 	p[2] *= -1.;
 	p[3] *= -1.;
 
-	dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
-	dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
-	dir3 = cth * v0z + sth * (cphi * v1z + sphi * v2z);
+	{
+		
+		/* find one more unit vector using cross product;
+		this guy is automatically normalized */
+		double v2x = v0y * v1z - v0z * v1y;
+		double v2y = v0z * v1x - v0x * v1z;
+		double v2z = v0x * v1y - v0y * v1x;
 
-	kpe[0] = k0p;
-	kpe[1] = k0p * dir1;
-	kpe[2] = k0p * dir2;
-	kpe[3] = k0p * dir3;
+		/* find phi for new photon */
+		double phi = 2. * M_PI * curand_uniform_double(localState);
+		double sphi = sin(phi);
+		double cphi = cos(phi);
+		
+		double dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
+		double dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
+		double dir3 = cth * v0z + sth * (cphi * v1z + sphi * v2z);
+
+		kpe[0] = k0p;
+		kpe[1] = k0p * dir1;
+		kpe[2] = k0p * dir2;
+		kpe[3] = k0p * dir3;
+	}
 	
 	/* transform k back to lab frame */
 	GPU_boost(kpe, p, kp);
 
 	/* quality control */
 	if (kp[0] < 0 || isnan(kp[0])) {
-		printf("in sample_scattered_photon:\n");
-		printf("k0p[0] = %g\n", k0p);
-		printf("kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
-		printf("kpe: %g %g %g %g\n", kpe[0], kpe[1],
-			kpe[2], kpe[3]);
-		printf("k:  %g %g %g %g\n", k[0], k[1], k[2],
-			k[3]);
-		printf("ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
-			ke[3]);
-		printf("p:   %g %g %g %g\n", p[0], p[1], p[2],
-			p[3]);
-		printf("kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
-			kp[3]);
-		printf("phi = %g, cphi = %g, sphi = %g\n", phi, cphi, sphi);
-		printf("cth = %g, sth = %g\n", cth, sth);
+		printf("in sample_scattered_photon: %le, %le\n", kp[0], kpe[0]);
+		// printf("k0p[0] = %g\n", k0p);
+		// printf("kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
+		// printf("kpe: %g %g %g %g\n", kpe[0], kpe[1],
+		// 	kpe[2], kpe[3]);
+		// printf("k:  %g %g %g %g\n", k[0], k[1], k[2],
+		// 	k[3]);
+		// printf("ke: %g %g %g %g\n", ke[0], ke[1], ke[2],
+		// 	ke[3]);
+		// printf("p:   %g %g %g %g\n", p[0], p[1], p[2],
+		// 	p[3]);
+		// printf("kp:  %g %g %g %g\n", kp[0], kp[1], kp[2],
+		// 	kp[3]);
+		// printf("phi = %g, cphi = %g, sphi = %g\n", phi, cphi, sphi);
+		// printf("cth = %g, sth = %g\n", cth, sth);
 	}
 	/* done! */
 }
 
 __device__ void GPU_boost(double v[4], double u[4], double vp[4])
 {
-	double g, V, n1, n2, n3, gm1;
-
-	g = u[0];
-	V = sqrt(fabs(1. - 1. / (g * g)));
-	n1 = u[1] / (g * V + SMALL);
-	n2 = u[2] / (g * V + SMALL);
-	n3 = u[3] / (g * V + SMALL);
-	gm1 = g - 1.;
-
+	double g = u[0];
+	double gm1 = g - 1.;
+	
+	// Compute V and handle small values efficiently
+	double g_inv_sq = 1. / (g * g);
+	double V = sqrt(fabs(1. - g_inv_sq));
+	double gV_inv = 1. / (g * V + SMALL);
+	
+	// Compute normalized direction components directly in expressions
+	double n1 = u[1] * gV_inv;
+	double n2 = u[2] * gV_inv;
+	double n3 = u[3] * gV_inv;
+	
 	/* general Lorentz boost into frame u from lab frame */
 	vp[0] = u[0] * v[0] - u[1] * v[1] - u[2] * v[2] - u[3] * v[3];
-	vp[1] =
-	    -u[1] * v[0] + (1. + n1 * n1 * gm1) * v[1] +
-	    n1 * n2 * gm1 * v[2] + n1 * n3 * gm1 * v[3];
-	vp[2] =
-	    -u[2] * v[0] + n2 * n1 * gm1 * v[1] + (1. +
-						   n2 * n2 * gm1) * v[2] +
-	    n2 * n3 * gm1 * v[3];
-	vp[3] =
-	    -u[3] * v[0] + n3 * n1 * gm1 * v[1] + n3 * n2 * gm1 * v[2] +
-	    (1. + n3 * n3 * gm1) * v[3];
-
+	
+	// Compute cross terms once and reuse
+	double n1_gm1 = n1 * gm1;
+	double n2_gm1 = n2 * gm1;
+	double n3_gm1 = n3 * gm1;
+	
+	vp[1] = -u[1] * v[0] + (1. + n1 * n1_gm1) * v[1] + 
+	        n1_gm1 * n2 * v[2] + n1_gm1 * n3 * v[3];
+	        
+	vp[2] = -u[2] * v[0] + n2_gm1 * n1 * v[1] + (1. + n2 * n2_gm1) * v[2] +
+	        n2_gm1 * n3 * v[3];
+	        
+	vp[3] = -u[3] * v[0] + n3_gm1 * n1 * v[1] + n3_gm1 * n2 * v[2] +
+	        (1. + n3 * n3_gm1) * v[3];
 }
 
 __device__ double GPU_sample_thomson(curandState * localState)
