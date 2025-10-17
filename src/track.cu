@@ -30,7 +30,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, cuda
 	double tau_scatt = 0;
 	int nstep = 0;
 
-	if (ph.w[photon_index] < 1) {
+	if (ph.w[photon_index] < 1e-100) {
 		return;
 	}
 	
@@ -132,19 +132,23 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, cuda
 
 				/* Test for scattering event */
 				double x1 = -log(curand_uniform_double(localState));
+				double boost = pow((round_scat + 1), 2);
+				boost = 0;
 				double weight_scat = ph.w[photon_index] / bias;
-				
-				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
+
+				if (bias * dtau_scatt * boost > x1 && weight_scat > WEIGHT_MIN) {
 					/* Scattering event occurs */
 					if (isnan(weight_scat) || isinf(weight_scat)) {
 						printf("w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
 							Ne, bias, ph.w[photon_index], weight_scat);
 					}
 
-					double frac = x1 / (bias * dtau_scatt);
+					double frac = x1 / (bias * dtau_scatt *boost);
 					
 					/* Apply absorption until scattering event */
-					dtau_abs *= frac;
+					dtau_abs *= frac;	
+
+
 					if (dtau_abs > 100) {
 						return;	/* This photon has been absorbed before scattering */
 					}

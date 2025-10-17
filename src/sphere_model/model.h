@@ -3,7 +3,7 @@
 #define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e16
+#define NUMAX 1.e15
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -13,7 +13,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1e-8)
+#define WEIGHT_MIN	(0)
 
 /*for stop criterium*/
 #define RMAX	(10000./L_UNIT) //Define the maximum radius up to track the photon
@@ -29,7 +29,7 @@
 
 #define NE_VALUE (1.e18)
 #define B_VALUE (1.)
-#define THETAE_VALUE (100.)
+#define THETAE_VALUE (3.)
 #define SPHERE_RADIUS (1./L_UNIT)
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/

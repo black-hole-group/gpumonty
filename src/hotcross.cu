@@ -102,7 +102,7 @@ __host__ void init_hotcross(void)
 			for (j = 0; j <= NT; j++) {
 				lw = lminw + i * dlw;
 				lT = lmint + j * dlT;
-				fprintf(fp, "%d %d %g %g %15.10g\n", i, j,
+				fprintf(fp, "%d %d %g %g %.15e\n", i, j,
 					lw, lT, table[i][j]);
 			}
 		fprintf(stderr, "done.\n\n");
@@ -143,11 +143,12 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
 		return (hc_klein_nishina(w) * SIGMA_THOMSON);
 	}
 
+
 	/* in-bounds for table */
 	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
 
-		lw = __log10f(w);
-		lT = __log10f(thetae);
+		lw = log10(w);
+		lT = log10(thetae);
 		i = (int) ((lw - d_lminw) / d_dlw);
 		j = (int) ((lT - d_lmint) / d_dlT2);
 		di = (lw - d_lminw) / d_dlw - i;
@@ -158,7 +159,9 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
 		    d_table_ptr[j + (NT+1) * (i+1)] + (1. - di) * dj * d_table_ptr[(j+1) + (NT+1) * i] +
 		    di * dj * d_table_ptr[(j+1) + (NT+1) * (i+1)];
 
-			
+		// printf("table[i][j] = %.15e\n, table[i][j+1] = %.15e\n table[i+1][j] = %.15e\n table[i+1][j+1] = %.15e\n lcross = %.15e\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)], lcross);
+		// printf("lcross = %.15e\n", lcross);
+
 		//lcross = tex2D<float>(tableTexObj, i, j);
 		if (isnan(lcross)) {
 			printf("Problem in total_compton_cross_lkup, lcross is nan!\n");	

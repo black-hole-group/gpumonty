@@ -288,10 +288,10 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			}
 			
 			cudaMemcpyFromSymbol(&scatterings_performed, scattering_counter, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-			if(scatterings_performed != num_scat_phs[n - 1]){
-				printf("Not all the photons created in scatterings have been evaluated (%llu, %llu)\n", scatterings_performed, num_scat_phs[n - 1]);
-				//exit(1);
-			}
+			// if(scatterings_performed != num_scat_phs[n - 1]){
+			// 	//printf("Not all the photons created in scatterings have been evaluated (%llu, %llu)\n", scatterings_performed, num_scat_phs[n - 1]);
+			// 	//exit(1);
+			// }
 			cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA* sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 			if(num_scat_phs[n] == 0){
 				printf("Quit flag reached in round %d!\n", n);
@@ -300,6 +300,9 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long));
 			printf("number of scattered photons generated = %llu in round %d\n", num_scat_phs[n], n);
 			n++;
+		}
+		if(n >= MAX_LAYER_SCA){
+			printf("Warning: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
 		}
 
 		cudaStatus = cudaGetLastError();
@@ -520,6 +523,9 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = GPU_linear_interp_weight(nu);
         } while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		if(nu > 5e14){
+			printf("Above 5e14 weight = %le\n", weight);
+		}
         ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
     
@@ -648,19 +654,55 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 
 
 
+// __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
+// 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+// 	curandState localState = my_curand_state[global_index];
+// 	double Ne, Thetae, B;
+// 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
+
+// 	/*track each photon we created along its geodesic*/
+// 	if(global_index == 0){
+// 		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
+// 	}
+	
+// 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
+// 		atomicAdd(&scattering_counter, 1);
+// 		double X[NDIM] = {ph.X0[a], ph.X1[a], ph.X2[a], ph.X3[a]};
+// 		gcov_func(X, Gcov);
+// 		#ifndef SPHERE_TEST
+// 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+// 		#else
+// 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+// 		#endif
+
+// 		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
+// 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+// 			continue;
+// 		}
+// 		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, a, &localState, besselTexObj);
+// 	}
+// 	my_curand_state[global_index] = localState;
+// }
+
+
 __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
+	unsigned long long scattering_counter_local = round_num_scat_init - 1;
 
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
 		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
 	}
 	
-	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
-		double X[NDIM] = {ph.X0[a], ph.X1[a], ph.X2[a], ph.X3[a]};
+	while(true){
+		scattering_counter_local = (round_num_scat_init) + (atomicAdd(&scattering_counter, 1));
+
+		if (scattering_counter_local >= round_num_scat_end) break;
+
+		double X[NDIM] = {ph.X0[scattering_counter_local], ph.X1[scattering_counter_local], ph.X2[scattering_counter_local], ph.X3[scattering_counter_local]};
 		gcov_func(X, Gcov);
 		#ifndef SPHERE_TEST
 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
@@ -668,12 +710,12 @@ __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, 
 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
 
-		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
-		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
+		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, scattering_counter_local);
+		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;
 		}
-		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, a, &localState, besselTexObj);
-		atomicAdd(&scattering_counter, 1);
+		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState, besselTexObj);
+
 	}
 	my_curand_state[global_index] = localState;
 }
