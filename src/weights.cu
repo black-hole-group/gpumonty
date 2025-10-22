@@ -60,7 +60,7 @@ void init_weight_table(void)
 	}
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++){
-		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
+		wgt[i] = log(sum[i] / (HPL * Ns));
 	}
 
 	

@@ -33,7 +33,8 @@ __host__ void init_data(char *fname)
 	gam = 13./9.;
 	Ne_value = NE_VALUE/NE_UNIT; /*in 1/cm^3*/
 	B_value = B_VALUE/B_UNIT; /*in G*/
-	thetae_value = THETAE_VALUE;
+    //TODO: change how thetae is set
+	thetae_value = 4;//THETAE_VALUE;
 
 	/*grid parameters*/
 	dx[1] = (Rout - Rin)/N1;
@@ -72,6 +73,8 @@ __host__ void init_data(char *fname)
 	dMact = 0.;
 	Ladv = 0.;
 	bias_norm = 0.;
+
+    double tau = 1e-4;
 	for (k = 0; k < N1 * N2 * N3; k++) {
 		// z = 0;
 		j = k % N2;
@@ -83,7 +86,9 @@ __host__ void init_data(char *fname)
         
 
 		if(r < sphere_radius){
-			p[NPRIM_INDEX(KRHO,k)] = Ne_value;
+			//p[NPRIM_INDEX(KRHO,k)] = Ne_value;
+            //TODO: change how ne is set
+            p[NPRIM_INDEX(KRHO,k)] = tau/(sphere_radius * L_UNIT * SIGMA_THOMSON);
 			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
 			#if(EXP_COORDS)
 				p[NPRIM_INDEX(B1,k)] = B_value * cos(h)/r ;

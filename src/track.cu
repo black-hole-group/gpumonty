@@ -133,7 +133,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, cuda
 				/* Test for scattering event */
 				double x1 = -log(curand_uniform_double(localState));
 				double boost = pow((round_scat + 1), 2);
-				boost = 0;
+				boost = 1;
 				double weight_scat = ph.w[photon_index] / bias;
 
 				if (bias * dtau_scatt * boost > x1 && weight_scat > WEIGHT_MIN) {
