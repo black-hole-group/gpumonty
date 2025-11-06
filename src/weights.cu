@@ -53,7 +53,7 @@ void init_weight_table(void)
 							K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
 						for (l = lstart; l < lend; l++){
 							sum[l] +=
-								fac * F_eval(Thetae, B, nu[l]);	
+								fac * F_eval(Thetae, B, nu[l]);
 						}
 			}
 #pragma omp barrier

@@ -4,6 +4,7 @@
 /* Range of superphoton frequencies */
 #define NUMIN 1.e7
 #define NUMAX 1.e14
+#define NPRIM	8
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -37,4 +38,5 @@ __host__ __device__ void gcov_func(double *X, double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ void check_scan_error(int scan_output, int number_of_arguments );
 __host__ __device__ void bl_coord(double *X, double *r, double *th);
+__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM]);
 #endif

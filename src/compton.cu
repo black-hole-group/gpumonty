@@ -2,6 +2,7 @@
 #include"compton.h"
 #include "tetrads.h"
 #include "curand.h"
+
 __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
 	double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], 
 	double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)

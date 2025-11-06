@@ -71,10 +71,8 @@
 
 /*Number of spacetime dimensions*/
 #define NDIM	4
-/*Number of primitive variables*/
-#define NPRIM	8
 /* mnemonics for primitive vars; conserved vars */
-#define KRHO     0
+#define KRHO    0
 #define UU      1
 #define U1      2
 #define U2      3
@@ -82,14 +80,15 @@
 #define B1      5
 #define B2      6
 #define B3      7
-
+#define KEL     8 
+#define KTOT    9
 /* numerical convenience */
 #define SMALL	1.e-40
 
 
 //#define NPRIM_INDEX3D(i,j,k,l) (i * (N1 * N2 * N3) + ((l) + N3 * (k + N2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
 //#define NPRIM_INDEX3D(i,j,k,l) ( j * (N3 * N2 * NPRIM) + k * (N3 * NPRIM) + l * NPRIM + i) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define NPRIM_INDEX3D(i,j,k,l) ((((j) * (N2) + (k)) * N3 + (l)) * NPRIM + (i))
+#define NPRIM_INDEX3D(v,i,j,k) (((v) * N1 * N2 * N3) + (k + N3 * (j + N2 * i)))
 
 #define SPATIAL_INDEX2D(i,j) ((j + N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
 #define SPATIAL_INDEX3D(i,j,k) (k+ N3*(j + N2 * i))

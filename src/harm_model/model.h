@@ -16,6 +16,7 @@
 /*for stop criterium*/
 #define RMAX	100. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
+#define NPRIM	8
 
 #define N1 256
 #define N2 256
@@ -44,4 +45,5 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], cudaTextureObject_t d_p);
 __device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
+__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM]);
 #endif

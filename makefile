@@ -1,14 +1,19 @@
-# Model name (hamr_model, harm_model, sphere_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+# Model name (hamr_model, harm_model, sphere_model, iharm_model)
+MODEL_DIR = $(SRC_DIR)/iharm_model
 
 CUDA_PATH ?= /usr/local/cuda
 #GSL setup
 GSL_PATH ?= /home/pedro/gsl
 
+# HDF5 setup
+HDF5_INCLUDE = -I/usr/include/hdf5/serial
+HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
+
+
 # Compiler flags
-ARCH = compute_60
-CODE = sm_60
-CODE_LTO = lto_60
+ARCH = compute_80
+CODE = sm_80
+CODE_LTO = lto_80
 
 # Directories
 SRC_DIR = src
@@ -26,7 +31,7 @@ DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
 NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
-                   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR)
+                   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR) $(HDF5_INCLUDE)
 
 NVCCFLAGS_DEBUG =  $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
 NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)
@@ -40,7 +45,7 @@ else
 endif
 
 # Linker flags
-LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++
+LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++ $(HDF5_LIB) -lhdf5_hl -lhdf5
 
 # Source and object files
 CUDA_SRC = $(wildcard $(SRC_DIR)/*.cu) $(wildcard $(MODEL_DIR)/*.cu)

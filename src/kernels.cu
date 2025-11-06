@@ -414,7 +414,12 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT
 				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 				* 1. / HPL;
-
+			// if(isnan(ninterp)){
+			// 	printf("NaN encountered in zone %d %d: \n l = %d, dlnu = %le, lnu_min = %le, d_wgt[l] = %le\n", i, j, l, dlnu, lnu_min, d_wgt[l]);
+			// 	*n2gen = 0.;
+			// 	*dnmax = 0.;
+			// 	return;
+			// }
 		} else {
 			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
 				ninterp = 0.;
@@ -523,9 +528,6 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = GPU_linear_interp_weight(nu);
         } while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-		if(nu > 5e14){
-			printf("Above 5e14 weight = %le\n", weight);
-		}
         ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
     

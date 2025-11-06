@@ -2,6 +2,7 @@
 /* Range of superphoton frequencies */
 #define NUMIN 1.e9
 #define NUMAX 1.e16
+#define NPRIM	8
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3

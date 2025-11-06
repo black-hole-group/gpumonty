@@ -307,36 +307,6 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 	return;
 }
 
-#define MIN(A,B) (A<B?A:B)
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
-{
-	double dl, dlx1, dlx2, dlx3;
-	double idlx1, idlx2, idlx3;
-	#ifdef HAMR
-		double x2_normal, stopx2_normal;
-		x2_normal = (1. + X[2])/2.;
-		stopx2_normal = 1.; 
-		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
-	#else
-		dlx2 = EPS * MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
-	#endif
-
-	#ifdef SPHERE_TEST
-		dlx1 = EPS/(fabs(K[1]) + SMALL);
-	#else
-		dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	#endif
-	dlx3 = EPS / (fabs(K[3]) + SMALL);
-
-	idlx1 = 1. / (fabs(dlx1) + SMALL);
-	idlx2 = 1. / (fabs(dlx2) + SMALL);
-	idlx3 = 1. / (fabs(dlx3) + SMALL);
-
-	dl = 1. / (idlx1 + idlx2 + idlx3);
-
-	return (dl);
-}
-#undef MIN
 
 
 // // //This one below is from gpu_monty

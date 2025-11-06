@@ -8,3 +8,4 @@ MAD_*
 SPHERE_TEST_THICK
 dump900
 *.ncu-rep
+*.h5

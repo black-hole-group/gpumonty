@@ -2,7 +2,7 @@
 #include "utils.h"
 
 
-__device__ double GPU_interp_scalar(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
+__device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
 
 	interp = coeff[0] * var[NPRIM_INDEX3D(mmenemonics, i, j, k)] + coeff[5] * var[NPRIM_INDEX3D(mmenemonics, i+1, j, k)] +
@@ -13,12 +13,12 @@ __device__ double GPU_interp_scalar(const double * __restrict__ var, const int m
 	return interp;
 }
 
-// __device__ double GPU_interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]){
-//     if(N3 == 1){
-//         return  tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
-//     }
-// 	return (1 - del[3]) * tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f)+ del[3] * tex3D<float>(var, (k+1) * NPRIM + mmenemonics + 0.5f ,(j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
-// }
+__device__ double GPU_interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]){
+    if(N3 == 1){
+        return  tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
+    }
+	return (1 - del[3]) * tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f)+ del[3] * tex3D<float>(var, (k+1) * NPRIM + mmenemonics + 0.5f ,(j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
+}
 __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int arraySize, unsigned long long photon_index) {
     int left = 0;
     int right = arraySize - 1;
