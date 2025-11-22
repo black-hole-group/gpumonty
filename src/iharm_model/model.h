@@ -3,7 +3,7 @@
 #define NUMIN 1.e8
 #define NUMAX 1.e16
 #define IHARM (1)
-
+#define DO_NOT_USE_TEXTURE_MEMORY 1 /*Define this macro to not use texture memory for fluid variables*/
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
 #define THETAE_MAX 1000.
@@ -36,13 +36,13 @@ __host__ void init_storage(void);
 __host__ void init_data(char *fname);
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+__device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __host__ __device__ void coord(int i, int j, double *X);
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], cudaTextureObject_t d_p);
+__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
 __device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM]);

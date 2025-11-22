@@ -198,11 +198,19 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 		fprintf(stderr, "Tracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number, besselTexObj);
+			#ifdef DO_NOT_USE_TEXTURE_MEMORY
+				GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number, besselTexObj);
+			#else
+				GPU_track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, max_block_number, besselTexObj);
+			#endif
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks, besselTexObj);
+			#ifdef DO_NOT_USE_TEXTURE_MEMORY
+				GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks, besselTexObj);
+			#else
+				GPU_track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, ideal_nblocks, besselTexObj);
+			#endif
 		}		
 
 		cudaDeviceSynchronize();
@@ -256,12 +264,19 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
-				GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#else
+					GPU_track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, max_block_number * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#endif
 			}else{
 				if (ideal_nblocks == 0)
 					ideal_nblocks = 1;
-
-				GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#else
+					GPU_track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, ideal_nblocks * N_THREADS, besselTexObj, round_num_scat_init, round_num_scat_end);
+				#endif
 			}
 			cudaDeviceSynchronize();
 			cudaEventRecord(stop);
@@ -328,7 +343,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	cudaFree(dnmax_arr);
 	cudaFree(d_geom);
 	cudaFree(d_table_ptr);
-	//cudaFree(d_p);
+	cudaFree(d_p);
     cudaFree(d_index_to_ijk);
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
@@ -518,7 +533,7 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
     
     // Scope 2: Get fluid properties
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
-    get_fluid_zone(i, j, 0, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
     
     // Scope 3: Sample frequency
     {
@@ -607,7 +622,13 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
     ph.nscatt[ph_arr_index] = 0;
 }
 	
-__global__ void GPU_track(struct of_photonSOA ph, cudaTextureObject_t  d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, const int nblocks, cudaTextureObject_t besselTexObj){
+__global__ void GPU_track(struct of_photonSOA ph, 
+	#ifdef DO_NOT_USE_TEXTURE_MEMORY
+	double * __restrict__  d_p,
+	#else
+	cudaTextureObject_t d_p,
+	#endif
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, const int nblocks, cudaTextureObject_t besselTexObj){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long photon_index = 0;
 	int n = 1;
@@ -687,7 +708,13 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 // }
 
 
-__global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
+__global__ void GPU_track_scat(struct of_photonSOA ph, 
+	#ifdef DO_NOT_USE_TEXTURE_MEMORY
+	 double * __restrict__ d_p, 
+	#else
+	 cudaTextureObject_t d_p,
+	#endif
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;

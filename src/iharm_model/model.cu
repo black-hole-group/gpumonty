@@ -506,34 +506,49 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 }
 
 /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+__device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
+  double phi;
+  double XG[NDIM];
+  for (int mu = 0; mu < NDIM; mu++) XG[mu] = X[mu];
+  phi = fmod(X[3], d_stopx[3]);
+  if (phi < 0.0) phi = d_stopx[3]+phi;
 
 	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000.) - 1000;
 	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000.) - 1000;
-	if (*i < 0) {
-		*i = 0;
-		del[1] = 0.;
-	} else if (*i > N1 - 2) {
-		*i = N1 - 2;
-		del[1] = 1.;
-	} else {
-		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
-	}
+  *k = (int) ((phi  - d_startx[3]) / d_dx[3] - 0.5 + 1000) - 1000;  
+ // don't allow "center zone" to be outside of [0,N*-1]. this will often fire
+  // for exotic corodinate systems and occasionally for normal ones. wrap x3.
+  if (*i < 0) *i = 0;
+  if (*j < 0) *j = 0;
+  if (*k < 0) *k = 0;
+  if (*i > N1-2) *i = N1-2; 
+  if (*j > N2-2) *j = N2-2; 
+  if (*k > N3-1) *k = N3-1; 
 
-	if (*j < 0) {
-		*j = 0;
-		del[2] = 0.;
-	} else if (*j > N2 - 2) {
-		*j = N2 - 2;
-		del[2] = 1.;
-	} else {
-		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2]; //fractional displacement of the center of the grid cell
-	}
-	*k = 0;
-	del[3] = 0;
+  // now construct del
+  del[1] = (XG[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
+  del[2] = (XG[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2];
+  del[3] = (phi - ((*k + 0.5) * d_dx[3] + d_startx[3])) / d_dx[3];
+
+  // finally enforce limits on del
+  if (del[1] > 1.) del[1] = 1.;
+  if (del[1] < 0.) del[1] = 0.;
+  if (del[2] > 1.) del[2] = 1.;
+  if (del[2] < 0.) del[2] = 0.;
+  if (del[3] > 1.) del[3] = 1.;
+  if (del[3] < 0.) {
+    int oldk = *k;
+    *k = N3-1;
+    del[3] += 1.;
+    if (del[3] < 0) {
+      printf(" ! unable to resolve X[3] coordinate to zone %d %d %g %g\n", oldk, *k, del[3], XG[3]);
+    }
+  }
 	return;
 }
+
+
 
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
 __host__ __device__ void coord(int i, int j, double *X)
@@ -707,7 +722,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
-    double Bcov[NDIM], cudaTextureObject_t d_p)
+    double Bcov[NDIM], double * d_p)
 {
     int i, j, k;
     double del[NDIM];
@@ -725,56 +740,51 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     }
 
     // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
-    //Xtoij(X, &i, &j, del);
     GPU_Xtoijk(X, &i, &j, &k, del);
-    //Xtoijk(X, &i, &j, &k, del);
-
     //Calculate the coeficient of displacement
-    // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
-    // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
-    // coeff[2] = (1. - del[1]) * del[2] * del[3];
-    // coeff[3] = del[1] * del[2] * del[3];
-    // coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
-    // coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
-    // coeff[6] = del[1] * (1. - del[2]) * del[3];
-    // coeff[7] = del[1] * del[2] * (1. - del[3]);
-
+    coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
+    coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
+    coeff[2] = (1. - del[1]) * del[2] * del[3];
+    coeff[3] = del[1] * del[2] * del[3];
+    coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
+    coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
+    coeff[6] = del[1] * (1. - del[2]) * del[3];
+    coeff[7] = del[1] * del[2] * (1. - del[3]);
 
 
     //interpolate based on the displacement
-    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
-    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
-    kel = GPU_interp_scalar(d_p, KEL, i,j,k, del);
+    rho = GPU_interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
+    uu = GPU_interp_scalar_pointer(d_p, UU, i, j, k, coeff);
+    kel = GPU_interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
     *Ne = rho * NE_UNIT;
 
-    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
-    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
-    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
+    Bp[1] = GPU_interp_scalar_pointer(d_p, B1, i, j, k, coeff);
+    Bp[2] = GPU_interp_scalar_pointer(d_p, B2, i, j, k, coeff);
+    Bp[3] = GPU_interp_scalar_pointer(d_p, B3, i, j, k, coeff);
 
-    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
-    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
-    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
-
+    Vcon[1] = GPU_interp_scalar_pointer(d_p, U1, i, j, k, coeff);
+    Vcon[2] = GPU_interp_scalar_pointer(d_p, U2, i, j, k, coeff);
+    Vcon[3] = GPU_interp_scalar_pointer(d_p, U3, i, j, k, coeff);
     gcon_func(X, gcov, gcon);
 
     /* Get Ucov */
     VdotV = 0.;
-    for (i = 1; i < NDIM; i++)
-    for (j = 1; j < NDIM; j++)
+    for (int i = 1; i < NDIM; i++)
+    for (int j = 1; j < NDIM; j++)
     VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
     Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
     Ucon[0] = -Vfac * gcon[0][0];
-    for (i = 1; i < NDIM; i++){
+    for (int i = 1; i < NDIM; i++){
     Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
     }
     lower(Ucon, gcov, Ucov);
 
     /* Get B and Bcov */
     UdotBp = 0.;
-    for (i = 1; i < NDIM; i++)
+    for (int i = 1; i < NDIM; i++)
     UdotBp += Ucov[i] * Bp[i];
     Bcon[0] = UdotBp;
-    for (i = 1; i < NDIM; i++)
+    for (int i = 1; i < NDIM; i++)
     Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
     lower(Bcon, gcov, Bcov);
 
@@ -782,6 +792,14 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
     *Thetae = thetae_func(uu, rho, (*B)/B_UNIT, kel);
+    // if(!isnan(*Thetae)){
+    //     printf("i = %d, j = %d, k = %d; uu = %le, rho = %le, B = %le, kel = %le, del = (%le, %le, %le, %le)\n", i, j, k, uu, rho, (*B)/B_UNIT, kel, del[0], del[1], del[2], del[3]);
+    // }
+    if(isnan(*Thetae)) {
+        printf("Ops! i = %d, j = %d, k = %d; uu = %le, rho = %le, B = %le, kel = %le, del = (%le, %le, %le, %le), X = (%le, %le, %le, %le) r = %le, th = %le, phi = %le\n", i, j, k, uu, rho, (*B)/B_UNIT, kel, del[0], del[1], del[2], del[3], X[0], X[1], X[2], X[3], exp(X[1]), X[2], X[3]);
+      //apparentely zone is fucked up. I gotta check how the texture object is at index 285 69 19, one above and one below in each index 
+      /*Ops! i = 285, j = 69, k = 19; uu = 0.000000e+00, rho = 0.000000e+00, B = 0.000000e+00, kel = 0.000000e+00, del = (2.672080e-06, 1.082138e-01, 3.391186e-01, 8.726584e-02), X = (1.086862e+03, 6.851746e+00, 5.456181e-01, 7.244673e+00) r = 9.455304e+02, th = 5.456181e-01, phi = 7.244673e+00*/
+    }
     if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
     double sig = pow(*B/B_UNIT, 2.)/(*Ne/NE_UNIT);

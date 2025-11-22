@@ -17,7 +17,7 @@
 
 
 /*GPU Number of blocks and threads*/
-#define N_BLOCKS 3456//176
+#define N_BLOCKS 256//176
 #define N_THREADS 256 //256
 
 
@@ -135,7 +135,7 @@
 
 /*This define the numbers of scatterins per photon. This is just an approximate to allocate memory, if you don't know, just leave it equal 1.*/
 /*If this number is very large and you are still getting invalid memory access, it means that something is wrong with bias, prob*/
-#define SCATTERINGS_PER_PHOTON (7) 
+#define SCATTERINGS_PER_PHOTON (1) 
 
 /*Making of Nint table*/
 #define	NINT (20000) //Number of table data
@@ -143,7 +143,7 @@
 #define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
-#define MAX_LAYER_SCA (5)
+#define MAX_LAYER_SCA (3)
 
 /*for stepsize*/
 #define EPS (0.04)

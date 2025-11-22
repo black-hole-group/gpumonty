@@ -18,7 +18,13 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 }
 
 #define dtauK (L_UNIT / (ME * CL * CL / HPL))
-__noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
+__noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, 
+	#ifdef DO_NOT_USE_TEXTURE_MEMORY
+	 	double * __restrict__ d_p,
+	#else
+		cudaTextureObject_t d_p,
+	#endif
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
 {
 	// Keeping only essential variables at function scope
 	double XArray[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
