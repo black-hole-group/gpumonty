@@ -77,6 +77,13 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		/* find the electron that we collided with */
 		double P[NDIM];
 		GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
+		if(isnan(P[1]) || isnan(P[2]) || isnan(P[3])){
+			#ifndef IHARM
+				printf("sample electron returned nan\n");
+			#endif
+			ph.w[photon_index] = 0.;
+			return;
+		}
 
 		/* given electron momentum P, find the new photon momentum Kp */
 		GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
@@ -349,7 +356,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 
 	/* quality control */
 	if (kp[0] < 0 || isnan(kp[0])) {
-		printf("in sample_scattered_photon: %le, %le\n", kp[0], kpe[0]);
+		printf("in sample_scattered_photon: %le, %le, p = (%le, %le, %le, %le)\n", kp[0], kpe[0], p[0], p[1], p[2], p[3]);
 		// printf("k0p[0] = %g\n", k0p);
 		// printf("kp[0], kpe[0]: %g %g\n", kp[0], kpe[0]);
 		// printf("kpe: %g %g %g %g\n", kpe[0], kpe[1],

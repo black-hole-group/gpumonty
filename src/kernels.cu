@@ -316,8 +316,8 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			printf("number of scattered photons generated = %llu in round %d\n", num_scat_phs[n], n);
 			n++;
 		}
-		if(n >= MAX_LAYER_SCA){
-			printf("Warning: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
+		if(n >= MAX_LAYER_SCA && num_scat_phs[n] > 0){
+			printf("WARNING: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
 		}
 
 		cudaStatus = cudaGetLastError();

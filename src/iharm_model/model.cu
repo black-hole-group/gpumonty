@@ -844,6 +844,7 @@ __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectr
         printf("record isnan: %g %g\n", ph.w[photon_index], ph.E[photon_index]);
         return;
     }
+    d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
 
     double r, th;
     double X_Array[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
