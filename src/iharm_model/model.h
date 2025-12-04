@@ -7,7 +7,6 @@
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
 #define THETAE_MAX 1000.
-
 /*Ratio of proton temperature to electron temperature*/
 #define TP_OVER_TE	(3.)
 
@@ -58,10 +57,11 @@ __host__ void init_geometry();
 #define TRAT_LARGE 10.
 #define GAME (4./3.)
 #define GAMP (5./3.)
-#define GAM (13./9.)
+#define GAM (1.4444440)
 #define USE_FIXED_TPTE (0)
 #define USE_MIXED_TPTE (1)
-
+#define WITH_ELECTRONS (2)
+#define Thetae_MAX2 (1.e100)
 
 #define ZLOOP \
     for (int i = 0; i < N1; i++) \

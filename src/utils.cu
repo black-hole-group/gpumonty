@@ -4,11 +4,17 @@
 
 __device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
+    int kp1 = k + 1;
+    int ip1 = i + 1;
+    int jp1 = j + 1;
+    if (k == (N3 - 1)){
+        kp1 = 0;
+    }
 
-	interp = coeff[0] * var[NPRIM_INDEX3D(mmenemonics, i, j, k)] + coeff[5] * var[NPRIM_INDEX3D(mmenemonics, i+1, j, k)] +
-	coeff[4] * var[NPRIM_INDEX3D(mmenemonics, i, j + 1, k)] + coeff[7]  * var[NPRIM_INDEX3D(mmenemonics, i+1, j+1, k)] +
-	coeff[1] * var[NPRIM_INDEX3D(mmenemonics, i, j, k+1)] + coeff[6] * var[NPRIM_INDEX3D(mmenemonics, i+1, j, k+1)] +
-	coeff[2] * var[NPRIM_INDEX3D(mmenemonics, i, j+1, k+1)] + coeff[3] * var[NPRIM_INDEX3D(mmenemonics, i+1, j+1, k+1)];
+	interp = coeff[0] * var[NPRIM_INDEX3D(mmenemonics, i, j, k)] + coeff[5] * var[NPRIM_INDEX3D(mmenemonics, ip1, j, k)] +
+	coeff[4] * var[NPRIM_INDEX3D(mmenemonics, i, jp1, k)] + coeff[7]  * var[NPRIM_INDEX3D(mmenemonics, ip1, jp1, k)] +
+	coeff[1] * var[NPRIM_INDEX3D(mmenemonics, i, j, kp1)] + coeff[6] * var[NPRIM_INDEX3D(mmenemonics, ip1, j, kp1)] +
+	coeff[2] * var[NPRIM_INDEX3D(mmenemonics, i, jp1, kp1)] + coeff[3] * var[NPRIM_INDEX3D(mmenemonics, ip1, jp1, kp1)];
 
 	return interp;
 }

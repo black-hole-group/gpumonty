@@ -263,7 +263,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 }
 
 
-// __host__ __device__ void gcon_func(double X[4], double gcov[][NDIM], double gcon[][NDIM])
+// __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
 // {
 //   invert_matrix( gcov, gcon );
 // }
@@ -304,10 +304,6 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 		//transformation for Kerr-Schild -> modified Kerr-Schild 
 		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
 
-		#ifdef HAMR
-		hfac = M_PI;
-		#endif
-
 		gcon[0][0] = -1. - 2. * r * irho2;
 		gcon[0][1] = 2. * irho2;
 
@@ -325,6 +321,53 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 
 #ifndef SPHERE_TEST
 
+// #define DEL (1.e-7)
+// 	__device__ void GPU_get_connection(const double X[NDIM], double conn[NDIM][NDIM][NDIM])
+// 	{
+// 	double tmp[NDIM][NDIM][NDIM];
+// 	double Xh[NDIM], Xl[NDIM];
+// 	double gcon[NDIM][NDIM];
+// 	double gcov[NDIM][NDIM];
+// 	double gh[NDIM][NDIM];
+// 	double gl[NDIM][NDIM];
+
+// 	gcov_func(X, gcov);
+// 	gcon_func(X, gcov, gcon);
+
+// 	// take partial derivatives of metric
+// 	for (int k = 0; k < NDIM; k++) {
+// 		for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
+// 		for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
+// 		Xh[k] += DEL;
+// 		Xl[k] -= DEL;
+// 		gcov_func(Xh, gh);
+// 		gcov_func(Xl, gl);
+
+// 		for (int i = 0; i < NDIM; i++){
+// 		for (int j = 0; j < NDIM; j++){
+// 			conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
+// 		}
+// 		}
+// 	}
+
+// 	// Rearrange to find \Gamma_{ijk}
+// 	for (int i = 0; i < NDIM; i++)
+// 		for (int j = 0; j < NDIM; j++)
+// 		for (int k = 0; k < NDIM; k++)
+// 			tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
+
+// 	// G_{ijk} -> G^i_{jk}
+// 	for (int i = 0; i < NDIM; i++) {
+// 		for (int j = 0; j < NDIM; j++) {
+// 		for (int k = 0; k < NDIM; k++) {
+// 			conn[i][j][k] = 0.;
+// 			for (int l = 0; l < NDIM; l++) 
+// 			conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
+// 		}
+// 		}
+// 	}
+// 	}
+// 	#undef DEL
 	__device__ void GPU_get_connection(const double X[4], double lconn[4][4][4])
 	{
 
@@ -395,7 +438,6 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 		lconn[0][0][0] = 2. * r1 * fac1_rho23;
 		lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
 		lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
-
 
 		lconn[0][0][3] = -2. * BHSPIN * r1sth2 * fac1_rho23;
 

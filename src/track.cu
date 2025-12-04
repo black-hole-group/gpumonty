@@ -50,6 +50,18 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 			KArray[1], KArray[2], KArray[3], ph.w[photon_index], ph.nscatt[photon_index]);
 		return;
 	}
+	if (photon_index == 0){
+		XArray[0] = 0.;
+		XArray[1] = 3.860329427347717e-01;
+		XArray[2] = 4.570312500000000e-01;
+		XArray[3] = 0.0;
+		KArray[0] = 1.649037731505288e-11;
+		KArray[1] = -4.752716515150061e-13;
+		KArray[2] = 5.029172547659908e-13;
+		KArray[3] = 6.840589551248962e-12;
+		ph.w[photon_index] = 8.226374526377148e+40;
+
+	}
 
 	/* Initialize opacities and fluid parameters */
 	double alpha_scatti, alpha_absi, bi;
@@ -69,11 +81,15 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 		alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
 		alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
 		bi = GPU_bias_func(Thetae, ph.w[photon_index], round_scat);
+		// if(photon_index == 0){
+		// 	printf("Initial opacities: nu, alpha_scatti, alpha_absi, bi: %.15e %.15e %.15e %.15e\n", nu, alpha_scatti, alpha_absi, bi);
+		// 	printf("Ne = %.15e, Thetae = %.15e, B = %.15e, theta = %.15e\n", Ne, Thetae, B, theta);
+		// }
 	}
-
 	/* Initialize dK/dlam */
 	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
-
+	//if(photon_index == 0)
+	// printf("dKdlamArray = %.15e, %.15e, %.15e, %15e\n", dKdlamArray[0], dKdlamArray[1], dKdlamArray[2], dKdlamArray[3]);
 	while (!GPU_stop_criterion(XArray[1], &(ph.w[photon_index]), localState)) {
 		/* Save initial state for this step */
 		double Xi[NDIM] = {XArray[0], XArray[1], XArray[2], XArray[3]};
@@ -84,7 +100,11 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 		/* evaluate stepsize and step the geodesic */
 		double dl = GPU_stepsize(XArray, KArray);
 		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &E0s);
-
+		// if(photon_index == 0){
+		// 	printf("dl = %.15e\n", dl);
+		// 	if(nstep > 10.)
+		// 	return;
+		// }
 		if (GPU_stop_criterion(XArray[1], &(ph.w[photon_index]), localState)){
 			break;
 		}
@@ -99,6 +119,21 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 			#else
 				GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 			#endif
+
+			// if(photon_index == 0){
+			// 	printf("Printing Gcov in a matrix format:\n");
+			// 	for(int row = 0; row < NDIM; row++){
+			// 		for(int col = 0; col < NDIM; col++){
+			// 			printf("%.15e ", Gcov[row][col]);
+			// 		}
+			// 		printf("\n");
+			// 	}
+			// 	printf("Ucon: %.15e %.15e %.15e %.15e\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
+			// 	printf("Ucov: %.15e %.15e %.15e %.15e\n", Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
+			// 	printf("Bcon: %.15e %.15e %.15e %.15e\n", Bcon[0], Bcon[1], Bcon[2], Bcon[3]);
+			// 	printf("Bcov: %.15e %.15e %.15e %.15e\n", Bcov[0], Bcov[1], Bcov[2], Bcov[3]);
+			// 	printf("Ne = %.15e, Thetae = %.15e, B = %.15e\n", Ne, Thetae, B);
+			// }
 
 			/* Process interactions with matter */
 			if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
@@ -122,6 +157,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 					alpha_scatti = alpha_absi = 0.;
 					bias = 0.;
 					bi = 0.;
+					
 				} else {
 					double alpha_scattf = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
@@ -136,10 +172,12 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 					bi = bf;
 				}
 
+				
+
 				/* Test for scattering event */
 				double x1 = -log(curand_uniform_double(localState));
 				double boost = pow((round_scat + 1), 2);
-				boost = 1;
+				boost = 1.;
 				double weight_scat = ph.w[photon_index] / bias;
 
 				if (bias * dtau_scatt * boost > x1 && weight_scat > WEIGHT_MIN) {
@@ -241,12 +279,15 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 					tau_abs += dtau_abs;
 					tau_scatt += dtau_scatt;
 					double dtau = dtau_abs + dtau_scatt;
-
+					
 					if (dtau < 1.e-3) {
 						ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
 					} else {
 						ph.w[photon_index] *= exp(-dtau); 
 					}
+					// if(photon_index == 0)
+					// 	printf("tau_abs = %.15e, tau_scatt = %.15e, dtau = %.15e, ph.w = %.15e\n", tau_abs, tau_scatt, dtau, ph.w[photon_index]);
+
 				}
 			}
 		}
@@ -278,7 +319,9 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 	ph.E0s[photon_index] = E0s;
 	ph.tau_abs[photon_index] = tau_abs;
 	ph.tau_scatt[photon_index] = tau_scatt;
-
+	// if(photon_index == 0){
+	// 	printf("It got here!! nstep = %llu\n", nstep);
+	// }
 	return;
 }
 
@@ -286,7 +329,7 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;
 	double lconn[NDIM][NDIM][NDIM];
-
+	
 	GPU_get_connection(X, lconn);
 
 	for (k = 0; k < 4; k++) {

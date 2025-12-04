@@ -71,7 +71,6 @@ __host__ void init_hotcross(void)
 	double dlT = log10(MAXT / MINT) / NT;
 	double lminw = log10(MINW);
 	double lmint = log10(MINT);
-
 	fp = fopen(HOTCROSS, "r");
 	if (fp == NULL) {
 		fprintf(stderr, "file %s not found.\n", HOTCROSS);
@@ -210,7 +209,6 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae)
 			cross +=
 			    dmue * dgammae * boostcross(w, mue,
 							gammae) * f;
-
 			if (isnan(cross)) {
 				printf("Problem in hc_klein_nishina, cross is nan\n");
 				printf("%g %g %g %g %g %g\n", w,
@@ -332,6 +330,7 @@ __host__ __device__ double bessi1(double xbess)
     return xbess < 0.0 ? -ans : ans;
 }
 /*Modified bessel0 function defined as Numerical Recipes book*/
+
 __host__ __device__ double bessk0(double xbess)
 {
     double y, ans;

@@ -449,7 +449,7 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 			}
 
 		}
-
+		
 	#ifdef __CUDA_ARCH__
 	K2 = K2_eval(Thetae, besselTexObj);
 	#else

@@ -5,11 +5,6 @@
 #include "../hdf5_utils.h"
 
 
-static double tp_over_te = 3.;
-static double trat_small = 2.;
-static double trat_large = 70.;
-static double beta_crit = 1.;
-static double Thetae_max = 1.e100;
 static int with_electrons;
 
 static hdf5_blob fluid_header = { 0 };
@@ -259,13 +254,13 @@ void init_data(char *fname)
     Thetae_unit = MP/ME;
   } else if (USE_FIXED_TPTE && !USE_MIXED_TPTE) {
     with_electrons = 0; // force TP_OVER_TE to overwrite electron temperatures
-    fprintf(stderr, "using fixed tp_over_te ratio = %g\n", tp_over_te);
-    Thetae_unit = MP/ME * (gam-1.) / (1. + tp_over_te);
-    Thetae_unit = 2./3. * MP/ME / (2. + tp_over_te);
+    fprintf(stderr, "using fixed tp_over_te ratio = %g\n", TP_OVER_TE);
+    Thetae_unit = MP/ME * (gam-1.) / (1. + TP_OVER_TE);
+    Thetae_unit = 2./3. * MP/ME / (2. + TP_OVER_TE);
   } else if (USE_MIXED_TPTE && !USE_FIXED_TPTE) {
     Thetae_unit = 2./3. * MP/ME / 5.;
     with_electrons = 2;
-    fprintf(stderr, "using mixed tp_over_te with trat_small = %g and trat_large = %g\n", trat_small, trat_large);
+    fprintf(stderr, "using mixed tp_over_te with trat_small = %g and trat_large = %g\n", TRAT_SMALL, TRAT_LARGE);
   } else {
     fprintf(stderr, "! please change electron model in model/iharm.c\n");
     exit(-3);
@@ -407,8 +402,6 @@ if (with_electrons == 1) {
     double Ne, Thetae, Bmag, Ucon[NDIM], Ucov[NDIM], Bcon[NDIM];
     get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, geom, p);
     bias_norm += dV*geom[SPATIAL_INDEX2D(i,j)].g * Thetae*Thetae;
-
-
     if (10 <= i && i <= 20) {
       lower(Ucon, geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
       dMact += geom[SPATIAL_INDEX2D(i,j)].g*dx[2]*dx[3]*p[NPRIM_INDEX3D(KRHO,i,j,k)]*Ucon[1];
@@ -447,20 +440,9 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
-	#ifdef HAMR
-		double x2_normal, stopx2_normal;
-		x2_normal = (1. + X[2])/2.;
-		stopx2_normal = 1.; 
-		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
-	#else
-		dlx2 = EPS * MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
-	#endif
 
-	#ifdef SPHERE_TEST
-		dlx1 = EPS/(fabs(K[1]) + SMALL);
-	#else
-		dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	#endif
+  dlx2 = EPS * MIN(X[2], 1. - X[2]) / (fabs(K[2]) + SMALL);
+	dlx1 = EPS / (fabs(K[1]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -492,12 +474,12 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 		}
 	}
     
-    X1min = log(d_Rh * 1.05);	/* this is coordinate-specific; stop
+  X1min = log(d_Rh * 1.05);	/* this is coordinate-specific; stop
 				   at event horizon */
 	X1max = log(RMAX * 1.1);	/* this is coordinate and simulation
 				   specific: stop at large distance */
 
-                   
+  
 	if (X1 < X1min || X1 > X1max) {
 		return 1;
 	}
@@ -659,9 +641,6 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
         double theta_unit = Thetae_unit;
     #endif
 
-    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
-    *Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * theta_unit;
-
     Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
     Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
     Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
@@ -693,6 +672,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
     *Thetae = thetae_func(d_p[NPRIM_INDEX3D(UU, i, j, k)], d_p[NPRIM_INDEX3D(KRHO, i, j, k)] , (*B)/B_UNIT, d_p[NPRIM_INDEX3D(KEL, i, j, k)]);
+    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
 
     if (*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
@@ -733,7 +713,6 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     //checks if it's within the grid
     if (X[1] < d_startx[1] ||
     X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
-
     *Ne = 0.;
 
     return;
@@ -756,6 +735,8 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     rho = GPU_interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
     uu = GPU_interp_scalar_pointer(d_p, UU, i, j, k, coeff);
     kel = GPU_interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
+    
+
     *Ne = rho * NE_UNIT;
 
     Bp[1] = GPU_interp_scalar_pointer(d_p, B1, i, j, k, coeff);
@@ -765,13 +746,16 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     Vcon[1] = GPU_interp_scalar_pointer(d_p, U1, i, j, k, coeff);
     Vcon[2] = GPU_interp_scalar_pointer(d_p, U2, i, j, k, coeff);
     Vcon[3] = GPU_interp_scalar_pointer(d_p, U3, i, j, k, coeff);
+
     gcon_func(X, gcov, gcon);
 
     /* Get Ucov */
     VdotV = 0.;
     for (int i = 1; i < NDIM; i++)
-    for (int j = 1; j < NDIM; j++)
-    VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+      for (int j = 1; j < NDIM; j++)
+        VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
+
+    //printf("gcov = %.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n", gcov[0][0], gcov[0][1], gcov[0][2], gcov[0][3], gcov[1][0], gcov[1][1], gcov[1][2], gcov[1][3], gcov[2][0], gcov[2][1], gcov[2][2], gcov[2][3], gcov[3][0], gcov[3][1], gcov[3][2], gcov[3][3]);
     Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
     Ucon[0] = -Vfac * gcon[0][0];
     for (int i = 1; i < NDIM; i++){
@@ -792,14 +776,6 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
 
     *Thetae = thetae_func(uu, rho, (*B)/B_UNIT, kel);
-    // if(!isnan(*Thetae)){
-    //     printf("i = %d, j = %d, k = %d; uu = %le, rho = %le, B = %le, kel = %le, del = (%le, %le, %le, %le)\n", i, j, k, uu, rho, (*B)/B_UNIT, kel, del[0], del[1], del[2], del[3]);
-    // }
-    if(isnan(*Thetae)) {
-        printf("Ops! i = %d, j = %d, k = %d; uu = %le, rho = %le, B = %le, kel = %le, del = (%le, %le, %le, %le), X = (%le, %le, %le, %le) r = %le, th = %le, phi = %le\n", i, j, k, uu, rho, (*B)/B_UNIT, kel, del[0], del[1], del[2], del[3], X[0], X[1], X[2], X[3], exp(X[1]), X[2], X[3]);
-      //apparentely zone is fucked up. I gotta check how the texture object is at index 285 69 19, one above and one below in each index 
-      /*Ops! i = 285, j = 69, k = 19; uu = 0.000000e+00, rho = 0.000000e+00, B = 0.000000e+00, kel = 0.000000e+00, del = (2.672080e-06, 1.082138e-01, 3.391186e-01, 8.726584e-02), X = (1.086862e+03, 6.851746e+00, 5.456181e-01, 7.244673e+00) r = 9.455304e+02, th = 5.456181e-01, phi = 7.244673e+00*/
-    }
     if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
     double sig = pow(*B/B_UNIT, 2.)/(*Ne/NE_UNIT);
@@ -815,11 +791,11 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
   max = 0.5 * w / WEIGHT_MIN;
 
   if (Te > 1000.) Te = 1000.;
-  bias = 16. * Te * Te / (5. * d_max_tau_scatt);
+  bias = 16. * Te * Te / (5. * 1e-4);
 
   if (bias > max) bias = max;
 
-  return bias * biasTuning;
+  return bias * biasTuning * 1./2.;
 }
 
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
@@ -888,19 +864,21 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     #endif
     // Gotta save d_Thetae_unit, game, gamp, beta, beta_crit, trat_large, trat_small to device memory
 
-    //if (with_electrons == 0) {
-    // fixed tp/te ratio
+    if (WITH_ELECTRONS == 0) {
+    //fixed tp/te ratio
     thetae = uu / rho * theta_unit;
-    // } else if (with_electrons == 1) {
-    // // howes/kawazura model from IHARM electron thermodynamics
-    // thetae = kel * pow(rho, GAME-1.) * Thetae_unit;
-    // } else if (with_electrons == 2 ) {
-    // double beta = uu * (GAM -1.) / 0.5 / B / B;
-    // double b2 = beta*beta / BETA_CRIT/BETA_CRIT;
-    // double trat = TRAT_LARGE * b2/(1.+b2) + TRAT_SMALL /(1.+b2);
-    // if (B == 0) trat = TRAT_LARGE;
-    // thetae = (MP/ME) * (GAME-1.) * (GAMP-1.) / ( (GAMP-1.) + (GAME-1.)*trat ) * uu / rho;
-    // }
+    } else if (WITH_ELECTRONS == 1) {
+    // howes/kawazura model from IHARM electron thermodynamics
+    //thetae = kel * pow(rho, GAME-1.) * Thetae_unit;
+    } else if (WITH_ELECTRONS == 2 ) {
+    double beta = uu * (GAM -1.) / 0.5 / B / B;
+    double b2 = beta*beta / BETA_CRIT/BETA_CRIT;
+    double trat = TRAT_LARGE * b2/(1.+b2) + TRAT_SMALL /(1.+b2);
+    if (B == 0) trat = TRAT_LARGE;
+    thetae = (MP/ME) * (GAME-1.) * (GAMP-1.) / ( (GAMP-1.) + (GAME-1.)*trat ) * uu / rho;
+      //printf("GAME = %g, GAMP = %g\n", GAME, GAMP);
+      //printf("trat_large = %g, trat_small = %g, beta = %g, trat = %g, thetae = %g\n", TRAT_LARGE, TRAT_SMALL, beta, trat, thetae);
+    }
 
-    return 1./(1./thetae + 1./THETAE_MAX);
+    return 1./(1./thetae + 1./Thetae_MAX2);
 }
