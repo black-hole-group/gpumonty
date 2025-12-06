@@ -36,7 +36,7 @@ __host__ void init_data(char *fname);
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
-__host__ __device__ void coord(int i, int j, double *X);
+__host__ __device__ void coord(const int i, const int j, const int k, double *X);
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);

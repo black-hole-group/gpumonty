@@ -95,7 +95,7 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 #undef CST
 
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-__host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
+__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/

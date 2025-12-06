@@ -17,7 +17,7 @@
 
 
 /*GPU Number of blocks and threads*/
-#define N_BLOCKS 256//176
+#define N_BLOCKS 352//176
 #define N_THREADS 256 //256
 
 
@@ -33,7 +33,7 @@
     // #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
     // #define N_ESAMP 200
     // #define N_EBINS 200
-    #define	dlE (0.06) //Size of the energy bin
+    #define	dlE (0.12) //Size of the energy bin
     #define lE0	(log(1.e-12)) //Minimum energy of the energy bin
     #define N_ESAMP 800
     #define N_EBINS 800
@@ -138,9 +138,9 @@
 #define SCATTERINGS_PER_PHOTON (1) 
 
 /*Making of Nint table*/
-#define	NINT (20000) //Number of table data
+#define	NINT (40000) //Number of table data
 #define BTHSQMIN	(1.e-8) //Minimum of log(B *thetae^2)
-#define BTHSQMAX	(1.e14) //Maximum of log(B *thetae^2)
+#define BTHSQMAX	(1.e9) //Maximum of log(B *thetae^2)
 
 /*Max number of scatterings*/
 #define MAX_LAYER_SCA (3)

@@ -10,7 +10,7 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
    , cudaTextureObject_t besselTexObj
    #endif
    );
-__host__ double int_jnu(double Ne, double Thetae, double Bmag, double nu);
+__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu);
 double jnu_integrand(double th, void *params);
 __host__ void init_emiss_tables(void);
 __host__ __device__ double K2_eval(const double Thetae

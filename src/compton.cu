@@ -92,6 +92,12 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	/* transform back to coordinate frame */
 	GPU_tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
 
+	/*update K back*/
+	php.K0[photon_index] = KArrayphp[0];
+	php.K1[photon_index] = KArrayphp[1];
+	php.K2[photon_index] = KArrayphp[2];
+	php.K3[photon_index] = KArrayphp[3];
+
 	/* quality control */
 	if (isnan(KArrayphp[1])) {
 		printf(
@@ -111,8 +117,8 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	}
 
 	if (KArrayphp[0] < 0) {
-		// printf("K0, K0p, Kp, P[0]: %g %g %g %g\n",
-		// 	K_tetrad[0], K_tetrad_p[0], php->K[0], P[0]);
+		printf("K0, K0p, Kp, P[0]: %g %g %g\n",
+			K_tetrad[0], K_tetrad_p[0], KArrayphp[0]);
 		php.w[photon_index] = 0.;
 		return;
 	}
@@ -130,11 +136,6 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
 	}
 
-	/*update K back*/
-	php.K0[photon_index] = KArrayphp[0];
-	php.K1[photon_index] = KArrayphp[1];
-	php.K2[photon_index] = KArrayphp[2];
-	php.K3[photon_index] = KArrayphp[3];
 
 	return;
 }

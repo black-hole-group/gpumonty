@@ -372,7 +372,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
 		GPU_init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, &localState, besselTexObj);
-		//GPU_init_blackbody_photons(i,j,k, &generated_photons, &dnmax, d_geom, d_dx, d_Ns);
+		
 		generated_photons_arr[a] = generated_photons;
 
 
@@ -413,14 +413,14 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 			*dnmax = 0.;
 			*n2gen = 0.;
 			return;
-		} else if (l >= NINT|| 1) {
+		} else if (l >= NINT || 1) {
 			//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
 			ninterp = 0.;
 			*dnmax = 0.;
-			for (l = 0; l <= N_ESAMP; l++) {
+			for (int m = 0; m <= N_ESAMP; m++) {
 				dn = F_eval(Thetae, Bmag,
-						exp(l * dlnu +
-						lnu_min)) / (exp(d_wgt[l]) +
+						exp(m * dlnu +
+						lnu_min)) / (exp(d_wgt[m]) +
 								1.e-100);
 				if (dn > *dnmax)
 					*dnmax = dn;
@@ -429,12 +429,7 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT
 				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 				* 1. / HPL;
-			// if(isnan(ninterp)){
-			// 	printf("NaN encountered in zone %d %d: \n l = %d, dlnu = %le, lnu_min = %le, d_wgt[l] = %le\n", i, j, l, dlnu, lnu_min, d_wgt[l]);
-			// 	*n2gen = 0.;
-			// 	*dnmax = 0.;
-			// 	return;
-			// }
+
 		} else {
 			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
 				ninterp = 0.;
@@ -463,7 +458,6 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 	}
 	
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
-
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -522,8 +516,8 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
     
     // Scope 1: Initial setup and coordinate transformation
     {
-        double Xarray[4] = {ph.X0[ph_arr_index], ph.X1[ph_arr_index], ph.X2[ph_arr_index], ph.X3[ph_arr_index]};
-        coord(i, j, Xarray);
+        double Xarray[NDIM];
+        coord(i, j, k, Xarray);
         // Store back immediately, don't keep Xarray alive
         ph.X0[ph_arr_index] = Xarray[0];
         ph.X1[ph_arr_index] = Xarray[1];

@@ -7,7 +7,7 @@
 
 static int with_electrons;
 
-static hdf5_blob fluid_header = { 0 };
+// static hdf5_blob fluid_header = { 0 };
 
 static int with_radiation;
 
@@ -190,7 +190,7 @@ __host__ void init_storage(void)
 void init_data(char *fname)
 {
   double dV, V;
-  int nprims = 0;
+  unsigned long long nprims = 0;
 
   if ( hdf5_open((char *)fname) < 0 ) {
     fprintf(stderr, "File %s does not exist! Exiting...\n", fname);
@@ -198,7 +198,7 @@ void init_data(char *fname)
   }
 
   // get dump info to copy to grmonty output
-  fluid_header = hdf5_get_blob("/header");
+  // fluid_header = hdf5_get_blob("/header");
 
   // read header
   hdf5_set_directory("/header/");
@@ -533,25 +533,26 @@ __device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double 
 
 
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
-__host__ __device__ void coord(int i, int j, double *X)
+__host__ __device__ void coord(const int i, const int j, const int k, double *X)
 {
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];
-		X[1] = d_startx[1] + (i + 0.5) * d_dx[1];
-		X[2] = d_startx[2] + (j + 0.5) * d_dx[2];
-		X[3] = d_startx[3];
+    X[1] = d_startx[1] + (i+0.5)*d_dx[1];
+    X[2] = d_startx[2] + (j+0.5)*d_dx[2];
+    X[3] = d_startx[3] + (k+0.5)*d_dx[3];
 	#else
 		/* returns zone-centered values for coordinates */
 		X[0] = startx[0];
 		X[1] = startx[1] + (i + 0.5) * dx[1];
 		X[2] = startx[2] + (j + 0.5) * dx[2];
-		X[3] = startx[3];
+		X[3] = startx[3] + (k + 0.5) * dx[3];
 	#endif
 
 
 	return;
 }
+
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 {
 	int k, l;
@@ -632,14 +633,6 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     int l, m;
     double Ucov[NDIM], Bcov[NDIM];
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-
-    #ifdef __CUDA_ARCH__
-        /* Device code */
-        double theta_unit = d_thetae_unit;
-    #else
-        /* Host code */
-        double theta_unit = Thetae_unit;
-    #endif
 
     Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
     Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
@@ -787,7 +780,6 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 {
   double bias, max;
-  double biasTuning = 1.0;
   max = 0.5 * w / WEIGHT_MIN;
 
   if (Te > 1000.) Te = 1000.;
@@ -795,7 +787,7 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 
   if (bias > max) bias = max;
 
-  return bias * biasTuning * 1./2.;
+  return bias * 30. * 1./2.;
 }
 
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val)

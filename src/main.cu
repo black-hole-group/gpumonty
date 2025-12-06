@@ -103,7 +103,7 @@ __host__ void init_geometry()
 			for (k = 0; k < N3; k++) {
 
 				/* zone-centered */
-				coord(i, j, X);
+				coord(i, j, k, X);
 				gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
 				geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
 				gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
