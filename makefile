@@ -11,9 +11,9 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
 # Compiler flags
-ARCH = compute_75
-CODE = sm_75
-CODE_LTO = lto_75
+ARCH = compute_80
+CODE = sm_80
+CODE_LTO = lto_80
 
 # Directories
 SRC_DIR = src
@@ -30,8 +30,8 @@ CUDA_LIB = -L$(CUDA_PATH)/lib64
 DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
-NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
-                   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR) $(HDF5_INCLUDE) 
+	NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
+			   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR) $(HDF5_INCLUDE) 
 
 NVCCFLAGS_DEBUG =  $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
 NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)

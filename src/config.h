@@ -17,7 +17,7 @@
 
 
 /*GPU Number of blocks and threads*/
-#define N_BLOCKS 352//176
+#define N_BLOCKS 3456//176
 #define N_THREADS 256 //256
 
 
