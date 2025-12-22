@@ -175,13 +175,13 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
 			if (tau_scatt > max_tau_scatt){
 				max_tau_scatt = tau_scatt;
 			}
-			L += nuLnu * dOmega * dlE;
+			L += nuLnu * dOmega * dlE/(4.*M_PI);
 		}
 		fprintf(fp, "\n");
 	}
 	fprintf(stderr,
-		"luminosity %g, dMact %g, efficiency %g, L/Ladv %g, max_tau_scatt %g\n",
-		L, dMact * M_UNIT / T_UNIT / (MSUN / YEAR),
+		"luminosity %g erg/s, dMact %g, efficiency %g, L/Ladv %g, max_tau_scatt %g\n",
+		L * LSUN, dMact * M_UNIT / T_UNIT / (MSUN / YEAR),
 		L * LSUN / (dMact * M_UNIT * CL * CL / T_UNIT),
 		L * LSUN / (Ladv * M_UNIT * CL * CL / T_UNIT),
 		max_tau_scatt);
