@@ -7,7 +7,7 @@ __device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, con
     int kp1 = k + 1;
     int ip1 = i + 1;
     int jp1 = j + 1;
-    if (k == (N3 - 1)){
+    if (k == (d_N3 - 1)){
         kp1 = 0;
     }
 
@@ -20,7 +20,7 @@ __device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, con
 }
 
 __device__ double GPU_interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]){
-    if(N3 == 1){
+    if(d_N3 == 1){
         return  tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
     }
 	return (1 - del[3]) * tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f)+ del[3] * tex3D<float>(var, (k+1) * NPRIM + mmenemonics + 0.5f ,(j + del[2]) + 0.5f, (i + del[1]) + 0.5f);

@@ -2,6 +2,7 @@
 #include "weights.h"
 #include "decs.h"
 #include "jnu_mixed.h"
+#include "utils.h"
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 void init_weight_table(void)
 {

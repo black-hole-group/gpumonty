@@ -22,9 +22,6 @@
 //RMIN for sphere model only
 #define RMIN (0.01/L_UNIT)
 
-#define N1 8192
-#define N2 128
-#define N3 1
 #define BHSPIN 0
 
 #define NE_VALUE (1.e18)
@@ -52,7 +49,7 @@ __host__ void init_data(char *fname);
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
-__host__ __device__ void coord(int i, int j, double *X);
+__host__ __device__ void coord(int i, int j, int k, double *X);
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);

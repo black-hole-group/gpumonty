@@ -86,15 +86,27 @@
 #define SMALL	1.e-40
 
 
-//#define NPRIM_INDEX3D(i,j,k,l) (i * (N1 * N2 * N3) + ((l) + N3 * (k + N2 * j))) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-//#define NPRIM_INDEX3D(i,j,k,l) ( j * (N3 * N2 * NPRIM) + k * (N3 * NPRIM) + l * NPRIM + i) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define NPRIM_INDEX3D(v,i,j,k) (((v) * N1 * N2 * N3) + (k + N3 * (j + N2 * i)))
+//#define NPRIM_INDEX3D(v,i,j,k) (((v) * N1 * N2 * N3) + (k + N3 * (j + N2 * i)))
 
-#define SPATIAL_INDEX2D(i,j) ((j + N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
-#define SPATIAL_INDEX3D(i,j,k) (k+ N3*(j + N2 * i))
-//#define NPRIM_INDEX(i,j) (i * (N1 * N2 * N3) + j) /*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+
+// #define SPATIAL_INDEX2D(i,j) ((j + N2 * i))/*i should be mmenemonics for memory, j, k, l should be 3D spatial index for dimensions with N1, N2 and N3*/
+// #define SPATIAL_INDEX3D(i,j,k) (k+ N3*(j + N2 * i))
+
+
 #define NPRIM_INDEX(i, j) (j * NPRIM + i)
-#define SLOOP_DEVICE for(int i=0;i<N1;i++)for(int j = 0; j< N2; j++)for(int k=0; k < N3; k++)
+// #define SLOOP_DEVICE for(int i=0;i<N1;i++)for(int j = 0; j< N2; j++)for(int k=0; k < N3; k++)
+
+#ifdef __CUDA_ARCH__
+#define SLOOP_DEVICE(i,j,k) \
+    for (int i = 0; i < d_N1; i++) \
+        for (int j = 0; j < d_N2; j++) \
+            for (int k = 0; k < d_N3; k++)
+#else
+#define SLOOP_DEVICE(i,j,k) \
+    for (int i = 0; i < N1; i++) \
+        for (int j = 0; j < N2; j++) \
+            for (int k = 0; k < N3; k++)
+#endif
 
 #define DLOOP  for(k=0;k<NDIM;k++)for(l=0;l<NDIM;l++)
 

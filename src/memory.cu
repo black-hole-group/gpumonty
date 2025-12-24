@@ -153,6 +153,10 @@ __host__ void transferGlobalVariables(){
 	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
 	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
 	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
+	cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
+	cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
+	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
+
 	//cudaDeviceSetLimit(cudaLimitStackSize, 8000);
 }
 

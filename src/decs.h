@@ -109,6 +109,7 @@ struct of_spectrum {
 	extern __device__ int total_sca;
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
+	extern __device__ int d_N1, d_N2, d_N3;
 
 #endif
 
@@ -140,5 +141,7 @@ struct of_spectrum {
 	extern double dMsim;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
+
+	extern int N1, N2, N3;
 
 #endif

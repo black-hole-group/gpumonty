@@ -358,16 +358,16 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 	double dnmax;
 	int i, j, k;
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139;//139 * global_index + time;
+	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide N1 * N2 * N3 between blocks*/
-	for(int a = global_index; a < N1 * N2 * N3; (a += N_BLOCKS * N_THREADS)){
-		k = a % N3;
-		j = (a/N3) % N2;
-		i = (a/(N2 * N3));
+	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
+		k = a % d_N3;
+		j = (a/d_N3) % d_N2;
+		i = (a/(d_N2 * d_N3));
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
@@ -485,7 +485,7 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
 		const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 		int zone_index = 0;
 		double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
-		int past_zone = (N1 * N2 * N3);
+		int past_zone = (d_N1 * d_N2 * d_N3);
 		curandState localState = my_curand_state[global_index];
 		while (true) {
 			photon_index = (atomicAdd(&tracking_counter_sampling, 1)-1);
@@ -493,10 +493,10 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
 				break;
 			}
 	
-			zone_index = findPhotonIndex(index_to_ijk, N1 * N2 * N3, photons_processed_sofar +photon_index);
-			k = zone_index % N3;
-			j = (zone_index/N3) % N2;
-			i = (zone_index/(N2 * N3));
+			zone_index = findPhotonIndex(index_to_ijk, d_N1 * d_N2 * d_N3, photons_processed_sofar +photon_index);
+			k = zone_index % d_N3;
+			j = (zone_index/d_N3) % d_N2;
+			i = (zone_index/(d_N2 * d_N3));
 
 
 			/*Sample all the photons generated in GPU_init_zone*/

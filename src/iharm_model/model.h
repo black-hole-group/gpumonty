@@ -17,9 +17,9 @@
 #define RMAX	1000. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
-#define N1 288
-#define N2 128
-#define N3 128
+// #define N1 288
+// #define N2 128
+// #define N3 128
 #define BHSPIN 0.9375
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/

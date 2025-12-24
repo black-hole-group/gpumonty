@@ -19,7 +19,6 @@ __host__ void init_data(char *fname)
     double a;
     double rp, hp, V, dV, two_temp_gam;
     int i, j, k;
-    int N1_local, N2_local, N3_local;
     /* header variables not used except locally */
     double t, tf, cour, DTd, DTl, DTi, dt;
     int nstep, DTr, dump_cnt, image_cnt, rdump_cnt, lim, failed;
@@ -37,8 +36,8 @@ __host__ void init_data(char *fname)
 
     /* get standard HARM header */
     if (fscanf(fp, "%lf", &t) != 1 ||
-        fscanf(fp, "%d", &N1_local) != 1 ||
-        fscanf(fp, "%d", &N2_local) != 1 ||
+        fscanf(fp, "%d", &N1) != 1 ||
+        fscanf(fp, "%d", &N2) != 1 ||
         fscanf(fp, "%lf", &startx[1]) != 1 ||
         fscanf(fp, "%lf", &startx[2]) != 1 ||
         fscanf(fp, "%lf", &dx[1]) != 1 ||
@@ -67,14 +66,8 @@ __host__ void init_data(char *fname)
         exit(1);
     }
 
-    N3_local = 1;
-    if(N1_local != N1 || N2_local != N2 || N3_local != N3){
-        fprintf(stderr, "Code resolution does not match the simulation data resolution\n");
-        fprintf(stderr, "Code resolution: %d, %d, %d\n", N1_local, N2_local, N3_local);
-        fprintf(stderr, "Simulation resolution: %d, %d, %d\n", N1, N2, N3);
-        fprintf(stderr, "Change macros in model.h file");
-        exit(1);
-    }
+    /*Original HARM does not support 3D runs*/
+    N3 = 1;
     if (a != BHSPIN){
         fprintf(stderr, "BH spin does not match the simulation data BH spin\n");
         fprintf(stderr, "Code BH spin: %lf, Simulation BH spin: %lf\n", BHSPIN, a);
@@ -151,7 +144,7 @@ __host__ void init_data(char *fname)
             fscanf(fp, "%lf", &vmin) != 1 ||
             fscanf(fp, "%lf", &vmax) != 1 ||
             fscanf(fp, "%lf", &gdet) != 1) {
-            fprintf(stderr, "Error reading other data\n");
+            fprintf(stderr, "Error reading other data at cell k=%d (i=%d, j=%d)\n", k, i, j);
             fclose(fp);
             exit(1);
         }
@@ -270,8 +263,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*i < 0) {
 		*i = 0;
 		del[1] = 0.;
-	} else if (*i > N1 - 2) {
-		*i = N1 - 2;
+	} else if (*i > d_N1 - 2) {
+		*i = d_N1 - 2;
 		del[1] = 1.;
 	} else {
 		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
@@ -280,8 +273,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*j < 0) {
 		*j = 0;
 		del[2] = 0.;
-	} else if (*j > N2 - 2) {
-		*j = N2 - 2;
+	} else if (*j > d_N2 - 2) {
+		*j = d_N2 - 2;
 		del[2] = 1.;
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2]; //fractional displacement of the center of the grid cell
@@ -292,20 +285,20 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 }
 
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
-__host__ __device__ void coord(int i, int j, double *X)
+__host__ __device__ void coord(int i, int j, int k, double *X)
 {
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];
 		X[1] = d_startx[1] + (i + 0.5) * d_dx[1];
 		X[2] = d_startx[2] + (j + 0.5) * d_dx[2];
-		X[3] = d_startx[3];
+		X[3] = d_startx[3] + (k + 0.5) * d_dx[3];
 	#else
 		/* returns zone-centered values for coordinates */
 		X[0] = startx[0];
 		X[1] = startx[1] + (i + 0.5) * dx[1];
 		X[2] = startx[2] + (j + 0.5) * dx[2];
-		X[3] = startx[3];
+		X[3] = startx[3] + (k + 0.5) * dx[3];
 	#endif
 
 
@@ -458,7 +451,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     double del[NDIM];
     double rho, uu;
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    double gcon[NDIM][NDIM], coeff[8];
+    double gcon[NDIM][NDIM];
 
     //checks if it's within the grid
     if (X[1] < d_startx[1] ||
@@ -475,6 +468,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     //Xtoijk(X, &i, &j, &k, del);
 
     //Calculate the coeficient of displacement
+    //double coeff[8];
     // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
     // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
     // coeff[2] = (1. - del[1]) * del[2] * del[3];
@@ -537,7 +531,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
     double del[NDIM];
     double rho, uu;
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    double gcon[NDIM][NDIM], coeff[8];
+    double gcon[NDIM][NDIM];
     double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
     //checks if it's within the grid
@@ -555,6 +549,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
     //Xtoijk(X, &i, &j, &k, del);
 
     //Calculate the coeficient of displacement
+    // double coeff[8];
     // coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
     // coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
     // coeff[2] = (1. - del[1]) * del[2] * del[3];
@@ -625,7 +620,7 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         return bias;
     #else
         //return 1;
-        bias = Te * Te / (5. * max_tau_scatt) * 0.01;
+        bias = Te * Te / (5. * d_max_tau_scatt) * 0.01;
         // max = 0.5 * w/1.e28
         // if (bias > max)
         //     bias = max;

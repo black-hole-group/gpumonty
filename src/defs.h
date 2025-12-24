@@ -29,6 +29,8 @@ double ***ne;
 double ***thetae;
 double ***b;
 
+int N1, N2, N3;
+
 
 double table[NW + 1][NT + 1];
 double dlw, dlT, lminw, lmint; 
@@ -55,6 +57,8 @@ __device__ double d_hslope = 0;
 __device__ double d_R0 = 0;
 __device__ int total_sca = 0;
 __device__ unsigned long long tracking_counter_sampling = 0;
+
+__device__ int d_N1, d_N2, d_N3;
 
 /** data structures **/
 

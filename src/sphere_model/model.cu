@@ -55,16 +55,19 @@ __host__ void init_data(char *fname)
 	double r, h;
 	double x[4];
 	double sphere_radius = SPHERE_RADIUS;
-	double Ne_value, B_value, thetae_value;
+	double B_value, thetae_value;
 	int i,j,k;
 
 	/*sphere parameters*/
 	gam = 13./9.;
-	Ne_value = NE_VALUE/NE_UNIT; /*in 1/cm^3*/
 	B_value = B_VALUE/B_UNIT; /*in G*/
     //TODO: change how thetae is set
 	thetae_value = 4;//THETAE_VALUE;
 
+	/*Setting the resolution*/
+    N1 = 8192;
+	N2 = 128;
+	N3 = 1;
 	/*grid parameters*/
 	dx[1] = (Rout - Rin)/N1;
 	dx[2] = (th_out - th_in)/N2;
@@ -101,7 +104,6 @@ __host__ void init_data(char *fname)
 
 	dMact = 0.;
 	Ladv = 0.;
-	bias_norm = 0.;
 
     double tau = 1e-4;
 	for (k = 0; k < N1 * N2 * N3; k++) {
@@ -137,9 +139,6 @@ __host__ void init_data(char *fname)
 		p[NPRIM_INDEX(U2,k)] = 0.;
 		p[NPRIM_INDEX(U3,k)] = 0.;
 	}
-	//bias_norm = 0.0/0.0; //producing a nan so we don't account for scattering
-	bias_norm = 0.0;
-    fprintf(stderr, "bias_norm = %le\n", bias_norm);
 }
 
 
@@ -197,8 +196,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*i < 0) {
 		*i = 0;
 		del[1] = 0.;
-	} else if (*i > N1 - 2) {
-		*i = N1 - 2;
+	} else if (*i > d_N1 - 2) {
+		*i = d_N1 - 2;
 		del[1] = 1.;
 	} else {
 		del[1] = (X[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
@@ -207,8 +206,8 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 	if (*j < 0) {
 		*j = 0;
 		del[2] = 0.;
-	} else if (*j > N2 - 2) {
-		*j = N2 - 2;
+	} else if (*j > d_N2 - 2) {
+		*j = d_N2 - 2;
 		del[2] = 1.;
 	} else {
 		del[2] = (X[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2]; //fractional displacement of the center of the grid cell
@@ -220,9 +219,10 @@ __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[ND
 }
 
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
-__host__ __device__ void coord(int i, int j, double *X)
+__host__ __device__ void coord(int i, int j, int k, double *X)
 {
-    int k = 0;
+	/*Sphere test is 2D*/
+    k = 0;
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];
@@ -369,8 +369,9 @@ __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][
 
 __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 {
-    double bias, max, avg_num_scatt;
+    double bias;
     #if(0)
+		double max;
         max = 0.5 * w / WEIGHT_MIN;
         //bias = Te * Te /(5. *d_max_tau_scatt);
         bias = fmax(1., d_bias_norm * Te * Te/d_max_tau_scatt);
@@ -382,11 +383,10 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
         return bias;
     #elif (1)
         double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * L_UNIT;
-
-        max = 0.5 * w /WEIGHT_MIN;
         bias = (model_tau_0 > 1.0) ? (model_tau_0) : 1.0;
         return bias;
     #else
+		double avg_num_scatt, max;
         //return 1;
         max = 0.5 * w / WEIGHT_MIN;
 

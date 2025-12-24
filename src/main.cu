@@ -5,6 +5,7 @@
 #include "metrics.h"
 #include "jnu_mixed.h"
 #include "hotcross.h"
+#include "utils.h"
 __host__ void init_model(char *args[]);
 __host__ void init_geometry();
 int main(int argc, char *argv[])
@@ -28,7 +29,6 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "example: ./gpumonty 8000000 ./data/SANE_0.9.bin SANE.spec \n");
 		exit(0);
 	}
-
 	#endif
 	sscanf(argv[1], "%lf", &Ntot);
 	Ns = (int) Ntot;
