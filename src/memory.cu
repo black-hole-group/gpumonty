@@ -164,6 +164,7 @@ __host__ void transferParams() {
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
 	cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double));
+	cudaMemcpyToSymbol(d_tp_over_te, &(params.tp_over_te), sizeof(double));
 
 
 

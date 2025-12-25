@@ -49,7 +49,7 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 #define RED     "\033[1;31m"
 #define GREEN   "\033[1;32m"
 #define BOLD    "\033[1m"
-
+#define GRAY    "\033[90m"
 __host__ void load_par (const char *fname, Params *params) {
     char line[256];
     FILE *fp = fopen(fname, "r");
@@ -86,7 +86,7 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "lnumax"))     { read_param(line, "lnumax", &(params->lnumax), 2); f.lnumax = 1; }
         if (strstr(line, "alpha_spec")) { read_param(line, "alpha_spec", &(params->alpha_spec), 2); f.alpha = 1; }
         
-        if (strstr(line, "TP_OVER_TE")) { read_param(line, "TP_OVER_TE", &(params->tp_over_te), 2); f.tp_te = 1; }
+        if (strstr(line, "tp_over_te")) { read_param(line, "tp_over_te", &(params->tp_over_te), 2); f.tp_te = 1; }
         if (strstr(line, "beta_crit"))  { read_param(line, "beta_crit", &(params->beta_crit), 2); f.beta = 1; }
         if (strstr(line, "trat_small")) { read_param(line, "trat_small", &(params->trat_small), 2); f.trat_s = 1; }
         if (strstr(line, "trat_large")) { read_param(line, "trat_large", &(params->trat_large), 2); f.trat_l = 1; }
@@ -108,6 +108,12 @@ __host__ void load_par (const char *fname, Params *params) {
         else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10d (default)\n", name, val);
     };
 
+    if(0){
+      /*Just to shut the warning from not using it*/
+      print_status_i("seed", f.seed, params->seed);
+    }
+    
+
     auto print_status_s = [](const char* name, int found, const char* val) {
         if (found) printf("\033[1;32m[SET]     \033[0m %-15s : %-10s\n", name, val);
         else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10s (default)\n", name, val);
@@ -119,19 +125,34 @@ __host__ void load_par (const char *fname, Params *params) {
     print_status("M_unit", f.M_unit, params->M_unit);
     print_status_s("dump", f.dump, params->dump);
     print_status_s("spectrum", f.spectrum, params->spectrum);
-    print_status("bias", f.bias, params->biasTuning);
-    print_status_i("fit_bias", f.fit_bias, params->fitBias);
-    print_status("fit_bias_ns", f.fit_bias_ns, params->fitBiasNs);
-    print_status("ratio", f.ratio, params->targetRatio);
+
+    #if (0)
+      print_status("bias", f.bias, params->biasTuning);
+      print_status_i("fit_bias", f.fit_bias, params->fitBias);
+      print_status("fit_bias_ns", f.fit_bias_ns, params->fitBiasNs);
+      print_status("ratio", f.ratio, params->targetRatio);
+    #else
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "bias");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "fit_bias");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "fit_bias_ns");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "ratio");
+    #endif
     print_status("lnumin", f.lnumin, params->lnumin);
     print_status("lnumax", f.lnumax, params->lnumax);
-    print_status("alpha_spec", f.alpha, params->alpha_spec);
-    print_status("TP_OVER_TE", f.tp_te, params->tp_over_te);
-    print_status("beta_crit", f.beta, params->beta_crit);
-    print_status("trat_small", f.trat_s, params->trat_small);
-    print_status("trat_large", f.trat_l, params->trat_large);
-    print_status("Thetae_max", f.theta_m, params->Thetae_max);
-
+    print_status("tp_over_te", f.tp_te, params->tp_over_te);
+    #ifdef IHARM
+      print_status("beta_crit", f.beta, params->beta_crit);
+      print_status("trat_small", f.trat_s, params->trat_small);
+      print_status("trat_large", f.trat_l, params->trat_large);
+      print_status("Thetae_max", f.theta_m, params->Thetae_max);
+      print_status("alpha_spec", f.alpha, params->alpha_spec);
+    #else
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "alpha_spec");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "beta_crit");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_small");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_large");
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "Thetae_max");
+    #endif
     printf("\033[1m================================\033[0m\n");
     params->loaded = 1;
 }

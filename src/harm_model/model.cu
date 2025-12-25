@@ -12,7 +12,7 @@ __host__ void init_storage(void)
     return;
 }
 
-__host__ void init_data(const char *fname)
+__host__ void init_data()
 {
     FILE *fp;
     double x[4];
@@ -25,13 +25,13 @@ __host__ void init_data(const char *fname)
     double r, h, divb, vmin, vmax, gdet;
     double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 
-    fp = fopen(fname, "r");
+    fp = fopen(params.dump, "r");
 
     if (fp == NULL) {
         fprintf(stderr, "can't open sim data file\n");
         exit(1);
     } else {
-        fprintf(stderr, "successfully opened %s\n", fname);
+        fprintf(stderr, "successfully opened %s\n", params.dump);
     }
 
     /* get standard HARM header */
@@ -93,8 +93,8 @@ __host__ void init_data(const char *fname)
     init_storage();
 	Rh = 1 + sqrt(1. - a * a);
 	fprintf(stderr, "Rh = %le\n", Rh);
-    two_temp_gam = 0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) + gam);
-    Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+    two_temp_gam = 0.5 * ((1. + 2. / 3. * (params.tp_over_te + 1.) / (params.tp_over_te + 2.)) + gam);
+    Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + params.tp_over_te);
     dMact = 0.;
     Ladv = 0.;
     bias_norm = 0.;
@@ -635,12 +635,12 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 
         //bias = Te * Te/(d_bias_norm * d_max_tau_scatt * 2.);
 
-        if (bias < TP_OVER_TE)
-        bias = TP_OVER_TE;
+        if (bias < d_tp_over_te)
+        bias = d_tp_over_te;
         if (bias > max)
         bias = max;
         //printf("bias = %le, max = %le, avg_num_scatt = %le\n", bias, max, avg_num_scatt);
-        return bias / TP_OVER_TE;
+        return bias / d_tp_over_te;
     #endif
 }
 

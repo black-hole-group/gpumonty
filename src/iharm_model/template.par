@@ -3,8 +3,11 @@ Ns 1e6
 
 #path to the GRMHD data file
 dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
+#dump ./data/dump019
 
 spectrum sane.ben
+
+tp_over_te 3.
 
 trat_small 1.
 trat_large 10.

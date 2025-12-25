@@ -7,9 +7,6 @@
 #define THETAE_MIN	0.3
 #define THETAE_MAX 1000.
 
-/*Ratio of proton temperature to electron temperature*/
-#define TP_OVER_TE	(3.)
-
 /*Define the minimum weight of the superphoton to be considered*/
 #define WEIGHT_MIN	(1.e31)
 
@@ -30,7 +27,7 @@
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
-__host__ void init_data(const char *fname);
+__host__ void init_data();
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);

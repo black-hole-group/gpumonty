@@ -18,20 +18,9 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
-	#ifdef HAMR
-		double x2_normal, stopx2_normal;
-		x2_normal = (1. + X[2])/2.;
-		stopx2_normal = 1.; 
-		dlx2 = EPS * GSL_MIN(x2_normal, stopx2_normal - x2_normal) / (fabs(K[2]) + SMALL);
-	#else
-		dlx2 = EPS * MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
-	#endif
+	dlx2 = EPS * MIN(X[2], d_stopx[2] - X[2]) / (fabs(K[2]) + SMALL);
 
-	#ifdef SPHERE_TEST
-		dlx1 = EPS/(fabs(K[1]) + SMALL);
-	#else
-		dlx1 = EPS * X[1] / (fabs(K[1]) + SMALL);
-	#endif
+	dlx1 = EPS/(fabs(K[1]) + SMALL);
 	dlx3 = EPS / (fabs(K[3]) + SMALL);
 
 	idlx1 = 1. / (fabs(dlx1) + SMALL);
@@ -44,7 +33,7 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 }
 #undef MIN
 
-__host__ void init_data(const char *fname)
+__host__ void init_data()
 {
 	double Rin = RMIN;
 	double Rout = RMAX;
@@ -97,9 +86,9 @@ __host__ void init_data(const char *fname)
 	init_storage();
 
 	two_temp_gam =
-	    0.5 * ((1. + 2. / 3. * (TP_OVER_TE + 1.) / (TP_OVER_TE + 2.)) +
+	    0.5 * ((1. + 2. / 3. * (params.tp_over_te + 1.) / (params.tp_over_te + 2.)) +
 		   gam);
-	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + TP_OVER_TE);
+	Thetae_unit = (two_temp_gam - 1.) * (MP / ME) / (1. + params.tp_over_te);
 	printf("Thetae_unit = %le\n", Thetae_unit);
 
 	dMact = 0.;
@@ -396,11 +385,11 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
                 (avg_num_scatt + 2));
 
 
-        if (bias < TP_OVER_TE)
-        bias = TP_OVER_TE;
+        if (bias < d_tp_over_te)
+        bias = d_tp_over_te;
         if (bias > max)
         bias = max;
-        return bias / TP_OVER_TE;
+        return bias / d_tp_over_te;
     #endif
 }
 

@@ -60,7 +60,7 @@ __device__ unsigned long long tracking_counter_sampling = 0;
 __device__ int d_N1, d_N2, d_N3;
 
 /*iharm variables*/
-__device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max; 
+__device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te; 
 
 
 /** data structures **/

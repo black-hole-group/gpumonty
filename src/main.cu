@@ -11,24 +11,10 @@ __host__ void init_model(char *args[]);
 __host__ void init_geometry();
 int main(int argc, char *argv[])
 {
-
-
 	time_t starttime = time(NULL);
-
-	double Ntot;
 	
-	#ifdef SPHERE_TEST
-	printf("%d\n", argc);
-	if (argc < 3 || argc > 3) {
-		fprintf(stderr, "usage: gpumonty, Ns, filename\n");
-		fprintf(stderr, "example: ./gpumonty 8000000 SPHERE.spec \n");
-		exit(0);
-	}
-	const char *spect_file_name = argv[2];
-	#endif
-	  // load parameters from command line
+	// load parameters from command line
   	load_par_from_argv(argc, argv, &params);
-	sscanf(argv[1], "%lf", &Ntot);
 
 
 	/* initialize model data, auxiliary variables */
