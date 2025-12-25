@@ -23,7 +23,7 @@ __host__ void init_storage(void)
 #include <hdf5_hl.h>
 
 
-void init_data(Params params)
+void init_data()
 {
   double dV, V;
   unsigned long long nprims = 0;
@@ -89,7 +89,7 @@ void init_data(Params params)
   } else if (USE_MIXED_TPTE && !USE_FIXED_TPTE) {
     Thetae_unit = 2./3. * MP/ME / 5.;
     with_electrons = 2;
-    fprintf(stderr, "using mixed tp_over_te with trat_small = %g and trat_large = %g\n", TRAT_SMALL, TRAT_LARGE);
+    fprintf(stderr, "using mixed tp_over_te with trat_small = %g and trat_large = %g\n", params.trat_small, params.trat_large);
   } else {
     fprintf(stderr, "! please change electron model in model/iharm.c\n");
     exit(-3);
@@ -680,8 +680,16 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     double thetae = 0.;
     #ifdef __CUDA_ARCH__
     double theta_unit = d_thetae_unit;
+    double local_trat_small = d_trat_small;
+    double local_trat_large = d_trat_large;
+    double local_beta_crit = d_beta_crit;
+    double thetae_local_max = d_thetae_max;
     #else
     double theta_unit = Thetae_unit;
+    double local_trat_small = params.trat_small;
+    double local_trat_large = params.trat_large;
+    double local_beta_crit = params.beta_crit;
+    double thetae_local_max = params.Thetae_max;
     #endif
     // Gotta save d_Thetae_unit, game, gamp, beta, beta_crit, trat_large, trat_small to device memory
 
@@ -693,12 +701,10 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     //thetae = kel * pow(rho, GAME-1.) * Thetae_unit;
     } else if (WITH_ELECTRONS == 2 ) {
     double beta = uu * (GAM -1.) / 0.5 / B / B;
-    double b2 = beta*beta / BETA_CRIT/BETA_CRIT;
-    double trat = TRAT_LARGE * b2/(1.+b2) + TRAT_SMALL /(1.+b2);
-    if (B == 0) trat = TRAT_LARGE;
+    double b2 = beta*beta / local_beta_crit/local_beta_crit;
+    double trat = local_trat_large * b2/(1.+b2) + local_trat_small /(1.+b2);
+    if (B == 0) trat = local_trat_large;
     thetae = (MP/ME) * (GAME-1.) * (GAMP-1.) / ( (GAMP-1.) + (GAME-1.)*trat ) * uu / rho;
-      //printf("GAME = %g, GAMP = %g\n", GAME, GAMP);
-      //printf("trat_large = %g, trat_small = %g, beta = %g, trat = %g, thetae = %g\n", TRAT_LARGE, TRAT_SMALL, beta, trat, thetae);
     }
 
     return 1./(1./thetae + 1./Thetae_MAX2);

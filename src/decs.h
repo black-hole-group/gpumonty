@@ -141,6 +141,7 @@ struct of_spectrum {
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
+	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max; 
 
 #endif
 
@@ -159,7 +160,7 @@ struct of_spectrum {
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 	extern double table[NW + 1][NT + 1];
 
-	extern int Ns, N_scatt;
+	extern int N_scatt;
 	extern unsigned long long N_superph_recorded;
 
 	/* some coordinate parameters */
@@ -174,5 +175,6 @@ struct of_spectrum {
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
 	extern int N1, N2, N3;
+	extern Params params;
 
 #endif

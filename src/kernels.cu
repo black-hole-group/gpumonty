@@ -14,7 +14,7 @@
 #include "track.h"
 
 
-__host__ void mainFlowControl(time_t time, double * p, Params params){
+__host__ void mainFlowControl(time_t time, double * p){
 	/*
 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
 
@@ -381,7 +381,14 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 	double lnu_min = log(NUMIN);
 	double lnu_max = log(NUMAX);
 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
-	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+
+	#ifdef __CUDA_ARCH__
+    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	#else
+		Thetae = 0.;
+		Ne = 0.;
+		Bmag = 0.;
+	#endif
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*n2gen = 0.;
@@ -512,7 +519,13 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
     
     // Scope 2: Get fluid properties
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
-    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	#ifdef __CUDA_ARCH__
+    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	#else
+		Thetae = 0.;
+		Ne = 0.;
+		Bmag = 0.;
+	#endif
     
     // Scope 3: Sample frequency
     {
@@ -629,11 +642,16 @@ __global__ void GPU_track(struct of_photonSOA ph,
         // Progress indicator
         if (global_index == 0) {
             float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
-            if (percentage >= n * 10) {
-                printf("Progress: %llu%%\n", (unsigned long long)percentage);
-                n++;
+            if (percentage >= n * 5.0f) {
+				printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
+				n++;
             }
         }
+	}
+
+	/*Set to 100%*/
+	if(global_index == 0){
+		printf("\rProgress: \033[1;32m100%%\033[0m   \n");
 	}
 	if(global_index > N_BLOCKS * N_THREADS){
 		printf("Warning! Too many threads! Some threads are not being used!\n");
@@ -656,37 +674,6 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 
 
 
-// __global__ void GPU_track_scat(struct of_photonSOA ph, cudaTextureObject_t d_p, const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
-// 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-// 	curandState localState = my_curand_state[global_index];
-// 	double Ne, Thetae, B;
-// 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
-
-// 	/*track each photon we created along its geodesic*/
-// 	if(global_index == 0){
-// 		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
-// 	}
-	
-// 	for(unsigned long long a = round_num_scat_init + global_index; a < round_num_scat_end; (a += number_of_threads)){
-// 		atomicAdd(&scattering_counter, 1);
-// 		double X[NDIM] = {ph.X0[a], ph.X1[a], ph.X2[a], ph.X3[a]};
-// 		gcov_func(X, Gcov);
-// 		#ifndef SPHERE_TEST
-// 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
-// 		#else
-// 			GPU_get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
-// 		#endif
-
-// 		GPU_scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, a);
-// 		if (ph.w[a] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
-// 			continue;
-// 		}
-// 		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, a, &localState, besselTexObj);
-// 	}
-// 	my_curand_state[global_index] = localState;
-// }
-
-
 __global__ void GPU_track_scat(struct of_photonSOA ph, 
 	#ifdef DO_NOT_USE_TEXTURE_MEMORY
 	 double * __restrict__ d_p, 
@@ -699,6 +686,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph,
 	double Ne, Thetae, B;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
 	unsigned long long scattering_counter_local = round_num_scat_init - 1;
+	int n_progress = 1;
 
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
@@ -723,7 +711,18 @@ __global__ void GPU_track_scat(struct of_photonSOA ph,
 			continue;
 		}
 		GPU_track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState, besselTexObj);
-
+        // Progress indicator
+		if (global_index == 0) {		
+			float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);
+			if (percentage >= n_progress * 5.0f) {
+				printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
+				n_progress++;
+            }
+		}
+	}
+	/*Set to 100%*/
+	if(global_index == 0){
+		printf("\rProgress: \033[1;32m100%%\033[0m   \n");
 	}
 	my_curand_state[global_index] = localState;
 }

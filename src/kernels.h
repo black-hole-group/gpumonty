@@ -28,5 +28,5 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
 __global__ void GPU_record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n);
 
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
-__host__ void mainFlowControl(time_t time, double * p, Params params);
+__host__ void mainFlowControl(time_t time, double * p);
 #endif

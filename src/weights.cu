@@ -1,10 +1,10 @@
 /*This should be passed to every file*/
-#include "weights.h"
 #include "decs.h"
+#include "weights.h"
 #include "jnu_mixed.h"
 #include "utils.h"
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-void init_weight_table(void)
+void init_weight_table()
 {
 	int k;
 	int i, j, l, lstart, lend, myid, nthreads;
@@ -61,7 +61,7 @@ void init_weight_table(void)
 	}
 #pragma omp parallel for schedule(static) private(i)
 	for (i = 0; i <= N_ESAMP; i++){
-		wgt[i] = log(sum[i] / (HPL * Ns) + WEIGHT_MIN);
+		wgt[i] = log(sum[i] / (HPL * (int) params.Ns) + WEIGHT_MIN);
 	}
 
 	
@@ -72,75 +72,6 @@ void init_weight_table(void)
 }
 
 #undef JCST
-
-
-void init_weight_table_blackbody(void)
-{
-    int i, j, k, l;
-    double ThetaS = 1.e-8;
-	int lstart, lend, myid, nthreads;
-    double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
-    double temperature = ThetaS * ME * CL * CL / KBOL;
-    
-    fprintf(stderr, "Building weight table for blackbody photons\n");
-    fflush(stderr);
-
-    /* Set up frequency grid */
-    double lnu_min = log(NUMIN);
-    double lnu_max = log(NUMAX);
-    double dlnu = (lnu_max - lnu_min) / N_ESAMP; // This is Δln ν
-
-    /* Initialize arrays */
-    for (int i = 0; i <= N_ESAMP; i++) {
-        sum[i] = 0.0;
-        nu[i] = exp(i * dlnu + lnu_min);
-    }
-
-    /* Volume element factor √(-g)ΔtΔ²x */
-    double dt = 1.0; // Time step
-    double area_element = dt * dx[2] * dx[3] * L_UNIT * L_UNIT;
-
-    /* Sequential computation of emission */
-    //I'm setting i = 200 as R = 1./L_UNIT
-	#pragma omp parallel private(i, j,k, l, lstart, lend,myid,nthreads)
-	{
-		nthreads = omp_get_num_threads();
-		myid = omp_get_thread_num();
-		lstart = myid * (N_ESAMP / nthreads);
-		lend = (myid + 1) * (N_ESAMP / nthreads);
-		if (myid == nthreads - 1)
-			lend = N_ESAMP + 1;
-		int index = N1 - 1;
-
-		for (j = 0; j < N2; j++) {
-			for (k = 0; k < N3; k++) {
-				
-				/* Get metric determinant for area*/
-				double g = sqrt(geom[SPATIAL_INDEX2D(index, j)].gcov[2][2] * geom[SPATIAL_INDEX2D(index,j)].gcov[3][3]);
-
-				/* Calculate emission for each frequency */
-				for (l = lstart; l < lend; l++){	
-					double dS = (M_PI) * 2.0 * HPL * nu[l] * nu[l] * nu[l] / 
-								(CL * CL) * 1.0 / (exp(HPL * nu[l] / (KBOL * temperature)) - 1.0);
-
-					/* Add to sum with proper weight formula components */
-					sum[l] += g * area_element * dlnu * dS;
-				}
-			}
-		}
-
-		#pragma omp barrier
-	}
-
-    /* Calculate final weights */
-#pragma omp parallel for schedule(static) private(i)
-	for (i = 0; i <= N_ESAMP; i++){
-		wgt[i] = log(sum[i] / (HPL * Ns));
-	}
-    fprintf(stderr, "done.\n\n");
-    fflush(stderr);
-    return;
-}
 
 
 __host__ void init_nint_table(void)

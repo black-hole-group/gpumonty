@@ -7,13 +7,11 @@
 #include "hotcross.h"
 #include "utils.h"
 #include "par.h"
-
-__host__ void init_model(char *args[], Params params);
+__host__ void init_model(char *args[]);
 __host__ void init_geometry();
 int main(int argc, char *argv[])
 {
 
-	Params params = { 0 };
 
 	time_t starttime = time(NULL);
 
@@ -31,11 +29,10 @@ int main(int argc, char *argv[])
 	  // load parameters from command line
   	load_par_from_argv(argc, argv, &params);
 	sscanf(argv[1], "%lf", &Ntot);
-	Ns = (int) params.Ns;
 
 
 	/* initialize model data, auxiliary variables */
-	init_model(argv, params);
+	init_model(argv);
 
 	/** main loop **/
 	N_superph_recorded = 0;
@@ -44,15 +41,15 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    mainFlowControl(time(NULL), p, params);
+    mainFlowControl(time(NULL), p);
     printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
-	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", Ns, N_BLOCKS, N_THREADS);
+	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", (int) params.Ns, N_BLOCKS, N_THREADS);
 
 	return (0);
 
 }
 
-__host__ void init_model(char *args[], Params params)
+__host__ void init_model(char *args[])
 {
 	/* This will tell the units defined in decs.h. 
 	There used to be a function here for this, but it's extremely 
@@ -66,7 +63,7 @@ __host__ void init_model(char *args[], Params params)
 
 
 	fprintf(stderr, "getting simulation data...\n");
-	init_data(params);
+	init_data();
 	/* initialize the metric */
 	fprintf(stderr, "initializing geometry...\n");
 	fflush(stderr);

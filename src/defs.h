@@ -4,7 +4,6 @@ gsl_integration_workspace *w;
 /*Global Variable Section*/
 /* defining declarations for global variables */
 double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
-int Ns;
 unsigned long long N_scatt;
 unsigned long long N_superph_recorded;
 
@@ -60,11 +59,11 @@ __device__ unsigned long long tracking_counter_sampling = 0;
 
 __device__ int d_N1, d_N2, d_N3;
 
+/*iharm variables*/
+__device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max; 
+
+
 /** data structures **/
-
-
-
-
 struct of_geom {
 	double gcon[NDIM][NDIM];
 	double gcov[NDIM][NDIM];
@@ -111,5 +110,6 @@ typedef struct params_t {
 
   char loaded;
 } Params;
+Params params = { 0 };
 
 

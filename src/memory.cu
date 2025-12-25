@@ -136,7 +136,9 @@ __host__ void transferParams() {
     @Rh - radius of theevent horizon
 
 	*/
-    cudaMemcpyToSymbol(d_Ns, &Ns, sizeof(int));
+
+	int Ns_int = (int) params.Ns;
+    cudaMemcpyToSymbol(d_Ns, &Ns_int, sizeof(int));
     cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double));
 
 	if(hslope > 0)
@@ -156,6 +158,14 @@ __host__ void transferParams() {
 	cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
 	cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
 	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
+
+	/*iharm variables*/
+	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
+	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
+	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
+	cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double));
+
+
 
 	//cudaDeviceSetLimit(cudaLimitStackSize, 8000);
 }

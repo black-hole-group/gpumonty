@@ -1,7 +1,8 @@
 #include <math.h>
 #include "decs.h"
 #include "par.h"
-
+#include <string.h>
+#include <errno.h>
 // call this to set defaults
 __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 
@@ -41,60 +42,104 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 // }
 // sets default values for elements of params (if desired) and loads
 // from par file 'fname'
+
+
+// Color Definitions
+#define RESET   "\033[0m"
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define BOLD    "\033[1m"
+
 __host__ void load_par (const char *fname, Params *params) {
- 
-  char line[256];
-  FILE *fp = fopen(fname, "r");
+    char line[256];
+    FILE *fp = fopen(fname, "r");
 
-  if (fp == NULL) {
-    fprintf(stderr, "! unable to load parameter file '%s'. (%d: %s)\n", fname, errno, strerror(errno));
-    exit(-1);
-  }
+    // Tracker for all variables - prefixed with 'found_' to avoid macro issues
+    struct {
+        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio;
+        int lnumin, lnumax, alpha, tp_te, beta, trat_s, trat_l, theta_m;
+    } f = {0}; 
 
-  // modify parameters/types below
-  while (fgets(line, 255, fp) != NULL) {
+    if (fp == NULL) {
+        printf("\033[1;31m! unable to load parameter file '%s'.\033[0m\n", fname);
+        exit(-1);
+    }
 
-    if (line[0] == '#') continue; 
+    while (fgets(line, 255, fp) != NULL) {
+        if (line[0] == '#' || line[0] == '\n') continue; 
 
-    read_param(line, "seed", &(params->seed), TYPE_DBL);
+        // We check if the keyword is in the line, then call the void read_param
+        if (strstr(line, "seed")) { read_param(line, "seed", &(params->seed), 2); f.seed = 1; }
+        if (strstr(line, "Ns"))   { read_param(line, "Ns", &(params->Ns), 2); f.Ns = 1; }
+        if (strstr(line, "MBH"))  { read_param(line, "MBH", &(params->MBH_par), 2); f.MBH_par = 1; }
+        if (strstr(line, "M_unit")){ read_param(line, "M_unit", &(params->M_unit), 2); f.M_unit = 1; }
+        
+        if (strstr(line, "dump"))     { read_param(line, "dump", (void *)(params->dump), 3); f.dump = 1; }
+        if (strstr(line, "spectrum")) { read_param(line, "spectrum", (void *)(params->spectrum), 3); f.spectrum = 1; }
 
-    read_param(line, "Ns", &(params->Ns), TYPE_DBL);
-    read_param(line, "MBH", &(params->MBH_par), TYPE_DBL);
-    //#ifdef HAMR_READ
-    //read_param(line, "RHO_unit", &(params->RHO_unit), TYPE_DBL);
-    //#else
-    read_param(line, "M_unit", &(params->M_unit), TYPE_DBL);
-    //#endif
-    read_param(line, "dump", (void *)(params->dump), TYPE_STR);
-    read_param(line, "spectrum", (void *)(params->spectrum), TYPE_STR);
+        if (strstr(line, "bias"))        { read_param(line, "bias", &(params->biasTuning), 2); f.bias = 1; }
+        if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }
+        if (strstr(line, "fit_bias_ns")) { read_param(line, "fit_bias_ns", &(params->fitBiasNs), 2); f.fit_bias_ns = 1; }
+        if (strstr(line, "ratio"))       { read_param(line, "ratio", &(params->targetRatio), 2); f.ratio = 1; }
 
-    // bias
-    read_param(line, "bias",        &(params->biasTuning),  TYPE_DBL);
-    read_param(line, "fit_bias",    &(params->fitBias),     TYPE_INT);
-    read_param(line, "fit_bias_ns", &(params->fitBiasNs),   TYPE_DBL);
-    read_param(line, "ratio",       &(params->targetRatio), TYPE_DBL);
+        if (strstr(line, "lnumin"))     { read_param(line, "lnumin", &(params->lnumin), 2); f.lnumin = 1; }
+        if (strstr(line, "lnumax"))     { read_param(line, "lnumax", &(params->lnumax), 2); f.lnumax = 1; }
+        if (strstr(line, "alpha_spec")) { read_param(line, "alpha_spec", &(params->alpha_spec), 2); f.alpha = 1; }
+        
+        if (strstr(line, "TP_OVER_TE")) { read_param(line, "TP_OVER_TE", &(params->tp_over_te), 2); f.tp_te = 1; }
+        if (strstr(line, "beta_crit"))  { read_param(line, "beta_crit", &(params->beta_crit), 2); f.beta = 1; }
+        if (strstr(line, "trat_small")) { read_param(line, "trat_small", &(params->trat_small), 2); f.trat_s = 1; }
+        if (strstr(line, "trat_large")) { read_param(line, "trat_large", &(params->trat_large), 2); f.trat_l = 1; }
+        if (strstr(line, "Thetae_max")) { read_param(line, "Thetae_max", &(params->Thetae_max), 2); f.theta_m = 1; }
+    }
+    fclose(fp);
 
-    // two point model
-    read_param(line, "lnumin", &(params->lnumin), TYPE_DBL);
-    read_param(line, "lnumax", &(params->lnumax), TYPE_DBL);
-    read_param(line, "alpha_spec", &(params->alpha_spec), TYPE_DBL);    
+    // --- FINAL REPORT ---
+    printf("\n\033[1m=== PARAMETER LOADING REPORT ===\033[0m\n");
+    
+    // Lambdas updated to handle 'const char*' for string compatibility
+    auto print_status = [](const char* name, int found, double val) {
+        if (found) printf("\033[1;32m[SET]     \033[0m %-15s : %-10g\n", name, val);
+        else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10g (default)\n", name, val);
+    };
 
-    // electron temperature models
-    read_param(line, "TP_OVER_TE", &(params->tp_over_te), TYPE_DBL);
-    read_param(line, "beta_crit", &(params->beta_crit), TYPE_DBL);
-    read_param(line, "trat_small", &(params->trat_small), TYPE_DBL);
-    read_param(line, "trat_large", &(params->trat_large), TYPE_DBL);
-    read_param(line, "Thetae_max", &(params->Thetae_max), TYPE_DBL);
+    auto print_status_i = [](const char* name, int found, int val) {
+        if (found) printf("\033[1;32m[SET]     \033[0m %-15s : %-10d\n", name, val);
+        else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10d (default)\n", name, val);
+    };
 
-    // set model parameters
-    //try_set_radiation_parameter(line);
-  }
+    auto print_status_s = [](const char* name, int found, const char* val) {
+        if (found) printf("\033[1;32m[SET]     \033[0m %-15s : %-10s\n", name, val);
+        else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10s (default)\n", name, val);
+    };
 
-  fclose(fp);
+    print_status("seed", f.seed, params->seed);
+    print_status("Ns", f.Ns, params->Ns);
+    print_status("MBH", f.MBH_par, params->MBH_par);
+    print_status("M_unit", f.M_unit, params->M_unit);
+    print_status_s("dump", f.dump, params->dump);
+    print_status_s("spectrum", f.spectrum, params->spectrum);
+    print_status("bias", f.bias, params->biasTuning);
+    print_status_i("fit_bias", f.fit_bias, params->fitBias);
+    print_status("fit_bias_ns", f.fit_bias_ns, params->fitBiasNs);
+    print_status("ratio", f.ratio, params->targetRatio);
+    print_status("lnumin", f.lnumin, params->lnumin);
+    print_status("lnumax", f.lnumax, params->lnumax);
+    print_status("alpha_spec", f.alpha, params->alpha_spec);
+    print_status("TP_OVER_TE", f.tp_te, params->tp_over_te);
+    print_status("beta_crit", f.beta, params->beta_crit);
+    print_status("trat_small", f.trat_s, params->trat_small);
+    print_status("trat_large", f.trat_l, params->trat_large);
+    print_status("Thetae_max", f.theta_m, params->Thetae_max);
 
-  params->loaded = 1;
-
+    printf("\033[1m================================\033[0m\n");
+    params->loaded = 1;
 }
+#undef RESET
+#undef RED
+#undef GREEN
+#undef BOLD
+
 
 // loads value -> (type *)*val if line corresponds to (key,value)
 __host__ void read_param (const char *line, const char *key, void *val, int type) {

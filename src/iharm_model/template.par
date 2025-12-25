@@ -5,3 +5,8 @@ Ns 1e6
 dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
 
 spectrum sane.ben
+
+trat_small 1.
+trat_large 10.
+beta_crit 1.
+Thetae_max = 1.e100

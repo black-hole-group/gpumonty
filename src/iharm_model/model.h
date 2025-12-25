@@ -32,7 +32,7 @@
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
-__host__ void init_data(Params params);
+__host__ void init_data();
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
@@ -40,7 +40,8 @@ __host__ __device__ void coord(const int i, const int j, const int k, double *X)
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
-__host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
+__host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,
+    double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *  d_geom, const double *  d_p);
 __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
 __device__ double GPU_bias_func(double Te, double w, int round_scatt);
 __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
@@ -52,9 +53,6 @@ __host__ void init_geometry();
 
 
 //Parameters that probably should be read from file or job submission
-#define BETA_CRIT 1.
-#define TRAT_SMALL 1.
-#define TRAT_LARGE 10.
 #define GAME (4./3.)
 #define GAMP (5./3.)
 #define GAM (1.4444440)
