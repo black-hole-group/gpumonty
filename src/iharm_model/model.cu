@@ -4,7 +4,6 @@
 #include "../metrics.h"
 #include "../hdf5_utils.h"
 
-
 static int with_electrons;
 
 // static hdf5_blob fluid_header = { 0 };
@@ -15,7 +14,6 @@ __host__ void init_storage(void)
 {
 
     p = (double *) malloc(NPRIM * N1 * N2 * N3 * sizeof(double *));
-
     geom = (struct of_geom *) malloc(N1* N2* sizeof(struct of_geom));
     return;
 }
@@ -25,13 +23,13 @@ __host__ void init_storage(void)
 #include <hdf5_hl.h>
 
 
-void init_data(char *fname)
+void init_data(Params params)
 {
   double dV, V;
   unsigned long long nprims = 0;
+  // 1. Checking if file exists
 
-  if ( hdf5_open((char *)fname) < 0 ) {
-    fprintf(stderr, "File %s does not exist! Exiting...\n", fname);
+  if ( hdf5_open((char *)params.dump) < 0 ) {
     exit(-1);
   }
 
@@ -56,13 +54,6 @@ void init_data(char *fname)
   hdf5_read_single_val(&N3, "n3", H5T_STD_I32LE);
   hdf5_read_single_val(&gam, "gam", H5T_IEEE_F64LE);
 
-  // if(N1_local != N1 || N2_local != N2 || N3_local != N3){
-  //   fprintf(stderr, "Code resolution does not match the simulation data resolution\n");
-  //   fprintf(stderr, "Code resolution: %d, %d, %d\n", N1_local, N2_local, N3_local);
-  //   fprintf(stderr, "Simulation resolution: %d, %d, %d\n", N1, N2, N3);
-  //   fprintf(stderr, "Change macros in model.h file");
-  //   exit(-2);
-  // }
 
   // conditional reads
   double game = 4./3;
@@ -92,9 +83,9 @@ void init_data(char *fname)
     Thetae_unit = MP/ME;
   } else if (USE_FIXED_TPTE && !USE_MIXED_TPTE) {
     with_electrons = 0; // force TP_OVER_TE to overwrite electron temperatures
-    fprintf(stderr, "using fixed tp_over_te ratio = %g\n", TP_OVER_TE);
-    Thetae_unit = MP/ME * (gam-1.) / (1. + TP_OVER_TE);
-    Thetae_unit = 2./3. * MP/ME / (2. + TP_OVER_TE);
+    fprintf(stderr, "using fixed tp_over_te ratio = %g\n", params.tp_over_te);
+    Thetae_unit = MP/ME * (gam-1.) / (1. + params.tp_over_te);
+    Thetae_unit = 2./3. * MP/ME / (2. + params.tp_over_te);
   } else if (USE_MIXED_TPTE && !USE_FIXED_TPTE) {
     Thetae_unit = 2./3. * MP/ME / 5.;
     with_electrons = 2;

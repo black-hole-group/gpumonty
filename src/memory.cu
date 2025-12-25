@@ -111,7 +111,7 @@ __host__ void createTableTextureObj(cudaTextureObject_t * texObj, double table[]
 }
 
 
-__host__ void transferGlobalVariables(){
+__host__ void transferParams() {
 	/*
 	This function will transfer the global variables to the GPU.
 

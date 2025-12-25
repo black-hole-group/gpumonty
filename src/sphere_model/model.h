@@ -45,7 +45,7 @@
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
-__host__ void init_data(char *fname);
+__host__ void init_data(const char *fname);
 __device__ int GPU_record_criterion(double X1);
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
 __device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);

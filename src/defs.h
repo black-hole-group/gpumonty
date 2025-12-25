@@ -84,6 +84,32 @@ struct of_spectrum {
 	double E0;
 };
 
+typedef struct params_t {
+  int seed;
 
+  double Ns;
+  double MBH_par;
+  double M_unit;
+  const char dump[256];
+  const char spectrum[256];
+
+  // bias
+  double biasTuning;
+  int    fitBias;
+  double fitBiasNs;
+  double targetRatio;
+
+  // two point model
+  double lnumin, lnumax, alpha_spec;
+
+  // electron temperature models
+  double tp_over_te;
+  double beta_crit;
+  double trat_small;
+  double trat_large;
+  double Thetae_max;
+
+  char loaded;
+} Params;
 
 

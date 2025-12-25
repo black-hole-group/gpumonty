@@ -6,10 +6,15 @@
 #include "jnu_mixed.h"
 #include "hotcross.h"
 #include "utils.h"
-__host__ void init_model(char *args[]);
+#include "par.h"
+
+__host__ void init_model(char *args[], Params params);
 __host__ void init_geometry();
 int main(int argc, char *argv[])
 {
+
+	Params params = { 0 };
+
 	time_t starttime = time(NULL);
 
 	double Ntot;
@@ -22,20 +27,15 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 	const char *spect_file_name = argv[2];
-	#else
-	const char *spect_file_name = argv[3];
-	if (argc < 4|| argc > 4) {
-		fprintf(stderr, "usage: gpumonty, Ns, path_to_data, filename\n");
-		fprintf(stderr, "example: ./gpumonty 8000000 ./data/SANE_0.9.bin SANE.spec \n");
-		exit(0);
-	}
 	#endif
+	  // load parameters from command line
+  	load_par_from_argv(argc, argv, &params);
 	sscanf(argv[1], "%lf", &Ntot);
-	Ns = (int) Ntot;
+	Ns = (int) params.Ns;
 
 
 	/* initialize model data, auxiliary variables */
-	init_model(argv);
+	init_model(argv, params);
 
 	/** main loop **/
 	N_superph_recorded = 0;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    mainFlowControl(time(NULL), p, spect_file_name);
+    mainFlowControl(time(NULL), p, params);
     printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
 	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", Ns, N_BLOCKS, N_THREADS);
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
 }
 
-__host__ void init_model(char *args[])
+__host__ void init_model(char *args[], Params params)
 {
 	/* This will tell the units defined in decs.h. 
 	There used to be a function here for this, but it's extremely 
@@ -66,7 +66,7 @@ __host__ void init_model(char *args[])
 
 
 	fprintf(stderr, "getting simulation data...\n");
-	init_data(args[2]);
+	init_data(params);
 	/* initialize the metric */
 	fprintf(stderr, "initializing geometry...\n");
 	fflush(stderr);

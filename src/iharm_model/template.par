@@ -1,0 +1,7 @@
+#input super photons parameter
+Ns 1e6
+
+#path to the GRMHD data file
+dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
+
+spectrum sane.ben

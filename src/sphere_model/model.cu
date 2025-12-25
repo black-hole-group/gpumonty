@@ -44,7 +44,7 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 }
 #undef MIN
 
-__host__ void init_data(char *fname)
+__host__ void init_data(const char *fname)
 {
 	double Rin = RMIN;
 	double Rout = RMAX;

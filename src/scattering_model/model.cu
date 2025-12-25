@@ -196,7 +196,7 @@ __host__ void init_storage(void)
 //     fclose(fp);
 // }
 
-__host__ void init_data(char *fname)
+__host__ void init_data(const char *fname)
 {
 
 	/*Resolution*/

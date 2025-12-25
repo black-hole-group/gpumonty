@@ -12,7 +12,7 @@ __host__ void init_storage(void)
     return;
 }
 
-__host__ void init_data(char *fname)
+__host__ void init_data(const char *fname)
 {
     FILE *fp;
     double x[4];

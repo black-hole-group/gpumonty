@@ -12,21 +12,16 @@
 #include "jnu_mixed.h"
 #include "curand.h"
 #include "track.h"
-// __global__ void compare_array_to_texture(cudaTextureObject_t texObj, const int size){
-// 	for(int i = 0; i < size; i++){
-// 		float var = tex1D<float>(texObj, (i + 0. + 0.5f));
-// 		printf("Error in position %d, Og: %f, tex: %f\n", i, (d_K2[i] + d_K2[i + 1])/2, var);
-// 	}
-// }
 
-__host__ void mainFlowControl(time_t time, double * p, const char * filename){
+
+__host__ void mainFlowControl(time_t time, double * p, Params params){
 	/*
 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
 
 	Parameters:
 	@time: This is the usual C function that returns the number of seconds since the epoch. It is used to seed the random number generator
 	@p: Array of the primitive variables at each grid cell
-	@filename: Name of the file where the spectrum will be saved
+	@params: Struct containing various parameters for the simulation
 
 	Variables:
 	@start: Start event to measure the time of the kernel
@@ -58,13 +53,16 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 
 	*/
     cudaEvent_t start, stop;
+
     float milliseconds = 0;
+
 	cudaEventCreate(&start);
+
     cudaEventCreate(&stop);
+
 	cudaError_t cudaStatus;
 	cudaStatus = cudaGetLastError();
-
-	transferGlobalVariables();
+	transferParams();
 
 	struct of_spectrum spect[N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
@@ -86,18 +84,6 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	cudaTextureObject_t besselTexObj = 0;
 	cudaArray_t besselCuArray;
 	create1DTextureObj(&besselTexObj, K2, &besselCuArray);
-	// compare_array_to_texture<<<1,1>>>(besselTexObj, N_ESAMP + 1);
-	// cudaDeviceSynchronize();
-	// cudaStatus = cudaGetLastError();
-	// if (cudaStatus != cudaSuccess) {
-	// 	fprintf(stderr, "in compare_array_to_texture %s\n", cudaGetErrorString(cudaStatus));
-	// 	exit(1);
-	// }
-	// exit(1);
-	// cudaTextureObject_t tableTexObj = 0;
-	// cudaArray_t cuArray;
-	// createTableTextureObj(&tableTexObj, table, NT + 1, NW + 1, &cuArray);
-	
 
 
 	struct of_geom *d_geom;
@@ -241,7 +227,6 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 			exit(1);
 		}
 	 	freePhotonData(&initial_photon_states);
-		//cudaFree(initial_photon_states);
 
 
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
@@ -337,7 +322,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-	report_spectrum(gen_superph, spect, filename);
+	report_spectrum(gen_superph, spect, params.spectrum);
 	cudaFree(d_spect);
 	cudaFree(generated_photons_arr); 
 	cudaFree(dnmax_arr);
