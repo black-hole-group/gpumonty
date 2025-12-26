@@ -16,6 +16,7 @@
       <script src="../_static/documentation_options.js?v=2709fde1"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -52,12 +53,29 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -200,6 +218,26 @@
 <li><p><strong>dP</strong> – Input plasma properties. </p></li>
 <li><p><strong>cuArray</strong> – Pointer to the allocated 3D CUDA array resource.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t">
+<span id="_CPPv318create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"></span><span id="_CPPv218create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"></span><span id="create1DTextureObj__cudaTextureObject_tP.doubleP.cudaArray_tP"></span><span class="target" id="memory_8h_1abbb611fb57df8c4c4842ecbbbf9fad2a"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create1DTextureObj</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">texObj</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="n"><span class="pre">cudaArray_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cudaArray</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a 1D texture object from a 1D data array. </p>
+<p>Converts input <code class="docutils literal notranslate"><span class="pre">double</span></code> data to <code class="docutils literal notranslate"><span class="pre">float</span></code>, uploads it to a 1D CUDA array, and initializes a texture object with linear filtering and clamp addressing.</p>
+<p>This is used for the Modified Bessel function lookup table ( <span class="math notranslate nohighlight">\( K_2 \)</span>). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texObj</strong> – Pointer to the resulting texture object. </p></li>
+<li><p><strong>ptr</strong> – Input 1D data array. </p></li>
+<li><p><strong>cudaArray</strong> – Pointer to the allocated 1D CUDA array resource.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
 </dd>
 </dl>
 </dd></dl>

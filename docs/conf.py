@@ -36,7 +36,7 @@ extensions = [
 # Tell Breathe where the Doxygen XML files are
 # (Assuming Doxygen output is in a folder named 'xml' inside your project root)
 breathe_projects = {"GPUmonty": "../xml/"}
-breathe_default_project = "MyProject"
+breathe_default_project = "GPUmonty"
 
 # Set the theme to the professional "Read the Docs" style
 html_theme = "sphinx_rtd_theme"
@@ -49,8 +49,8 @@ cpp_id_attributes = [
     "__forceinline__",
 ]
 
+
 html_theme_options = {
-    # This is the "magic" setting. 
     # 'True' hides the plus signs for non-active sections.
     # 'False' forces the sidebar to show expansion icons for everything.
     'collapse_navigation': False,

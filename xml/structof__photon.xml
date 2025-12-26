@@ -4,10 +4,10 @@
     <compoundname>of_photon</compoundname>
     <includes refid="decs_8h" local="no">decs.h</includes>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structof__photon_1a48da8fb4660dec61d49d2a38d4710fe6" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structof__photon_1a1e9c2a5ca8f4a5e43c7bdf04df82da46" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double of_photon::X[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double of_photon::X[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>X</name>
         <briefdescription>
         </briefdescription>
@@ -17,10 +17,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="77" column="8" bodyfile="src/decs.h" bodystart="77" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structof__photon_1a60a38f9b176ef5bd502787cddaeedcb4" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structof__photon_1aa66ace82792b2f8f6ada1684725f480e" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double of_photon::K[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double of_photon::K[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>K</name>
         <briefdescription>
         </briefdescription>
@@ -30,10 +30,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="78" column="8" bodyfile="src/decs.h" bodystart="78" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structof__photon_1a5d9fc5d60a26f041da5505fe9f0efe36" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structof__photon_1a9a93952484074e9e847c93e429053504" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double of_photon::dKdlam[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double of_photon::dKdlam[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>dKdlam</name>
         <briefdescription>
         </briefdescription>
@@ -167,16 +167,16 @@
     </detaileddescription>
     <location file="src/decs.h" line="76" column="1" bodyfile="src/decs.h" bodystart="76" bodyend="84"/>
     <listofallmembers>
-      <member refid="structof__photon_1a5d9fc5d60a26f041da5505fe9f0efe36" prot="public" virt="non-virtual"><scope>of_photon</scope><name>dKdlam</name></member>
+      <member refid="structof__photon_1a9a93952484074e9e847c93e429053504" prot="public" virt="non-virtual"><scope>of_photon</scope><name>dKdlam</name></member>
       <member refid="structof__photon_1a221cfa3e6c6f646d2c7b8bb6cdf6f1d8" prot="public" virt="non-virtual"><scope>of_photon</scope><name>E</name></member>
       <member refid="structof__photon_1a5d15103fb3bd6a60b361d9c21e43f5b5" prot="public" virt="non-virtual"><scope>of_photon</scope><name>E0</name></member>
       <member refid="structof__photon_1aaf027d5b0376a447f095e4ba17947e60" prot="public" virt="non-virtual"><scope>of_photon</scope><name>E0s</name></member>
-      <member refid="structof__photon_1a60a38f9b176ef5bd502787cddaeedcb4" prot="public" virt="non-virtual"><scope>of_photon</scope><name>K</name></member>
+      <member refid="structof__photon_1aa66ace82792b2f8f6ada1684725f480e" prot="public" virt="non-virtual"><scope>of_photon</scope><name>K</name></member>
       <member refid="structof__photon_1aec688671cd182fb94426fbaf37351d94" prot="public" virt="non-virtual"><scope>of_photon</scope><name>nscatt</name></member>
       <member refid="structof__photon_1a638962ae99cfde866ef9e56dccb31b50" prot="public" virt="non-virtual"><scope>of_photon</scope><name>tau_abs</name></member>
       <member refid="structof__photon_1a3e6b5288f9a8da76c4c33a3673c813da" prot="public" virt="non-virtual"><scope>of_photon</scope><name>tau_scatt</name></member>
       <member refid="structof__photon_1a33986e676f3fa4b6c47680a592d4e839" prot="public" virt="non-virtual"><scope>of_photon</scope><name>w</name></member>
-      <member refid="structof__photon_1a48da8fb4660dec61d49d2a38d4710fe6" prot="public" virt="non-virtual"><scope>of_photon</scope><name>X</name></member>
+      <member refid="structof__photon_1a1e9c2a5ca8f4a5e43c7bdf04df82da46" prot="public" virt="non-virtual"><scope>of_photon</scope><name>X</name></member>
       <member refid="structof__photon_1a39aa94a5450af57135bfc80265a86144" prot="public" virt="non-virtual"><scope>of_photon</scope><name>X1i</name></member>
       <member refid="structof__photon_1aa44077de97de2f0dec7c5a1df98bcffc" prot="public" virt="non-virtual"><scope>of_photon</scope><name>X2i</name></member>
     </listofallmembers>

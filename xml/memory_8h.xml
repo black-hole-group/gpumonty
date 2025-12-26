@@ -253,6 +253,61 @@
         </inbodydescription>
         <location file="src/memory.h" line="95" column="15" declfile="src/memory.h" declline="95" declcolumn="15"/>
       </memberdef>
+      <memberdef kind="function" id="memory_8h_1abbb611fb57df8c4c4842ecbbbf9fad2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void create1DTextureObj</definition>
+        <argsstring>(cudaTextureObject_t *texObj, double *ptr, cudaArray_t *cudaArray)</argsstring>
+        <name>create1DTextureObj</name>
+        <param>
+          <type>cudaTextureObject_t *</type>
+          <declname>texObj</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>ptr</declname>
+        </param>
+        <param>
+          <type>cudaArray_t *</type>
+          <declname>cudaArray</declname>
+        </param>
+        <briefdescription>
+<para>Creates a 1D texture object from a 1D data array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Converts input <computeroutput>double</computeroutput> data to <computeroutput>float</computeroutput>, uploads it to a 1D CUDA array, and initializes a texture object with linear filtering and clamp addressing.</para>
+<para>This is used for the Modified Bessel function lookup table ( <formula id="22">$ K_2 $</formula>). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>texObj</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the resulting texture object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input 1D data array. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cudaArray</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the allocated 1D CUDA array resource.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/memory.h" line="111" column="15" declfile="src/memory.h" declline="111" declcolumn="15"/>
+      </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -282,7 +337,11 @@
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
 <codeline lineno="95" refid="memory_8h_1abaf6f13eb01390c597e84a0763e4ac55" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="memory_8h_1abaf6f13eb01390c597e84a0763e4ac55" kindref="member">createdPTextureObj</ref>(cudaTextureObject_t<sp/>*<sp/>texObj,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>dP,<sp/>cudaArray_t<sp/>*<sp/>cuArray);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="memory_8h_1abbb611fb57df8c4c4842ecbbbf9fad2a" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="memory_8h_1abbb611fb57df8c4c4842ecbbbf9fad2a" kindref="member">create1DTextureObj</ref>(cudaTextureObject_t<sp/>*<sp/>texObj,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>ptr,<sp/>cudaArray_t<sp/>*<sp/>cudaArray);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/memory.h"/>
   </compounddef>

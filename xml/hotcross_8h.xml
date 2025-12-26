@@ -19,10 +19,10 @@
         </inbodydescription>
         <location file="src/hotcross.h" line="8" column="15" declfile="src/hotcross.h" declline="8" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="function" id="hotcross_8h_1aa074d44cce20857a447a3875efb90ecc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
         <definition>__device__ double total_compton_cross_lkup</definition>
-        <argsstring>(double w, double thetae, const double *__restrict__ d_table_ptr)</argsstring>
+        <argsstring>(double w, double thetae, const double *d_table_ptr)</argsstring>
         <name>total_compton_cross_lkup</name>
         <param>
           <type>double</type>
@@ -33,7 +33,7 @@
           <declname>thetae</declname>
         </param>
         <param>
-          <type>const double *__restrict__</type>
+          <type>const double *</type>
           <declname>d_table_ptr</declname>
         </param>
         <briefdescription>
@@ -227,7 +227,7 @@
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>HOTCROSS_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HOTCROSS_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8" refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" kindref="member">init_hotcross</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="9" refid="hotcross_8h_1aa074d44cce20857a447a3875efb90ecc" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1aa074d44cce20857a447a3875efb90ecc" kindref="member">total_compton_cross_lkup</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="9" refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" kindref="member">total_compton_cross_lkup</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
 <codeline lineno="10" refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" kindref="member">total_compton_cross_num</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>);</highlight></codeline>
 <codeline lineno="11" refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" kindref="member">dNdgammae</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>
 <codeline lineno="12" refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" kindref="member">boostcross</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mue,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>

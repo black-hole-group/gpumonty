@@ -97,6 +97,9 @@ Functions</h2></td></tr>
 <tr class="memitem:abaf6f13eb01390c597e84a0763e4ac55"><td class="memItemLeft" align="right" valign="top">__host__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="memory_8h.html#abaf6f13eb01390c597e84a0763e4ac55">createdPTextureObj</a> (cudaTextureObject_t *texObj, double *dP, cudaArray_t *cuArray)</td></tr>
 <tr class="memdesc:abaf6f13eb01390c597e84a0763e4ac55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a 3D texture object from a 4D data grid for the plasma primitive properties.  <a href="memory_8h.html#abaf6f13eb01390c597e84a0763e4ac55">More...</a><br /></td></tr>
 <tr class="separator:abaf6f13eb01390c597e84a0763e4ac55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbb611fb57df8c4c4842ecbbbf9fad2a"><td class="memItemLeft" align="right" valign="top">__host__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="memory_8h.html#abbb611fb57df8c4c4842ecbbbf9fad2a">create1DTextureObj</a> (cudaTextureObject_t *texObj, double *ptr, cudaArray_t *cudaArray)</td></tr>
+<tr class="memdesc:abbb611fb57df8c4c4842ecbbbf9fad2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a 1D texture object from a 1D data array.  <a href="memory_8h.html#abbb611fb57df8c4c4842ecbbbf9fad2a">More...</a><br /></td></tr>
+<tr class="separator:abbb611fb57df8c4c4842ecbbbf9fad2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a75477149f6e665fc22861a2ffc04d30b"></a>
@@ -136,6 +139,52 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="abbb611fb57df8c4c4842ecbbbf9fad2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbb611fb57df8c4c4842ecbbbf9fad2a">&#9670;&nbsp;</a></span>create1DTextureObj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ void create1DTextureObj </td>
+          <td>(</td>
+          <td class="paramtype">cudaTextureObject_t *&#160;</td>
+          <td class="paramname"><em>texObj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cudaArray_t *&#160;</td>
+          <td class="paramname"><em>cudaArray</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a 1D texture object from a 1D data array. </p>
+<p>Converts input <code>double</code> data to <code>float</code>, uploads it to a 1D CUDA array, and initializes a texture object with linear filtering and clamp addressing.</p>
+<p>This is used for the Modified Bessel function lookup table ( <img class="formulaInl" alt="$ K_2 $" src="form_22.png"/>). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">texObj</td><td>Pointer to the resulting texture object. </td></tr>
+    <tr><td class="paramname">ptr</td><td>Input 1D data array. </td></tr>
+    <tr><td class="paramname">cudaArray</td><td>Pointer to the allocated 1D CUDA array resource.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>

@@ -9,3 +9,4 @@ organized by module.
 
    api/memory
    api/kernels
+   api/curand

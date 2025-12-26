@@ -9,10 +9,11 @@ var searchData=
   ['constants_2eh_27',['constants.h',['../constants_8h.html',1,'']]],
   ['corn_28',['CORN',['../config_8h.html#a8bd0e356054974167b130739499f2b84',1,'config.h']]],
   ['cpuglobals_29',['CPUGLOBALS',['../decs_8h.html#affa4ba22cd40d0fd29cc743dabbd8703',1,'decs.h']]],
-  ['createdptextureobj_30',['createdPTextureObj',['../memory_8h.html#abaf6f13eb01390c597e84a0763e4ac55',1,'memory.h']]],
-  ['cst_31',['CST',['../constants_8h.html#a774aa867ffa37c901bcf3db2bc378cc3',1,'constants.h']]],
-  ['cudamemcpycheck_32',['cudaMemcpyCheck',['../decs_8h.html#ab73a46ea7eb34f689eb4c09e84b5c3e9',1,'decs.h']]],
-  ['cudamemcpyerrorcheck_33',['cudaMemcpyErrorCheck',['../decs_8h.html#a9f11035cc432d1ca499b449fddefb937',1,'decs.h']]],
-  ['cummulativephotonsperzone_34',['cummulativePhotonsPerZone',['../memory_8h.html#a8136b0be5f7b0b43408c44287ed9b549',1,'memory.h']]],
-  ['curand_2eh_35',['curand.h',['../curand_8h.html',1,'']]]
+  ['create1dtextureobj_30',['create1DTextureObj',['../memory_8h.html#abbb611fb57df8c4c4842ecbbbf9fad2a',1,'memory.h']]],
+  ['createdptextureobj_31',['createdPTextureObj',['../memory_8h.html#abaf6f13eb01390c597e84a0763e4ac55',1,'memory.h']]],
+  ['cst_32',['CST',['../constants_8h.html#a774aa867ffa37c901bcf3db2bc378cc3',1,'constants.h']]],
+  ['cudamemcpycheck_33',['cudaMemcpyCheck',['../decs_8h.html#ab73a46ea7eb34f689eb4c09e84b5c3e9',1,'decs.h']]],
+  ['cudamemcpyerrorcheck_34',['cudaMemcpyErrorCheck',['../decs_8h.html#a9f11035cc432d1ca499b449fddefb937',1,'decs.h']]],
+  ['cummulativephotonsperzone_35',['cummulativePhotonsPerZone',['../memory_8h.html#a8136b0be5f7b0b43408c44287ed9b549',1,'memory.h']]],
+  ['curand_2eh_36',['curand.h',['../curand_8h.html',1,'']]]
 ];

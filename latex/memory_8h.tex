@@ -16,7 +16,9 @@
 \+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{memory_8h_a83056eb1e471f3b418d1214300eb3626}{free\+Photon\+Data}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} $\ast$ph)
 \begin{DoxyCompactList}\small\item\em Deallocates device memory for a {\ttfamily \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}} structure. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{memory_8h_abaf6f13eb01390c597e84a0763e4ac55}{created\+PTexture\+Obj}} (cuda\+Texture\+Object\+\_\+t $\ast$tex\+Obj, double $\ast$dP, cuda\+Array\+\_\+t $\ast$cu\+Array)
-\begin{DoxyCompactList}\small\item\em Creates a 3D texture object from a 4D data grid for the plasma primitive properties. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Creates a 3D texture object from a 4D data grid for the plasma primitive properties. \end{DoxyCompactList}\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{memory_8h_abbb611fb57df8c4c4842ecbbbf9fad2a}{create1\+DTexture\+Obj}} (cuda\+Texture\+Object\+\_\+t $\ast$tex\+Obj, double $\ast$ptr, cuda\+Array\+\_\+t $\ast$cuda\+Array)
+\begin{DoxyCompactList}\small\item\em Creates a 1D texture object from a 1D data array. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -42,6 +44,30 @@ Initializes a {\ttfamily \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+S
 {\em size} & The number of photon slots to allocate in each array. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{memory_8h_abbb611fb57df8c4c4842ecbbbf9fad2a}\label{memory_8h_abbb611fb57df8c4c4842ecbbbf9fad2a}} 
+\index{memory.h@{memory.h}!create1DTextureObj@{create1DTextureObj}}
+\index{create1DTextureObj@{create1DTextureObj}!memory.h@{memory.h}}
+\doxysubsubsection{\texorpdfstring{create1DTextureObj()}{create1DTextureObj()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void create1\+DTexture\+Obj (\begin{DoxyParamCaption}\item[{cuda\+Texture\+Object\+\_\+t $\ast$}]{tex\+Obj,  }\item[{double $\ast$}]{ptr,  }\item[{cuda\+Array\+\_\+t $\ast$}]{cuda\+Array }\end{DoxyParamCaption})}
+
+
+
+Creates a 1D texture object from a 1D data array. 
+
+Converts input {\ttfamily double} data to {\ttfamily float}, uploads it to a 1D CUDA array, and initializes a texture object with linear filtering and clamp addressing.
+
+This is used for the Modified Bessel function lookup table ( $ K_2 $). 
+\begin{DoxyParams}{Parameters}
+{\em tex\+Obj} & Pointer to the resulting texture object. \\
+\hline
+{\em ptr} & Input 1D data array. \\
+\hline
+{\em cuda\+Array} & Pointer to the allocated 1D CUDA array resource.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{memory_8h_abaf6f13eb01390c597e84a0763e4ac55}\label{memory_8h_abaf6f13eb01390c597e84a0763e4ac55}} 
 \index{memory.h@{memory.h}!createdPTextureObj@{createdPTextureObj}}
 \index{createdPTextureObj@{createdPTextureObj}!memory.h@{memory.h}}

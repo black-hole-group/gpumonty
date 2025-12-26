@@ -77,16 +77,22 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aa0d699792c90c9c0a311f0ce9a99aa2a"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#aa0d699792c90c9c0a311f0ce9a99aa2a">GPU_init_monty_rand</a> (int seed)</td></tr>
+<tr class="memdesc:aa0d699792c90c9c0a311f0ce9a99aa2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the cuRAND random number generator state for each GPU thread.  <a href="curand_8h.html#aa0d699792c90c9c0a311f0ce9a99aa2a">More...</a><br /></td></tr>
 <tr class="separator:aa0d699792c90c9c0a311f0ce9a99aa2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a161bac54521949f738425df8d4575a34"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#a161bac54521949f738425df8d4575a34">generate_random_direction</a> (double *x, double *y, double *z, curandState *localState)</td></tr>
+<tr class="memdesc:a161bac54521949f738425df8d4575a34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random 3D unit vector uniformly distributed on the sphere.  <a href="curand_8h.html#a161bac54521949f738425df8d4575a34">More...</a><br /></td></tr>
 <tr class="separator:a161bac54521949f738425df8d4575a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb8b0c03e481e93523bc9caa7f44d619"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#afb8b0c03e481e93523bc9caa7f44d619">chi_square</a> (int df, curandState *localState)</td></tr>
+<tr class="memdesc:afb8b0c03e481e93523bc9caa7f44d619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a Chi-square distributed random variable for a given degree of freedom. Uses the transformation property where a Chi-square distribution with $k$ degrees of freedom is equivalent to a Gamma distribution scaled by 2: $\chi^2(k) \sim 2\Gamma(k/2, 1)$. χ  <a href="curand_8h.html#afb8b0c03e481e93523bc9caa7f44d619">More...</a><br /></td></tr>
 <tr class="separator:afb8b0c03e481e93523bc9caa7f44d619"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9c2dd446dfab91259100793af28fa28"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#ad9c2dd446dfab91259100793af28fa28">legacy_standard_exponential</a> (curandState *localState)</td></tr>
+<tr class="memdesc:ad9c2dd446dfab91259100793af28fa28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a random variable from the standard exponential distribution ($\lambda = 1$). Implements the Inverse Transform Sampling method by transforming a uniform $(0,1]$ random variable into an exponential distribution.  <a href="curand_8h.html#ad9c2dd446dfab91259100793af28fa28">More...</a><br /></td></tr>
 <tr class="separator:ad9c2dd446dfab91259100793af28fa28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c742f9247534502f6c5e0df8182193d"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#a5c742f9247534502f6c5e0df8182193d">legacy_gauss</a> (double *out1, double *out2, curandState *localState)</td></tr>
+<tr class="memdesc:a5c742f9247534502f6c5e0df8182193d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle.  <a href="curand_8h.html#a5c742f9247534502f6c5e0df8182193d">More...</a><br /></td></tr>
 <tr class="separator:a5c742f9247534502f6c5e0df8182193d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a933acc3f6fe6da53c8ae10278078860e"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#a933acc3f6fe6da53c8ae10278078860e">legacy_standard_gamma</a> (double shape, curandState *localState)</td></tr>
+<tr class="memdesc:a933acc3f6fe6da53c8ae10278078860e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_0.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_1.png"/>).  <a href="curand_8h.html#a933acc3f6fe6da53c8ae10278078860e">More...</a><br /></td></tr>
 <tr class="separator:a933acc3f6fe6da53c8ae10278078860e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -115,6 +121,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples a Chi-square distributed random variable for a given degree of freedom. Uses the transformation property where a Chi-square distribution with $k$ degrees of freedom is equivalent to a Gamma distribution scaled by 2: $\chi^2(k) \sim 2\Gamma(k/2, 1)$. χ </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Chi-squared_distribution#Relation_to_other_distributions">Wikipedia article about χ-Γ relation</a></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">df</td><td>Degrees of freedom ($k$). </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the thread-local cuRAND state.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A random value sampled from the $\chi^2$ distribution. </dd></dl>
 
 </div>
 </div>
@@ -156,6 +173,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Generates a random 3D unit vector uniformly distributed on the sphere. </p>
+<p>Uses Marsaglia’s method (also attributed to Knop; CACM 13 (1970), 326) to generate an isotropic direction by sampling points uniformly inside the unit disk and mapping them to the surface of the unit sphere.</p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://dl.acm.org/doi/10.1145/362349.362377">Algorithm 381: random vectors uniform in solid angle</a></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Pointer to the x-component of the resulting unit vector. </td></tr>
+    <tr><td class="paramname">y</td><td>Pointer to the y-component of the resulting unit vector. </td></tr>
+    <tr><td class="paramname">z</td><td>Pointer to the z-component of the resulting unit vector. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the thread-local cuRAND state. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="aa0d699792c90c9c0a311f0ce9a99aa2a"></a>
@@ -173,6 +203,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes the cuRAND random number generator state for each GPU thread. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seed</td><td>The value used to randomize the generator's starting state.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>
@@ -208,6 +247,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Marsaglia_polar_method">Marsaglia_polar_method</a></dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out1,out2</td><td>Pointers to store the two independent Gaussian results. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the thread-local cuRAND state. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ad9c2dd446dfab91259100793af28fa28"></a>
@@ -225,6 +274,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples a random variable from the standard exponential distribution ($\lambda = 1$). Implements the Inverse Transform Sampling method by transforming a uniform $(0,1]$ random variable into an exponential distribution. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Inverse_transform_sampling#Examples">Check wikipedia article example</a> </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">localState</td><td>Pointer to the thread-local cuRAND state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A random value sampled from the exponential distribution. </dd></dl>
 
 </div>
 </div>
@@ -253,6 +312,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_0.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_1.png"/>). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shape</td><td>Shape parameter ($\alpha$) of the distribution. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the thread-local cuRAND state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A random value sampled from the Gamma distribution. </dd></dl>
 
 </div>
 </div>

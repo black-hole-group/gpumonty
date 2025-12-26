@@ -189,10 +189,10 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="var">
-      <memberdef kind="variable" id="decs_8h_1a6fbfd70ce148bee2d0f9b864ea66e6a4" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a95ef596741a95d1d63302e7253aba118" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_table[220+1][80+1]</definition>
-        <argsstring>[220+1][80+1]</argsstring>
+        <definition>__device__ double d_table[NW+1][NT+1]</definition>
+        <argsstring>[NW+1][NT+1]</argsstring>
         <name>d_table</name>
         <briefdescription>
         </briefdescription>
@@ -280,10 +280,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="26" bodyfile="src/defs.h" bodystart="48" bodyend="-1" declfile="src/decs.h" declline="127" declcolumn="26"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a1d7a13b3c392d5b1456a136c95f74223" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1afb0bb80689693ef035db918b7f086e97" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_startx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>__device__ double d_startx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>d_startx</name>
         <briefdescription>
         </briefdescription>
@@ -293,10 +293,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="40" bodyfile="src/decs.h" bodystart="127" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a1148144319f41da988d106074ab1cc15" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a806b19125f64305b649724dc510925b6" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_dx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>__device__ double d_dx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>d_dx</name>
         <briefdescription>
         </briefdescription>
@@ -306,10 +306,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="49" bodyfile="src/decs.h" bodystart="127" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a8edc197f9828749fdacec83c94897ed8" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a2f6b6a134b32ab683f420fc0ae510d4c" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_wgt[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>__device__ double d_wgt[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>d_wgt</name>
         <briefdescription>
         </briefdescription>
@@ -319,10 +319,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="54" bodyfile="src/decs.h" bodystart="127" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a32bc2b470fa84bd906d0fe0d301f240a" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a9beebcea8262a3456a0b7d0d794aae79" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_F[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>__device__ double d_F[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>d_F</name>
         <briefdescription>
         </briefdescription>
@@ -332,10 +332,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="60" bodyfile="src/decs.h" bodystart="127" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a8d36118555dce348aac569423334f743" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a8bcadfe9b0014cb019542231f47e30fa" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_K2[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>__device__ double d_K2[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>d_K2</name>
         <briefdescription>
         </briefdescription>
@@ -358,10 +358,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="127" column="69" bodyfile="src/decs.h" bodystart="127" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a540234bcfbc0936b547add8ba066682e" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1adf863d5efaf64762a7abd61751e04c9c" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_stopx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>__device__ double d_stopx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>d_stopx</name>
         <briefdescription>
         </briefdescription>
@@ -410,10 +410,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="130" column="38" bodyfile="src/defs.h" bodystart="50" bodyend="-1" declfile="src/decs.h" declline="130" declcolumn="38"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1ae3f7504002d5010a87327d32a3255ca0" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1abe0616d6431e19c68647b1aade2f8ec1" prot="public" static="no" mutable="no">
         <type>__device__ unsigned long long</type>
-        <definition>__device__ unsigned long long d_num_scat_phs[(3)]</definition>
-        <argsstring>[(3)]</argsstring>
+        <definition>__device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA]</definition>
+        <argsstring>[MAX_LAYER_SCA]</argsstring>
         <name>d_num_scat_phs</name>
         <briefdescription>
         </briefdescription>
@@ -436,10 +436,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="132" column="38" bodyfile="src/defs.h" bodystart="52" bodyend="-1" declfile="src/decs.h" declline="132" declcolumn="38"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1af3623f3cd5730cb8d57c2ed2be1b5ada" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a64ecd046ffd88a595206662710ef3576" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_nint[(40000)+1]</definition>
-        <argsstring>[(40000)+1]</argsstring>
+        <definition>__device__ double d_nint[NINT+1]</definition>
+        <argsstring>[NINT+1]</argsstring>
         <name>d_nint</name>
         <briefdescription>
         </briefdescription>
@@ -449,10 +449,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="133" column="26" bodyfile="src/defs.h" bodystart="53" bodyend="-1" declfile="src/decs.h" declline="133" declcolumn="26"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a7a7952bb165e1171597f761e1e945ef1" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a72b4989106eb6ea19a8d1c21ad568eef" prot="public" static="no" mutable="no">
         <type>__device__ double</type>
-        <definition>__device__ double d_dndlnu_max[(40000)+1]</definition>
-        <argsstring>[(40000)+1]</argsstring>
+        <definition>__device__ double d_dndlnu_max[NINT+1]</definition>
+        <argsstring>[NINT+1]</argsstring>
         <name>d_dndlnu_max</name>
         <briefdescription>
         </briefdescription>
@@ -514,10 +514,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="138" column="38" bodyfile="src/defs.h" bodystart="58" bodyend="-1" declfile="src/decs.h" declline="138" declcolumn="38"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a95bc280ba29632fc6e927dfb9dbc6adc" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a3c4b6997b6599853757d218ac7315829" prot="public" static="no" mutable="no">
         <type>__device__ curandState</type>
-        <definition>__device__ curandState my_curand_state[3456 * 256]</definition>
-        <argsstring>[3456 *256]</argsstring>
+        <definition>__device__ curandState my_curand_state[N_BLOCKS *N_THREADS]</definition>
+        <argsstring>[N_BLOCKS *N_THREADS]</argsstring>
         <name>my_curand_state</name>
         <briefdescription>
         </briefdescription>
@@ -709,10 +709,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="149" column="15" bodyfile="src/decs.h" bodystart="166" bodyend="-1" declfile="src/decs.h" declline="149" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a444d08dcccdedf0c1282d34b23965bc3" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a2f3d0d438577635140783541568339fe" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double nint[(40000)+1]</definition>
-        <argsstring>[(40000)+1]</argsstring>
+        <definition>double nint[NINT+1]</definition>
+        <argsstring>[NINT+1]</argsstring>
         <name>nint</name>
         <briefdescription>
         </briefdescription>
@@ -722,10 +722,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="150" column="15" bodyfile="src/defs.h" bodystart="36" bodyend="-1" declfile="src/decs.h" declline="150" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a6068c3307e311182000df32983022b7f" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1ab730c3c176e1935139f79d8881137f34" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double dndlnu_max[(40000)+1]</definition>
-        <argsstring>[(40000)+1]</argsstring>
+        <definition>double dndlnu_max[NINT+1]</definition>
+        <argsstring>[NINT+1]</argsstring>
         <name>dndlnu_max</name>
         <briefdescription>
         </briefdescription>
@@ -735,10 +735,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="151" column="15" bodyfile="src/defs.h" bodystart="38" bodyend="-1" declfile="src/decs.h" declline="151" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a6547c87f4689b4642b73c2c250fa83be" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1adbeb6461125f4b1f5605e48d0013a35d" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double K2[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>double K2[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>K2</name>
         <briefdescription>
         </briefdescription>
@@ -748,10 +748,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="152" column="15" bodyfile="src/defs.h" bodystart="37" bodyend="-1" declfile="src/decs.h" declline="152" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a4ba778202c908d0355d7f79b21f9efe7" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a6b0bc09e401de6b01d58d5e4b4ed71af" prot="public" static="no" mutable="no">
         <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref></type>
-        <definition>struct of_spectrum spect[6][800]</definition>
-        <argsstring>[6][800]</argsstring>
+        <definition>struct of_spectrum spect[N_THBINS][N_EBINS]</definition>
+        <argsstring>[N_THBINS][N_EBINS]</argsstring>
         <name>spect</name>
         <briefdescription>
         </briefdescription>
@@ -774,10 +774,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="157" column="21" bodyfile="src/defs.h" bodystart="2" bodyend="-1" declfile="src/decs.h" declline="157" declcolumn="21"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a1b0ec3044652a5d922d8e1a24455df81" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a9ffffa61db90b62819349ec183c95971" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double F[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>double F[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>F</name>
         <briefdescription>
         </briefdescription>
@@ -787,10 +787,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="158" column="15" bodyfile="src/defs.h" bodystart="6" bodyend="-1" declfile="src/decs.h" declline="158" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a87df3bdc854d088f7b90e59bc034edcc" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1ab9694097c5454a2ef1276844d22694a1" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double wgt[800+1]</definition>
-        <argsstring>[800+1]</argsstring>
+        <definition>double wgt[N_ESAMP+1]</definition>
+        <argsstring>[N_ESAMP+1]</argsstring>
         <name>wgt</name>
         <briefdescription>
         </briefdescription>
@@ -800,10 +800,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="158" column="17" bodyfile="src/decs.h" bodystart="158" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1adb649385fc46caa4ec00d0e0978a916f" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a7055762a2f045edd348adf0251fd54d0" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double table[220+1][80+1]</definition>
-        <argsstring>[220+1][80+1]</argsstring>
+        <definition>double table[NW+1][NT+1]</definition>
+        <argsstring>[NW+1][NT+1]</argsstring>
         <name>table</name>
         <briefdescription>
         </briefdescription>
@@ -904,10 +904,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="165" column="30" bodyfile="src/decs.h" bodystart="165" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a22a1624b7aadab4136bba181b4644564" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a1af6c2233e7accdc7fc859ceb6d4101d" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double startx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double startx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>startx</name>
         <briefdescription>
         </briefdescription>
@@ -917,10 +917,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="167" column="15" bodyfile="src/defs.h" bodystart="13" bodyend="-1" declfile="src/decs.h" declline="167" declcolumn="15"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1ab72209febcbdc5407955e21864ab504b" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a1d062115a0a9faa81b98868d62bab991" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double stopx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double stopx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>stopx</name>
         <briefdescription>
         </briefdescription>
@@ -930,10 +930,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="167" column="22" bodyfile="src/decs.h" bodystart="167" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="decs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="decs_8h_1a907315012a2980e923e1c120d0935b61" prot="public" static="no" mutable="no">
         <type>double</type>
-        <definition>double dx[4]</definition>
-        <argsstring>[4]</argsstring>
+        <definition>double dx[NDIM]</definition>
+        <argsstring>[NDIM]</argsstring>
         <name>dx</name>
         <briefdescription>
         </briefdescription>
@@ -1327,9 +1327,9 @@
 <codeline lineno="74"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight></codeline>
 <codeline lineno="76" refid="structof__photon" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__photon" kindref="compound">of_photon</ref><sp/>{</highlight></codeline>
-<codeline lineno="77" refid="structof__photon_1a48da8fb4660dec61d49d2a38d4710fe6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a48da8fb4660dec61d49d2a38d4710fe6" kindref="member">X</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
-<codeline lineno="78" refid="structof__photon_1a60a38f9b176ef5bd502787cddaeedcb4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a60a38f9b176ef5bd502787cddaeedcb4" kindref="member">K</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
-<codeline lineno="79" refid="structof__photon_1a5d9fc5d60a26f041da5505fe9f0efe36" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a5d9fc5d60a26f041da5505fe9f0efe36" kindref="member">dKdlam</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="77" refid="structof__photon_1a1e9c2a5ca8f4a5e43c7bdf04df82da46" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a1e9c2a5ca8f4a5e43c7bdf04df82da46" kindref="member">X</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="78" refid="structof__photon_1aa66ace82792b2f8f6ada1684725f480e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1aa66ace82792b2f8f6ada1684725f480e" kindref="member">K</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="79" refid="structof__photon_1a9a93952484074e9e847c93e429053504" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a9a93952484074e9e847c93e429053504" kindref="member">dKdlam</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
 <codeline lineno="80" refid="structof__photon_1a221cfa3e6c6f646d2c7b8bb6cdf6f1d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a33986e676f3fa4b6c47680a592d4e839" kindref="member">w</ref>,<sp/><ref refid="structof__photon_1a221cfa3e6c6f646d2c7b8bb6cdf6f1d8" kindref="member">E</ref>,<sp/><ref refid="structof__photon_1a39aa94a5450af57135bfc80265a86144" kindref="member">X1i</ref>,<sp/><ref refid="structof__photon_1aa44077de97de2f0dec7c5a1df98bcffc" kindref="member">X2i</ref>;</highlight></codeline>
 <codeline lineno="81" refid="structof__photon_1a638962ae99cfde866ef9e56dccb31b50" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a638962ae99cfde866ef9e56dccb31b50" kindref="member">tau_abs</ref>,<sp/><ref refid="structof__photon_1a3e6b5288f9a8da76c4c33a3673c813da" kindref="member">tau_scatt</ref>;</highlight></codeline>
 <codeline lineno="82" refid="structof__photon_1a5d15103fb3bd6a60b361d9c21e43f5b5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__photon_1a5d15103fb3bd6a60b361d9c21e43f5b5" kindref="member">E0</ref>,<sp/><ref refid="structof__photon_1aaf027d5b0376a447f095e4ba17947e60" kindref="member">E0s</ref>;</highlight></codeline>
@@ -1349,8 +1349,8 @@
 <codeline lineno="96"><highlight class="normal"></highlight></codeline>
 <codeline lineno="97"><highlight class="normal"></highlight></codeline>
 <codeline lineno="98" refid="structof__geom" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>{</highlight></codeline>
-<codeline lineno="99" refid="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" kindref="member">gcon</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
-<codeline lineno="100" refid="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" kindref="member">gcov</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="99" refid="structof__geom_1a659d8804f5bc115be53d951a82d00599" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1a659d8804f5bc115be53d951a82d00599" kindref="member">gcon</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="100" refid="structof__geom_1a63392b3038946263a5e0288919a8cd87" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1a63392b3038946263a5e0288919a8cd87" kindref="member">gcov</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
 <codeline lineno="101" refid="structof__geom_1aa63a8d09d767064b96c81da603da93bb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1aa63a8d09d767064b96c81da603da93bb" kindref="member">g</ref>;</highlight></codeline>
 <codeline lineno="102"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight></codeline>
@@ -1371,25 +1371,25 @@
 <codeline lineno="118"><highlight class="normal"></highlight></codeline>
 <codeline lineno="119"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>GPUGLOBALS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="120" refid="decs_8h_1a6cf1c47267bb82f39af393a4fffa2bc3" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GPUGLOBALS</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6fbfd70ce148bee2d0f9b864ea66e6a4" kindref="member">d_table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a95ef596741a95d1d63302e7253aba118" kindref="member">d_table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="122"><highlight class="normal"></highlight></codeline>
 <codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" kindref="member">photon_count</ref>;</highlight></codeline>
 <codeline lineno="124" refid="decs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6bcce35fba28e9e8136daeb648c76dde" kindref="member">generated_sphotons</ref>,<sp/><ref refid="decs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" kindref="member">d_N_superph_recorded</ref>;</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" kindref="member">d_Ns</ref>;</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1aed8971ac92cef3856c889bf508614ff0" kindref="member">d_N_scatt</ref>;</highlight></codeline>
-<codeline lineno="127" refid="decs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a7929fa904845ee6867b2ae7d814b66c1" kindref="member">d_thetae_unit</ref>,<sp/><ref refid="decs_8h_1a1d7a13b3c392d5b1456a136c95f74223" kindref="member">d_startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a1148144319f41da988d106074ab1cc15" kindref="member">d_dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a8edc197f9828749fdacec83c94897ed8" kindref="member">d_wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a32bc2b470fa84bd906d0fe0d301f240a" kindref="member">d_F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a8d36118555dce348aac569423334f743" kindref="member">d_K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" kindref="member">d_bias_norm</ref>,<sp/><ref refid="decs_8h_1a540234bcfbc0936b547add8ba066682e" kindref="member">d_stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a742ef4db884976e1496d9dcd0cf7bb49" kindref="member">d_Rh</ref>,<sp/><ref refid="decs_8h_1af9b8ee4984379bf47ea136962fee273e" kindref="member">d_max_tau_scatt</ref>;</highlight></codeline>
+<codeline lineno="127" refid="decs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a7929fa904845ee6867b2ae7d814b66c1" kindref="member">d_thetae_unit</ref>,<sp/><ref refid="decs_8h_1afb0bb80689693ef035db918b7f086e97" kindref="member">d_startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a806b19125f64305b649724dc510925b6" kindref="member">d_dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a2f6b6a134b32ab683f420fc0ae510d4c" kindref="member">d_wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a9beebcea8262a3456a0b7d0d794aae79" kindref="member">d_F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a8bcadfe9b0014cb019542231f47e30fa" kindref="member">d_K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" kindref="member">d_bias_norm</ref>,<sp/><ref refid="decs_8h_1adf863d5efaf64762a7abd61751e04c9c" kindref="member">d_stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a742ef4db884976e1496d9dcd0cf7bb49" kindref="member">d_Rh</ref>,<sp/><ref refid="decs_8h_1af9b8ee4984379bf47ea136962fee273e" kindref="member">d_max_tau_scatt</ref>;</highlight></codeline>
 <codeline lineno="128"><highlight class="normal"></highlight></codeline>
 <codeline lineno="129"><highlight class="normal"></highlight></codeline>
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a78c64dac8bec176d822a7a3fa3839005" kindref="member">scattering_counter</ref>;</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1ae3f7504002d5010a87327d32a3255ca0" kindref="member">d_num_scat_phs</ref>[<ref refid="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa" kindref="member">MAX_LAYER_SCA</ref>];</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1abe0616d6431e19c68647b1aade2f8ec1" kindref="member">d_num_scat_phs</ref>[<ref refid="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa" kindref="member">MAX_LAYER_SCA</ref>];</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a68ccb3c564f43896d2410ddd61d21f90" kindref="member">tracking_counter</ref>;</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1af3623f3cd5730cb8d57c2ed2be1b5ada" kindref="member">d_nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a7a7952bb165e1171597f761e1e945ef1" kindref="member">d_dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a64ecd046ffd88a595206662710ef3576" kindref="member">d_nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a72b4989106eb6ea19a8d1c21ad568eef" kindref="member">d_dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" kindref="member">d_hslope</ref>;</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a2b92264ec3008463a5529a4535f369e4" kindref="member">d_R0</ref>;</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a18ecee65560d33d3da019b4e34aee4cb" kindref="member">total_sca</ref>;</highlight></codeline>
 <codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1aa8328a2d08bffccbcfb60d960343b21c" kindref="member">tracking_counter_sampling</ref>;</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/>curandState<sp/><ref refid="decs_8h_1a95bc280ba29632fc6e927dfb9dbc6adc" kindref="member">my_curand_state</ref>[<ref refid="config_8h_1aa714b8308c6a460183a00af49b098b37" kindref="member">N_BLOCKS</ref><sp/>*<sp/><ref refid="config_8h_1ab60b5074c740fd36061f48f90d1a0b21" kindref="member">N_THREADS</ref>];<sp/></highlight><highlight class="comment">//<sp/>Array<sp/>of<sp/>curandState<sp/>structures</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/>curandState<sp/><ref refid="decs_8h_1a3c4b6997b6599853757d218ac7315829" kindref="member">my_curand_state</ref>[<ref refid="config_8h_1aa714b8308c6a460183a00af49b098b37" kindref="member">N_BLOCKS</ref><sp/>*<sp/><ref refid="config_8h_1ab60b5074c740fd36061f48f90d1a0b21" kindref="member">N_THREADS</ref>];<sp/></highlight><highlight class="comment">//<sp/>Array<sp/>of<sp/>curandState<sp/>structures</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="140" refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6b10273d9bb77b624a016098ab2e1151" kindref="member">d_N1</ref>,<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref>,<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref>;</highlight></codeline>
 <codeline lineno="141" refid="decs_8h_1a8a27186bc9fd223c9427acf61a78fda6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a40a4a3aa2d0eaf8420ab59fd074a51fd" kindref="member">d_trat_small</ref>,<sp/><ref refid="decs_8h_1a6473b9c41ac13c339daecf5f7521bb99" kindref="member">d_trat_large</ref>,<sp/><ref refid="decs_8h_1a8a27186bc9fd223c9427acf61a78fda6" kindref="member">d_beta_crit</ref>,<sp/><ref refid="decs_8h_1a2536dffcc4e5773ab21b546a6ab92c45" kindref="member">d_thetae_max</ref>,<sp/><ref refid="decs_8h_1ab654fe0b60b7baf8dde19e2ae081623c" kindref="member">d_tp_over_te</ref>;</highlight></codeline>
 <codeline lineno="142" refid="decs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a7c8f846e91603646020cec12c0d92338" kindref="member">d_MBH</ref>,<sp/><ref refid="decs_8h_1a7a450efe14c37256eeb7be121aed1eff" kindref="member">d_L_unit</ref>,<sp/><ref refid="decs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c" kindref="member">d_B_unit</ref>,<sp/><ref refid="decs_8h_1a31cc8358ceeceb4c8a3a2ab3ac9bfc7b" kindref="member">d_Ne_unit</ref>;</highlight></codeline>
@@ -1400,16 +1400,16 @@
 <codeline lineno="147" refid="decs_8h_1affa4ba22cd40d0fd29cc743dabbd8703" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CPUGLOBALS</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>;</highlight></codeline>
 <codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1aec158415808eb5ddb908cdeb7bf9c343" kindref="member">hslope</ref>;</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a444d08dcccdedf0c1282d34b23965bc3" kindref="member">nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6068c3307e311182000df32983022b7f" kindref="member">dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6547c87f4689b4642b73c2c250fa83be" kindref="member">K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a2f3d0d438577635140783541568339fe" kindref="member">nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1ab730c3c176e1935139f79d8881137f34" kindref="member">dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1adbeb6461125f4b1f5605e48d0013a35d" kindref="member">K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*Global<sp/>Variable<sp/>Section*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>defining<sp/>declarations<sp/>for<sp/>global<sp/>variables<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/><ref refid="decs_8h_1a4ba778202c908d0355d7f79b21f9efe7" kindref="member">spect</ref>[<ref refid="config_8h_1af52e5601e24f633637c7ef961a01a847" kindref="member">N_THBINS</ref>][<ref refid="config_8h_1af9cf051839fae1fdc190fe02abd595c6" kindref="member">N_EBINS</ref>];</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/><ref refid="decs_8h_1a6b0bc09e401de6b01d58d5e4b4ed71af" kindref="member">spect</ref>[<ref refid="config_8h_1af52e5601e24f633637c7ef961a01a847" kindref="member">N_THBINS</ref>][<ref refid="config_8h_1af9cf051839fae1fdc190fe02abd595c6" kindref="member">N_EBINS</ref>];</highlight></codeline>
 <codeline lineno="156"><highlight class="normal"></highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<ref refid="decs_8h_1ae323db0d410f2ea234b9484acfd333d4" kindref="member">geom</ref>;</highlight></codeline>
-<codeline lineno="158" refid="decs_8h_1a87df3bdc854d088f7b90e59bc034edcc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a1b0ec3044652a5d922d8e1a24455df81" kindref="member">F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1a87df3bdc854d088f7b90e59bc034edcc" kindref="member">wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1adb649385fc46caa4ec00d0e0978a916f" kindref="member">table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="158" refid="decs_8h_1ab9694097c5454a2ef1276844d22694a1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a9ffffa61db90b62819349ec183c95971" kindref="member">F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="decs_8h_1ab9694097c5454a2ef1276844d22694a1" kindref="member">wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a7055762a2f045edd348adf0251fd54d0" kindref="member">table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"></highlight></codeline>
 <codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a6208c40fc9dbb2a489f76a36c66fa159" kindref="member">N_scatt</ref>;</highlight></codeline>
 <codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a68dd8132a9835dbc463907ffd59958c1" kindref="member">N_superph_recorded</ref>;</highlight></codeline>
@@ -1417,7 +1417,7 @@
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>some<sp/>coordinate<sp/>parameters<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="165" refid="decs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a37800d14d893b7a8126f821b7a34e1d1" kindref="member">R0</ref>,<sp/><ref refid="decs_8h_1a5f200d81ca494457b004628aa958bcec" kindref="member">Rin</ref>,<sp/><ref refid="decs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" kindref="member">Rh</ref>,<sp/><ref refid="decs_8h_1ae38887db77c101efeb7db711a9e856db" kindref="member">Rout</ref>,<sp/><ref refid="decs_8h_1a147f35f70045c8c403c380ba83176093" kindref="member">Rms</ref>;</highlight></codeline>
 <codeline lineno="166" refid="decs_8h_1aec158415808eb5ddb908cdeb7bf9c343" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1aec158415808eb5ddb908cdeb7bf9c343" kindref="member">hslope</ref>;</highlight></codeline>
-<codeline lineno="167" refid="decs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a22a1624b7aadab4136bba181b4644564" kindref="member">startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1ab72209febcbdc5407955e21864ab504b" kindref="member">stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" kindref="member">dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="167" refid="decs_8h_1a907315012a2980e923e1c120d0935b61" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a1af6c2233e7accdc7fc859ceb6d4101d" kindref="member">startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a1d062115a0a9faa81b98868d62bab991" kindref="member">stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="decs_8h_1a907315012a2980e923e1c120d0935b61" kindref="member">dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"></highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//extern<sp/>double<sp/>dlE,<sp/>lE0;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a45d60151fb0572200ad00231c304aaf0" kindref="member">gam</ref>;</highlight></codeline>

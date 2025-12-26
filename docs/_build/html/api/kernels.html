@@ -16,10 +16,12 @@
       <script src="../_static/documentation_options.js?v=2709fde1"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Memory.cu" href="memory.html" /> 
+    <link rel="next" title="curand.cu" href="curand.html" />
+    <link rel="prev" title="memory.cu" href="memory.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,7 +45,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="memory.html">Memory.cu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
@@ -51,12 +53,29 @@
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -90,58 +109,291 @@
              
   <section id="kernels-cu">
 <h1>kernels.cu<a class="headerlink" href="#kernels-cu" title="Link to this heading"></a></h1>
-<p>Documentation for the core CUDA kernels used in the simulation.</p>
+<p>This page documents the functions defined in kernels.cu. kernels.cu contains the CUDA kernels used in the simulation and some extra functions.</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a807c1d397d9848379b38a2dbda253ef1"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_generate_photons</span> <span class="pre">(const</span> <span class="pre">struct</span> <span class="pre">of_geom</span> <span class="pre">*__restrict__</span> <span class="pre">d_geom,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">d_p,</span> <span class="pre">const</span> <span class="pre">time_t</span> <span class="pre">time,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">*__restrict__</span> <span class="pre">generated_photons_arr,</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">dnmax_arr,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">besselTexObj)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t">
+<span id="_CPPv320GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"></span><span id="_CPPv220GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"></span><span id="GPU_generate_photons__of_geomCP.doubleCP.time_tC.unsigned-l-lP.doubleP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1aa821269601cfb86b5bf4da52ac595561"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_generate_photons</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_geom</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">time_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generated_photons_arr</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax_arr</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Kernel that will divide the work of generating superphotons among the GPU threads. </p>
+<p><ul class="simple">
+<li><p>Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.</p></li>
+<li><p>Calls GPU_init_zone to initialize the photon generation for each zone in the simulation grid.</p></li>
+<li><p>The loop follows a <strong>grid-stride pattern</strong> to ensure all zones are covered. Each thread <span class="math notranslate nohighlight">\( n \)</span> processes a sequence of zones defined by: <div class="math notranslate nohighlight">
+\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</div>
+ where <span class="math notranslate nohighlight">\( {\rm i_n}\)</span> is the current zone <span class="math notranslate nohighlight">\( \rm i \)</span> that thread <span class="math notranslate nohighlight">\( \rm n \)</span> is analyzing, <span class="math notranslate nohighlight">\( n \)</span> is the global thread ID, <span class="math notranslate nohighlight">\( N_{\text{total}} \)</span> is the total number of threads in the grid, and <span class="math notranslate nohighlight">\( k \in \{0, 1, 2, \dots\} \)</span>.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device array containing the plasma parameters of the simulation. </p></li>
+<li><p><strong>time</strong> – Current time used to seed the random number generator for photon generation. </p></li>
+<li><p><strong>generated_photons_arr</strong> – Pointer to the device array that will store the number of photons generated per zone. </p></li>
+<li><p><strong>dnmax_arr</strong> – Pointer to the device array that will store the maximum value of <span class="math notranslate nohighlight">\( \frac{dN}{d\ln\nu} \)</span> per zone. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for Bessel function lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a869ff413f418f99cbc32aa5711fb9de4"></span><span class="sig-name descname"><span class="pre">__device__</span> <span class="pre">void</span> <span class="pre">GPU_init_zone</span> <span class="pre">(const</span> <span class="pre">int</span> <span class="pre">i,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">j,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">k,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">*__restrict__</span> <span class="pre">n2gen,</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">dnmax,</span> <span class="pre">const</span> <span class="pre">struct</span> <span class="pre">of_geom</span> <span class="pre">*__restrict__</span> <span class="pre">d_geom,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">d_p,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">d_Ns_par,</span> <span class="pre">curandState</span> <span class="pre">*localState,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">besselTexObj)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t">
+<span id="_CPPv313GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"></span><span id="_CPPv213GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"></span><span id="GPU_init_zone__iC.iC.iC.unsigned-l-lP.doubleP.of_geomCP.doubleCP.iC.curandStateP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1aba2eb37747fbd2a219125074a9c4a1de"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_init_zone</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">n2gen</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_geom</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_Ns_par</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Initializes the photon generation parameters for a specific grid zone. </p>
+<p><ul class="simple">
+<li><p>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <span class="math notranslate nohighlight">\((i, j, k)\)</span> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</p></li>
+</ul>
+</p>
+<p>The expected number of superphotons <span class="math notranslate nohighlight">\( N_{s,i} \)</span> in zone <span class="math notranslate nohighlight">\( i \)</span> is governed by: <div class="math notranslate nohighlight">
+\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]</div>
+ where <span class="math notranslate nohighlight">\( \sqrt{-g} \)</span> is the metric determinant, <span class="math notranslate nohighlight">\( j_\nu \)</span> is the emissivity, and <span class="math notranslate nohighlight">\( \omega \)</span> is the superphoton weight.</p>
+<p>The final number of superphotons <span class="math notranslate nohighlight">\( n_{2gen} \)</span> is determined stochastically to handle the fractional part of the expected count <span class="math notranslate nohighlight">\( n_z \)</span>: <div class="math notranslate nohighlight">
+\[\begin{split} n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \end{split}\]</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – Radial grid index. </p></li>
+<li><p><strong>j</strong> – Poloidal grid index. </p></li>
+<li><p><strong>k</strong> – Azimuthal grid index. </p></li>
+<li><p><strong>n2gen</strong> – Pointer to store the integer number of superphotons to be generated. </p></li>
+<li><p><strong>dnmax</strong> – [Pointer to store the maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span>, required for subsequent rejection sampling. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device simulation plasma properties. </p></li>
+<li><p><strong>d_Ns_par</strong> – Target superphoton count parameter. </p></li>
+<li><p><strong>localState</strong> – Pointer to the curandState for the current thread. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a61d27aa585f40c04f60ce1c1afb7e0b0"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_sample_photons_batch</span> <span class="pre">(struct</span> <span class="pre">of_photonSOA</span> <span class="pre">ph_init,</span> <span class="pre">const</span> <span class="pre">struct</span> <span class="pre">of_geom</span> <span class="pre">*__restrict__</span> <span class="pre">d_geom,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">d_p,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">*__restrict__</span> <span class="pre">generated_photons_arr,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">dnmax_arr,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">max_partition_ph,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">photons_processed_sofar,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">*__restrict__</span> <span class="pre">index_to_ijk,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">besselTexObj)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t">
+<span id="_CPPv324GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"></span><span id="_CPPv224GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"></span><span id="GPU_sample_photons_batch__of_photonSOA.of_geomCP.doubleCP.unsigned-l-lCP.doubleCP.iC.unsigned-l-lC.unsigned-l-lCP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a85259381f038730c4faa5df2e87ab3cf"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_sample_photons_batch</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph_init</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_geom</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generated_photons_arr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax_arr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">photons_processed_sofar</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index_to_ijk</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Samples superphoton properties for the current batch using dynamic workload allocation. </p>
+<p><ul class="simple">
+<li><p>This kernel performs the rejection sampling and initial coordinate assignment for superphotons. Unlike a standard grid-stride pattern where thread work is predetermined by ID, this kernel utilizes a <strong>dynamic workload allocation</strong> strategy since some zones may generate significantly more superphotons than others, leading to extreme load imbalance. To mitigate this, threads fetch work dynamically using an atomic counter. This ensures that as soon as a thread finishes sampling a photon, it immediately pulls the next available index, keeping GPU execution units saturated regardless of the variation in workload per zone.</p></li>
+<li><p>The kernel maps the superphoton to the grid zone that generated it <span class="math notranslate nohighlight">\( (i, j, k) \)</span> by performing a binary search on the cumulative distribution array <code class="docutils literal notranslate"><span class="pre">index_to_ijk</span></code>. Once the <code class="docutils literal notranslate"><span class="pre">zone_index</span></code> is retrieved, it is decomposed into 3D grid coordinates:</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph_init</strong> – The Structure of Arrays (SoA) where sampled photon data is stored. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device simulation plasma properties. </p></li>
+<li><p><strong>generated_photons_arr</strong> – Array containing the number of photons to be generated per zone. </p></li>
+<li><p><strong>dnmax_arr</strong> – The maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span> for each zone, used for rejection sampling. </p></li>
+<li><p><strong>max_partition_ph</strong> – The maximum number of photons assigned to this batch. </p></li>
+<li><p><strong>photons_processed_sofar</strong> – Offset for the current batch relative to the total simulation count. </p></li>
+<li><p><strong>index_to_ijk</strong> – Cumulative sum array mapping global photon indices to zone indices. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t">
 <span id="_CPPv322GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"></span><span id="_CPPv222GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPANDIM_dPANDIM_dP11curandState19cudaTextureObject_t"></span><span class="target" id="kernels_8h_1aeb4ff65d6c85509d96c92ac2edb01c97"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_sample_zone_photon</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dnmax</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_geom</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">zone_flag</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph_arr_index</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Econ</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Ecov</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Samples the physical properties of a single superphoton within a zone. </p>
+<p>It uses a series of rejection sampling loops to determine the frequency and angular distribution of emission, then transforms the resulting momentum vector from the local fluid tetrad into the global coordinate frame.</p>
+<p><strong>Frequency Sampling</strong>: The photon frequency <span class="math notranslate nohighlight">\( \nu \)</span> is sampled using rejection sampling over the range <span class="math notranslate nohighlight">\( [\nu_{min}, \nu_{max}] \)</span>. The selection is weighted by the local distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span>:</p>
+<p><strong>Angular Distribution</strong>: The polar angle <span class="math notranslate nohighlight">\( \theta \)</span> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <span class="math notranslate nohighlight">\( j_\nu(\theta) \)</span>. A second rejection sampling loop ensures that: <div class="math notranslate nohighlight">
+\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]</div>
+ where <span class="math notranslate nohighlight">\( j_{\nu, max} \)</span> is the emissivity at <span class="math notranslate nohighlight">\( \theta = \pi/2 \)</span>.</p>
+<p><strong>Tetrad Transformation</strong>: The momentum vector <span class="math notranslate nohighlight">\( K \)</span> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <span class="math notranslate nohighlight">\( u^\mu \)</span> and the magnetic field <span class="math notranslate nohighlight">\( b^\mu \)</span>. It is then transformed to the coordinate frame using: <div class="math notranslate nohighlight">
+\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]</div>
+ where <span class="math notranslate nohighlight">\( e^\mu_{(\alpha)} \)</span> is the tetrad basis built by <code class="docutils literal notranslate"><span class="pre">GPU_make_tetrad</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – Radial grid index. </p></li>
+<li><p><strong>j</strong> – Poloidal grid index. </p></li>
+<li><p><strong>k</strong> – Azimuthal grid index. </p></li>
+<li><p><strong>dnmax</strong> – The maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span> for this zone. </p></li>
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) used for photon storage. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to plasma properties array. </p></li>
+<li><p><strong>zone_flag</strong> – Boolean flag; if true, this is the first photon in this zone for this particular thread and a tetrad must be constructed, otherwise reuse the existing tetrad. </p></li>
+<li><p><strong>ph_arr_index</strong> – The specific index in the SoA to store this photon. </p></li>
+<li><p><strong>Econ</strong> – Tetrad basis (coordinate to orthonormal). </p></li>
+<li><p><strong>Ecov</strong> – Dual tetrad basis (orthonormal to coordinate). </p></li>
+<li><p><strong>localState</strong> – Pointer to the curandState for the current thread. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for $K_2$ Bessel function lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a2493f93ef12374fe8c6f44d4f343daf6"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_track</span> <span class="pre">(struct</span> <span class="pre">of_photonSOA</span> <span class="pre">ph,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">d_p,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">d_table_ptr,</span> <span class="pre">struct</span> <span class="pre">of_photonSOA</span> <span class="pre">scat_ofphoton,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">max_partition_ph,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">nblocks,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">besselTexObj)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t">
+<span id="_CPPv39GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"></span><span id="_CPPv29GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"></span><span id="GPU_track__of_photonSOA.cudaTextureObject_t.doubleCP.of_photonSOA.unsigned-l-lC.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a712968b8146c71a1a45a2323dc8f86f1"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_track</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_table_ptr</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scat_ofphoton</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <span class="math notranslate nohighlight">\( n \)</span> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Progress Monitoring</strong>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the informations of the superphotons. </p></li>
+<li><p><strong>d_p</strong> – Pointer or Texture Object to the device plasma parameters, depending on the <code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code> flag. </p></li>
+<li><p><strong>d_table_ptr</strong> – Pointer to the scattering probability and cross-section lookup tables. </p></li>
+<li><p><strong>scat_ofphoton</strong> – A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </p></li>
+<li><p><strong>max_partition_ph</strong> – Total number of superphotons assigned to this specific tracking batch. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1aab4e6a25a16de5d65678453d43a76f80"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_track_scat</span> <span class="pre">(struct</span> <span class="pre">of_photonSOA</span> <span class="pre">ph,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">d_p,</span> <span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">d_table_ptr,</span> <span class="pre">struct</span> <span class="pre">of_photonSOA</span> <span class="pre">scat_ofphoton,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">n,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">number_of_threads,</span> <span class="pre">cudaTextureObject_t</span> <span class="pre">besselTexObj,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">round_num_scat_init,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">round_num_scat_end)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy">
+<span id="_CPPv314GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"></span><span id="_CPPv214GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"></span><span id="GPU_track_scat__of_photonSOA.cudaTextureObject_t.doubleCP.of_photonSOA.iC.cudaTextureObject_t.unsigned-l-l.unsigned-l-l"></span><span class="target" id="kernels_8h_1af2452f264b7f0ad396637abcc3e7f43e"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_track_scat</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_table_ptr</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scat_ofphoton</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">round_num_scat_init</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">round_num_scat_end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy" title="Link to this definition"></a><br /></dt>
+<dd><p>Assign each scattered superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <span class="math notranslate nohighlight">\( n \)</span> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Progress Monitoring</strong>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the informations of the superphotons. </p></li>
+<li><p><strong>d_p</strong> – Pointer or Texture Object to the device plasma parameters, depending on the <code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code> flag. </p></li>
+<li><p><strong>d_table_ptr</strong> – Pointer to the scattering probability and cross-section lookup tables. </p></li>
+<li><p><strong>scat_ofphoton</strong> – A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </p></li>
+<li><p><strong>n</strong> – Current scattering layer index. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+<li><p><strong>round_num_scat_init</strong> – The starting global photon index for this scattering batch. </p></li>
+<li><p><strong>round_num_scat_end</strong> – The ending global photon index for this scattering batch. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a623514e2566ee4a0a1a88c0cd0bfd52d"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_record</span> <span class="pre">(struct</span> <span class="pre">of_photonSOA</span> <span class="pre">ph,</span> <span class="pre">struct</span> <span class="pre">of_spectrum</span> <span class="pre">*__restrict__</span> <span class="pre">d_spect,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">max_partition_ph,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">nblocks)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi">
+<span id="_CPPv310GPU_record12of_photonSOAP11of_spectrumKyKi"></span><span id="_CPPv210GPU_record12of_photonSOAP11of_spectrumKyKi"></span><span id="GPU_record__of_photonSOA.of_spectrumP.unsigned-l-lC.iC"></span><span class="target" id="kernels_8h_1ac1c435d0ee5fa5994513454a55466305"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_record</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_spectrum</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nblocks</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi" title="Link to this definition"></a><br /></dt>
+<dd><p>Final processing kernel to record escaped superphotons into the observed spectrum by dynamically allocating each superphoton to each thread. </p>
+<p>This kernel iterates through the processed full evolved batch of photons and identifies those that have satisfied the “escape” criteria. For each successful photon, it updates the global spectrum object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the final state of the photons. </p></li>
+<li><p><strong>d_spect</strong> – Pointer to the device spectrum structure where intensity is accumulated. </p></li>
+<li><p><strong>max_partition_ph</strong> – The total number of photons to be checked in this batch. </p></li>
+<li><p><strong>nblocks</strong> – The number of CUDA blocks used in the grid. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="kernels_8h_1a29f709d0b25f7f6b5494d53169ce3023"></span><span class="sig-name descname"><span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">GPU_record_scattering</span> <span class="pre">(struct</span> <span class="pre">of_photonSOA</span> <span class="pre">ph,</span> <span class="pre">struct</span> <span class="pre">of_spectrum</span> <span class="pre">*__restrict__</span> <span class="pre">d_spect,</span> <span class="pre">const</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">long</span> <span class="pre">max_partition_ph,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">nblocks,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">n)</span></span></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi">
+<span id="_CPPv321GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"></span><span id="_CPPv221GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"></span><span id="GPU_record_scattering__of_photonSOA.of_spectrumP.unsigned-l-lC.iC.iC"></span><span class="target" id="kernels_8h_1aa7287dc36ec91a9fc56342eabd1a1463"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_record_scattering</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_spectrum</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nblocks</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi" title="Link to this definition"></a><br /></dt>
+<dd><p>Recording kernel for photons that have been created due to scattering events by dynamically allocating each superphoton to each thread. </p>
+<p>This kernel iterates through the processed full evolved batch of photons and identifies those that have satisfied the “escape” criteria. For each successful photon, it updates the global spectrum object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the primary record kernel, this function must calculate the correct memory offsets into the scattering SoA, as photons from different scattering orders are stored sequentially.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the scattered superphotons. </p></li>
+<li><p><strong>d_spect</strong> – Pointer to the device spectrum object for intensity accumulation. </p></li>
+<li><p><strong>max_partition_ph</strong> – Maximum photon capacity (included for signature consistency). </p></li>
+<li><p><strong>nblocks</strong> – Number of CUDA blocks in the grid. </p></li>
+<li><p><strong>n</strong> – The current scattering order (round) being processed. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc">
 <span id="_CPPv315report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"></span><span id="_CPPv215report_spectrumyAN_THBINS_AN_EBINS_11of_spectrumPKc"></span><span id="report_spectrum__unsigned-l-l.of_spectrumAA.cCP"></span><span class="target" id="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">report_spectrum</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_superph_made</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_spectrum</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spect</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_THBINS</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_EBINS</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Post-processes simulation results and writes the final spectrum to a file. </p>
+<p>This host function aggregates the data stored in the energy and frequency binned spectrum.</p>
+<p><strong>Diagnostic Outputs</strong>: After writing the per-bin data, the function calculates and prints to stderr:<ul class="simple">
+<li><p><strong>Total Luminosity</strong>: The integral of the spectrum over all angles and energies.</p></li>
+<li><p><strong>Accretion Efficiency</strong>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <span class="math notranslate nohighlight">\( L / \dot{M}c^2 \)</span>).</p></li>
+<li><p><strong>Optical Depths</strong>: Average scattering ( <span class="math notranslate nohighlight">\( \tau_{\text{scatt}} \)</span>) and absorption ( <span class="math notranslate nohighlight">\( \tau_{\text{abs}} \)</span>) depths.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N_superph_made</strong> – Total number of grid superphotons generated. </p></li>
+<li><p><strong>spect</strong> – 2D array [Theta Bins][Energy Bins] containing the accumulated photon data. </p></li>
+<li><p><strong>filename</strong> – Name of the output file (to be stored in the <code class="docutils literal notranslate"><span class="pre">./output/</span></code> directory). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv415mainFlowControl6time_tPd">
 <span id="_CPPv315mainFlowControl6time_tPd"></span><span id="_CPPv215mainFlowControl6time_tPd"></span><span id="mainFlowControl__time_t.doubleP"></span><span class="target" id="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mainFlowControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">time_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mainFlowControl6time_tPd" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>The main host-side controller for the GPU-accelerated Monte Carlo simulation. </p>
+<p>This function manages the high-level execution flow, coordinating memory management, data transfers, and kernel launches. It implements a multi-pass approach to handle large photon populations through batching and manages iterative scattering rounds.</p>
+<p><strong>Execution Workflow</strong>:</p>
+<p>a) <strong>Initialization</strong>: Allocates device memory for plasma properties, geometry, scattering tables, and the final spectrum.</p>
+<p>b) <strong>Generation Phase</strong>: Determines the total number of grid superphotons to be emitted based on local fluid conditions.</p>
+<p>c) <strong>Batch Processing Loop</strong>: Divides the total photon count into manageable partitions to prevent GPU memory overflow. For each batch:</p>
+<p><ul class="simple">
+<li><p><strong>Sampling</strong>: Initializes photon positions and momenta.</p></li>
+<li><p><strong>Tracking</strong>: Integrates geodesics in the curved spacetime.</p></li>
+<li><p><strong>Recording</strong>: Bins escaped “primary” photons into the spectrum.</p></li>
+</ul>
+</p>
+<p>d) <strong>Scattering Iterations</strong>: Enters a secondary loop to process Inverse Compton scattering. It tracks and records photons through multiple scattering “rounds” until the population of scattered photons is depleted or the <code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code> limit is reached.</p>
+<p>e) <strong>Finalization</strong>: Transfers the accumulated spectrum back to the host and prints I/O output diagnostics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – Current epoch time used for seeding the random number generators. </p></li>
+<li><p><strong>p</strong> – Pointer to the host-side array of primitive fluid variables. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </section>
@@ -150,7 +402,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="memory.html" class="btn btn-neutral float-left" title="Memory.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="memory.html" class="btn btn-neutral float-left" title="memory.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="curand.html" class="btn btn-neutral float-right" title="curand.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

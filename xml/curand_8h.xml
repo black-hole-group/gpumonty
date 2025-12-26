@@ -13,12 +13,25 @@
           <declname>seed</declname>
         </param>
         <briefdescription>
+<para>Initializes the cuRAND random number generator state for each GPU thread. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>seed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value used to randomize the generator&apos;s starting state.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="7" column="17" declfile="src/curand.h" declline="7" declcolumn="17"/>
+        <location file="src/curand.h" line="13" column="17" declfile="src/curand.h" declline="13" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="curand_8h_1a161bac54521949f738425df8d4575a34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -42,12 +55,50 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Generates a random 3D unit vector uniformly distributed on the sphere. </para>
         </briefdescription>
         <detaileddescription>
+<para>Uses Marsaglia’s method (also attributed to Knop; CACM 13 (1970), 326) to generate an isotropic direction by sampling points uniformly inside the unit disk and mapping them to the surface of the unit sphere.</para>
+<para><simplesect kind="see"><para><ulink url="https://dl.acm.org/doi/10.1145/362349.362377">Algorithm 381: random vectors uniform in solid angle</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the x-component of the resulting unit vector. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the y-component of the resulting unit vector. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the z-component of the resulting unit vector. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the thread-local cuRAND state. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="8" column="17" declfile="src/curand.h" declline="8" declcolumn="17"/>
+        <location file="src/curand.h" line="31" column="17" declfile="src/curand.h" declline="31" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -63,12 +114,35 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples a Chi-square distributed random variable for a given degree of freedom. Uses the transformation property where a Chi-square distribution with $k$ degrees of freedom is equivalent to a Gamma distribution scaled by 2: $\chi^2(k) \sim 2\Gamma(k/2, 1)$. χ </para>
         </briefdescription>
         <detaileddescription>
+<para><simplesect kind="see"><para><ulink url="https://en.wikipedia.org/wiki/Chi-squared_distribution#Relation_to_other_distributions">Wikipedia article about χ-Γ relation</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>df</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Degrees of freedom ($k$). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the thread-local cuRAND state.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A random value sampled from the $\chi^2$ distribution. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="9" column="19" declfile="src/curand.h" declline="9" declcolumn="19"/>
+        <location file="src/curand.h" line="45" column="19" declfile="src/curand.h" declline="45" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="curand_8h_1ad9c2dd446dfab91259100793af28fa28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -80,12 +154,27 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples a random variable from the standard exponential distribution ($\lambda = 1$). Implements the Inverse Transform Sampling method by transforming a uniform $(0,1]$ random variable into an exponential distribution. </para>
         </briefdescription>
         <detaileddescription>
+<para><simplesect kind="see"><para><ulink url="https://en.wikipedia.org/wiki/Inverse_transform_sampling#Examples">Check wikipedia article example</ulink> </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the thread-local cuRAND state. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A random value sampled from the exponential distribution. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="10" column="19" declfile="src/curand.h" declline="10" declcolumn="19"/>
+        <location file="src/curand.h" line="55" column="19" declfile="src/curand.h" declline="55" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="curand_8h_1a5c742f9247534502f6c5e0df8182193d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -105,12 +194,34 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle. </para>
         </briefdescription>
         <detaileddescription>
+<para><simplesect kind="see"><para><ulink url="https://en.wikipedia.org/wiki/Marsaglia_polar_method">Marsaglia_polar_method</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>out1</parametername>
+<parametername>out2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointers to store the two independent Gaussian results. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the thread-local cuRAND state. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="11" column="17" declfile="src/curand.h" declline="11" declcolumn="17"/>
+        <location file="src/curand.h" line="68" column="17" declfile="src/curand.h" declline="68" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -126,12 +237,33 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <formula id="0">$ \alpha \geq 1 $</formula>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <formula id="1">$ \alpha &lt; 1 $</formula>). </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>shape</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Shape parameter ($\alpha$) of the distribution. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the thread-local cuRAND state. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A random value sampled from the Gamma distribution. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/curand.h" line="12" column="19" declfile="src/curand.h" declline="12" declcolumn="19"/>
+        <location file="src/curand.h" line="78" column="19" declfile="src/curand.h" declline="78" declcolumn="19"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -145,13 +277,19 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>CURAND_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CURAND_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" kindref="member">GPU_init_monty_rand</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed);</highlight></codeline>
-<codeline lineno="8" refid="curand_8h_1a161bac54521949f738425df8d4575a34" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a161bac54521949f738425df8d4575a34" kindref="member">generate_random_direction</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*z,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="9" refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" kindref="member">chi_square</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>df,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="10" refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" kindref="member">legacy_standard_exponential</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="11" refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" kindref="member">legacy_gauss</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out2,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="12" refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" kindref="member">legacy_standard_gamma</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>shape,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="13" refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" kindref="member">GPU_init_monty_rand</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="curand_8h_1a161bac54521949f738425df8d4575a34" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a161bac54521949f738425df8d4575a34" kindref="member">generate_random_direction</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*z,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" kindref="member">chi_square</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>df,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" kindref="member">legacy_standard_exponential</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" kindref="member">legacy_gauss</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out2,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" kindref="member">legacy_standard_gamma</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>shape,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/curand.h"/>
   </compounddef>

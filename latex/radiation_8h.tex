@@ -7,11 +7,11 @@
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}{GPU\+\_\+\+Bnu\+\_\+inv}} (const double nu, const double Thetae)
 \item 
-\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a40dcfb79f016d1e55b17edbf5ae4d23a}{GPU\+\_\+kappa\+\_\+es}} (const double nu, const double Thetae, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+table\+\_\+ptr)
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}{GPU\+\_\+kappa\+\_\+es}} (const double nu, const double Thetae, const double $\ast$d\+\_\+table\+\_\+ptr)
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a5be615cb47f0652c14f230eaedd45fb5}{GPU\+\_\+get\+\_\+fluid\+\_\+nu}} (const double X\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double K\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double Ucov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
 \item 
-\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a584569c2ad5baf1391c7a74a5a0c483f}{GPU\+\_\+alpha\+\_\+inv\+\_\+scatt}} (const double nu, const double Thetae, const double Ne, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+table\+\_\+ptr)
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a29cfae5744717c016c0fc8d38e399575}{GPU\+\_\+alpha\+\_\+inv\+\_\+scatt}} (const double nu, const double Thetae, const double Ne, const double $\ast$d\+\_\+table\+\_\+ptr)
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_acb8273fe5b2026c98166e10f887c5948}{GPU\+\_\+alpha\+\_\+inv\+\_\+abs}} (const double nu, const double Thetae, const double Ne, const double B, double theta, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
 \item 
@@ -26,11 +26,11 @@
 \doxysubsubsection{\texorpdfstring{GPU\_alpha\_inv\_abs()}{GPU\_alpha\_inv\_abs()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+alpha\+\_\+inv\+\_\+abs (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double}]{B,  }\item[{double}]{theta,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{radiation_8h_a584569c2ad5baf1391c7a74a5a0c483f}\label{radiation_8h_a584569c2ad5baf1391c7a74a5a0c483f}} 
+\mbox{\Hypertarget{radiation_8h_a29cfae5744717c016c0fc8d38e399575}\label{radiation_8h_a29cfae5744717c016c0fc8d38e399575}} 
 \index{radiation.h@{radiation.h}!GPU\_alpha\_inv\_scatt@{GPU\_alpha\_inv\_scatt}}
 \index{GPU\_alpha\_inv\_scatt@{GPU\_alpha\_inv\_scatt}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_alpha\_inv\_scatt()}{GPU\_alpha\_inv\_scatt()}}
-{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+alpha\+\_\+inv\+\_\+scatt (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+alpha\+\_\+inv\+\_\+scatt (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double $\ast$}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}\label{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}} 
 \index{radiation.h@{radiation.h}!GPU\_Bnu\_inv@{GPU\_Bnu\_inv}}
@@ -56,9 +56,9 @@
 \doxysubsubsection{\texorpdfstring{GPU\_jnu\_inv()}{GPU\_jnu\_inv()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+jnu\+\_\+inv (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double}]{B,  }\item[{const double}]{theta,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{radiation_8h_a40dcfb79f016d1e55b17edbf5ae4d23a}\label{radiation_8h_a40dcfb79f016d1e55b17edbf5ae4d23a}} 
+\mbox{\Hypertarget{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}\label{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}} 
 \index{radiation.h@{radiation.h}!GPU\_kappa\_es@{GPU\_kappa\_es}}
 \index{GPU\_kappa\_es@{GPU\_kappa\_es}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_kappa\_es()}{GPU\_kappa\_es()}}
-{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+kappa\+\_\+es (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+kappa\+\_\+es (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double $\ast$}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
 

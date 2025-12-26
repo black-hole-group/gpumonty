@@ -4,10 +4,10 @@
     <compoundname>of_geom</compoundname>
     <includes refid="decs_8h" local="no">decs.h</includes>
       <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structof__geom_1a659d8804f5bc115be53d951a82d00599" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double of_geom::gcon</definition>
-        <argsstring>[4][4]</argsstring>
+        <argsstring>[NDIM][NDIM]</argsstring>
         <name>gcon</name>
         <briefdescription>
         </briefdescription>
@@ -17,10 +17,10 @@
         </inbodydescription>
         <location file="src/decs.h" line="99" column="8" bodyfile="src/decs.h" bodystart="99" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structof__geom_1a63392b3038946263a5e0288919a8cd87" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double of_geom::gcov</definition>
-        <argsstring>[4][4]</argsstring>
+        <argsstring>[NDIM][NDIM]</argsstring>
         <name>gcov</name>
         <briefdescription>
         </briefdescription>
@@ -52,8 +52,8 @@
     <location file="src/decs.h" line="98" column="1" bodyfile="src/decs.h" bodystart="98" bodyend="102"/>
     <listofallmembers>
       <member refid="structof__geom_1aa63a8d09d767064b96c81da603da93bb" prot="public" virt="non-virtual"><scope>of_geom</scope><name>g</name></member>
-      <member refid="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcon</name></member>
-      <member refid="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcov</name></member>
+      <member refid="structof__geom_1a659d8804f5bc115be53d951a82d00599" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcon</name></member>
+      <member refid="structof__geom_1a63392b3038946263a5e0288919a8cd87" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcov</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

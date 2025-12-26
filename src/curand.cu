@@ -1,24 +1,12 @@
 #include "decs.h"
 #include "curand.h"
+
 __device__ void GPU_init_monty_rand(int seed) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, tid, 0, &my_curand_state[tid]);
 }
 
 
-
-
-// __device__ double chi_square(int df)
-// {
-// 	int tid = blockIdx.x * blockDim.x + threadIdx.x;
-// 	double sum = 0.0f;
-// 	for (int i = 0; i < df; ++i)
-// 	{
-// 		double normal_variate = curand_normal(&my_curand_state[tid]);
-// 		sum += normal_variate * normal_variate;
-// 	}
-// 	return sum;
-// }
 
 __device__ void generate_random_direction(double *x, double *y, double *z, curandState * localState)
 {
@@ -134,7 +122,6 @@ __device__ double legacy_standard_gamma(double shape, curandState * localState) 
 		}
 	}
 }
-
 
 __device__ double chi_square(int df, curandState * localState)
 {

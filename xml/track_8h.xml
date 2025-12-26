@@ -3,10 +3,10 @@
   <compounddef id="track_8h" kind="file" language="C++">
     <compoundname>track.h</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="track_8h_1a0dd4e8c6ca726f6044b2cc365fb4501d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="track_8h_1a86f3000bae9d541123672b98031af09b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
         <definition>__device__ void GPU_track_super_photon</definition>
-        <argsstring>(struct of_photonSOA ph, cudaTextureObject_t d_p, const double *__restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *localState, cudaTextureObject_t besselTexObj)</argsstring>
+        <argsstring>(struct of_photonSOA ph, cudaTextureObject_t d_p, const double *d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *localState, cudaTextureObject_t besselTexObj)</argsstring>
         <name>GPU_track_super_photon</name>
         <param>
           <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
@@ -17,7 +17,7 @@
           <declname>d_p</declname>
         </param>
         <param>
-          <type>const double *__restrict__</type>
+          <type>const double *</type>
           <declname>d_table_ptr</declname>
         </param>
         <param>
@@ -128,7 +128,7 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>TRACK_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TRACK_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="track_8h_1a0dd4e8c6ca726f6044b2cc365fb4501d" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="track_8h_1a0dd4e8c6ca726f6044b2cc365fb4501d" kindref="member">GPU_track_super_photon</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph<sp/>,<sp/></highlight></codeline>
+<codeline lineno="7" refid="track_8h_1a86f3000bae9d541123672b98031af09b" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="track_8h_1a86f3000bae9d541123672b98031af09b" kindref="member">GPU_track_super_photon</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph<sp/>,<sp/></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>DO_NOT_USE_TEXTURE_MEMORY</highlight></codeline>
 <codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_p,</highlight></codeline>
 <codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>#</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
