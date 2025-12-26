@@ -1,6 +1,6 @@
 # GPUmonty: A GPU-Accelerated Relativistic Monte Carlo Code
 
-GPUMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in Dolence et al. 2009 Astrophysical Journal Supplement.
+GPUMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in the well established code grmonty([Dolence et al. 2009](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387)).
 
 ## Running the code
 The code is written in C and parallelized using Nvidia's Graphical Processing Unit (GPU) language [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/) and is configured to use input files from the HARM ([Gammie et al. 2003](https://arxiv.org/abs/astro-ph/0301509)) and H-AMR ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)) codes. 

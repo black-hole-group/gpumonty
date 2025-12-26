@@ -1,0 +1,18 @@
+#input super photons parameter
+Ns 1e6
+
+#path to the GRMHD data file
+dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
+#dump ./data/dump019
+
+spectrum sane_iharm.spec
+
+tp_over_te 3.
+
+MBH 4.14e6
+M_unit 1.e16
+
+trat_small 1.
+trat_large 10.
+beta_crit 1.
+Thetae_max = 1.e100

@@ -1,5 +1,5 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+MODEL_DIR = $(SRC_DIR)/iharm_model
 
 CUDA_PATH ?= /usr/local/cuda-12.3
 #CUDA_PATH ?= /usr/local/cuda
@@ -13,9 +13,9 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
 # Compiler flags
-ARCH = compute_75
-CODE = sm_75
-CODE_LTO = lto_75
+ARCH = compute_80
+CODE = sm_80
+CODE_LTO = lto_80
 
 # Directories
 SRC_DIR = src
