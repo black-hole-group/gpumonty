@@ -1,3 +1,15 @@
+# Ignore all Jupyter notebooks
+*.ipynb
+
+# But keep this one tracked
+!example.ipynb
+
+# Ignore all GRMONTY spectrum files
+output/*
+# But keep this one tracked
+!example.spec
+
+
 
 callgrind.out*
 *.o
