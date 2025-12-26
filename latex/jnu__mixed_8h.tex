@@ -4,21 +4,21 @@
 \begin{DoxyCompactItemize}
 \item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}{jnu\+\_\+synch}} (const double nu, const double Ne, const double Thetae, const double B, const double theta)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the thermal synchrotron emissivity \$j\+\_\+\textbackslash{}nu(\textbackslash{}nu, \textbackslash{}theta)\$ following \href{https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf}{\texttt{ Leung et al.(2011)}}. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}{int\+\_\+jnu}} (double Ne, double Thetae, double Bmag, double nu)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the angle-\/integrated thermal synchrotron emissivity $ J_\nu $ in CGS units. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}{jnu\+\_\+integrand}} (double th, void $\ast$\mbox{\hyperlink{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}})
-\item 
+\begin{DoxyCompactList}\small\item\em Provides the integrand for calculating the angle-\/integrated thermal synchrotron emissivity. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}{init\+\_\+emiss\+\_\+tables}} (void)
-\item 
+\begin{DoxyCompactList}\small\item\em Initializes lookup tables for the angle-\/integrated emissivity function $ F $ and the modified Bessel function $ K_2 $. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}{K2\+\_\+eval}} (const double Thetae)
-\item 
+\begin{DoxyCompactList}\small\item\em Evaluation of the modified Bessel function of the second kind, order 2, $ K_2(1/\Theta_e) $. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a686392b9766898ebd7dc493489b4008a}{F\+\_\+eval}} (const double Thetae, const double Bmag, const double nu)
-\item 
+\begin{DoxyCompactList}\small\item\em Evaluates the frequency-\/dependent component $ F(K) $ of the angle-\/integrated emissivity. This function calculates the dimensionless frequency parameter $ K $ and retrieves the corresponding value of the precomputed integral $ \int j_\nu d\Omega $. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}{linear\+\_\+interp\+\_\+F}} (const double K)
-\item 
+\begin{DoxyCompactList}\small\item\em Performs linear interpolation on the precomputed emissivity function $ F(K) $. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}{linear\+\_\+interp\+\_\+\+K2}} (const double Thetae)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Performs linear interpolation on the precomputed modified Bessel function $ K_2(1/\Theta_e) $. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -28,45 +28,198 @@ double \mbox{\hyperlink{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}{jnu\+\_
 \doxysubsubsection{\texorpdfstring{F\_eval()}{F\_eval()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double F\+\_\+eval (\begin{DoxyParamCaption}\item[{const double}]{Thetae,  }\item[{const double}]{Bmag,  }\item[{const double}]{nu }\end{DoxyParamCaption})}
 
+
+
+Evaluates the frequency-\/dependent component $ F(K) $ of the angle-\/integrated emissivity. This function calculates the dimensionless frequency parameter $ K $ and retrieves the corresponding value of the precomputed integral $ \int j_\nu d\Omega $. 
+
+
+\begin{DoxyItemize}
+\item 
+\end{DoxyItemize}
+
+
+\begin{DoxyItemize}
+\item If $ K > K_{\rm MAX} $\+: Returns 0 due to the exponential decay of the synchrotron spectrum.
+\item If $ K < K_{\rm MIN} $\+: Uses a power-\/law approximation based on the asymptotic behavior of the emissivity at low frequencies.
+\item Otherwise\+: Performs a linear interpolation using the precomputed {\ttfamily F} table.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e $. \\
+\hline
+{\em Bmag} & Magnetic field strength $ B $. \\
+\hline
+{\em nu} & Photon frequency $ \nu $ in the plasma frame.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the integrated emissivity function $ F $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}\label{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!init\_emiss\_tables@{init\_emiss\_tables}}
 \index{init\_emiss\_tables@{init\_emiss\_tables}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{init\_emiss\_tables()}{init\_emiss\_tables()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void init\+\_\+emiss\+\_\+tables (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
+
+
+Initializes lookup tables for the angle-\/integrated emissivity function $ F $ and the modified Bessel function $ K_2 $. 
+
+Precomputes $ F(K) $ by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores the second-\/order modified Bessel function $ K_2(1/\Theta_e) $ in log-\/space for rapid retrieval during the simulation.
+
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}\label{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!int\_jnu@{int\_jnu}}
 \index{int\_jnu@{int\_jnu}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{int\_jnu()}{int\_jnu()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double int\+\_\+jnu (\begin{DoxyParamCaption}\item[{double}]{Ne,  }\item[{double}]{Thetae,  }\item[{double}]{Bmag,  }\item[{double}]{nu }\end{DoxyParamCaption})}
 
+
+
+Calculates the angle-\/integrated thermal synchrotron emissivity $ J_\nu $ in CGS units. 
+
+This function evaluates the total energy emitted per unit time, per unit volume, and per unit frequency, integrated over all solid angles $ \int j_\nu d\Omega $.
+
+
+\begin{DoxyItemize}
+\item Implements\+: $ J_\nu = \frac{\sqrt{2} e^3 n_e B \Theta_e^2}{27 m_e c^2 K_2(1/\Theta_e)} F(\Theta_e, B, \nu) $
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em Ne} & Electron number density $ n_e $. \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_{\rm e} $. \\
+\hline
+{\em Bmag} & Magnetic field strength $ B $. \\
+\hline
+{\em nu} & Photon frequency $ \nu $ in the plasma frame. \\
+\hline
+{\em bessel\+Tex\+Obj} & (CUDA only) Texture object for Bessel function look-\/up tables. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The integrated emissivity in $ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}\label{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!jnu\_integrand@{jnu\_integrand}}
 \index{jnu\_integrand@{jnu\_integrand}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{jnu\_integrand()}{jnu\_integrand()}}
 {\footnotesize\ttfamily double jnu\+\_\+integrand (\begin{DoxyParamCaption}\item[{double}]{th,  }\item[{void $\ast$}]{params }\end{DoxyParamCaption})}
 
+
+
+Provides the integrand for calculating the angle-\/integrated thermal synchrotron emissivity. 
+
+This function is used by the GSL integrator to evaluate the integral over solid angles $ \int j_\nu \sin\theta d\theta $.
+
+The integrand is given by\+: \[ \sin^2\theta \left( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6} \right)^2 \exp\left[-(K/\sin\theta)^{1/3}\right] \]
+
+
+\begin{DoxyParams}{Parameters}
+{\em th} & The angle $ \theta $ between the magnetic field and the photon wave vector. \\
+\hline
+{\em params} & A pointer to the dimensionless frequency parameter $ K $. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the integrand at the given angle. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}\label{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!jnu\_synch@{jnu\_synch}}
 \index{jnu\_synch@{jnu\_synch}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{jnu\_synch()}{jnu\_synch()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double jnu\+\_\+synch (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Ne,  }\item[{const double}]{Thetae,  }\item[{const double}]{B,  }\item[{const double}]{theta }\end{DoxyParamCaption})}
 
+
+
+Calculates the thermal synchrotron emissivity \$j\+\_\+\textbackslash{}nu(\textbackslash{}nu, \textbackslash{}theta)\$ following \href{https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf}{\texttt{ Leung et al.(2011)}}. 
+
+This function implements the analytical fit for the emissivity of a thermal distribution of electrons\+: $ j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) $
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency in the plasma frame. \\
+\hline
+{\em Ne} & Electron number density (\$n\+\_\+e\$). \\
+\hline
+{\em Thetae} & Dimensionless electron temperature (\$\textbackslash{}\+Theta\+\_\+e\$). \\
+\hline
+{\em B} & Magnetic field strength. \\
+\hline
+{\em theta} & Angle between the magnetic field and the wave vector (\$\textbackslash{}theta\$). \\
+\hline
+{\em bessel\+Tex\+Obj} & (CUDA only) Texture object for Bessel function look-\/up tables. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The local emissivity $ j_\nu $ in CGS units. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}\label{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!K2\_eval@{K2\_eval}}
 \index{K2\_eval@{K2\_eval}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{K2\_eval()}{K2\_eval()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double K2\+\_\+eval (\begin{DoxyParamCaption}\item[{const double}]{Thetae }\end{DoxyParamCaption})}
 
+
+
+Evaluation of the modified Bessel function of the second kind, order 2, $ K_2(1/\Theta_e) $. 
+
+This function retrieves the value of $ K_2(1/\Theta_e) $ from precomputed lookup tables for efficient computation during simulations.
+
+
+\begin{DoxyParams}{Parameters}
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e $. \\
+\hline
+{\em bessel\+Tex\+Obj} & (CUDA only) Texture object for Bessel function look-\/up tables.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+for large $ \Theta_e $, we can use the asymptotic expansion $ K_2(1/\Theta_e) \approx 2 \Theta_e^2 $. 
+
+TMAX and THETA\+\_\+\+MIN define the valid range for $ \Theta_e $ in the lookup tables.
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+The value of $ K_2(1/\Theta_e) $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}\label{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!linear\_interp\_F@{linear\_interp\_F}}
 \index{linear\_interp\_F@{linear\_interp\_F}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{linear\_interp\_F()}{linear\_interp\_F()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double linear\+\_\+interp\+\_\+F (\begin{DoxyParamCaption}\item[{const double}]{K }\end{DoxyParamCaption})}
 
+
+
+Performs linear interpolation on the precomputed emissivity function $ F(K) $. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em K} & Dimensionless frequency parameter $ K $.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The interpolated value of $ F(K) $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}\label{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}} 
 \index{jnu\_mixed.h@{jnu\_mixed.h}!linear\_interp\_K2@{linear\_interp\_K2}}
 \index{linear\_interp\_K2@{linear\_interp\_K2}!jnu\_mixed.h@{jnu\_mixed.h}}
 \doxysubsubsection{\texorpdfstring{linear\_interp\_K2()}{linear\_interp\_K2()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double linear\+\_\+interp\+\_\+\+K2 (\begin{DoxyParamCaption}\item[{const double}]{Thetae }\end{DoxyParamCaption})}
 
+
+
+Performs linear interpolation on the precomputed modified Bessel function $ K_2(1/\Theta_e) $. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e $. \\
+\hline
+{\em bessel\+Tex\+Obj} & (CUDA only) Texture object for Bessel function look-\/up tables.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The interpolated value of $ K_2(1/\Theta_e) $. 
+\end{DoxyReturn}

@@ -10,3 +10,5 @@ organized by module.
    api/memory
    api/kernels
    api/curand
+   api/weight
+   api/jnu_mixed

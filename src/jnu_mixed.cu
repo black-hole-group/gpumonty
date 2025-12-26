@@ -132,23 +132,13 @@ double jnu_integrand(double th, void *params)
 
 	if (sth < 1.e-150 || x > 2.e8)
 		return 0.;
-	//fprintf(stderr, "sth = %le, x = %le, Inside jnu_integrand = %le\n",sth, x, sth *  sth * pow(sqrt(x) + CST * pow(x, 1. / 6.), 2.) * exp(-pow(x, 1. / 3.)) );
 	return sth * sth * pow(sqrt(x) + CST * pow(x, 1. / 6.),
 			       2.) * exp(-pow(x, 1. / 3.));
 }
 
 #undef CST
 
-/* Tables */
-//double F[N_ESAMP + 1], K2[N_ESAMP + 1]; //PEDRO EDIT -> F is being declared twice here and in grmonty.c, so I've just commented this and added line below \/
-// extern double F[N_ESAMP + 1];
-// double K2[N_ESAMP + 1];
-// double lK_min, dlK;
-// double lT_min;
-// extern double dlT; //PEDRO EDIT -> F is being declared twice here and in hotcross.c, so I've just defined this as an extern
 
-
-//F is the emissiviti's table
 __host__ void init_emiss_tables(void)
 {
 
@@ -199,7 +189,6 @@ __host__ void init_emiss_tables(void)
 	return;
 }
 
-/* rapid evaluation of K_2(1/\Thetae) */
 
 __host__ __device__ double K2_eval(const double Thetae
 #ifdef __CUDA_ARCH__

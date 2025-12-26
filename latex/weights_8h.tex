@@ -3,14 +3,12 @@
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \mbox{\hyperlink{weights_8h_a8c31118751b32386eda9d93a3c2caf68}{init\+\_\+weight\+\_\+table}} ()
-\item 
-void \mbox{\hyperlink{weights_8h_a5f84efc0f11ca48c85184e9f65cd9dda}{init\+\_\+weight\+\_\+table\+\_\+blackbody}} (void)
-\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{weights_8h_a83b30654a46ef58fd5aceecb93513d29}{init\+\_\+weight\+\_\+table}} ()
+\begin{DoxyCompactList}\small\item\em Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function \$j\+\_\+\textbackslash{}nu\$ across the entire simulation grid to determine the weight \$\textbackslash{}omega\+\_\+\textbackslash{}nu\$ for each frequency bin. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{weights_8h_ac06de333fa374fbdae412978d3ac94de}{init\+\_\+nint\+\_\+table}} (void)
-\item 
+\begin{DoxyCompactList}\small\item\em Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity \$j\+\_\+\textbackslash{}nu\$ to the precomputed superphoton weights \$\textbackslash{}omega\+\_\+\textbackslash{}nu\$ across all frequency bins for a range of magnetic field strengths. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{weights_8h_ad9e4dd98ccc13acb821654e859fd9561}{GPU\+\_\+linear\+\_\+interp\+\_\+weight}} (const double nu)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Computes the linear interpolation weight for a given frequency. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -20,21 +18,52 @@ void \mbox{\hyperlink{weights_8h_a5f84efc0f11ca48c85184e9f65cd9dda}{init\+\_\+we
 \doxysubsubsection{\texorpdfstring{GPU\_linear\_interp\_weight()}{GPU\_linear\_interp\_weight()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+linear\+\_\+interp\+\_\+weight (\begin{DoxyParamCaption}\item[{const double}]{nu }\end{DoxyParamCaption})}
 
+
+
+Computes the linear interpolation weight for a given frequency. 
+
+Calculates the interpolated superphoton weight between precomputed values in the weight table based on the input frequency {\ttfamily nu}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & The frequency at which to compute the interpolated weight (\textbackslash{}omega). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The computed linearly interpolated superphoton weight. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{weights_8h_ac06de333fa374fbdae412978d3ac94de}\label{weights_8h_ac06de333fa374fbdae412978d3ac94de}} 
 \index{weights.h@{weights.h}!init\_nint\_table@{init\_nint\_table}}
 \index{init\_nint\_table@{init\_nint\_table}!weights.h@{weights.h}}
 \doxysubsubsection{\texorpdfstring{init\_nint\_table()}{init\_nint\_table()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void init\+\_\+nint\+\_\+table (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{weights_8h_a8c31118751b32386eda9d93a3c2caf68}\label{weights_8h_a8c31118751b32386eda9d93a3c2caf68}} 
+
+
+Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity \$j\+\_\+\textbackslash{}nu\$ to the precomputed superphoton weights \$\textbackslash{}omega\+\_\+\textbackslash{}nu\$ across all frequency bins for a range of magnetic field strengths. 
+
+
+\begin{DoxyItemize}
+\item Implements the integrated photon density\+:
+
+$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega $
+\item {\ttfamily nint\mbox{[}i\mbox{]}}\+: Stores globally the log of the total number of superphotons to be generated per unit volume.
+\item {\ttfamily dndlnu\+\_\+max\mbox{[}i\mbox{]}}\+: Stores globally the log of the maximum value of \$dn/d\textbackslash{}ln\textbackslash{}nu\$, used as the proposal distribution envelope for frequency sampling. 
+\end{DoxyItemize}\mbox{\Hypertarget{weights_8h_a83b30654a46ef58fd5aceecb93513d29}\label{weights_8h_a83b30654a46ef58fd5aceecb93513d29}} 
 \index{weights.h@{weights.h}!init\_weight\_table@{init\_weight\_table}}
 \index{init\_weight\_table@{init\_weight\_table}!weights.h@{weights.h}}
 \doxysubsubsection{\texorpdfstring{init\_weight\_table()}{init\_weight\_table()}}
-{\footnotesize\ttfamily void init\+\_\+weight\+\_\+table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void init\+\_\+weight\+\_\+table (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{weights_8h_a5f84efc0f11ca48c85184e9f65cd9dda}\label{weights_8h_a5f84efc0f11ca48c85184e9f65cd9dda}} 
-\index{weights.h@{weights.h}!init\_weight\_table\_blackbody@{init\_weight\_table\_blackbody}}
-\index{init\_weight\_table\_blackbody@{init\_weight\_table\_blackbody}!weights.h@{weights.h}}
-\doxysubsubsection{\texorpdfstring{init\_weight\_table\_blackbody()}{init\_weight\_table\_blackbody()}}
-{\footnotesize\ttfamily void init\+\_\+weight\+\_\+table\+\_\+blackbody (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
+
+Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function \$j\+\_\+\textbackslash{}nu\$ across the entire simulation grid to determine the weight \$\textbackslash{}omega\+\_\+\textbackslash{}nu\$ for each frequency bin. 
+
+
+\begin{DoxyItemize}
+\item Implements\+: $ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} dΩ $
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+The resulting weights are stored in log-\/space within the global {\ttfamily wgt} array for faster interpolation. 
+\end{DoxyNote}

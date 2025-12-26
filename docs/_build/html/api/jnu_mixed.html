@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jnu_mixed.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="weights.cu" href="weight.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">jnu_mixed.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/jnu_mixed.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jnu-mixed-cu">
+<h1>jnu_mixed.cu<a class="headerlink" href="#jnu-mixed-cu" title="Link to this heading"></a></h1>
+<p>Documentation for the file jnu_mixed.cu. This file contains functions related to the thermal synchrotron emissivity calculation.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49jnu_synchKdKdKdKdKd">
+<span id="_CPPv39jnu_synchKdKdKdKdKd"></span><span id="_CPPv29jnu_synchKdKdKdKdKd"></span><span id="jnu_synch__doubleC.doubleC.doubleC.doubleC.doubleC"></span><span class="target" id="jnu__mixed_8h_1a115f2e03b41ee872a89e0e3770d93322"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jnu_synch</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theta</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49jnu_synchKdKdKdKdKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the thermal synchrotron emissivity $j_\nu(\nu, \theta)$ following <a class="reference external" href="https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf">Leung et al.(2011)</a>. </p>
+<p>This function implements the analytical fit for the emissivity of a thermal distribution of electrons: <span class="math notranslate nohighlight">\( j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) \)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nu</strong> – Photon frequency in the plasma frame. </p></li>
+<li><p><strong>Ne</strong> – Electron number density ($n_e$). </p></li>
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature ($\Theta_e$). </p></li>
+<li><p><strong>B</strong> – Magnetic field strength. </p></li>
+<li><p><strong>theta</strong> – Angle between the magnetic field and the wave vector ($\theta$). </p></li>
+<li><p><strong>besselTexObj</strong> – (CUDA only) Texture object for Bessel function look-up tables. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The local emissivity <span class="math notranslate nohighlight">\( j_\nu \)</span> in CGS units. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47int_jnudddd">
+<span id="_CPPv37int_jnudddd"></span><span id="_CPPv27int_jnudddd"></span><span id="int_jnu__double.double.double.double"></span><span class="target" id="jnu__mixed_8h_1a092b094208fe34f2bb4e04e4e1ee0959"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_jnu</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bmag</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47int_jnudddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the angle-integrated thermal synchrotron emissivity <span class="math notranslate nohighlight">\( J_\nu \)</span> in CGS units. </p>
+<p>This function evaluates the total energy emitted per unit time, per unit volume, and per unit frequency, integrated over all solid angles <span class="math notranslate nohighlight">\( \int j_\nu d\Omega \)</span>.</p>
+<p><ul class="simple">
+<li><p>Implements: <span class="math notranslate nohighlight">\( J_\nu = \frac{\sqrt{2} e^3 n_e B \Theta_e^2}{27 m_e c^2 K_2(1/\Theta_e)} F(\Theta_e, B, \nu) \)</span></p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ne</strong> – Electron number density <span class="math notranslate nohighlight">\( n_e \)</span>. </p></li>
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>. </p></li>
+<li><p><strong>Bmag</strong> – Magnetic field strength <span class="math notranslate nohighlight">\( B \)</span>. </p></li>
+<li><p><strong>nu</strong> – Photon frequency <span class="math notranslate nohighlight">\( \nu \)</span> in the plasma frame. </p></li>
+<li><p><strong>besselTexObj</strong> – (CUDA only) Texture object for Bessel function look-up tables. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The integrated emissivity in <span class="math notranslate nohighlight">\( \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413jnu_integranddPv">
+<span id="_CPPv313jnu_integranddPv"></span><span id="_CPPv213jnu_integranddPv"></span><span id="jnu_integrand__double.voidP"></span><span class="target" id="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jnu_integrand</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">th</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413jnu_integranddPv" title="Link to this definition"></a><br /></dt>
+<dd><p>Provides the integrand for calculating the angle-integrated thermal synchrotron emissivity. </p>
+<p>This function is used by the GSL integrator to evaluate the integral over solid angles <span class="math notranslate nohighlight">\( \int j_\nu \sin\theta d\theta \)</span>.</p>
+<p>The integrand is given by: <div class="math notranslate nohighlight">
+\[ \sin^2\theta \left( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6} \right)^2 \exp\left[-(K/\sin\theta)^{1/3}\right] \]</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>th</strong> – The angle <span class="math notranslate nohighlight">\( \theta \)</span> between the magnetic field and the photon wave vector. </p></li>
+<li><p><strong>params</strong> – A pointer to the dimensionless frequency parameter <span class="math notranslate nohighlight">\( K \)</span>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the integrand at the given angle. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417init_emiss_tablesv">
+<span id="_CPPv317init_emiss_tablesv"></span><span id="_CPPv217init_emiss_tablesv"></span><span id="init_emiss_tables__void"></span><span class="target" id="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_emiss_tables</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417init_emiss_tablesv" title="Link to this definition"></a><br /></dt>
+<dd><p>Initializes lookup tables for the angle-integrated emissivity function <span class="math notranslate nohighlight">\( F \)</span> and the modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span>. </p>
+<p>Precomputes <span class="math notranslate nohighlight">\( F(K) \)</span> by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores the second-order modified Bessel function <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span> in log-space for rapid retrieval during the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47K2_evalKd">
+<span id="_CPPv37K2_evalKd"></span><span id="_CPPv27K2_evalKd"></span><span id="K2_eval__doubleC"></span><span class="target" id="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">K2_eval</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47K2_evalKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Evaluation of the modified Bessel function of the second kind, order 2, <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span>. </p>
+<p>This function retrieves the value of <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span> from precomputed lookup tables for efficient computation during simulations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>for large <span class="math notranslate nohighlight">\( \Theta_e \)</span>, we can use the asymptotic expansion <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \approx 2 \Theta_e^2 \)</span>. </p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>TMAX and THETA_MIN define the valid range for <span class="math notranslate nohighlight">\( \Theta_e \)</span> in the lookup tables.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. </p></li>
+<li><p><strong>besselTexObj</strong> – (CUDA only) Texture object for Bessel function look-up tables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46F_evalKdKdKd">
+<span id="_CPPv36F_evalKdKdKd"></span><span id="_CPPv26F_evalKdKdKd"></span><span id="F_eval__doubleC.doubleC.doubleC"></span><span class="target" id="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F_eval</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bmag</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46F_evalKdKdKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Evaluates the frequency-dependent component <span class="math notranslate nohighlight">\( F(K) \)</span> of the angle-integrated emissivity. This function calculates the dimensionless frequency parameter <span class="math notranslate nohighlight">\( K \)</span> and retrieves the corresponding value of the precomputed integral <span class="math notranslate nohighlight">\( \int j_\nu d\Omega \)</span>. </p>
+<p><ul class="simple">
+<li></li>
+</ul>
+</p>
+<p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\( K &gt; K_{\rm MAX} \)</span>: Returns 0 due to the exponential decay of the synchrotron spectrum.</p></li>
+<li><p>If <span class="math notranslate nohighlight">\( K &lt; K_{\rm MIN} \)</span>: Uses a power-law approximation based on the asymptotic behavior of the emissivity at low frequencies.</p></li>
+<li><p>Otherwise: Performs a linear interpolation using the precomputed <code class="docutils literal notranslate"><span class="pre">F</span></code> table.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. </p></li>
+<li><p><strong>Bmag</strong> – Magnetic field strength <span class="math notranslate nohighlight">\( B \)</span>. </p></li>
+<li><p><strong>nu</strong> – Photon frequency <span class="math notranslate nohighlight">\( \nu \)</span> in the plasma frame.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the integrated emissivity function <span class="math notranslate nohighlight">\( F \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415linear_interp_FKd">
+<span id="_CPPv315linear_interp_FKd"></span><span id="_CPPv215linear_interp_FKd"></span><span id="linear_interp_F__doubleC"></span><span class="target" id="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">linear_interp_F</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">K</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415linear_interp_FKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs linear interpolation on the precomputed emissivity function <span class="math notranslate nohighlight">\( F(K) \)</span>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>K</strong> – Dimensionless frequency parameter <span class="math notranslate nohighlight">\( K \)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The interpolated value of <span class="math notranslate nohighlight">\( F(K) \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416linear_interp_K2Kd">
+<span id="_CPPv316linear_interp_K2Kd"></span><span id="_CPPv216linear_interp_K2Kd"></span><span id="linear_interp_K2__doubleC"></span><span class="target" id="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">linear_interp_K2</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416linear_interp_K2Kd" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs linear interpolation on the precomputed modified Bessel function <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. </p></li>
+<li><p><strong>besselTexObj</strong> – (CUDA only) Texture object for Bessel function look-up tables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The interpolated value of <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="weight.html" class="btn btn-neutral float-left" title="weights.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -32,6 +32,7 @@ This documentation site is provided as a reference for the **function specifics*
 * Use the sidebar to explore the specific modules.
 
 **Developed by**: Pedro Naethe Motta
+
 **Currently maintained by**: Pedro Naethe Motta
 
 .. toctree::

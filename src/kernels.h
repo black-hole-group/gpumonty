@@ -59,7 +59,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
  * @param j Poloidal grid index.
  * @param k Azimuthal grid index.
  * @param n2gen Pointer to store the integer number of superphotons to be generated.
- * @param dnmax [Pointer to store the maximum of the distribution \f$ dN_s/d\ln\nu \f$, 
+ * @param dnmax Pointer to store the maximum of the distribution \f$ dN_s/d\ln\nu \f$, 
  * required for subsequent rejection sampling.
  * @param d_geom Pointer to the device geometry structure that carries the metric information \f$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \f$ .
  * @param d_p Pointer to the device simulation plasma properties.

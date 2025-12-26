@@ -4,7 +4,7 @@
 #include "jnu_mixed.h"
 #include "utils.h"
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-void init_weight_table()
+__host__ void init_weight_table()
 {
 	int k;
 	int i, j, l, lstart, lend, myid, nthreads;
@@ -112,7 +112,6 @@ __host__ void init_nint_table(void)
 		    * 1. / HPL;
 		nint[i] = log(nint[i]);
 		dndlnu_max[i] = log(dndlnu_max[i]);
-		//printf("%d %e %e\n", i, nint[i], dndlnu_max[i]);
 
 	}
 

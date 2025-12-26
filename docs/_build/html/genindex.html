@@ -74,6 +74,23 @@
 <li class="toctree-l3"><a class="reference internal" href="api/curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="api/weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -109,6 +126,9 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -144,6 +164,10 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/jnu_mixed.html#_CPPv46F_evalKdKdKd">F_eval (C++ function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA">freePhotonData (C++ function)</a>
 </li>
   </ul></td>
@@ -160,10 +184,12 @@
 </li>
       <li><a href="api/kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t">GPU_init_zone (C++ function)</a>
 </li>
-      <li><a href="api/kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi">GPU_record (C++ function)</a>
+      <li><a href="api/weight.html#_CPPv424GPU_linear_interp_weightKd">GPU_linear_interp_weight (C++ function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi">GPU_record (C++ function)</a>
+</li>
       <li><a href="api/kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi">GPU_record_scattering (C++ function)</a>
 </li>
       <li><a href="api/kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t">GPU_sample_photons_batch (C++ function)</a>
@@ -177,16 +203,56 @@
   </ul></td>
 </tr></table>
 
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/jnu_mixed.html#_CPPv417init_emiss_tablesv">init_emiss_tables (C++ function)</a>
+</li>
+      <li><a href="api/weight.html#_CPPv415init_nint_tablev">init_nint_table (C++ function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/weight.html#_CPPv417init_weight_tablev">init_weight_table (C++ function)</a>
+</li>
+      <li><a href="api/jnu_mixed.html#_CPPv47int_jnudddd">int_jnu (C++ function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/jnu_mixed.html#_CPPv413jnu_integranddPv">jnu_integrand (C++ function)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd">jnu_synch (C++ function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/jnu_mixed.html#_CPPv47K2_evalKd">K2_eval (C++ function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/curand.html#_CPPv412legacy_gaussPdPdP11curandState">legacy_gauss (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/curand.html#_CPPv427legacy_standard_exponentialP11curandState">legacy_standard_exponential (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/curand.html#_CPPv421legacy_standard_gammadP11curandState">legacy_standard_gamma (C++ function)</a>
+</li>
+      <li><a href="api/jnu_mixed.html#_CPPv415linear_interp_FKd">linear_interp_F (C++ function)</a>
+</li>
+      <li><a href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd">linear_interp_K2 (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>

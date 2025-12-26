@@ -491,8 +491,7 @@
     <member refid="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" kind="function"><name>SPATIAL_INDEX3D</name></member>
   </compound>
   <compound refid="weights_8h" kind="file"><name>weights.h</name>
-    <member refid="weights_8h_1a8c31118751b32386eda9d93a3c2caf68" kind="function"><name>init_weight_table</name></member>
-    <member refid="weights_8h_1a5f84efc0f11ca48c85184e9f65cd9dda" kind="function"><name>init_weight_table_blackbody</name></member>
+    <member refid="weights_8h_1a83b30654a46ef58fd5aceecb93513d29" kind="function"><name>init_weight_table</name></member>
     <member refid="weights_8h_1ac06de333fa374fbdae412978d3ac94de" kind="function"><name>init_nint_table</name></member>
     <member refid="weights_8h_1ad9e4dd98ccc13acb821654e859fd9561" kind="function"><name>GPU_linear_interp_weight</name></member>
   </compound>

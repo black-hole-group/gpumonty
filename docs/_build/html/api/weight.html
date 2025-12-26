@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>weights.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="jnu_mixed.cu" href="jnu_mixed.html" />
+    <link rel="prev" title="curand.cu" href="curand.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">weights.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/weight.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="weights-cu">
+<h1>weights.cu<a class="headerlink" href="#weights-cu" title="Link to this heading"></a></h1>
+<p>This page documents the functions defined in weights.cu. weights.cu contains the functions related to the superphoton weight calculations.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417init_weight_tablev">
+<span id="_CPPv317init_weight_tablev"></span><span id="_CPPv217init_weight_tablev"></span><span id="init_weight_table"></span><span class="target" id="weights_8h_1a83b30654a46ef58fd5aceecb93513d29"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_weight_table</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417init_weight_tablev" title="Link to this definition"></a><br /></dt>
+<dd><p>Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function $j_\nu$ across the entire simulation grid to determine the weight $\omega_\nu$ for each frequency bin. </p>
+<p><ul class="simple">
+<li><p>Implements: <span class="math notranslate nohighlight">\( \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} dΩ \)</span></p></li>
+</ul>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The resulting weights are stored in log-space within the global <code class="docutils literal notranslate"><span class="pre">wgt</span></code> array for faster interpolation. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415init_nint_tablev">
+<span id="_CPPv315init_nint_tablev"></span><span id="_CPPv215init_nint_tablev"></span><span id="init_nint_table__void"></span><span class="target" id="weights_8h_1ac06de333fa374fbdae412978d3ac94de"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_nint_table</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415init_nint_tablev" title="Link to this definition"></a><br /></dt>
+<dd><p>Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity $j_\nu$ to the precomputed superphoton weights $\omega_\nu$ across all frequency bins for a range of magnetic field strengths. </p>
+<p><ul>
+<li><p>Implements the integrated photon density:</p>
+<p><span class="math notranslate nohighlight">\( N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega \)</span></p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nint[i]</span></code>: Stores globally the log of the total number of superphotons to be generated per unit volume.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dndlnu_max[i]</span></code>: Stores globally the log of the maximum value of $dn/d\ln\nu$, used as the proposal distribution envelope for frequency sampling. </p></li>
+</ul>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424GPU_linear_interp_weightKd">
+<span id="_CPPv324GPU_linear_interp_weightKd"></span><span id="_CPPv224GPU_linear_interp_weightKd"></span><span id="GPU_linear_interp_weight__doubleC"></span><span class="target" id="weights_8h_1ad9e4dd98ccc13acb821654e859fd9561"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_linear_interp_weight</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GPU_linear_interp_weightKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the linear interpolation weight for a given frequency. </p>
+<p>Calculates the interpolated superphoton weight between precomputed values in the weight table based on the input frequency <code class="docutils literal notranslate"><span class="pre">nu</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> – The frequency at which to compute the interpolated weight (\omega). </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The computed linearly interpolated superphoton weight. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="curand.html" class="btn btn-neutral float-left" title="curand.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jnu_mixed.html" class="btn btn-neutral float-right" title="jnu_mixed.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
