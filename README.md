@@ -2,6 +2,8 @@
 
 GPUmonty is a high-performance, [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on [igrmonty](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387).
 
+Please refer to the [documentation webpage](https://pedronaethe.github.io/gpumonty/) for more details on the functions.
+
 ## 1. Prerequisites
 Before compiling, ensure your system has the following libraries installed and accessible:
 
