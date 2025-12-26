@@ -1,46 +1,62 @@
 # GPUmonty: A GPU-Accelerated Relativistic Monte Carlo Code
 
-GPUMONTY is a Monte Carlo code designed for calculating the emergent spectrum from a model using a Monte Carlo technique. It is particularly suited for studying plasmas near black holes described by Kerr-Schild coordinates, radiating through thermal synchrotron and inverse Compton scattering. The code is based on the work presented in the well established code grmonty([Dolence et al. 2009](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387)).
+GPUmonty is a high-performance, [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on [igrmonty](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387).
 
-## Running the code
-The code is written in C and parallelized using Nvidia's Graphical Processing Unit (GPU) language [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/) and is configured to use input files from the HARM ([Gammie et al. 2003](https://arxiv.org/abs/astro-ph/0301509)) and H-AMR ([Liska et al. 2019](https://arxiv.org/abs/1912.10192)) codes. 
+## 1. Prerequisites
+Before compiling, ensure your system has the following libraries installed and accessible:
 
-- Before compiling: 
+* **[CUDA Toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/):** Required for the `nvcc` compiler and GPU kernels.
+* **[GNU scientific library (GSL)](https://www.gnu.org/software/gsl/):** Required for various mathematical and statistical routines.
+* **[Hierarchical Data Format v5 (HDF5)](https://www.hdfgroup.org/solutions/hdf5/):** Required for reading GRMHD simulation snapshots.
 
-1) Code utilizes the [GNU scientific library(GSL)](https://www.gnu.org/software/gsl/) in the C portion of the code. Locate the gsl and cuda paths in your computer (if necessary) and modify the variables ```CUDA_PATH``` and ```GSL_PATH```  in the makefile.
-2) You need to identify the compute capability of the GPU you are using. This can be found in the [NVIDIA website](https://developer.nvidia.com/cuda-gpus). Then, you got to properly change the number in the ```ARCH```, ```CODE``` and ```CODE_LTO```.
-3) You also need to identify the model you want to use for your data. In the ```MODEL_DIR``` variable of the makefile, change its path to the location of the model you want to use. 
+### Environment Configuration
+Locate the installation paths for these libraries on your system and update the corresponding variables in the `Makefile`:
 
+```makefile
+CUDA_PATH     = /usr/local/cuda
+GSL_PATH      = /usr/local
+HDF5_INCLUDE  = /usr/include/hdf5/serial
+HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
+```
 After you have changed all these things, compile with by typing ```make```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
 
-- Code parameters
-  
-The file called ```config.h``` holds many of code parameters by means of pre-compiled variables, adjust the variables as you need. ```N_BLOCKS``` will set the number of blocks that will compose the GPU grid and ```N_THREADS``` is the number of threads per block. You may need to change parameters.
-In case you are running H-AMR (```#define HAMR (1)```) or SPHERE_TEST (```#define SPHERE_TEST (1)```), enable the proper switches in the ```config.h``` file as well as modify the model in the makefile.
+- Configuration Parameters
 
-- Run the code
+Simulation parameters are passed to the executable via a `.par` file. You can find a baseline configuration in `/gpumonty/template.par`. 
 
-The command follows a simple structure of the arguments (```N_s```, ```path_to_data```, ```Name of the output file```). An example is given by
+To run a simulation with your custom parameters:
 ```
-./gpumonty 50000 ./data/dump019 gpumonty_spec.spec
+./gpumonty -par path/to/your_file.par
 ```
+The following runtime parameters are supported:
 
--Analyze the output
+| Parameter | Description |
+| :--- | :--- |
+| `Ns` | **Superphoton Count**: The approximated total number of photon packets to be generated. Higher values improve the signal-to-noise ratio in the resulting spectrum. |
+| `dump` | **Data Path**: The relative or absolute path to the input GRMHD data file. |
+| `spectrum` | **Output Name**: The filename for the output spectral data (e.g., `sane.spec`). |
+| `MBH` | **Black Hole Mass**: Mass of the central black hole in Solar Masses ($M_\odot$). |
+| `M_unit` | **Mass Unit Scale**: The normalization factor (in grams) used to scale dimensionless GRMHD density to physical CGS units. |
+| `tp_over_te` | **Proton-to-Electron Temperature Ratio**: A constant ratio ($T_p/T_e$) used if a dynamic heating model is not active. |
+| `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
 
-Inside the python files, we have a notebook to guide you on how to open, extract and plot the spectrum in python. Each index in the nuLnu array is related to one of the theta_bins.
 
-## Possible errors
+## Analyzing the Output
 
-- Can't open file/Invalid: Either the data path is not valid or the function that reads the data is not reading the data in the right order.
+To facilitate data post-processing and visualization, an example Jupyter Notebook is provided in the repository.
 
-- "Not all the photons created in scatterings have been evaluated": This problem usually happens if the number of scattered photons is outstandly large and corrupt memory location in scattering photon array. 
+* **Notebook Location:** `python/example.ipynb`
+* **Workflow:** This tutorial guides you through the process of opening output files, extracting spectral arrays, and generating plots.
 
-- Invalid memory location in GPU_track kernel. This happens when too many photons are scattered, therefore the gpu does not have enough memory to account for all of the scattered photons and ends up crashing. This is most likely caused by the bias function, which depending on how it is written, it can develop a cascade effect where the scattering grows exponentially. This is brieffly discussed in [Dolence et al. 2009](https://arxiv.org/pdf/0909.0708). Remember that you can modify the size of the memory allocation for scattering photons by changing ```#define SCATTERINGS_PER_PHOTON``` in config.h file. This defines the size of the scattering memory allocation by saying that total_number_of_scatterings = SCATTERINGS_PER_PHOTON * number_of_generated_photons.
+### Spectral Data Structure
+When analyzing the raw results in Python, please note the relationship between luminosity and the observer's viewing angle:
+* **Indexing:** The luminosity array (`nuLnu`) is multi-dimensional; each index in the array corresponds directly to one of the `theta_bins` defined in your simulation.
 
-# LICENSE 
 
-`gpumonty` is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+# LICENSE
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the `LICENSE` file or the [GNU General Public License](http://www.gnu.org/licenses/) for more details.
+`gpumonty` is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either **version 2** of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the `LICENSE` file or the [GNU General Public License](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) for more details.
 
 
