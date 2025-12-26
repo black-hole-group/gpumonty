@@ -20,8 +20,7 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   params->trat_large = 10.;
   params->Thetae_max = 1.e100;
 
-  params->spectrum = "spectrum.spec";
-
+  strcpy(params->spectrum, "spectrum.spec");
   params->MBH_par = 4.1e6;   // MBH for Sgr A* is updated by Gravity Collaboration 2018,615,L15
 
   // Load parameters

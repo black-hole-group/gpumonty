@@ -1,23 +1,19 @@
-# Ignore all Jupyter notebooks
+.vscode/
+
+data/*.h5
+gpumonty
+
+output/
+!output/example.spec
+
+python/**/.ipynb_checkpoints/
+
 *.ipynb
-
-# But keep this one tracked
-!example.ipynb
-
-# Ignore all GRMONTY spectrum files
-./output/*
-# But keep this one tracked
-!example.spec
-
-./.vscode
-
-callgrind.out*
-*.o
-*.txt
-HAMR_GRMONTY_DUMP300_3D.bin
-HAMR_GRMONTY_DUMP110_thin.bin
-MAD_*
-SPHERE_TEST_THICK
-dump900
-*.ncu-rep
+*.pdf
+*.png
+*.spec
+*.bin
 *.h5
+
+!python/example.ipynb
+!output/example.spec

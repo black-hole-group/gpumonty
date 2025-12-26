@@ -8,8 +8,8 @@ typedef struct params_t {
   double Ns;
   double MBH_par;
   double M_unit;
-  const char dump[256];
-  const char spectrum[256];
+  char dump[256];
+  char spectrum[256];
 
   // bias
   double biasTuning;

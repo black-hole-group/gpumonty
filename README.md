@@ -18,7 +18,7 @@ GSL_PATH      = /usr/local
 HDF5_INCLUDE  = /usr/include/hdf5/serial
 HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
 ```
-After you have changed all these things, compile with by typing ```make```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
+After you have changed all these things, compile with by typing ```make -j 15```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
 
 - Configuration Parameters
 
