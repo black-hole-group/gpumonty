@@ -178,15 +178,11 @@ void init_data()
   stopx[3] = startx[3]+N3*dx[3];
 
   // Set remaining units and constants
-  max_tau_scatt = (6.*L_UNIT)*RHO_UNIT*0.4; // this doesn't make sense ...
+  max_tau_scatt = (6.*L_unit)*Rho_unit*0.4; // this doesn't make sense ...
   max_tau_scatt = 0.0001; // TODO look at this in the future and figure out a smarter general value
 
   // Horizon and "max R for geodesic tracking" in KS coordinates
   Rh = 1. + sqrt(1. - a * a);
-
-  fprintf(stderr, "L_unit, T_unit, M_unit = %g %g %g\n", L_UNIT, T_UNIT, M_UNIT);
-  fprintf(stderr, "B_unit, Ne_unit, RHO_unit = %g %g %g\n", B_UNIT, NE_UNIT, RHO_UNIT);
-  fprintf(stderr, "Thetae_unit = %g\n", Thetae_unit);
 
   // Allocate storage and set geometry
   init_storage();
@@ -463,6 +459,14 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     double Ucov[NDIM], Bcov[NDIM];
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 
+    #ifdef __CUDA_ARCH__
+    double local_B_unit = d_B_unit;
+    double local_Ne_unit = d_Ne_unit;
+    #else
+    double local_B_unit = B_unit;
+    double local_Ne_unit = Ne_unit;
+    #endif
+
     Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
     Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
     Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
@@ -492,13 +496,13 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     }
     lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
-    *Thetae = thetae_func(d_p[NPRIM_INDEX3D(UU, i, j, k)], d_p[NPRIM_INDEX3D(KRHO, i, j, k)] , (*B)/B_UNIT, d_p[NPRIM_INDEX3D(KEL, i, j, k)]);
-    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * local_B_unit;
+    *Thetae = thetae_func(d_p[NPRIM_INDEX3D(UU, i, j, k)], d_p[NPRIM_INDEX3D(KRHO, i, j, k)] , (*B)/local_B_unit, d_p[NPRIM_INDEX3D(KEL, i, j, k)]);
+    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * local_Ne_unit;
 
     if (*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
-    double sig = pow(*B/B_UNIT,2)/(*Ne/NE_UNIT);
+    double sig = pow(*B/local_B_unit,2)/(*Ne/local_Ne_unit);
     if(sig > 1. || i < 9) {
         *Thetae = SMALL;
     }
@@ -559,7 +563,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     kel = GPU_interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
     
 
-    *Ne = rho * NE_UNIT;
+    *Ne = rho * d_Ne_unit;
 
     Bp[1] = GPU_interp_scalar_pointer(d_p, B1, i, j, k, coeff);
     Bp[2] = GPU_interp_scalar_pointer(d_p, B2, i, j, k, coeff);
@@ -595,12 +599,12 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     lower(Bcon, gcov, Bcov);
 
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
 
-    *Thetae = thetae_func(uu, rho, (*B)/B_UNIT, kel);
+    *Thetae = thetae_func(uu, rho, (*B)/d_B_unit, kel);
     if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
-    double sig = pow(*B/B_UNIT, 2.)/(*Ne/NE_UNIT);
+    double sig = pow(*B/d_B_unit, 2.)/(*Ne/d_Ne_unit);
     if(sig > 1.) *Thetae = SMALL;
 }
 
@@ -707,5 +711,5 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     thetae = (MP/ME) * (GAME-1.) * (GAMP-1.) / ( (GAMP-1.) + (GAME-1.)*trat ) * uu / rho;
     }
 
-    return 1./(1./thetae + 1./Thetae_MAX2);
+    return 1./(1./thetae + 1./thetae_local_max);
 }

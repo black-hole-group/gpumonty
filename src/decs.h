@@ -17,9 +17,6 @@ typedef struct params_t {
   double fitBiasNs;
   double targetRatio;
 
-  // two point model
-  double lnumin, lnumax, alpha_spec;
-
   // electron temperature models
   double tp_over_te;
   double beta_crit;
@@ -141,7 +138,8 @@ struct of_spectrum {
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
-	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te; 
+	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
+	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
 
 #endif
 
@@ -176,5 +174,6 @@ struct of_spectrum {
 
 	extern int N1, N2, N3;
 	extern Params params;
+	extern double L_unit, B_unit, Ne_unit, Rho_unit, U_unit, M_unit, T_unit;
 
 #endif

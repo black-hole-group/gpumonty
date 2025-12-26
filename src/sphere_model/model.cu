@@ -35,21 +35,21 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 
 __host__ void init_data()
 {
-	double Rin = RMIN;
-	double Rout = RMAX;
+	double Rin = RMIN/L_unit;
+	double Rout = RMAX/L_unit;
 
 	double th_in = 0.;
 	double th_out = M_PI;
 	double two_temp_gam;
 	double r, h;
 	double x[4];
-	double sphere_radius = SPHERE_RADIUS;
+	double sphere_radius = SPHERE_RADIUS/L_unit;
 	double B_value, thetae_value;
 	int i,j,k;
 
 	/*sphere parameters*/
 	gam = 13./9.;
-	B_value = B_VALUE/B_UNIT; /*in G*/
+	B_value = B_VALUE/B_unit; /*in G*/
     //TODO: change how thetae is set
 	thetae_value = 4;//THETAE_VALUE;
 
@@ -108,7 +108,7 @@ __host__ void init_data()
 		if(r < sphere_radius){
 			//p[NPRIM_INDEX(KRHO,k)] = Ne_value;
             //TODO: change how ne is set
-            p[NPRIM_INDEX(KRHO,k)] = tau/(sphere_radius * L_UNIT * SIGMA_THOMSON);
+            p[NPRIM_INDEX(KRHO,k)] = tau/(sphere_radius * L_unit * SIGMA_THOMSON);
 			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
 			#if(EXP_COORDS)
 				p[NPRIM_INDEX(B1,k)] = B_value * cos(h)/r ;
@@ -142,7 +142,7 @@ __device__ int GPU_record_criterion(double X1)
 	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-	if (r > R_RECORD){
+	if (r > R_RECORD/d_L_unit){
 		return (1);
     }else{
         return (0);
@@ -159,7 +159,6 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 	#else
 	const double r = X1;
 	#endif				   
-    //printf("r = %le, w = %le, RMIN = %le, R_RECORD = %le\n", r, *w, RMIN, R_RECORD);
     if(*w < WEIGHT_MIN){
         if (curand_uniform_double(localState)<= 1. / ROULETTE) {
             *w = *w *  ROULETTE;
@@ -168,7 +167,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
             return 1;
         }
     }
-	if (r < RMIN || r > R_RECORD){
+	if (r < RMIN/d_L_unit || r > R_RECORD/d_L_unit){
 		return 1;
     }
 
@@ -313,6 +312,9 @@ __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][
         *Thetae = 0;
         return;
     }
+
+    double local_L_unit = d_L_unit;
+    double local_B_unit = d_B_unit;
     #else
     if (X[1] < startx[1] || X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
         *Ne = 0;
@@ -320,12 +322,14 @@ __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][
         *Thetae = 0;
         return;
     }
+    double local_L_unit = L_unit;
+    double local_B_unit = B_unit;
     #endif
 
     double r,th;
     bl_coord(X, &r, &th);
 
-    if(r > SPHERE_RADIUS){
+    if(r > SPHERE_RADIUS/local_L_unit){
         *Ne = 0.;
         *Thetae = 0.;
         *B = 0.;
@@ -342,8 +346,8 @@ __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][
     Ucon[3] = 0.;
 
     Bcon[0] = 0.;
-    Bcon[1] = B_VALUE * cos(th)/B_UNIT;
-    Bcon[2] = -B_VALUE * sin(th)/(r + 1.e-8) / B_UNIT;
+    Bcon[1] = B_VALUE * cos(th)/local_B_unit;
+    Bcon[2] = -B_VALUE * sin(th)/(r + 1.e-8) / local_B_unit;
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)
@@ -371,7 +375,7 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt)
 
         return bias;
     #elif (1)
-        double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * L_UNIT;
+        double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * d_L_unit;
         bias = (model_tau_0 > 1.0) ? (model_tau_0) : 1.0;
         return bias;
     #else

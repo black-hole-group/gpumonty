@@ -17,16 +17,8 @@
 #define RMAX	1000. //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 
-// #define N1 288
-// #define N2 128
-// #define N3 128
 #define BHSPIN 0.9375
 
-/*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.14e6)/*In solar UNITs*/
-#define M_UNIT (1.e16)
-#define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
-#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 #define NPRIM	8
 
 #ifndef MODEL_FUNCTIONS

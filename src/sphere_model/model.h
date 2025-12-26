@@ -16,26 +16,20 @@
 #define WEIGHT_MIN	(0)
 
 /*for stop criterium*/
-#define RMAX	(10000./L_UNIT) //Define the maximum radius up to track the photon
+#define RMAX	(10000.) //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
-#define R_RECORD (3000./L_UNIT)
+#define R_RECORD (3000.)
 //RMIN for sphere model only
-#define RMIN (0.01/L_UNIT)
+#define RMIN (0.01)
 
 #define BHSPIN 0
 
 #define NE_VALUE (1.e18)
 #define B_VALUE (1.)
 #define THETAE_VALUE (3.)
-#define SPHERE_RADIUS (1./L_UNIT)
+#define SPHERE_RADIUS (1.)
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
-//#define MBH (6.770292094e-6)/*In solar UNITs*/
-#define MBH (4.1e6)
-#define M_UNIT (1.)
-#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
-#define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
-//#define L_UNIT (1.) /* UNIT of length*/
 
 #define NPRIM	8
 

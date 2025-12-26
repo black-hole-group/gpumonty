@@ -1,5 +1,5 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/iharm_model
+MODEL_DIR = $(SRC_DIR)/sphere_model
 
 CUDA_PATH ?= /usr/local/cuda-12.3
 #CUDA_PATH ?= /usr/local/cuda

@@ -17,7 +17,6 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
     return __longlong_as_double(ret);
 }
 
-#define dtauK (L_UNIT / (ME * CL * CL / HPL))
 __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, 
 	#ifdef DO_NOT_USE_TEXTURE_MEMORY
 	 	double * __restrict__ d_p,
@@ -35,6 +34,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 	double tau_abs = 0;
 	double tau_scatt = 0;
 	int nstep = 0;
+	double dtauK = (d_L_unit / (ME * CL * CL / HPL));
 
 	#ifdef IHARM
 		if (ph.w[photon_index] < 1.) {
@@ -286,7 +286,8 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 	ph.tau_scatt[photon_index] = tau_scatt;
 	return;
 }
-#undef dtauK
+
+
 __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;

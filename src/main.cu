@@ -12,6 +12,7 @@ __host__ void init_geometry();
 int main(int argc, char *argv[])
 {
 	time_t starttime = time(NULL);
+	time_t time_seeding;
 	
 	// load parameters from command line
   	load_par_from_argv(argc, argv, &params);
@@ -27,7 +28,12 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Entering main loop...\n");
 	fflush(stderr);
 
-    mainFlowControl(time(NULL), p);
+	if(params.seed == -1){
+		time_seeding =  time(NULL);
+	}else{
+		time_seeding = 0;
+	}
+    mainFlowControl(time_seeding, p);
     printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
 	printf("Ntot = %d/Number of Blocks = %d /Block Size = %d\n", (int) params.Ns, N_BLOCKS, N_THREADS);
 
@@ -35,15 +41,37 @@ int main(int argc, char *argv[])
 
 }
 
+__host__ void set_units(Params params)
+{
+	/* Sets the global units based on the parameters passed in */
+	L_unit = GNEWT * params.MBH_par * MSUN / (CL * CL);
+	M_unit = params.M_unit;
+	Rho_unit = M_unit / (L_unit * L_unit * L_unit);
+
+	/*Derived units*/
+	T_unit = L_unit/CL; /*UNIT of time*/
+	U_unit = Rho_unit * CL * CL; /*UNITy of energy density*/
+	B_unit = CL * sqrt(4. * M_PI * Rho_unit); /*Unit of magnetig field*/
+	Ne_unit = Rho_unit/(MP + ME); /*Unit of electron density*/
+
+	/*Set global variables for device*/
+	cudaMemcpyToSymbol(d_L_unit, &L_unit, sizeof(double));
+	cudaMemcpyToSymbol(d_MBH, &params.MBH_par, sizeof(double));
+	cudaMemcpyToSymbol(d_B_unit, &B_unit, sizeof(double));
+	cudaMemcpyToSymbol(d_Ne_unit, &Ne_unit, sizeof(double));
+}
+
 __host__ void init_model(char *args[])
 {
 	/* This will tell the units defined in decs.h. 
 	There used to be a function here for this, but it's extremely 
 	unecessary as well as taking M_UNIT as an argument*/
+
+	set_units(params);
 	fprintf(stderr, "\nUNITS\n");
-	fprintf(stderr, "L,T,M: %g %g %g\n", L_UNIT, T_UNIT, M_UNIT);
-	fprintf(stderr, "rho,u,B: %g %g %g\n", RHO_UNIT, U_UNIT, B_UNIT);
-	max_tau_scatt = (6. * L_UNIT) * RHO_UNIT * 0.4;
+	fprintf(stderr, "L,T,M: %g %g %g\n", L_unit, T_unit, M_unit);
+	fprintf(stderr, "rho,u,B: %g %g %g\n", Rho_unit, U_unit, B_unit);
+	max_tau_scatt = (6. * L_unit) * Rho_unit * 0.4;
 
 	fprintf(stderr, "Initial max_tau_scatt: %g\n", max_tau_scatt);
 
@@ -164,9 +192,9 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
 	}
 	fprintf(stderr,
 		"luminosity %g erg/s, dMact %g, efficiency %g, L/Ladv %g, max_tau_scatt %g\n",
-		L * LSUN, dMact * M_UNIT / T_UNIT / (MSUN / YEAR),
-		L * LSUN / (dMact * M_UNIT * CL * CL / T_UNIT),
-		L * LSUN / (Ladv * M_UNIT * CL * CL / T_UNIT),
+		L * LSUN, dMact * M_unit / T_unit / (MSUN / YEAR),
+		L * LSUN / (dMact * M_unit * CL * CL / T_unit),
+		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
 		max_tau_scatt);
 	for (j = 0; j < N_THBINS; j++) {
 	/* convert accumulated photon number in each bin 

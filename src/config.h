@@ -62,12 +62,6 @@
 /* physical parameters */
 #define MMW	0.5		/* mean molecular weight, in units of mp */
 
-/*Units based off the mass of the blackhole and the Unit of mass*/
-#define T_UNIT (L_UNIT/CL) /*UNIT of time*/
-#define U_UNIT (RHO_UNIT * CL * CL) /*UNITy of energy density*/
-#define B_UNIT (CL * sqrt(4. * M_PI * RHO_UNIT)) /*Unit of magnetig field*/
-#define NE_UNIT (RHO_UNIT/(MP + ME)) /*Unit of electron density*/
-
 
 /*Number of spacetime dimensions*/
 #define NDIM	4

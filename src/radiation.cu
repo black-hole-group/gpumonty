@@ -105,7 +105,7 @@ __device__ double GPU_get_bk_angle(const double X[NDIM] , const double K[NDIM]  
 
 	/* B is in cgs but Bcov is in code units */
 	mu = (K[0] * Bcov[0] + K[1] * Bcov[1] + K[2] * Bcov[2] +
-	      K[3] * Bcov[3]) / (k * B / B_UNIT);
+	      K[3] * Bcov[3]) / (k * B / d_B_unit);
 
 	if (fabs(mu) > 1.)
 		mu /= fabs(mu);

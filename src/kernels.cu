@@ -133,6 +133,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 
 	while(instant_partition <= batch_divisions){
+		printf("\n\n\033[1m===========================================\033[0m\n");
 		printf("Starting partition %d out of %d\n", instant_partition, batch_divisions);
 
 		//If in the last partition and there is an offset, just do it;
@@ -154,7 +155,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		//gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
 		//gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * instant_photon_number* sizeof(struct of_photon))); 
 
-		fprintf(stderr, "Sampling the photons!\n");
+		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
 			GPU_sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj);
@@ -181,7 +182,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		fprintf(stderr, "Photon sampling process completed!\n");
 
 
-		fprintf(stderr, "Tracking photons along the geodesics\n");
+		fprintf(stderr, "\nTracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
 			#ifdef DO_NOT_USE_TEXTURE_MEMORY
@@ -231,14 +232,14 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 		printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
-		printf("Solving the scattered photons...\n");
+		printf("\nSolving the scattered photons...\n");
 		printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
 		int n = 1;
 		bool quit_flag_sca = false;
 		unsigned long long scatterings_performed = 0;
 
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
-			printf("Starting round %d\n", n);
+			printf("\nStarting round %d\n", n);
 			ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
 			unsigned long long round_num_scat_init = 0;
 
@@ -346,7 +347,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
 	int seed = 139 * global_index + time;
 	GPU_init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
-
+	
 	/*This is how we'll split things between blocks and threads*/
 	/*We'll divide N1 * N2 * N3 between blocks*/
 	for(int a = global_index; a < d_N1 * d_N2 * d_N3; (a += N_BLOCKS * N_THREADS)){
@@ -418,7 +419,7 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
 					*dnmax = dn;
 				ninterp += dlnu * dn;
 			}
-			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * L_UNIT * L_UNIT * L_UNIT
+			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
 				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 				* 1. / HPL;
 
@@ -577,7 +578,7 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
     if (zone_flag) {
         double bhat[NDIM];
         if (Bmag > 0.) {
-            const double inv_Bmag = B_UNIT / Bmag;
+            const double inv_Bmag = d_B_unit / Bmag;
             for (int l = 0; l < NDIM; l++) {
                 bhat[l] = Bcon[l] * inv_Bmag;
             }
@@ -687,6 +688,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph,
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
 	unsigned long long scattering_counter_local = round_num_scat_init - 1;
 	int n_progress = 1;
+	
 
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){

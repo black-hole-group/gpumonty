@@ -384,15 +384,20 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     int l, m;
     double Ucov[NDIM], Bcov[NDIM];
     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    #ifdef __CUDA_ARCH__
+
+   #ifdef __CUDA_ARCH__
+    double local_B_unit = d_B_unit;
+    double local_Ne_unit = d_Ne_unit;
     double thetaeUnit = d_thetae_unit;
     #else
+    double local_B_unit = B_unit;
+    double local_Ne_unit = Ne_unit;
     double thetaeUnit = Thetae_unit;
-
     #endif
 
-    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * NE_UNIT;
-    *Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * NE_UNIT * thetaeUnit;
+
+    *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * local_Ne_unit;
+    *Thetae = d_p[NPRIM_INDEX3D(UU, i, j, k)] / (*Ne) * local_Ne_unit * thetaeUnit;
 
     Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
     Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
@@ -423,7 +428,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     }
     lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * local_B_unit;
 
 
     if (isnan(*B)){
@@ -483,7 +488,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     //interpolate based on the displacement
     rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
     uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
-    *Ne = rho * NE_UNIT;
+    *Ne = rho * d_Ne_unit;
     *Thetae = uu / rho * d_thetae_unit;
 
     Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
@@ -518,7 +523,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     lower(Bcon, gcov, Bcov);
 
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
 
 
 }
@@ -564,7 +569,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
     //interpolate based on the displacement
     rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
     uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
-    *Ne = rho * NE_UNIT;
+    *Ne = rho * d_Ne_unit;
     *Thetae = uu / rho * d_thetae_unit;
 
     Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
@@ -599,7 +604,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
     lower(Bcon, gcov, Bcov);
 
     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * B_UNIT;
+    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
 
 
 }

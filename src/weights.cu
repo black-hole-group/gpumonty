@@ -27,7 +27,7 @@ void init_weight_table()
 		nu[i] = exp(i * dlnu + lnu_min);
 	}
 
-	sfac = dx[1] * dx[2] * dx[3] * L_UNIT * L_UNIT * L_UNIT;
+	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
 
 #pragma omp parallel private(i,j,k,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
 	{
@@ -107,7 +107,7 @@ __host__ void init_nint_table(void)
 				dndlnu_max[i] = dn;
 			nint[i] += dlnu * dn;
 		}
-		nint[i] *= dx[1] * dx[2] * dx[3] * L_UNIT * L_UNIT * L_UNIT
+		nint[i] *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
 		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
 		    * 1. / HPL;
 		nint[i] = log(nint[i]);

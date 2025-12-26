@@ -17,11 +17,6 @@
 
 #define BHSPIN 0.9375
 
-/*Mass of the black hole and the unit of M in order to transform to natural code units*/
-#define MBH (4.e6)/*In solar UNITs*/
-#define M_UNIT (4.e19)
-#define L_UNIT (GNEWT * MBH * MSUN/(CL * CL)) /* UNIT of length*/
-#define RHO_UNIT (M_UNIT/pow(L_UNIT,3)) /*UNIT of density*/
 
 
 #ifndef MODEL_FUNCTIONS

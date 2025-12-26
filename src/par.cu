@@ -20,6 +20,8 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   params->trat_large = 10.;
   params->Thetae_max = 1.e100;
 
+  params->spectrum = "spectrum.spec";
+
   params->MBH_par = 4.1e6;   // MBH for Sgr A* is updated by Gravity Collaboration 2018,615,L15
 
   // Load parameters
@@ -48,7 +50,6 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
 #define GREEN   "\033[1;32m"
-#define BOLD    "\033[1m"
 #define GRAY    "\033[90m"
 __host__ void load_par (const char *fname, Params *params) {
     char line[256];
@@ -57,7 +58,7 @@ __host__ void load_par (const char *fname, Params *params) {
     // Tracker for all variables - prefixed with 'found_' to avoid macro issues
     struct {
         int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio;
-        int lnumin, lnumax, alpha, tp_te, beta, trat_s, trat_l, theta_m;
+        int tp_te, beta, trat_s, trat_l, theta_m;
     } f = {0}; 
 
     if (fp == NULL) {
@@ -81,10 +82,6 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }
         if (strstr(line, "fit_bias_ns")) { read_param(line, "fit_bias_ns", &(params->fitBiasNs), 2); f.fit_bias_ns = 1; }
         if (strstr(line, "ratio"))       { read_param(line, "ratio", &(params->targetRatio), 2); f.ratio = 1; }
-
-        if (strstr(line, "lnumin"))     { read_param(line, "lnumin", &(params->lnumin), 2); f.lnumin = 1; }
-        if (strstr(line, "lnumax"))     { read_param(line, "lnumax", &(params->lnumax), 2); f.lnumax = 1; }
-        if (strstr(line, "alpha_spec")) { read_param(line, "alpha_spec", &(params->alpha_spec), 2); f.alpha = 1; }
         
         if (strstr(line, "tp_over_te")) { read_param(line, "tp_over_te", &(params->tp_over_te), 2); f.tp_te = 1; }
         if (strstr(line, "beta_crit"))  { read_param(line, "beta_crit", &(params->beta_crit), 2); f.beta = 1; }
@@ -103,6 +100,12 @@ __host__ void load_par (const char *fname, Params *params) {
         else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10g (default)\n", name, val);
     };
 
+    auto print_status_inv = [](const char* name, int found, double val) {
+        if (!found) printf("\033[1;32m[Random]\033[0m %-15s : %-10g (default)\n", name, val);
+        else       printf("\033[1;31m[Constant] \033[0m %-15s : %-10g\n", name, val);
+    };
+
+
     auto print_status_i = [](const char* name, int found, int val) {
         if (found) printf("\033[1;32m[SET]     \033[0m %-15s : %-10d\n", name, val);
         else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10d (default)\n", name, val);
@@ -119,7 +122,7 @@ __host__ void load_par (const char *fname, Params *params) {
         else       printf("\033[1;31m[MISSING] \033[0m %-15s : %-10s (default)\n", name, val);
     };
 
-    print_status("seed", f.seed, params->seed);
+    print_status_inv("seed", f.seed, params->seed);
     print_status("Ns", f.Ns, params->Ns);
     print_status("MBH", f.MBH_par, params->MBH_par);
     print_status("M_unit", f.M_unit, params->M_unit);
@@ -137,17 +140,13 @@ __host__ void load_par (const char *fname, Params *params) {
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "fit_bias_ns");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "ratio");
     #endif
-    print_status("lnumin", f.lnumin, params->lnumin);
-    print_status("lnumax", f.lnumax, params->lnumax);
     print_status("tp_over_te", f.tp_te, params->tp_over_te);
     #ifdef IHARM
       print_status("beta_crit", f.beta, params->beta_crit);
       print_status("trat_small", f.trat_s, params->trat_small);
       print_status("trat_large", f.trat_l, params->trat_large);
       print_status("Thetae_max", f.theta_m, params->Thetae_max);
-      print_status("alpha_spec", f.alpha, params->alpha_spec);
     #else
-      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "alpha_spec");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "beta_crit");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_small");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_large");
@@ -159,7 +158,6 @@ __host__ void load_par (const char *fname, Params *params) {
 #undef RESET
 #undef RED
 #undef GREEN
-#undef BOLD
 
 
 // loads value -> (type *)*val if line corresponds to (key,value)
