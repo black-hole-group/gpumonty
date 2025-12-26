@@ -5,7 +5,7 @@
 !example.ipynb
 
 # Ignore all GRMONTY spectrum files
-output/*
+./output/*
 # But keep this one tracked
 !example.spec
 
