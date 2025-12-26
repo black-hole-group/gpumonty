@@ -9,7 +9,7 @@
 # But keep this one tracked
 !example.spec
 
-
+./.vscode
 
 callgrind.out*
 *.o
