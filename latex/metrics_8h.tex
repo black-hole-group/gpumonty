@@ -1,0 +1,64 @@
+\hypertarget{metrics_8h}{}\doxysection{src/metrics.h File Reference}
+\label{metrics_8h}\index{src/metrics.h@{src/metrics.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{metrics_8h_a45c52226b556bfdefcc172ece54db11c}{gdet\+\_\+func}} (double gcov\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}{LU\+\_\+decompose}} (double A\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, int permute\mbox{[}$\,$\mbox{]})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}{LU\+\_\+substitution}} (double A\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double B\mbox{[}$\,$\mbox{]}, int permute\mbox{[}$\,$\mbox{]})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}{invert\+\_\+matrix}} (double Am\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Aminv\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_a2941833c93751da72ab28f1751a79a18}{gcon\+\_\+func}} (const double X\mbox{[}4\mbox{]}, double gcov\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double gcon\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}{GPU\+\_\+get\+\_\+connection}} (const double X\mbox{[}4\mbox{]}, double lconn\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}\mbox{[}4\mbox{]})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}{lower}} (double $\ast$\mbox{\hyperlink{defs_8h_acca984f3768575908e2e0dd2f22cbb95}{ucon}}, const double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double $\ast$\mbox{\hyperlink{defs_8h_a7a49aa3585420e73246460b8ab0a4ca7}{ucov}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{metrics_8h_a2941833c93751da72ab28f1751a79a18}\label{metrics_8h_a2941833c93751da72ab28f1751a79a18}} 
+\index{metrics.h@{metrics.h}!gcon\_func@{gcon\_func}}
+\index{gcon\_func@{gcon\_func}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{gcon\_func()}{gcon\_func()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void gcon\+\_\+func (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}4\mbox{]},  }\item[{double}]{gcov\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{gcon\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_a45c52226b556bfdefcc172ece54db11c}\label{metrics_8h_a45c52226b556bfdefcc172ece54db11c}} 
+\index{metrics.h@{metrics.h}!gdet\_func@{gdet\_func}}
+\index{gdet\_func@{gdet\_func}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{gdet\_func()}{gdet\_func()}}
+{\footnotesize\ttfamily double gdet\+\_\+func (\begin{DoxyParamCaption}\item[{double}]{gcov\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}\label{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}} 
+\index{metrics.h@{metrics.h}!GPU\_get\_connection@{GPU\_get\_connection}}
+\index{GPU\_get\_connection@{GPU\_get\_connection}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_get\_connection()}{GPU\_get\_connection()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+get\+\_\+connection (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}4\mbox{]},  }\item[{double}]{lconn\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}\mbox{[}4\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}\label{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}} 
+\index{metrics.h@{metrics.h}!invert\_matrix@{invert\_matrix}}
+\index{invert\_matrix@{invert\_matrix}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{invert\_matrix()}{invert\_matrix()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int invert\+\_\+matrix (\begin{DoxyParamCaption}\item[{double}]{Am\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Aminv\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}\label{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}} 
+\index{metrics.h@{metrics.h}!lower@{lower}}
+\index{lower@{lower}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{lower()}{lower()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void lower (\begin{DoxyParamCaption}\item[{double $\ast$}]{ucon,  }\item[{const double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double $\ast$}]{ucov }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}\label{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}} 
+\index{metrics.h@{metrics.h}!LU\_decompose@{LU\_decompose}}
+\index{LU\_decompose@{LU\_decompose}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{LU\_decompose()}{LU\_decompose()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int LU\+\_\+decompose (\begin{DoxyParamCaption}\item[{double}]{A\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{int}]{permute\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}\label{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}} 
+\index{metrics.h@{metrics.h}!LU\_substitution@{LU\_substitution}}
+\index{LU\_substitution@{LU\_substitution}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{LU\_substitution()}{LU\_substitution()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void LU\+\_\+substitution (\begin{DoxyParamCaption}\item[{double}]{A\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{B\mbox{[}$\,$\mbox{]},  }\item[{int}]{permute\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+

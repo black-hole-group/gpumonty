@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="tetrads_8h" kind="file" language="C++">
+    <compoundname>tetrads.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="tetrads_8h_1ade72d9c30e6aa1a250be2050b34ed12a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_make_tetrad</definition>
+        <argsstring>(double Ucon[NDIM], double trial[NDIM], const double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM], double Ecov[NDIM][NDIM])</argsstring>
+        <name>GPU_make_tetrad</name>
+        <param>
+          <type>double</type>
+          <declname>Ucon</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>trial</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Gcov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Econ</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Ecov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="7" column="17" declfile="src/tetrads.h" declline="7" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="tetrads_8h_1a8a0da4e24c190d57ec68a765a8a5de4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_tetrad_to_coordinate</definition>
+        <argsstring>(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM], double K[NDIM])</argsstring>
+        <name>GPU_tetrad_to_coordinate</name>
+        <param>
+          <type>const double</type>
+          <declname>Econ</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>K_tetrad</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>K</declname>
+          <array>[NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="8" column="17" declfile="src/tetrads.h" declline="8" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="tetrads_8h_1ab80dc45ae288a6dedb2e7286305dbe88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_coordinate_to_tetrad</definition>
+        <argsstring>(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM])</argsstring>
+        <name>GPU_coordinate_to_tetrad</name>
+        <param>
+          <type>const double</type>
+          <declname>Ecov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>K</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>K_tetrad</declname>
+          <array>[NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="9" column="17" declfile="src/tetrads.h" declline="9" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="tetrads_8h_1a4d34ab270232c8dbeef9cec70155d363" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_delta</definition>
+        <argsstring>(int i, int j)</argsstring>
+        <name>GPU_delta</name>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="10" column="19" declfile="src/tetrads.h" declline="10" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="tetrads_8h_1a7b58a0bd4b68a32510f73d168a8fda4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_normalize</definition>
+        <argsstring>(double *vcon, const double Gcov[NDIM][NDIM])</argsstring>
+        <name>GPU_normalize</name>
+        <param>
+          <type>double *</type>
+          <declname>vcon</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Gcov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="11" column="17" declfile="src/tetrads.h" declline="11" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="tetrads_8h_1aff0979a80c6542cf37407f6217103cce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_project_out</definition>
+        <argsstring>(double *vcona, double *vconb, const double Gcov[NDIM][NDIM])</argsstring>
+        <name>GPU_project_out</name>
+        <param>
+          <type>double *</type>
+          <declname>vcona</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>vconb</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Gcov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tetrads.h" line="12" column="17" declfile="src/tetrads.h" declline="12" declcolumn="17"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>Declaration<sp/>of<sp/>the<sp/>functions<sp/>used<sp/>in<sp/>tetrads.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>TETRADS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TETRADS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="tetrads_8h_1ade72d9c30e6aa1a250be2050b34ed12a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1ade72d9c30e6aa1a250be2050b34ed12a" kindref="member">GPU_make_tetrad</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>trial[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Econ[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ecov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="8" refid="tetrads_8h_1a8a0da4e24c190d57ec68a765a8a5de4a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1a8a0da4e24c190d57ec68a765a8a5de4a" kindref="member">GPU_tetrad_to_coordinate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Econ[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K_tetrad[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="9" refid="tetrads_8h_1ab80dc45ae288a6dedb2e7286305dbe88" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1ab80dc45ae288a6dedb2e7286305dbe88" kindref="member">GPU_coordinate_to_tetrad</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ecov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K_tetrad[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="10" refid="tetrads_8h_1a4d34ab270232c8dbeef9cec70155d363" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1a4d34ab270232c8dbeef9cec70155d363" kindref="member">GPU_delta</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j);</highlight></codeline>
+<codeline lineno="11" refid="tetrads_8h_1a7b58a0bd4b68a32510f73d168a8fda4a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1a7b58a0bd4b68a32510f73d168a8fda4a" kindref="member">GPU_normalize</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*vcon,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="12" refid="tetrads_8h_1aff0979a80c6542cf37407f6217103cce" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="tetrads_8h_1aff0979a80c6542cf37407f6217103cce" kindref="member">GPU_project_out</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*vcona,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*vconb,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/tetrads.h"/>
+  </compounddef>
+</doxygen>

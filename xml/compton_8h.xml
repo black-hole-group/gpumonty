@@ -1,0 +1,309 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="compton_8h" kind="file" language="C++">
+    <compoundname>compton.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_sample_scattered_photon</definition>
+        <argsstring>(double k[4], double p[4], double kp[4], curandState *localState)</argsstring>
+        <name>GPU_sample_scattered_photon</name>
+        <param>
+          <type>double</type>
+          <declname>k</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>p</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>kp</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="7" column="17" declfile="src/compton.h" declline="7" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a23889b06f89c43496986015e13a60f2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_boost</definition>
+        <argsstring>(double v[4], double u[4], double vp[4])</argsstring>
+        <name>GPU_boost</name>
+        <param>
+          <type>double</type>
+          <declname>v</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>u</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>vp</declname>
+          <array>[4]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="8" column="17" declfile="src/compton.h" declline="8" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a95628da4319e226d82f6ea553afea193" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_sample_thomson</definition>
+        <argsstring>(curandState *localState)</argsstring>
+        <name>GPU_sample_thomson</name>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="9" column="19" declfile="src/compton.h" declline="9" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_sample_klein_nishina</definition>
+        <argsstring>(double k0, curandState *localState)</argsstring>
+        <name>GPU_sample_klein_nishina</name>
+        <param>
+          <type>double</type>
+          <declname>k0</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="10" column="19" declfile="src/compton.h" declline="10" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a333330464deee8831babe16f98f16648" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_klein_nishina</definition>
+        <argsstring>(const double a, const double ap)</argsstring>
+        <name>GPU_klein_nishina</name>
+        <param>
+          <type>const double</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>ap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="11" column="19" declfile="src/compton.h" declline="11" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_sample_electron_distr_p</definition>
+        <argsstring>(double k[4], double p[4], double Thetae, curandState *localState)</argsstring>
+        <name>GPU_sample_electron_distr_p</name>
+        <param>
+          <type>double</type>
+          <declname>k</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>p</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="12" column="17" declfile="src/compton.h" declline="12" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a12ee38bdba5375c31513089d65642b5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_sample_beta_distr</definition>
+        <argsstring>(double Thetae, double *gamma_e, double *beta_e, curandState *localState)</argsstring>
+        <name>GPU_sample_beta_distr</name>
+        <param>
+          <type>double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>gamma_e</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>beta_e</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="13" column="17" declfile="src/compton.h" declline="13" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_sample_y_distr</definition>
+        <argsstring>(const double Thetae, curandState *localState)</argsstring>
+        <name>GPU_sample_y_distr</name>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="14" column="19" declfile="src/compton.h" declline="14" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1acecc256e76033d65ace1140306de801c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_sample_mu_distr</definition>
+        <argsstring>(const double beta_e, double random)</argsstring>
+        <name>GPU_sample_mu_distr</name>
+        <param>
+          <type>const double</type>
+          <declname>beta_e</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>random</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="15" column="19" declfile="src/compton.h" declline="15" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_scatter_super_photon</definition>
+        <argsstring>(struct of_photonSOA ph, struct of_photonSOA php, double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState *localState, unsigned long long photon_index)</argsstring>
+        <name>GPU_scatter_super_photon</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>php</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>B</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Ucon</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Bcon</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Gcov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <param>
+          <type>unsigned long long</type>
+          <declname>photon_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/compton.h" line="16" column="17" declfile="src/compton.h" declline="16" declcolumn="17"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declaration<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>compton.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>COMPTON_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>COMPTON_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" kindref="member">GPU_sample_scattered_photon</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>kp[4],<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="8" refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" kindref="member">GPU_boost</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>v[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>vp[4]);</highlight></codeline>
+<codeline lineno="9" refid="compton_8h_1a95628da4319e226d82f6ea553afea193" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a95628da4319e226d82f6ea553afea193" kindref="member">GPU_sample_thomson</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="10" refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" kindref="member">GPU_sample_klein_nishina</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k0,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="11" refid="compton_8h_1a333330464deee8831babe16f98f16648" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a333330464deee8831babe16f98f16648" kindref="member">GPU_klein_nishina</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ap);</highlight></codeline>
+<codeline lineno="12" refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" kindref="member">GPU_sample_electron_distr_p</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="13" refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" kindref="member">GPU_sample_beta_distr</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*gamma_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*beta_e,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="14" refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" kindref="member">GPU_sample_y_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="15" refid="compton_8h_1acecc256e76033d65ace1140306de801c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1acecc256e76033d65ace1140306de801c" kindref="member">GPU_sample_mu_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>beta_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>random);</highlight></codeline>
+<codeline lineno="16" refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" kindref="member">GPU_scatter_super_photon</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>php,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/>curandState<sp/>*<sp/>localState,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photon_index);</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/compton.h"/>
+  </compounddef>
+</doxygen>

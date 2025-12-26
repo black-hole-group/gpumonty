@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="curand_8h" kind="file" language="C++">
+    <compoundname>curand.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_init_monty_rand</definition>
+        <argsstring>(int seed)</argsstring>
+        <name>GPU_init_monty_rand</name>
+        <param>
+          <type>int</type>
+          <declname>seed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="7" column="17" declfile="src/curand.h" declline="7" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="curand_8h_1a161bac54521949f738425df8d4575a34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void generate_random_direction</definition>
+        <argsstring>(double *x, double *y, double *z, curandState *localState)</argsstring>
+        <name>generate_random_direction</name>
+        <param>
+          <type>double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="8" column="17" declfile="src/curand.h" declline="8" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double chi_square</definition>
+        <argsstring>(int df, curandState *localState)</argsstring>
+        <name>chi_square</name>
+        <param>
+          <type>int</type>
+          <declname>df</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="9" column="19" declfile="src/curand.h" declline="9" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="curand_8h_1ad9c2dd446dfab91259100793af28fa28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double legacy_standard_exponential</definition>
+        <argsstring>(curandState *localState)</argsstring>
+        <name>legacy_standard_exponential</name>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="10" column="19" declfile="src/curand.h" declline="10" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="curand_8h_1a5c742f9247534502f6c5e0df8182193d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void legacy_gauss</definition>
+        <argsstring>(double *out1, double *out2, curandState *localState)</argsstring>
+        <name>legacy_gauss</name>
+        <param>
+          <type>double *</type>
+          <declname>out1</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>out2</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="11" column="17" declfile="src/curand.h" declline="11" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double legacy_standard_gamma</definition>
+        <argsstring>(double shape, curandState *localState)</argsstring>
+        <name>legacy_standard_gamma</name>
+        <param>
+          <type>double</type>
+          <declname>shape</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/curand.h" line="12" column="19" declfile="src/curand.h" declline="12" declcolumn="19"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declarations<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>curand.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>CURAND_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CURAND_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1aa0d699792c90c9c0a311f0ce9a99aa2a" kindref="member">GPU_init_monty_rand</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seed);</highlight></codeline>
+<codeline lineno="8" refid="curand_8h_1a161bac54521949f738425df8d4575a34" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a161bac54521949f738425df8d4575a34" kindref="member">generate_random_direction</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*z,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="9" refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619" kindref="member">chi_square</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>df,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="10" refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1ad9c2dd446dfab91259100793af28fa28" kindref="member">legacy_standard_exponential</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="11" refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a5c742f9247534502f6c5e0df8182193d" kindref="member">legacy_gauss</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>out2,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="12" refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="curand_8h_1a933acc3f6fe6da53c8ae10278078860e" kindref="member">legacy_standard_gamma</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>shape,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/curand.h"/>
+  </compounddef>
+</doxygen>

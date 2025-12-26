@@ -1,0 +1,88 @@
+\hypertarget{kernels_8h}{}\doxysection{src/kernels.h File Reference}
+\label{kernels_8h}\index{src/kernels.h@{src/kernels.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a807c1d397d9848379b38a2dbda253ef1}{GPU\+\_\+generate\+\_\+photons}} (const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+geom, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+p, const time\+\_\+t time, unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ generated\+\_\+photons\+\_\+arr, double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ dnmax\+\_\+arr, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a869ff413f418f99cbc32aa5711fb9de4}{GPU\+\_\+init\+\_\+zone}} (const int i, const int j, const int k, unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ n2gen, double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ dnmax, const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+geom, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+p, const int d\+\_\+\+Ns\+\_\+par, curand\+State $\ast$local\+State, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a61d27aa585f40c04f60ce1c1afb7e0b0}{GPU\+\_\+sample\+\_\+photons\+\_\+batch}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph\+\_\+init, const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+geom, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+p, const unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ generated\+\_\+photons\+\_\+arr, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ dnmax\+\_\+arr, const int max\+\_\+partition\+\_\+ph, const unsigned long long photons\+\_\+processed\+\_\+sofar, const unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ index\+\_\+to\+\_\+ijk, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_aeb4ff65d6c85509d96c92ac2edb01c97}{GPU\+\_\+sample\+\_\+zone\+\_\+photon}} (const int i, const int j, const int k, const double dnmax, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$d\+\_\+geom, const double $\ast$d\+\_\+p, const int zone\+\_\+flag, const unsigned long long ph\+\_\+arr\+\_\+index, double($\ast$Econ)\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double($\ast$Ecov)\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, curand\+State $\ast$local\+State, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a2493f93ef12374fe8c6f44d4f343daf6}{GPU\+\_\+track}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, cuda\+Texture\+Object\+\_\+t d\+\_\+p, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+table\+\_\+ptr, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} scat\+\_\+ofphoton, const unsigned long long max\+\_\+partition\+\_\+ph, const int nblocks, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_aab4e6a25a16de5d65678453d43a76f80}{GPU\+\_\+track\+\_\+scat}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, cuda\+Texture\+Object\+\_\+t d\+\_\+p, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+table\+\_\+ptr, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} scat\+\_\+ofphoton, const int n, const int number\+\_\+of\+\_\+threads, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj, unsigned long long round\+\_\+num\+\_\+scat\+\_\+init, unsigned long long round\+\_\+num\+\_\+scat\+\_\+end)
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a623514e2566ee4a0a1a88c0cd0bfd52d}{GPU\+\_\+record}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+spect, const unsigned long long max\+\_\+partition\+\_\+ph, const int nblocks)
+\item 
+\+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a29f709d0b25f7f6b5494d53169ce3023}{GPU\+\_\+record\+\_\+scattering}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+spect, const unsigned long long max\+\_\+partition\+\_\+ph, const int nblocks, const int n)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}{report\+\_\+spectrum}} (unsigned long long N\+\_\+superph\+\_\+made, struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} \mbox{\hyperlink{decs_8h_a4ba778202c908d0355d7f79b21f9efe7}{spect}}\mbox{[}\mbox{\hyperlink{config_8h_af52e5601e24f633637c7ef961a01a847}{N\+\_\+\+THBINS}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_af9cf051839fae1fdc190fe02abd595c6}{N\+\_\+\+EBINS}}\mbox{]}, const char $\ast$filename)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a726cbb34f438abac82f3977b0ab170dd}{main\+Flow\+Control}} (time\+\_\+t time, double $\ast$\mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{kernels_8h_a807c1d397d9848379b38a2dbda253ef1}\label{kernels_8h_a807c1d397d9848379b38a2dbda253ef1}} 
+\index{kernels.h@{kernels.h}!GPU\_generate\_photons@{GPU\_generate\_photons}}
+\index{GPU\_generate\_photons@{GPU\_generate\_photons}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_generate\_photons()}{GPU\_generate\_photons()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+generate\+\_\+photons (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+geom,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+p,  }\item[{const time\+\_\+t}]{time,  }\item[{unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{generated\+\_\+photons\+\_\+arr,  }\item[{double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{dnmax\+\_\+arr,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a869ff413f418f99cbc32aa5711fb9de4}\label{kernels_8h_a869ff413f418f99cbc32aa5711fb9de4}} 
+\index{kernels.h@{kernels.h}!GPU\_init\_zone@{GPU\_init\_zone}}
+\index{GPU\_init\_zone@{GPU\_init\_zone}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_init\_zone()}{GPU\_init\_zone()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+init\+\_\+zone (\begin{DoxyParamCaption}\item[{const int}]{i,  }\item[{const int}]{j,  }\item[{const int}]{k,  }\item[{unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{n2gen,  }\item[{double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{dnmax,  }\item[{const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+geom,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+p,  }\item[{const int}]{d\+\_\+\+Ns\+\_\+par,  }\item[{curand\+State $\ast$}]{local\+State,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a623514e2566ee4a0a1a88c0cd0bfd52d}\label{kernels_8h_a623514e2566ee4a0a1a88c0cd0bfd52d}} 
+\index{kernels.h@{kernels.h}!GPU\_record@{GPU\_record}}
+\index{GPU\_record@{GPU\_record}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_record()}{GPU\_record()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+record (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+spect,  }\item[{const unsigned long long}]{max\+\_\+partition\+\_\+ph,  }\item[{const int}]{nblocks }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a29f709d0b25f7f6b5494d53169ce3023}\label{kernels_8h_a29f709d0b25f7f6b5494d53169ce3023}} 
+\index{kernels.h@{kernels.h}!GPU\_record\_scattering@{GPU\_record\_scattering}}
+\index{GPU\_record\_scattering@{GPU\_record\_scattering}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_record\_scattering()}{GPU\_record\_scattering()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+record\+\_\+scattering (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+spect,  }\item[{const unsigned long long}]{max\+\_\+partition\+\_\+ph,  }\item[{const int}]{nblocks,  }\item[{const int}]{n }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a61d27aa585f40c04f60ce1c1afb7e0b0}\label{kernels_8h_a61d27aa585f40c04f60ce1c1afb7e0b0}} 
+\index{kernels.h@{kernels.h}!GPU\_sample\_photons\_batch@{GPU\_sample\_photons\_batch}}
+\index{GPU\_sample\_photons\_batch@{GPU\_sample\_photons\_batch}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_photons\_batch()}{GPU\_sample\_photons\_batch()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+photons\+\_\+batch (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph\+\_\+init,  }\item[{const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+geom,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+p,  }\item[{const unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{generated\+\_\+photons\+\_\+arr,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{dnmax\+\_\+arr,  }\item[{const int}]{max\+\_\+partition\+\_\+ph,  }\item[{const unsigned long long}]{photons\+\_\+processed\+\_\+sofar,  }\item[{const unsigned long long $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{index\+\_\+to\+\_\+ijk,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_aeb4ff65d6c85509d96c92ac2edb01c97}\label{kernels_8h_aeb4ff65d6c85509d96c92ac2edb01c97}} 
+\index{kernels.h@{kernels.h}!GPU\_sample\_zone\_photon@{GPU\_sample\_zone\_photon}}
+\index{GPU\_sample\_zone\_photon@{GPU\_sample\_zone\_photon}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_zone\_photon()}{GPU\_sample\_zone\_photon()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+zone\+\_\+photon (\begin{DoxyParamCaption}\item[{const int}]{i,  }\item[{const int}]{j,  }\item[{const int}]{k,  }\item[{const double}]{dnmax,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{const struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$}]{d\+\_\+geom,  }\item[{const double $\ast$}]{d\+\_\+p,  }\item[{const int}]{zone\+\_\+flag,  }\item[{const unsigned long long}]{ph\+\_\+arr\+\_\+index,  }\item[{double($\ast$)}]{Econ\mbox{[}\+NDIM\mbox{]},  }\item[{double($\ast$)}]{Ecov\mbox{[}\+NDIM\mbox{]},  }\item[{curand\+State $\ast$}]{local\+State,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a2493f93ef12374fe8c6f44d4f343daf6}\label{kernels_8h_a2493f93ef12374fe8c6f44d4f343daf6}} 
+\index{kernels.h@{kernels.h}!GPU\_track@{GPU\_track}}
+\index{GPU\_track@{GPU\_track}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_track()}{GPU\_track()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+track (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{cuda\+Texture\+Object\+\_\+t}]{d\+\_\+p,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+table\+\_\+ptr,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{scat\+\_\+ofphoton,  }\item[{const unsigned long long}]{max\+\_\+partition\+\_\+ph,  }\item[{const int}]{nblocks,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_aab4e6a25a16de5d65678453d43a76f80}\label{kernels_8h_aab4e6a25a16de5d65678453d43a76f80}} 
+\index{kernels.h@{kernels.h}!GPU\_track\_scat@{GPU\_track\_scat}}
+\index{GPU\_track\_scat@{GPU\_track\_scat}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_track\_scat()}{GPU\_track\_scat()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+global\+\_\+\+\_\+ void GPU\+\_\+track\+\_\+scat (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{cuda\+Texture\+Object\+\_\+t}]{d\+\_\+p,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+table\+\_\+ptr,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{scat\+\_\+ofphoton,  }\item[{const int}]{n,  }\item[{const int}]{number\+\_\+of\+\_\+threads,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj,  }\item[{unsigned long long}]{round\+\_\+num\+\_\+scat\+\_\+init,  }\item[{unsigned long long}]{round\+\_\+num\+\_\+scat\+\_\+end }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_a726cbb34f438abac82f3977b0ab170dd}\label{kernels_8h_a726cbb34f438abac82f3977b0ab170dd}} 
+\index{kernels.h@{kernels.h}!mainFlowControl@{mainFlowControl}}
+\index{mainFlowControl@{mainFlowControl}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{mainFlowControl()}{mainFlowControl()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void main\+Flow\+Control (\begin{DoxyParamCaption}\item[{time\+\_\+t}]{time,  }\item[{double $\ast$}]{p }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}\label{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}} 
+\index{kernels.h@{kernels.h}!report\_spectrum@{report\_spectrum}}
+\index{report\_spectrum@{report\_spectrum}!kernels.h@{kernels.h}}
+\doxysubsubsection{\texorpdfstring{report\_spectrum()}{report\_spectrum()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void report\+\_\+spectrum (\begin{DoxyParamCaption}\item[{unsigned long long}]{N\+\_\+superph\+\_\+made,  }\item[{struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}}}]{spect\mbox{[}\+N\+\_\+\+THBINS\mbox{]}\mbox{[}\+N\+\_\+\+EBINS\mbox{]},  }\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+

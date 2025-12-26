@@ -1,0 +1,56 @@
+\hypertarget{curand_8h}{}\doxysection{src/curand.h File Reference}
+\label{curand_8h}\index{src/curand.h@{src/curand.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{curand_8h_aa0d699792c90c9c0a311f0ce9a99aa2a}{GPU\+\_\+init\+\_\+monty\+\_\+rand}} (int seed)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{curand_8h_a161bac54521949f738425df8d4575a34}{generate\+\_\+random\+\_\+direction}} (double $\ast$x, double $\ast$y, double $\ast$z, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{curand_8h_afb8b0c03e481e93523bc9caa7f44d619}{chi\+\_\+square}} (int df, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{curand_8h_ad9c2dd446dfab91259100793af28fa28}{legacy\+\_\+standard\+\_\+exponential}} (curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{curand_8h_a5c742f9247534502f6c5e0df8182193d}{legacy\+\_\+gauss}} (double $\ast$out1, double $\ast$out2, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{curand_8h_a933acc3f6fe6da53c8ae10278078860e}{legacy\+\_\+standard\+\_\+gamma}} (double shape, curand\+State $\ast$local\+State)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{curand_8h_afb8b0c03e481e93523bc9caa7f44d619}\label{curand_8h_afb8b0c03e481e93523bc9caa7f44d619}} 
+\index{curand.h@{curand.h}!chi\_square@{chi\_square}}
+\index{chi\_square@{chi\_square}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{chi\_square()}{chi\_square()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double chi\+\_\+square (\begin{DoxyParamCaption}\item[{int}]{df,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{curand_8h_a161bac54521949f738425df8d4575a34}\label{curand_8h_a161bac54521949f738425df8d4575a34}} 
+\index{curand.h@{curand.h}!generate\_random\_direction@{generate\_random\_direction}}
+\index{generate\_random\_direction@{generate\_random\_direction}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{generate\_random\_direction()}{generate\_random\_direction()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void generate\+\_\+random\+\_\+direction (\begin{DoxyParamCaption}\item[{double $\ast$}]{x,  }\item[{double $\ast$}]{y,  }\item[{double $\ast$}]{z,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{curand_8h_aa0d699792c90c9c0a311f0ce9a99aa2a}\label{curand_8h_aa0d699792c90c9c0a311f0ce9a99aa2a}} 
+\index{curand.h@{curand.h}!GPU\_init\_monty\_rand@{GPU\_init\_monty\_rand}}
+\index{GPU\_init\_monty\_rand@{GPU\_init\_monty\_rand}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_init\_monty\_rand()}{GPU\_init\_monty\_rand()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+init\+\_\+monty\+\_\+rand (\begin{DoxyParamCaption}\item[{int}]{seed }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{curand_8h_a5c742f9247534502f6c5e0df8182193d}\label{curand_8h_a5c742f9247534502f6c5e0df8182193d}} 
+\index{curand.h@{curand.h}!legacy\_gauss@{legacy\_gauss}}
+\index{legacy\_gauss@{legacy\_gauss}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{legacy\_gauss()}{legacy\_gauss()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void legacy\+\_\+gauss (\begin{DoxyParamCaption}\item[{double $\ast$}]{out1,  }\item[{double $\ast$}]{out2,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{curand_8h_ad9c2dd446dfab91259100793af28fa28}\label{curand_8h_ad9c2dd446dfab91259100793af28fa28}} 
+\index{curand.h@{curand.h}!legacy\_standard\_exponential@{legacy\_standard\_exponential}}
+\index{legacy\_standard\_exponential@{legacy\_standard\_exponential}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{legacy\_standard\_exponential()}{legacy\_standard\_exponential()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double legacy\+\_\+standard\+\_\+exponential (\begin{DoxyParamCaption}\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{curand_8h_a933acc3f6fe6da53c8ae10278078860e}\label{curand_8h_a933acc3f6fe6da53c8ae10278078860e}} 
+\index{curand.h@{curand.h}!legacy\_standard\_gamma@{legacy\_standard\_gamma}}
+\index{legacy\_standard\_gamma@{legacy\_standard\_gamma}!curand.h@{curand.h}}
+\doxysubsubsection{\texorpdfstring{legacy\_standard\_gamma()}{legacy\_standard\_gamma()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double legacy\+\_\+standard\+\_\+gamma (\begin{DoxyParamCaption}\item[{double}]{shape,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+

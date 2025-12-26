@@ -1,0 +1,56 @@
+\hypertarget{tetrads_8h}{}\doxysection{src/tetrads.h File Reference}
+\label{tetrads_8h}\index{src/tetrads.h@{src/tetrads.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{tetrads_8h_ade72d9c30e6aa1a250be2050b34ed12a}{GPU\+\_\+make\+\_\+tetrad}} (double Ucon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double trial\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Econ\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Ecov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{tetrads_8h_a8a0da4e24c190d57ec68a765a8a5de4a}{GPU\+\_\+tetrad\+\_\+to\+\_\+coordinate}} (const double Econ\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double K\+\_\+tetrad\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double K\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{tetrads_8h_ab80dc45ae288a6dedb2e7286305dbe88}{GPU\+\_\+coordinate\+\_\+to\+\_\+tetrad}} (const double Ecov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double K\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double K\+\_\+tetrad\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{tetrads_8h_a4d34ab270232c8dbeef9cec70155d363}{GPU\+\_\+delta}} (int i, int j)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{tetrads_8h_a7b58a0bd4b68a32510f73d168a8fda4a}{GPU\+\_\+normalize}} (double $\ast$vcon, const double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{tetrads_8h_aff0979a80c6542cf37407f6217103cce}{GPU\+\_\+project\+\_\+out}} (double $\ast$vcona, double $\ast$vconb, const double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tetrads_8h_ab80dc45ae288a6dedb2e7286305dbe88}\label{tetrads_8h_ab80dc45ae288a6dedb2e7286305dbe88}} 
+\index{tetrads.h@{tetrads.h}!GPU\_coordinate\_to\_tetrad@{GPU\_coordinate\_to\_tetrad}}
+\index{GPU\_coordinate\_to\_tetrad@{GPU\_coordinate\_to\_tetrad}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_coordinate\_to\_tetrad()}{GPU\_coordinate\_to\_tetrad()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+coordinate\+\_\+to\+\_\+tetrad (\begin{DoxyParamCaption}\item[{const double}]{Ecov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{K\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{K\+\_\+tetrad\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{tetrads_8h_a4d34ab270232c8dbeef9cec70155d363}\label{tetrads_8h_a4d34ab270232c8dbeef9cec70155d363}} 
+\index{tetrads.h@{tetrads.h}!GPU\_delta@{GPU\_delta}}
+\index{GPU\_delta@{GPU\_delta}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_delta()}{GPU\_delta()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+delta (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{tetrads_8h_ade72d9c30e6aa1a250be2050b34ed12a}\label{tetrads_8h_ade72d9c30e6aa1a250be2050b34ed12a}} 
+\index{tetrads.h@{tetrads.h}!GPU\_make\_tetrad@{GPU\_make\_tetrad}}
+\index{GPU\_make\_tetrad@{GPU\_make\_tetrad}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_make\_tetrad()}{GPU\_make\_tetrad()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+make\+\_\+tetrad (\begin{DoxyParamCaption}\item[{double}]{Ucon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{trial\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Econ\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Ecov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{tetrads_8h_a7b58a0bd4b68a32510f73d168a8fda4a}\label{tetrads_8h_a7b58a0bd4b68a32510f73d168a8fda4a}} 
+\index{tetrads.h@{tetrads.h}!GPU\_normalize@{GPU\_normalize}}
+\index{GPU\_normalize@{GPU\_normalize}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_normalize()}{GPU\_normalize()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+normalize (\begin{DoxyParamCaption}\item[{double $\ast$}]{vcon,  }\item[{const double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{tetrads_8h_aff0979a80c6542cf37407f6217103cce}\label{tetrads_8h_aff0979a80c6542cf37407f6217103cce}} 
+\index{tetrads.h@{tetrads.h}!GPU\_project\_out@{GPU\_project\_out}}
+\index{GPU\_project\_out@{GPU\_project\_out}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_project\_out()}{GPU\_project\_out()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+project\+\_\+out (\begin{DoxyParamCaption}\item[{double $\ast$}]{vcona,  }\item[{double $\ast$}]{vconb,  }\item[{const double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{tetrads_8h_a8a0da4e24c190d57ec68a765a8a5de4a}\label{tetrads_8h_a8a0da4e24c190d57ec68a765a8a5de4a}} 
+\index{tetrads.h@{tetrads.h}!GPU\_tetrad\_to\_coordinate@{GPU\_tetrad\_to\_coordinate}}
+\index{GPU\_tetrad\_to\_coordinate@{GPU\_tetrad\_to\_coordinate}!tetrads.h@{tetrads.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_tetrad\_to\_coordinate()}{GPU\_tetrad\_to\_coordinate()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+tetrad\+\_\+to\+\_\+coordinate (\begin{DoxyParamCaption}\item[{const double}]{Econ\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{K\+\_\+tetrad\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{K\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+

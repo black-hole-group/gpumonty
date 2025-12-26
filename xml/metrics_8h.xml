@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="metrics_8h" kind="file" language="C++">
+    <compoundname>metrics.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double gdet_func</definition>
+        <argsstring>(double gcov[][NDIM])</argsstring>
+        <name>gdet_func</name>
+        <param>
+          <type>double</type>
+          <declname>gcov</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="7" column="8" declfile="src/metrics.h" declline="7" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ int</type>
+        <definition>__host__ __device__ int LU_decompose</definition>
+        <argsstring>(double A[][NDIM], int permute[])</argsstring>
+        <name>LU_decompose</name>
+        <param>
+          <type>double</type>
+          <declname>A</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>permute</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="8" column="26" declfile="src/metrics.h" declline="8" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ void</type>
+        <definition>__host__ __device__ void LU_substitution</definition>
+        <argsstring>(double A[][NDIM], double B[], int permute[])</argsstring>
+        <name>LU_substitution</name>
+        <param>
+          <type>double</type>
+          <declname>A</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>B</declname>
+          <array>[]</array>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>permute</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="9" column="26" declfile="src/metrics.h" declline="9" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ int</type>
+        <definition>__host__ __device__ int invert_matrix</definition>
+        <argsstring>(double Am[][NDIM], double Aminv[][NDIM])</argsstring>
+        <name>invert_matrix</name>
+        <param>
+          <type>double</type>
+          <declname>Am</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Aminv</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="10" column="25" declfile="src/metrics.h" declline="10" declcolumn="25"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1a2941833c93751da72ab28f1751a79a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ void</type>
+        <definition>__host__ __device__ void gcon_func</definition>
+        <argsstring>(const double X[4], double gcov[][NDIM], double gcon[][NDIM])</argsstring>
+        <name>gcon_func</name>
+        <param>
+          <type>const double</type>
+          <declname>X</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>gcov</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>gcon</declname>
+          <array>[][NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="11" column="26" declfile="src/metrics.h" declline="11" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_get_connection</definition>
+        <argsstring>(const double X[4], double lconn[4][4][4])</argsstring>
+        <name>GPU_get_connection</name>
+        <param>
+          <type>const double</type>
+          <declname>X</declname>
+          <array>[4]</array>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>lconn</declname>
+          <array>[4][4][4]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="12" column="17" declfile="src/metrics.h" declline="12" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ void</type>
+        <definition>__host__ __device__ void lower</definition>
+        <argsstring>(double *ucon, const double Gcov[NDIM][NDIM], double *ucov)</argsstring>
+        <name>lower</name>
+        <param>
+          <type>double *</type>
+          <declname>ucon</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Gcov</declname>
+          <array>[NDIM][NDIM]</array>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>ucov</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="13" column="26" declfile="src/metrics.h" declline="13" declcolumn="26"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declarations<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>the<sp/>metrics.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" kindref="member">gdet_func</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="8" refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" refkind="member"><highlight class="normal">__host__<sp/><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" kindref="member">LU_decompose</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
+<codeline lineno="9" refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" kindref="member">LU_substitution</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B[],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
+<codeline lineno="10" refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Am[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Aminv[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>)<sp/><sp/>;</highlight></codeline>
+<codeline lineno="11" refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" kindref="member">gcon_func</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcon[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="12" refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" kindref="member">GPU_get_connection</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>lconn[4][4][4]);</highlight></codeline>
+<codeline lineno="13" refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" kindref="member">lower</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" kindref="member">ucon</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" kindref="member">ucov</ref>);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/metrics.h"/>
+  </compounddef>
+</doxygen>

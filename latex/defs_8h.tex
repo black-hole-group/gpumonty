@@ -1,0 +1,751 @@
+\hypertarget{defs_8h}{}\doxysection{src/defs.h File Reference}
+\label{defs_8h}\index{src/defs.h@{src/defs.h}}
+{\ttfamily \#include \char`\"{}config.\+h\char`\"{}}\newline
+Include dependency graph for defs.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{defs_8h__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}}
+\item 
+struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}}
+\item 
+struct \mbox{\hyperlink{structparams__t}{params\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structparams__t}{params\+\_\+t}} \mbox{\hyperlink{defs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$ \mbox{\hyperlink{defs_8h_ae323db0d410f2ea234b9484acfd333d4}{geom}}
+\item 
+gsl\+\_\+integration\+\_\+workspace $\ast$ \mbox{\hyperlink{defs_8h_ac34b583787faac6c02ad0438df077b59}{w}}
+\item 
+double \mbox{\hyperlink{defs_8h_a1b0ec3044652a5d922d8e1a24455df81}{F}} \mbox{[}800+1\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_a87df3bdc854d088f7b90e59bc034edcc}{wgt}} \mbox{[}800+1\mbox{]}
+\item 
+unsigned long long \mbox{\hyperlink{defs_8h_a665f40c3f8f3a36509e8c74668d398ab}{N\+\_\+scatt}}
+\item 
+unsigned long long \mbox{\hyperlink{defs_8h_a68dd8132a9835dbc463907ffd59958c1}{N\+\_\+superph\+\_\+recorded}}
+\item 
+double \mbox{\hyperlink{defs_8h_a37800d14d893b7a8126f821b7a34e1d1}{R0}}
+\item 
+double \mbox{\hyperlink{defs_8h_a5f200d81ca494457b004628aa958bcec}{Rin}}
+\item 
+double \mbox{\hyperlink{defs_8h_aa08ac2c5196daf0cda610def0b1b81fc}{Rh}}
+\item 
+double \mbox{\hyperlink{defs_8h_ae38887db77c101efeb7db711a9e856db}{Rout}}
+\item 
+double \mbox{\hyperlink{defs_8h_a147f35f70045c8c403c380ba83176093}{Rms}}
+\item 
+double \mbox{\hyperlink{defs_8h_aec158415808eb5ddb908cdeb7bf9c343}{hslope}}
+\item 
+double \mbox{\hyperlink{defs_8h_a22a1624b7aadab4136bba181b4644564}{startx}} \mbox{[}4\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_ab72209febcbdc5407955e21864ab504b}{stopx}} \mbox{[}4\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_a22ea0840a5ce5fbea6a94a905cd5ec41}{dx}} \mbox{[}4\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_a45d60151fb0572200ad00231c304aaf0}{gam}}
+\item 
+double \mbox{\hyperlink{defs_8h_af1b6f6b5c562420d01bcadcc0ba72453}{d\+Msim}}
+\item 
+double \mbox{\hyperlink{defs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}{Thetae\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_a1a12d1761d2fcb9a5ba79ae0724b4caa}{max\+\_\+tau\+\_\+scatt}}
+\item 
+double \mbox{\hyperlink{defs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}{Ladv}}
+\item 
+double \mbox{\hyperlink{defs_8h_ac95deac65effbea484bf30e539c1b62b}{d\+Mact}}
+\item 
+double \mbox{\hyperlink{defs_8h_a35b2d6b30ef375b6b18f546dc98357b2}{bias\+\_\+norm}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_aaec46a71b387d4a2e71769c208112fd3}{econ}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_a0d976351cecf4528d1cd3d41bea51ed0}{ecov}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_ad8c7a14419937e710e056a1592f8bf8b}{bcon}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_a8b61d35db7528efda160176a1898fadf}{bcov}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_acca984f3768575908e2e0dd2f22cbb95}{ucon}}
+\item 
+double $\ast$$\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_a7a49aa3585420e73246460b8ab0a4ca7}{ucov}}
+\item 
+double $\ast$ \mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}}
+\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_a03b3154ce6226810ae2cbe4b8e5edb0c}{ne}}
+\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_a96d86c26e48095c968a287e022017016}{thetae}}
+\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}}
+\item 
+int \mbox{\hyperlink{defs_8h_a5a6a26e0827f9640d2eb7201017f19d7}{N1}}
+\item 
+int \mbox{\hyperlink{defs_8h_adeea8075a0038c985c63d45161804d60}{N2}}
+\item 
+int \mbox{\hyperlink{defs_8h_a4e8e9c2bf9e06ae07ef364c05a073302}{N3}}
+\item 
+double \mbox{\hyperlink{defs_8h_a82fb14569b04b06cb437b3c9391ed3a1}{L\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_aa55bd2f4828da46e2cd051edf8f1635e}{B\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_a8cd0401d02c76917b31197c083fc4103}{Ne\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_a8d570719a5e6ac69fc38e8e0d05f7973}{Rho\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_afbb8cc3c69f9362ac770bae25cc29c28}{U\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_a3072f08245495d12fd322f1c4f467765}{M\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_aafaa1bab5b6fbd4b1a32f5db78aaf569}{T\+\_\+unit}}
+\item 
+double \mbox{\hyperlink{defs_8h_adb649385fc46caa4ec00d0e0978a916f}{table}} \mbox{[}220+1\mbox{]}\mbox{[}80+1\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_afc84f8980bb448e4accd61e55ba71d78}{dlw}}
+\item 
+double \mbox{\hyperlink{defs_8h_a35d39cb335cfdcf911ef2bcedaf40342}{dlT}}
+\item 
+double \mbox{\hyperlink{defs_8h_a44398a98f987d7af5296425e8dd8413a}{lminw}}
+\item 
+double \mbox{\hyperlink{defs_8h_a0b99ff70dfc3b1835de852cf00dad7d4}{lmint}}
+\item 
+double \mbox{\hyperlink{defs_8h_a444d08dcccdedf0c1282d34b23965bc3}{nint}} \mbox{[}(40000)+1\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_a6547c87f4689b4642b73c2c250fa83be}{K2}} \mbox{[}800+1\mbox{]}
+\item 
+double \mbox{\hyperlink{defs_8h_a6068c3307e311182000df32983022b7f}{dndlnu\+\_\+max}} \mbox{[}(40000)+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ curand\+State \mbox{\hyperlink{defs_8h_a95bc280ba29632fc6e927dfb9dbc6adc}{my\+\_\+curand\+\_\+state}} \mbox{[}3456 $\ast$256\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a6fbfd70ce148bee2d0f9b864ea66e6a4}{d\+\_\+table}} \mbox{[}220+1\mbox{]}\mbox{[}80+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_a11fcc0b80c83537a7a8efaa238550bc0}{photon\+\_\+count}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_a6bcce35fba28e9e8136daeb648c76dde}{generated\+\_\+sphotons}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}{d\+\_\+\+N\+\_\+superph\+\_\+recorded}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{defs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}{d\+\_\+\+Ns}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_aed8971ac92cef3856c889bf508614ff0}{d\+\_\+\+N\+\_\+scatt}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a7929fa904845ee6867b2ae7d814b66c1}{d\+\_\+thetae\+\_\+unit}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a1d7a13b3c392d5b1456a136c95f74223}{d\+\_\+startx}} \mbox{[}4\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a1148144319f41da988d106074ab1cc15}{d\+\_\+dx}} \mbox{[}4\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a8edc197f9828749fdacec83c94897ed8}{d\+\_\+wgt}} \mbox{[}800+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a32bc2b470fa84bd906d0fe0d301f240a}{d\+\_\+F}} \mbox{[}800+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a8d36118555dce348aac569423334f743}{d\+\_\+\+K2}} \mbox{[}800+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a88ccdcc4882ecbc64fb360c5f80e5c35}{d\+\_\+bias\+\_\+norm}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a540234bcfbc0936b547add8ba066682e}{d\+\_\+stopx}} \mbox{[}4\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a742ef4db884976e1496d9dcd0cf7bb49}{d\+\_\+\+Rh}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_af9b8ee4984379bf47ea136962fee273e}{d\+\_\+max\+\_\+tau\+\_\+scatt}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_a78c64dac8bec176d822a7a3fa3839005}{scattering\+\_\+counter}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_ae3f7504002d5010a87327d32a3255ca0}{d\+\_\+num\+\_\+scat\+\_\+phs}} \mbox{[}(3)\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_a68ccb3c564f43896d2410ddd61d21f90}{tracking\+\_\+counter}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_af3623f3cd5730cb8d57c2ed2be1b5ada}{d\+\_\+nint}} \mbox{[}(40000)+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a7a7952bb165e1171597f761e1e945ef1}{d\+\_\+dndlnu\+\_\+max}} \mbox{[}(40000)+1\mbox{]}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_ae4a4d415e471cb2b79c3028e6cf3b3da}{d\+\_\+hslope}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a2b92264ec3008463a5529a4535f369e4}{d\+\_\+\+R0}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{defs_8h_a18ecee65560d33d3da019b4e34aee4cb}{total\+\_\+sca}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{defs_8h_aa8328a2d08bffccbcfb60d960343b21c}{tracking\+\_\+counter\+\_\+sampling}} = 0
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{defs_8h_a6b10273d9bb77b624a016098ab2e1151}{d\+\_\+\+N1}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{defs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}{d\+\_\+\+N2}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{defs_8h_ad0ce8bdf3833a533b4345eedfe8224fd}{d\+\_\+\+N3}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a40a4a3aa2d0eaf8420ab59fd074a51fd}{d\+\_\+trat\+\_\+small}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a6473b9c41ac13c339daecf5f7521bb99}{d\+\_\+trat\+\_\+large}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a8a27186bc9fd223c9427acf61a78fda6}{d\+\_\+beta\+\_\+crit}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a2536dffcc4e5773ab21b546a6ab92c45}{d\+\_\+thetae\+\_\+max}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_ab654fe0b60b7baf8dde19e2ae081623c}{d\+\_\+tp\+\_\+over\+\_\+te}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a7c8f846e91603646020cec12c0d92338}{d\+\_\+\+MBH}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a7a450efe14c37256eeb7be121aed1eff}{d\+\_\+\+L\+\_\+unit}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a7a1a5fbfa7dc341e9889a58c7cbf723c}{d\+\_\+\+B\+\_\+unit}}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{defs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}{d\+\_\+\+Ne\+\_\+unit}}
+\item 
+\mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} \mbox{\hyperlink{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}} = \{ 0 \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{defs_8h_adf599310dc2d73d7dea6fe81566f2f1c}\label{defs_8h_adf599310dc2d73d7dea6fe81566f2f1c}} 
+\index{defs.h@{defs.h}!Params@{Params}}
+\index{Params@{Params}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Params}{Params}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structparams__t}{params\+\_\+t}} \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}}}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}\label{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}} 
+\index{defs.h@{defs.h}!b@{b}}
+\index{b@{b}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{b}{b}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$ b}
+
+\mbox{\Hypertarget{defs_8h_aa55bd2f4828da46e2cd051edf8f1635e}\label{defs_8h_aa55bd2f4828da46e2cd051edf8f1635e}} 
+\index{defs.h@{defs.h}!B\_unit@{B\_unit}}
+\index{B\_unit@{B\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{B\_unit}{B\_unit}}
+{\footnotesize\ttfamily double B\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_ad8c7a14419937e710e056a1592f8bf8b}\label{defs_8h_ad8c7a14419937e710e056a1592f8bf8b}} 
+\index{defs.h@{defs.h}!bcon@{bcon}}
+\index{bcon@{bcon}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{bcon}{bcon}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$ bcon}
+
+\mbox{\Hypertarget{defs_8h_a8b61d35db7528efda160176a1898fadf}\label{defs_8h_a8b61d35db7528efda160176a1898fadf}} 
+\index{defs.h@{defs.h}!bcov@{bcov}}
+\index{bcov@{bcov}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{bcov}{bcov}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$ bcov}
+
+\mbox{\Hypertarget{defs_8h_a35b2d6b30ef375b6b18f546dc98357b2}\label{defs_8h_a35b2d6b30ef375b6b18f546dc98357b2}} 
+\index{defs.h@{defs.h}!bias\_norm@{bias\_norm}}
+\index{bias\_norm@{bias\_norm}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{bias\_norm}{bias\_norm}}
+{\footnotesize\ttfamily double bias\+\_\+norm}
+
+\mbox{\Hypertarget{defs_8h_a7a1a5fbfa7dc341e9889a58c7cbf723c}\label{defs_8h_a7a1a5fbfa7dc341e9889a58c7cbf723c}} 
+\index{defs.h@{defs.h}!d\_B\_unit@{d\_B\_unit}}
+\index{d\_B\_unit@{d\_B\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_B\_unit}{d\_B\_unit}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+B\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_a8a27186bc9fd223c9427acf61a78fda6}\label{defs_8h_a8a27186bc9fd223c9427acf61a78fda6}} 
+\index{defs.h@{defs.h}!d\_beta\_crit@{d\_beta\_crit}}
+\index{d\_beta\_crit@{d\_beta\_crit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_beta\_crit}{d\_beta\_crit}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+beta\+\_\+crit}
+
+\mbox{\Hypertarget{defs_8h_a88ccdcc4882ecbc64fb360c5f80e5c35}\label{defs_8h_a88ccdcc4882ecbc64fb360c5f80e5c35}} 
+\index{defs.h@{defs.h}!d\_bias\_norm@{d\_bias\_norm}}
+\index{d\_bias\_norm@{d\_bias\_norm}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_bias\_norm}{d\_bias\_norm}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+bias\+\_\+norm}
+
+\mbox{\Hypertarget{defs_8h_a7a7952bb165e1171597f761e1e945ef1}\label{defs_8h_a7a7952bb165e1171597f761e1e945ef1}} 
+\index{defs.h@{defs.h}!d\_dndlnu\_max@{d\_dndlnu\_max}}
+\index{d\_dndlnu\_max@{d\_dndlnu\_max}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_dndlnu\_max}{d\_dndlnu\_max}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+dndlnu\+\_\+max\mbox{[}(40000)+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a1148144319f41da988d106074ab1cc15}\label{defs_8h_a1148144319f41da988d106074ab1cc15}} 
+\index{defs.h@{defs.h}!d\_dx@{d\_dx}}
+\index{d\_dx@{d\_dx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_dx}{d\_dx}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+dx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a32bc2b470fa84bd906d0fe0d301f240a}\label{defs_8h_a32bc2b470fa84bd906d0fe0d301f240a}} 
+\index{defs.h@{defs.h}!d\_F@{d\_F}}
+\index{d\_F@{d\_F}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_F}{d\_F}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+F\mbox{[}800+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_ae4a4d415e471cb2b79c3028e6cf3b3da}\label{defs_8h_ae4a4d415e471cb2b79c3028e6cf3b3da}} 
+\index{defs.h@{defs.h}!d\_hslope@{d\_hslope}}
+\index{d\_hslope@{d\_hslope}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_hslope}{d\_hslope}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+hslope = 0}
+
+\mbox{\Hypertarget{defs_8h_a8d36118555dce348aac569423334f743}\label{defs_8h_a8d36118555dce348aac569423334f743}} 
+\index{defs.h@{defs.h}!d\_K2@{d\_K2}}
+\index{d\_K2@{d\_K2}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_K2}{d\_K2}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+K2\mbox{[}800+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a7a450efe14c37256eeb7be121aed1eff}\label{defs_8h_a7a450efe14c37256eeb7be121aed1eff}} 
+\index{defs.h@{defs.h}!d\_L\_unit@{d\_L\_unit}}
+\index{d\_L\_unit@{d\_L\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_L\_unit}{d\_L\_unit}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+L\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_af9b8ee4984379bf47ea136962fee273e}\label{defs_8h_af9b8ee4984379bf47ea136962fee273e}} 
+\index{defs.h@{defs.h}!d\_max\_tau\_scatt@{d\_max\_tau\_scatt}}
+\index{d\_max\_tau\_scatt@{d\_max\_tau\_scatt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_max\_tau\_scatt}{d\_max\_tau\_scatt}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+max\+\_\+tau\+\_\+scatt}
+
+\mbox{\Hypertarget{defs_8h_a7c8f846e91603646020cec12c0d92338}\label{defs_8h_a7c8f846e91603646020cec12c0d92338}} 
+\index{defs.h@{defs.h}!d\_MBH@{d\_MBH}}
+\index{d\_MBH@{d\_MBH}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_MBH}{d\_MBH}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+MBH}
+
+\mbox{\Hypertarget{defs_8h_a6b10273d9bb77b624a016098ab2e1151}\label{defs_8h_a6b10273d9bb77b624a016098ab2e1151}} 
+\index{defs.h@{defs.h}!d\_N1@{d\_N1}}
+\index{d\_N1@{d\_N1}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_N1}{d\_N1}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+N1}
+
+\mbox{\Hypertarget{defs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}\label{defs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}} 
+\index{defs.h@{defs.h}!d\_N2@{d\_N2}}
+\index{d\_N2@{d\_N2}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_N2}{d\_N2}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+N2}
+
+\mbox{\Hypertarget{defs_8h_ad0ce8bdf3833a533b4345eedfe8224fd}\label{defs_8h_ad0ce8bdf3833a533b4345eedfe8224fd}} 
+\index{defs.h@{defs.h}!d\_N3@{d\_N3}}
+\index{d\_N3@{d\_N3}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_N3}{d\_N3}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+N3}
+
+\mbox{\Hypertarget{defs_8h_aed8971ac92cef3856c889bf508614ff0}\label{defs_8h_aed8971ac92cef3856c889bf508614ff0}} 
+\index{defs.h@{defs.h}!d\_N\_scatt@{d\_N\_scatt}}
+\index{d\_N\_scatt@{d\_N\_scatt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_N\_scatt}{d\_N\_scatt}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+\+N\+\_\+scatt}
+
+\mbox{\Hypertarget{defs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}\label{defs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}} 
+\index{defs.h@{defs.h}!d\_N\_superph\_recorded@{d\_N\_superph\_recorded}}
+\index{d\_N\_superph\_recorded@{d\_N\_superph\_recorded}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_N\_superph\_recorded}{d\_N\_superph\_recorded}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+\+N\+\_\+superph\+\_\+recorded}
+
+\mbox{\Hypertarget{defs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}\label{defs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}} 
+\index{defs.h@{defs.h}!d\_Ne\_unit@{d\_Ne\_unit}}
+\index{d\_Ne\_unit@{d\_Ne\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_Ne\_unit}{d\_Ne\_unit}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+Ne\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_af3623f3cd5730cb8d57c2ed2be1b5ada}\label{defs_8h_af3623f3cd5730cb8d57c2ed2be1b5ada}} 
+\index{defs.h@{defs.h}!d\_nint@{d\_nint}}
+\index{d\_nint@{d\_nint}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_nint}{d\_nint}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+nint\mbox{[}(40000)+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}\label{defs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}} 
+\index{defs.h@{defs.h}!d\_Ns@{d\_Ns}}
+\index{d\_Ns@{d\_Ns}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_Ns}{d\_Ns}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+Ns}
+
+\mbox{\Hypertarget{defs_8h_ae3f7504002d5010a87327d32a3255ca0}\label{defs_8h_ae3f7504002d5010a87327d32a3255ca0}} 
+\index{defs.h@{defs.h}!d\_num\_scat\_phs@{d\_num\_scat\_phs}}
+\index{d\_num\_scat\_phs@{d\_num\_scat\_phs}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_num\_scat\_phs}{d\_num\_scat\_phs}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+num\+\_\+scat\+\_\+phs\mbox{[}(3)\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a2b92264ec3008463a5529a4535f369e4}\label{defs_8h_a2b92264ec3008463a5529a4535f369e4}} 
+\index{defs.h@{defs.h}!d\_R0@{d\_R0}}
+\index{d\_R0@{d\_R0}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_R0}{d\_R0}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+R0 = 0}
+
+\mbox{\Hypertarget{defs_8h_a742ef4db884976e1496d9dcd0cf7bb49}\label{defs_8h_a742ef4db884976e1496d9dcd0cf7bb49}} 
+\index{defs.h@{defs.h}!d\_Rh@{d\_Rh}}
+\index{d\_Rh@{d\_Rh}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_Rh}{d\_Rh}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+Rh}
+
+\mbox{\Hypertarget{defs_8h_a1d7a13b3c392d5b1456a136c95f74223}\label{defs_8h_a1d7a13b3c392d5b1456a136c95f74223}} 
+\index{defs.h@{defs.h}!d\_startx@{d\_startx}}
+\index{d\_startx@{d\_startx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_startx}{d\_startx}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+startx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a540234bcfbc0936b547add8ba066682e}\label{defs_8h_a540234bcfbc0936b547add8ba066682e}} 
+\index{defs.h@{defs.h}!d\_stopx@{d\_stopx}}
+\index{d\_stopx@{d\_stopx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_stopx}{d\_stopx}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+stopx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a6fbfd70ce148bee2d0f9b864ea66e6a4}\label{defs_8h_a6fbfd70ce148bee2d0f9b864ea66e6a4}} 
+\index{defs.h@{defs.h}!d\_table@{d\_table}}
+\index{d\_table@{d\_table}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_table}{d\_table}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+table\mbox{[}220+1\mbox{]}\mbox{[}80+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a2536dffcc4e5773ab21b546a6ab92c45}\label{defs_8h_a2536dffcc4e5773ab21b546a6ab92c45}} 
+\index{defs.h@{defs.h}!d\_thetae\_max@{d\_thetae\_max}}
+\index{d\_thetae\_max@{d\_thetae\_max}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_thetae\_max}{d\_thetae\_max}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+thetae\+\_\+max}
+
+\mbox{\Hypertarget{defs_8h_a7929fa904845ee6867b2ae7d814b66c1}\label{defs_8h_a7929fa904845ee6867b2ae7d814b66c1}} 
+\index{defs.h@{defs.h}!d\_thetae\_unit@{d\_thetae\_unit}}
+\index{d\_thetae\_unit@{d\_thetae\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_thetae\_unit}{d\_thetae\_unit}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+thetae\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_ab654fe0b60b7baf8dde19e2ae081623c}\label{defs_8h_ab654fe0b60b7baf8dde19e2ae081623c}} 
+\index{defs.h@{defs.h}!d\_tp\_over\_te@{d\_tp\_over\_te}}
+\index{d\_tp\_over\_te@{d\_tp\_over\_te}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_tp\_over\_te}{d\_tp\_over\_te}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+tp\+\_\+over\+\_\+te}
+
+\mbox{\Hypertarget{defs_8h_a6473b9c41ac13c339daecf5f7521bb99}\label{defs_8h_a6473b9c41ac13c339daecf5f7521bb99}} 
+\index{defs.h@{defs.h}!d\_trat\_large@{d\_trat\_large}}
+\index{d\_trat\_large@{d\_trat\_large}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_trat\_large}{d\_trat\_large}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+trat\+\_\+large}
+
+\mbox{\Hypertarget{defs_8h_a40a4a3aa2d0eaf8420ab59fd074a51fd}\label{defs_8h_a40a4a3aa2d0eaf8420ab59fd074a51fd}} 
+\index{defs.h@{defs.h}!d\_trat\_small@{d\_trat\_small}}
+\index{d\_trat\_small@{d\_trat\_small}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_trat\_small}{d\_trat\_small}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+trat\+\_\+small}
+
+\mbox{\Hypertarget{defs_8h_a8edc197f9828749fdacec83c94897ed8}\label{defs_8h_a8edc197f9828749fdacec83c94897ed8}} 
+\index{defs.h@{defs.h}!d\_wgt@{d\_wgt}}
+\index{d\_wgt@{d\_wgt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{d\_wgt}{d\_wgt}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+wgt\mbox{[}800+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a35d39cb335cfdcf911ef2bcedaf40342}\label{defs_8h_a35d39cb335cfdcf911ef2bcedaf40342}} 
+\index{defs.h@{defs.h}!dlT@{dlT}}
+\index{dlT@{dlT}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dlT}{dlT}}
+{\footnotesize\ttfamily double dlT}
+
+\mbox{\Hypertarget{defs_8h_afc84f8980bb448e4accd61e55ba71d78}\label{defs_8h_afc84f8980bb448e4accd61e55ba71d78}} 
+\index{defs.h@{defs.h}!dlw@{dlw}}
+\index{dlw@{dlw}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dlw}{dlw}}
+{\footnotesize\ttfamily double dlw}
+
+\mbox{\Hypertarget{defs_8h_ac95deac65effbea484bf30e539c1b62b}\label{defs_8h_ac95deac65effbea484bf30e539c1b62b}} 
+\index{defs.h@{defs.h}!dMact@{dMact}}
+\index{dMact@{dMact}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dMact}{dMact}}
+{\footnotesize\ttfamily double d\+Mact}
+
+\mbox{\Hypertarget{defs_8h_af1b6f6b5c562420d01bcadcc0ba72453}\label{defs_8h_af1b6f6b5c562420d01bcadcc0ba72453}} 
+\index{defs.h@{defs.h}!dMsim@{dMsim}}
+\index{dMsim@{dMsim}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dMsim}{dMsim}}
+{\footnotesize\ttfamily double d\+Msim}
+
+\mbox{\Hypertarget{defs_8h_a6068c3307e311182000df32983022b7f}\label{defs_8h_a6068c3307e311182000df32983022b7f}} 
+\index{defs.h@{defs.h}!dndlnu\_max@{dndlnu\_max}}
+\index{dndlnu\_max@{dndlnu\_max}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dndlnu\_max}{dndlnu\_max}}
+{\footnotesize\ttfamily double dndlnu\+\_\+max\mbox{[}(40000)+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a22ea0840a5ce5fbea6a94a905cd5ec41}\label{defs_8h_a22ea0840a5ce5fbea6a94a905cd5ec41}} 
+\index{defs.h@{defs.h}!dx@{dx}}
+\index{dx@{dx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{dx}{dx}}
+{\footnotesize\ttfamily double dx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_aaec46a71b387d4a2e71769c208112fd3}\label{defs_8h_aaec46a71b387d4a2e71769c208112fd3}} 
+\index{defs.h@{defs.h}!econ@{econ}}
+\index{econ@{econ}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{econ}{econ}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$$\ast$ econ}
+
+\mbox{\Hypertarget{defs_8h_a0d976351cecf4528d1cd3d41bea51ed0}\label{defs_8h_a0d976351cecf4528d1cd3d41bea51ed0}} 
+\index{defs.h@{defs.h}!ecov@{ecov}}
+\index{ecov@{ecov}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{ecov}{ecov}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$$\ast$ ecov}
+
+\mbox{\Hypertarget{defs_8h_a1b0ec3044652a5d922d8e1a24455df81}\label{defs_8h_a1b0ec3044652a5d922d8e1a24455df81}} 
+\index{defs.h@{defs.h}!F@{F}}
+\index{F@{F}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{F}{F}}
+{\footnotesize\ttfamily double F\mbox{[}800+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a45d60151fb0572200ad00231c304aaf0}\label{defs_8h_a45d60151fb0572200ad00231c304aaf0}} 
+\index{defs.h@{defs.h}!gam@{gam}}
+\index{gam@{gam}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{gam}{gam}}
+{\footnotesize\ttfamily double gam}
+
+\mbox{\Hypertarget{defs_8h_a6bcce35fba28e9e8136daeb648c76dde}\label{defs_8h_a6bcce35fba28e9e8136daeb648c76dde}} 
+\index{defs.h@{defs.h}!generated\_sphotons@{generated\_sphotons}}
+\index{generated\_sphotons@{generated\_sphotons}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{generated\_sphotons}{generated\_sphotons}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long generated\+\_\+sphotons}
+
+\mbox{\Hypertarget{defs_8h_ae323db0d410f2ea234b9484acfd333d4}\label{defs_8h_ae323db0d410f2ea234b9484acfd333d4}} 
+\index{defs.h@{defs.h}!geom@{geom}}
+\index{geom@{geom}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{geom}{geom}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}}$\ast$ geom}
+
+\mbox{\Hypertarget{defs_8h_aec158415808eb5ddb908cdeb7bf9c343}\label{defs_8h_aec158415808eb5ddb908cdeb7bf9c343}} 
+\index{defs.h@{defs.h}!hslope@{hslope}}
+\index{hslope@{hslope}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{hslope}{hslope}}
+{\footnotesize\ttfamily double hslope}
+
+\mbox{\Hypertarget{defs_8h_a6547c87f4689b4642b73c2c250fa83be}\label{defs_8h_a6547c87f4689b4642b73c2c250fa83be}} 
+\index{defs.h@{defs.h}!K2@{K2}}
+\index{K2@{K2}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{K2}{K2}}
+{\footnotesize\ttfamily double K2\mbox{[}800+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a82fb14569b04b06cb437b3c9391ed3a1}\label{defs_8h_a82fb14569b04b06cb437b3c9391ed3a1}} 
+\index{defs.h@{defs.h}!L\_unit@{L\_unit}}
+\index{L\_unit@{L\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{L\_unit}{L\_unit}}
+{\footnotesize\ttfamily double L\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}\label{defs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}} 
+\index{defs.h@{defs.h}!Ladv@{Ladv}}
+\index{Ladv@{Ladv}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Ladv}{Ladv}}
+{\footnotesize\ttfamily double Ladv}
+
+\mbox{\Hypertarget{defs_8h_a0b99ff70dfc3b1835de852cf00dad7d4}\label{defs_8h_a0b99ff70dfc3b1835de852cf00dad7d4}} 
+\index{defs.h@{defs.h}!lmint@{lmint}}
+\index{lmint@{lmint}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{lmint}{lmint}}
+{\footnotesize\ttfamily double lmint}
+
+\mbox{\Hypertarget{defs_8h_a44398a98f987d7af5296425e8dd8413a}\label{defs_8h_a44398a98f987d7af5296425e8dd8413a}} 
+\index{defs.h@{defs.h}!lminw@{lminw}}
+\index{lminw@{lminw}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{lminw}{lminw}}
+{\footnotesize\ttfamily double lminw}
+
+\mbox{\Hypertarget{defs_8h_a3072f08245495d12fd322f1c4f467765}\label{defs_8h_a3072f08245495d12fd322f1c4f467765}} 
+\index{defs.h@{defs.h}!M\_unit@{M\_unit}}
+\index{M\_unit@{M\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{M\_unit}{M\_unit}}
+{\footnotesize\ttfamily double M\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_a1a12d1761d2fcb9a5ba79ae0724b4caa}\label{defs_8h_a1a12d1761d2fcb9a5ba79ae0724b4caa}} 
+\index{defs.h@{defs.h}!max\_tau\_scatt@{max\_tau\_scatt}}
+\index{max\_tau\_scatt@{max\_tau\_scatt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{max\_tau\_scatt}{max\_tau\_scatt}}
+{\footnotesize\ttfamily double max\+\_\+tau\+\_\+scatt}
+
+\mbox{\Hypertarget{defs_8h_a95bc280ba29632fc6e927dfb9dbc6adc}\label{defs_8h_a95bc280ba29632fc6e927dfb9dbc6adc}} 
+\index{defs.h@{defs.h}!my\_curand\_state@{my\_curand\_state}}
+\index{my\_curand\_state@{my\_curand\_state}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{my\_curand\_state}{my\_curand\_state}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ curand\+State my\+\_\+curand\+\_\+state\mbox{[}3456 $\ast$ 256\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a5a6a26e0827f9640d2eb7201017f19d7}\label{defs_8h_a5a6a26e0827f9640d2eb7201017f19d7}} 
+\index{defs.h@{defs.h}!N1@{N1}}
+\index{N1@{N1}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{N1}{N1}}
+{\footnotesize\ttfamily int N1}
+
+\mbox{\Hypertarget{defs_8h_adeea8075a0038c985c63d45161804d60}\label{defs_8h_adeea8075a0038c985c63d45161804d60}} 
+\index{defs.h@{defs.h}!N2@{N2}}
+\index{N2@{N2}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{N2}{N2}}
+{\footnotesize\ttfamily int N2}
+
+\mbox{\Hypertarget{defs_8h_a4e8e9c2bf9e06ae07ef364c05a073302}\label{defs_8h_a4e8e9c2bf9e06ae07ef364c05a073302}} 
+\index{defs.h@{defs.h}!N3@{N3}}
+\index{N3@{N3}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{N3}{N3}}
+{\footnotesize\ttfamily int N3}
+
+\mbox{\Hypertarget{defs_8h_a665f40c3f8f3a36509e8c74668d398ab}\label{defs_8h_a665f40c3f8f3a36509e8c74668d398ab}} 
+\index{defs.h@{defs.h}!N\_scatt@{N\_scatt}}
+\index{N\_scatt@{N\_scatt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{N\_scatt}{N\_scatt}}
+{\footnotesize\ttfamily unsigned long long N\+\_\+scatt}
+
+\mbox{\Hypertarget{defs_8h_a68dd8132a9835dbc463907ffd59958c1}\label{defs_8h_a68dd8132a9835dbc463907ffd59958c1}} 
+\index{defs.h@{defs.h}!N\_superph\_recorded@{N\_superph\_recorded}}
+\index{N\_superph\_recorded@{N\_superph\_recorded}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{N\_superph\_recorded}{N\_superph\_recorded}}
+{\footnotesize\ttfamily unsigned long long N\+\_\+superph\+\_\+recorded}
+
+\mbox{\Hypertarget{defs_8h_a03b3154ce6226810ae2cbe4b8e5edb0c}\label{defs_8h_a03b3154ce6226810ae2cbe4b8e5edb0c}} 
+\index{defs.h@{defs.h}!ne@{ne}}
+\index{ne@{ne}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{ne}{ne}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$ ne}
+
+\mbox{\Hypertarget{defs_8h_a8cd0401d02c76917b31197c083fc4103}\label{defs_8h_a8cd0401d02c76917b31197c083fc4103}} 
+\index{defs.h@{defs.h}!Ne\_unit@{Ne\_unit}}
+\index{Ne\_unit@{Ne\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Ne\_unit}{Ne\_unit}}
+{\footnotesize\ttfamily double Ne\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_a444d08dcccdedf0c1282d34b23965bc3}\label{defs_8h_a444d08dcccdedf0c1282d34b23965bc3}} 
+\index{defs.h@{defs.h}!nint@{nint}}
+\index{nint@{nint}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{nint}{nint}}
+{\footnotesize\ttfamily double nint\mbox{[}(40000)+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}\label{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}} 
+\index{defs.h@{defs.h}!p@{p}}
+\index{p@{p}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{p}{p}}
+{\footnotesize\ttfamily double$\ast$ p}
+
+\mbox{\Hypertarget{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}\label{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}} 
+\index{defs.h@{defs.h}!params@{params}}
+\index{params@{params}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{params}{params}}
+{\footnotesize\ttfamily \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} params = \{ 0 \}}
+
+\mbox{\Hypertarget{defs_8h_a11fcc0b80c83537a7a8efaa238550bc0}\label{defs_8h_a11fcc0b80c83537a7a8efaa238550bc0}} 
+\index{defs.h@{defs.h}!photon\_count@{photon\_count}}
+\index{photon\_count@{photon\_count}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{photon\_count}{photon\_count}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long photon\+\_\+count = 0}
+
+\mbox{\Hypertarget{defs_8h_a37800d14d893b7a8126f821b7a34e1d1}\label{defs_8h_a37800d14d893b7a8126f821b7a34e1d1}} 
+\index{defs.h@{defs.h}!R0@{R0}}
+\index{R0@{R0}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{R0}{R0}}
+{\footnotesize\ttfamily double R0}
+
+\mbox{\Hypertarget{defs_8h_aa08ac2c5196daf0cda610def0b1b81fc}\label{defs_8h_aa08ac2c5196daf0cda610def0b1b81fc}} 
+\index{defs.h@{defs.h}!Rh@{Rh}}
+\index{Rh@{Rh}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Rh}{Rh}}
+{\footnotesize\ttfamily double Rh}
+
+\mbox{\Hypertarget{defs_8h_a8d570719a5e6ac69fc38e8e0d05f7973}\label{defs_8h_a8d570719a5e6ac69fc38e8e0d05f7973}} 
+\index{defs.h@{defs.h}!Rho\_unit@{Rho\_unit}}
+\index{Rho\_unit@{Rho\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Rho\_unit}{Rho\_unit}}
+{\footnotesize\ttfamily double Rho\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_a5f200d81ca494457b004628aa958bcec}\label{defs_8h_a5f200d81ca494457b004628aa958bcec}} 
+\index{defs.h@{defs.h}!Rin@{Rin}}
+\index{Rin@{Rin}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Rin}{Rin}}
+{\footnotesize\ttfamily double Rin}
+
+\mbox{\Hypertarget{defs_8h_a147f35f70045c8c403c380ba83176093}\label{defs_8h_a147f35f70045c8c403c380ba83176093}} 
+\index{defs.h@{defs.h}!Rms@{Rms}}
+\index{Rms@{Rms}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Rms}{Rms}}
+{\footnotesize\ttfamily double Rms}
+
+\mbox{\Hypertarget{defs_8h_ae38887db77c101efeb7db711a9e856db}\label{defs_8h_ae38887db77c101efeb7db711a9e856db}} 
+\index{defs.h@{defs.h}!Rout@{Rout}}
+\index{Rout@{Rout}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Rout}{Rout}}
+{\footnotesize\ttfamily double Rout}
+
+\mbox{\Hypertarget{defs_8h_a78c64dac8bec176d822a7a3fa3839005}\label{defs_8h_a78c64dac8bec176d822a7a3fa3839005}} 
+\index{defs.h@{defs.h}!scattering\_counter@{scattering\_counter}}
+\index{scattering\_counter@{scattering\_counter}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{scattering\_counter}{scattering\_counter}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long scattering\+\_\+counter = 0}
+
+\mbox{\Hypertarget{defs_8h_a22a1624b7aadab4136bba181b4644564}\label{defs_8h_a22a1624b7aadab4136bba181b4644564}} 
+\index{defs.h@{defs.h}!startx@{startx}}
+\index{startx@{startx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{startx}{startx}}
+{\footnotesize\ttfamily double startx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_ab72209febcbdc5407955e21864ab504b}\label{defs_8h_ab72209febcbdc5407955e21864ab504b}} 
+\index{defs.h@{defs.h}!stopx@{stopx}}
+\index{stopx@{stopx}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{stopx}{stopx}}
+{\footnotesize\ttfamily double stopx\mbox{[}4\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_aafaa1bab5b6fbd4b1a32f5db78aaf569}\label{defs_8h_aafaa1bab5b6fbd4b1a32f5db78aaf569}} 
+\index{defs.h@{defs.h}!T\_unit@{T\_unit}}
+\index{T\_unit@{T\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{T\_unit}{T\_unit}}
+{\footnotesize\ttfamily double T\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_adb649385fc46caa4ec00d0e0978a916f}\label{defs_8h_adb649385fc46caa4ec00d0e0978a916f}} 
+\index{defs.h@{defs.h}!table@{table}}
+\index{table@{table}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{table}{table}}
+{\footnotesize\ttfamily double table\mbox{[}220+1\mbox{]}\mbox{[}80+1\mbox{]}}
+
+\mbox{\Hypertarget{defs_8h_a96d86c26e48095c968a287e022017016}\label{defs_8h_a96d86c26e48095c968a287e022017016}} 
+\index{defs.h@{defs.h}!thetae@{thetae}}
+\index{thetae@{thetae}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{thetae}{thetae}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$ thetae}
+
+\mbox{\Hypertarget{defs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}\label{defs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}} 
+\index{defs.h@{defs.h}!Thetae\_unit@{Thetae\_unit}}
+\index{Thetae\_unit@{Thetae\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{Thetae\_unit}{Thetae\_unit}}
+{\footnotesize\ttfamily double Thetae\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_a18ecee65560d33d3da019b4e34aee4cb}\label{defs_8h_a18ecee65560d33d3da019b4e34aee4cb}} 
+\index{defs.h@{defs.h}!total\_sca@{total\_sca}}
+\index{total\_sca@{total\_sca}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{total\_sca}{total\_sca}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int total\+\_\+sca = 0}
+
+\mbox{\Hypertarget{defs_8h_a68ccb3c564f43896d2410ddd61d21f90}\label{defs_8h_a68ccb3c564f43896d2410ddd61d21f90}} 
+\index{defs.h@{defs.h}!tracking\_counter@{tracking\_counter}}
+\index{tracking\_counter@{tracking\_counter}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{tracking\_counter}{tracking\_counter}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long tracking\+\_\+counter = 0}
+
+\mbox{\Hypertarget{defs_8h_aa8328a2d08bffccbcfb60d960343b21c}\label{defs_8h_aa8328a2d08bffccbcfb60d960343b21c}} 
+\index{defs.h@{defs.h}!tracking\_counter\_sampling@{tracking\_counter\_sampling}}
+\index{tracking\_counter\_sampling@{tracking\_counter\_sampling}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{tracking\_counter\_sampling}{tracking\_counter\_sampling}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long tracking\+\_\+counter\+\_\+sampling = 0}
+
+\mbox{\Hypertarget{defs_8h_afbb8cc3c69f9362ac770bae25cc29c28}\label{defs_8h_afbb8cc3c69f9362ac770bae25cc29c28}} 
+\index{defs.h@{defs.h}!U\_unit@{U\_unit}}
+\index{U\_unit@{U\_unit}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{U\_unit}{U\_unit}}
+{\footnotesize\ttfamily double U\+\_\+unit}
+
+\mbox{\Hypertarget{defs_8h_acca984f3768575908e2e0dd2f22cbb95}\label{defs_8h_acca984f3768575908e2e0dd2f22cbb95}} 
+\index{defs.h@{defs.h}!ucon@{ucon}}
+\index{ucon@{ucon}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{ucon}{ucon}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$ ucon}
+
+\mbox{\Hypertarget{defs_8h_a7a49aa3585420e73246460b8ab0a4ca7}\label{defs_8h_a7a49aa3585420e73246460b8ab0a4ca7}} 
+\index{defs.h@{defs.h}!ucov@{ucov}}
+\index{ucov@{ucov}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{ucov}{ucov}}
+{\footnotesize\ttfamily double$\ast$$\ast$$\ast$$\ast$ ucov}
+
+\mbox{\Hypertarget{defs_8h_ac34b583787faac6c02ad0438df077b59}\label{defs_8h_ac34b583787faac6c02ad0438df077b59}} 
+\index{defs.h@{defs.h}!w@{w}}
+\index{w@{w}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{w}{w}}
+{\footnotesize\ttfamily gsl\+\_\+integration\+\_\+workspace$\ast$ w}
+
+\mbox{\Hypertarget{defs_8h_a87df3bdc854d088f7b90e59bc034edcc}\label{defs_8h_a87df3bdc854d088f7b90e59bc034edcc}} 
+\index{defs.h@{defs.h}!wgt@{wgt}}
+\index{wgt@{wgt}!defs.h@{defs.h}}
+\doxysubsubsection{\texorpdfstring{wgt}{wgt}}
+{\footnotesize\ttfamily double wgt\mbox{[}800+1\mbox{]}}
+

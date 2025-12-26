@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="weights_8h" kind="file" language="C++">
+    <compoundname>weights.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="weights_8h_1a8c31118751b32386eda9d93a3c2caf68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void init_weight_table</definition>
+        <argsstring>()</argsstring>
+        <name>init_weight_table</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/weights.h" line="7" column="6" declfile="src/weights.h" declline="7" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="weights_8h_1a5f84efc0f11ca48c85184e9f65cd9dda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void init_weight_table_blackbody</definition>
+        <argsstring>(void)</argsstring>
+        <name>init_weight_table_blackbody</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/weights.h" line="8" column="6" declfile="src/weights.h" declline="8" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="weights_8h_1ac06de333fa374fbdae412978d3ac94de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void init_nint_table</definition>
+        <argsstring>(void)</argsstring>
+        <name>init_nint_table</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/weights.h" line="9" column="15" declfile="src/weights.h" declline="9" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="weights_8h_1ad9e4dd98ccc13acb821654e859fd9561" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_linear_interp_weight</definition>
+        <argsstring>(const double nu)</argsstring>
+        <name>GPU_linear_interp_weight</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/weights.h" line="10" column="19" declfile="src/weights.h" declline="10" declcolumn="19"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declaration<sp/>of<sp/>the<sp/>functions<sp/>used<sp/>in<sp/>weights.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>WEIGHTS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>WEIGHTS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="weights_8h_1a8c31118751b32386eda9d93a3c2caf68" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="weights_8h_1a8c31118751b32386eda9d93a3c2caf68" kindref="member">init_weight_table</ref>();</highlight></codeline>
+<codeline lineno="8" refid="weights_8h_1a5f84efc0f11ca48c85184e9f65cd9dda" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="weights_8h_1a5f84efc0f11ca48c85184e9f65cd9dda" kindref="member">init_weight_table_blackbody</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="9" refid="weights_8h_1ac06de333fa374fbdae412978d3ac94de" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="weights_8h_1ac06de333fa374fbdae412978d3ac94de" kindref="member">init_nint_table</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="10" refid="weights_8h_1ad9e4dd98ccc13acb821654e859fd9561" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="weights_8h_1ad9e4dd98ccc13acb821654e859fd9561" kindref="member">GPU_linear_interp_weight</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu);</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/weights.h"/>
+  </compounddef>
+</doxygen>

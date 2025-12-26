@@ -1,0 +1,452 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="kernels_8h" kind="file" language="C++">
+    <compoundname>kernels.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="kernels_8h_1a807c1d397d9848379b38a2dbda253ef1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_generate_photons</definition>
+        <argsstring>(const struct of_geom *__restrict__ d_geom, const double *__restrict__ d_p, const time_t time, unsigned long long *__restrict__ generated_photons_arr, double *__restrict__ dnmax_arr, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_generate_photons</name>
+        <param>
+          <type>const struct <ref refid="structof__geom" kindref="compound">of_geom</ref> *__restrict__</type>
+          <declname>d_geom</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const time_t</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>unsigned long long *__restrict__</type>
+          <declname>generated_photons_arr</declname>
+        </param>
+        <param>
+          <type>double *__restrict__</type>
+          <declname>dnmax_arr</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="7" column="17" declfile="src/kernels.h" declline="7" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a869ff413f418f99cbc32aa5711fb9de4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_init_zone</definition>
+        <argsstring>(const int i, const int j, const int k, unsigned long long *__restrict__ n2gen, double *__restrict__ dnmax, const struct of_geom *__restrict__ d_geom, const double *__restrict__ d_p, const int d_Ns_par, curandState *localState, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_init_zone</name>
+        <param>
+          <type>const int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>unsigned long long *__restrict__</type>
+          <declname>n2gen</declname>
+        </param>
+        <param>
+          <type>double *__restrict__</type>
+          <declname>dnmax</declname>
+        </param>
+        <param>
+          <type>const struct <ref refid="structof__geom" kindref="compound">of_geom</ref> *__restrict__</type>
+          <declname>d_geom</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>d_Ns_par</declname>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="8" column="17" declfile="src/kernels.h" declline="8" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a61d27aa585f40c04f60ce1c1afb7e0b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_sample_photons_batch</definition>
+        <argsstring>(struct of_photonSOA ph_init, const struct of_geom *__restrict__ d_geom, const double *__restrict__ d_p, const unsigned long long *__restrict__ generated_photons_arr, const double *__restrict__ dnmax_arr, const int max_partition_ph, const unsigned long long photons_processed_sofar, const unsigned long long *__restrict__ index_to_ijk, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_sample_photons_batch</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph_init</declname>
+        </param>
+        <param>
+          <type>const struct <ref refid="structof__geom" kindref="compound">of_geom</ref> *__restrict__</type>
+          <declname>d_geom</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const unsigned long long *__restrict__</type>
+          <declname>generated_photons_arr</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>dnmax_arr</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>max_partition_ph</declname>
+        </param>
+        <param>
+          <type>const unsigned long long</type>
+          <declname>photons_processed_sofar</declname>
+        </param>
+        <param>
+          <type>const unsigned long long *__restrict__</type>
+          <declname>index_to_ijk</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="9" column="17" declfile="src/kernels.h" declline="9" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1aeb4ff65d6c85509d96c92ac2edb01c97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ void</type>
+        <definition>__device__ void GPU_sample_zone_photon</definition>
+        <argsstring>(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom *d_geom, const double *d_p, const int zone_flag, const unsigned long long ph_arr_index, double(*Econ)[NDIM], double(*Ecov)[NDIM], curandState *localState, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_sample_zone_photon</name>
+        <param>
+          <type>const int</type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>dnmax</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>const struct <ref refid="structof__geom" kindref="compound">of_geom</ref> *</type>
+          <declname>d_geom</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>zone_flag</declname>
+        </param>
+        <param>
+          <type>const unsigned long long</type>
+          <declname>ph_arr_index</declname>
+        </param>
+        <param>
+          <type>double(*)</type>
+          <declname>Econ</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>double(*)</type>
+          <declname>Ecov</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>curandState *</type>
+          <declname>localState</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="10" column="17" declfile="src/kernels.h" declline="10" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a2493f93ef12374fe8c6f44d4f343daf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_track</definition>
+        <argsstring>(struct of_photonSOA ph, cudaTextureObject_t d_p, const double *__restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, const int nblocks, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_track</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_table_ptr</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>scat_ofphoton</declname>
+        </param>
+        <param>
+          <type>const unsigned long long</type>
+          <declname>max_partition_ph</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>nblocks</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="11" column="17" declfile="src/kernels.h" declline="11" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1aab4e6a25a16de5d65678453d43a76f80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_track_scat</definition>
+        <argsstring>(struct of_photonSOA ph, cudaTextureObject_t d_p, const double *__restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, const int number_of_threads, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end)</argsstring>
+        <name>GPU_track_scat</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>d_p</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_table_ptr</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>scat_ofphoton</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>number_of_threads</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <param>
+          <type>unsigned long long</type>
+          <declname>round_num_scat_init</declname>
+        </param>
+        <param>
+          <type>unsigned long long</type>
+          <declname>round_num_scat_end</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="19" column="17" declfile="src/kernels.h" declline="19" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a623514e2566ee4a0a1a88c0cd0bfd52d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_record</definition>
+        <argsstring>(struct of_photonSOA ph, struct of_spectrum *__restrict__ d_spect, const unsigned long long max_partition_ph, const int nblocks)</argsstring>
+        <name>GPU_record</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref> *__restrict__</type>
+          <declname>d_spect</declname>
+        </param>
+        <param>
+          <type>const unsigned long long</type>
+          <declname>max_partition_ph</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>nblocks</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="27" column="17" declfile="src/kernels.h" declline="27" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a29f709d0b25f7f6b5494d53169ce3023" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__global__ void</type>
+        <definition>__global__ void GPU_record_scattering</definition>
+        <argsstring>(struct of_photonSOA ph, struct of_spectrum *__restrict__ d_spect, const unsigned long long max_partition_ph, const int nblocks, const int n)</argsstring>
+        <name>GPU_record_scattering</name>
+        <param>
+          <type>struct <ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref></type>
+          <declname>ph</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref> *__restrict__</type>
+          <declname>d_spect</declname>
+        </param>
+        <param>
+          <type>const unsigned long long</type>
+          <declname>max_partition_ph</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>nblocks</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="28" column="17" declfile="src/kernels.h" declline="28" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void report_spectrum</definition>
+        <argsstring>(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char *filename)</argsstring>
+        <name>report_spectrum</name>
+        <param>
+          <type>unsigned long long</type>
+          <declname>N_superph_made</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref></type>
+          <declname>spect</declname>
+          <array>[N_THBINS][N_EBINS]</array>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="30" column="15" declfile="src/kernels.h" declline="30" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void mainFlowControl</definition>
+        <argsstring>(time_t time, double *p)</argsstring>
+        <name>mainFlowControl</name>
+        <param>
+          <type>time_t</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/kernels.h" line="31" column="15" declfile="src/kernels.h" declline="31" declcolumn="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declarations<sp/>of<sp/>the<sp/>kernels.cu<sp/>file<sp/>functions</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>KERNELS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>KERNELS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="kernels_8h_1a807c1d397d9848379b38a2dbda253ef1" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a807c1d397d9848379b38a2dbda253ef1" kindref="member">GPU_generate_photons</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_geom,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>d_p,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>time_t<sp/>time,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>generated_photons_arr,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>dnmax_arr,<sp/>cudaTextureObject_t<sp/>besselTexObj);<sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="8" refid="kernels_8h_1a869ff413f418f99cbc32aa5711fb9de4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a869ff413f418f99cbc32aa5711fb9de4" kindref="member">GPU_init_zone</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>n2gen,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>dnmax,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_geom,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_p,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d_Ns_par,<sp/>curandState<sp/><sp/>*<sp/>localState,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="9" refid="kernels_8h_1a61d27aa585f40c04f60ce1c1afb7e0b0" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a61d27aa585f40c04f60ce1c1afb7e0b0" kindref="member">GPU_sample_photons_batch</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph_init,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_geom,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>d_p,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>generated_photons_arr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>dnmax_arr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max_partition_ph,<sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photons_processed_sofar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>index_to_ijk,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="10" refid="kernels_8h_1aeb4ff65d6c85509d96c92ac2edb01c97" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1aeb4ff65d6c85509d96c92ac2edb01c97" kindref="member">GPU_sample_zone_photon</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dnmax,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<sp/>d_geom,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>d_p,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>zone_flag,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>ph_arr_index,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>(*Econ)[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>(*Ecov)[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/>curandState<sp/>*<sp/>localState,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="11" refid="kernels_8h_1a2493f93ef12374fe8c6f44d4f343daf6" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a2493f93ef12374fe8c6f44d4f343daf6" kindref="member">GPU_track</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>DO_NOT_USE_TEXTURE_MEMORY</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/><sp/>d_p,</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>#</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaTextureObject_t<sp/>d_p,</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>scat_ofphoton,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>max_partition_ph,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nblocks,<sp/>cudaTextureObject_t<sp/>besselTexObj);<sp/><sp/></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="kernels_8h_1aab4e6a25a16de5d65678453d43a76f80" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1aab4e6a25a16de5d65678453d43a76f80" kindref="member">GPU_track_scat</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>DO_NOT_USE_TEXTURE_MEMORY</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_p,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>#</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cudaTextureObject_t<sp/>d_p,</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>scat_ofphoton,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>number_of_threads,<sp/>cudaTextureObject_t<sp/>besselTexObj,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>round_num_scat_init,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>round_num_scat_end);</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="kernels_8h_1a623514e2566ee4a0a1a88c0cd0bfd52d" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a623514e2566ee4a0a1a88c0cd0bfd52d" kindref="member">GPU_record</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_spect,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><sp/>max_partition_ph,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nblocks);</highlight></codeline>
+<codeline lineno="28" refid="kernels_8h_1a29f709d0b25f7f6b5494d53169ce3023" refkind="member"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a29f709d0b25f7f6b5494d53169ce3023" kindref="member">GPU_record_scattering</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_spect,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><sp/>max_partition_ph,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nblocks,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kindref="member">report_spectrum</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>N_superph_made,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/><ref refid="decs_8h_1a4ba778202c908d0355d7f79b21f9efe7" kindref="member">spect</ref>[<ref refid="config_8h_1af52e5601e24f633637c7ef961a01a847" kindref="member">N_THBINS</ref>][<ref refid="config_8h_1af9cf051839fae1fdc190fe02abd595c6" kindref="member">N_EBINS</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>filename);</highlight></codeline>
+<codeline lineno="31" refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" kindref="member">mainFlowControl</ref>(time_t<sp/>time,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/kernels.h"/>
+  </compounddef>
+</doxygen>

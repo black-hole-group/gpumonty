@@ -1,0 +1,72 @@
+\hypertarget{jnu__mixed_8h}{}\doxysection{src/jnu\+\_\+mixed.h File Reference}
+\label{jnu__mixed_8h}\index{src/jnu\_mixed.h@{src/jnu\_mixed.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}{jnu\+\_\+synch}} (const double nu, const double Ne, const double Thetae, const double B, const double theta)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}{int\+\_\+jnu}} (double Ne, double Thetae, double Bmag, double nu)
+\item 
+double \mbox{\hyperlink{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}{jnu\+\_\+integrand}} (double th, void $\ast$\mbox{\hyperlink{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}})
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}{init\+\_\+emiss\+\_\+tables}} (void)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}{K2\+\_\+eval}} (const double Thetae)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a686392b9766898ebd7dc493489b4008a}{F\+\_\+eval}} (const double Thetae, const double Bmag, const double nu)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}{linear\+\_\+interp\+\_\+F}} (const double K)
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}{linear\+\_\+interp\+\_\+\+K2}} (const double Thetae)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{jnu__mixed_8h_a686392b9766898ebd7dc493489b4008a}\label{jnu__mixed_8h_a686392b9766898ebd7dc493489b4008a}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!F\_eval@{F\_eval}}
+\index{F\_eval@{F\_eval}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{F\_eval()}{F\_eval()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double F\+\_\+eval (\begin{DoxyParamCaption}\item[{const double}]{Thetae,  }\item[{const double}]{Bmag,  }\item[{const double}]{nu }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}\label{jnu__mixed_8h_a186db3c9d3d5464e8cc08315a867f968}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!init\_emiss\_tables@{init\_emiss\_tables}}
+\index{init\_emiss\_tables@{init\_emiss\_tables}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{init\_emiss\_tables()}{init\_emiss\_tables()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void init\+\_\+emiss\+\_\+tables (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}\label{jnu__mixed_8h_a092b094208fe34f2bb4e04e4e1ee0959}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!int\_jnu@{int\_jnu}}
+\index{int\_jnu@{int\_jnu}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{int\_jnu()}{int\_jnu()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double int\+\_\+jnu (\begin{DoxyParamCaption}\item[{double}]{Ne,  }\item[{double}]{Thetae,  }\item[{double}]{Bmag,  }\item[{double}]{nu }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}\label{jnu__mixed_8h_ae924d3f3abfdaea7a007babd29eb097d}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!jnu\_integrand@{jnu\_integrand}}
+\index{jnu\_integrand@{jnu\_integrand}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{jnu\_integrand()}{jnu\_integrand()}}
+{\footnotesize\ttfamily double jnu\+\_\+integrand (\begin{DoxyParamCaption}\item[{double}]{th,  }\item[{void $\ast$}]{params }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}\label{jnu__mixed_8h_a115f2e03b41ee872a89e0e3770d93322}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!jnu\_synch@{jnu\_synch}}
+\index{jnu\_synch@{jnu\_synch}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{jnu\_synch()}{jnu\_synch()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double jnu\+\_\+synch (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Ne,  }\item[{const double}]{Thetae,  }\item[{const double}]{B,  }\item[{const double}]{theta }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}\label{jnu__mixed_8h_ae2c9a720f057f4231ae16f2465285418}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!K2\_eval@{K2\_eval}}
+\index{K2\_eval@{K2\_eval}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{K2\_eval()}{K2\_eval()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double K2\+\_\+eval (\begin{DoxyParamCaption}\item[{const double}]{Thetae }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}\label{jnu__mixed_8h_aa1be441da61055d0e988a7008590f182}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!linear\_interp\_F@{linear\_interp\_F}}
+\index{linear\_interp\_F@{linear\_interp\_F}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{linear\_interp\_F()}{linear\_interp\_F()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double linear\+\_\+interp\+\_\+F (\begin{DoxyParamCaption}\item[{const double}]{K }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}\label{jnu__mixed_8h_a429d7676ec34cbd6b24473a68e6ef914}} 
+\index{jnu\_mixed.h@{jnu\_mixed.h}!linear\_interp\_K2@{linear\_interp\_K2}}
+\index{linear\_interp\_K2@{linear\_interp\_K2}!jnu\_mixed.h@{jnu\_mixed.h}}
+\doxysubsubsection{\texorpdfstring{linear\_interp\_K2()}{linear\_interp\_K2()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ double linear\+\_\+interp\+\_\+\+K2 (\begin{DoxyParamCaption}\item[{const double}]{Thetae }\end{DoxyParamCaption})}
+

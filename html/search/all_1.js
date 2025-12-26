@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['b_3',['b',['../defs_8h.html#ae6c58372b82cfe73d6b1d83e19190b78',1,'defs.h']]],
+  ['b1_4',['B1',['../config_8h.html#a7b21d6a6a4573b4997b1f04b01cd4efb',1,'config.h']]],
+  ['b2_5',['B2',['../config_8h.html#a6945d50f798e1fde624d70c74457090e',1,'config.h']]],
+  ['b3_6',['B3',['../config_8h.html#ae6ac0edb1e2c9c7672ab9488d8b65be9',1,'config.h']]],
+  ['b_5funit_7',['B_unit',['../decs_8h.html#aa55bd2f4828da46e2cd051edf8f1635e',1,'B_unit():&#160;decs.h'],['../defs_8h.html#aa55bd2f4828da46e2cd051edf8f1635e',1,'B_unit():&#160;defs.h']]],
+  ['bcon_8',['bcon',['../defs_8h.html#ad8c7a14419937e710e056a1592f8bf8b',1,'defs.h']]],
+  ['bcov_9',['bcov',['../defs_8h.html#a8b61d35db7528efda160176a1898fadf',1,'defs.h']]],
+  ['bessi0_10',['bessi0',['../hotcross_8h.html#a13757d5d606695b244e350fc51f5aacf',1,'hotcross.h']]],
+  ['bessi1_11',['bessi1',['../hotcross_8h.html#a846c30e692fa21d24737c516e70fb861',1,'hotcross.h']]],
+  ['bessk0_12',['bessk0',['../hotcross_8h.html#ab7b4137a545b9c2818d27fb8cf4a6885',1,'hotcross.h']]],
+  ['bessk1_13',['bessk1',['../hotcross_8h.html#a611ee8152758385d33a555c7059553f5',1,'hotcross.h']]],
+  ['bessk2_14',['bessk2',['../hotcross_8h.html#a1edac60ad338e72a59e3ac2edda1fc37',1,'hotcross.h']]],
+  ['beta_5fcrit_15',['beta_crit',['../structparams__t.html#a5f123ad5193aee95139a672ef25542f8',1,'params_t']]],
+  ['bias_5fnorm_16',['bias_norm',['../decs_8h.html#a35b2d6b30ef375b6b18f546dc98357b2',1,'bias_norm():&#160;decs.h'],['../defs_8h.html#a35b2d6b30ef375b6b18f546dc98357b2',1,'bias_norm():&#160;defs.h']]],
+  ['biastuning_17',['biasTuning',['../structparams__t.html#a7edf4766c3233057c4e152a8f5d8d428',1,'params_t']]],
+  ['boostcross_18',['boostcross',['../hotcross_8h.html#a7d5233de4d9aa05e073a8a4a290b3f4f',1,'hotcross.h']]],
+  ['bthsqmax_19',['BTHSQMAX',['../config_8h.html#a36768ba4c02dc3ab60ebaced991e178e',1,'config.h']]],
+  ['bthsqmin_20',['BTHSQMIN',['../config_8h.html#afa4565b6dc2e785bd055ba0bfe98f3ea',1,'config.h']]]
+];

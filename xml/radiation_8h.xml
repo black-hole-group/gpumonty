@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="radiation_8h" kind="file" language="C++">
+    <compoundname>radiation.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_jnu_inv</definition>
+        <argsstring>(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_jnu_inv</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>B</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>theta</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="7" column="19" declfile="src/radiation.h" declline="7" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_Bnu_inv</definition>
+        <argsstring>(const double nu, const double Thetae)</argsstring>
+        <name>GPU_Bnu_inv</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="8" column="19" declfile="src/radiation.h" declline="8" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1a40dcfb79f016d1e55b17edbf5ae4d23a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_kappa_es</definition>
+        <argsstring>(const double nu, const double Thetae, const double *__restrict__ d_table_ptr)</argsstring>
+        <name>GPU_kappa_es</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_table_ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="9" column="19" declfile="src/radiation.h" declline="9" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_get_fluid_nu</definition>
+        <argsstring>(const double X[NDIM], const double K[NDIM], const double Ucov[NDIM])</argsstring>
+        <name>GPU_get_fluid_nu</name>
+        <param>
+          <type>const double</type>
+          <declname>X</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>K</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ucov</declname>
+          <array>[NDIM]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="10" column="19" declfile="src/radiation.h" declline="10" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1a584569c2ad5baf1391c7a74a5a0c483f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_alpha_inv_scatt</definition>
+        <argsstring>(const double nu, const double Thetae, const double Ne, const double *__restrict__ d_table_ptr)</argsstring>
+        <name>GPU_alpha_inv_scatt</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>const double *__restrict__</type>
+          <declname>d_table_ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="11" column="19" declfile="src/radiation.h" declline="11" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_alpha_inv_abs</definition>
+        <argsstring>(const double nu, const double Thetae, const double Ne, const double B, double theta, cudaTextureObject_t besselTexObj)</argsstring>
+        <name>GPU_alpha_inv_abs</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>B</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta</declname>
+        </param>
+        <param>
+          <type>cudaTextureObject_t</type>
+          <declname>besselTexObj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="12" column="19" declfile="src/radiation.h" declline="12" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__device__ double</type>
+        <definition>__device__ double GPU_get_bk_angle</definition>
+        <argsstring>(const double X[NDIM], const double K[NDIM], const double Ucov[NDIM], const double Bcov[NDIM], const double B)</argsstring>
+        <name>GPU_get_bk_angle</name>
+        <param>
+          <type>const double</type>
+          <declname>X</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>K</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ucov</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Bcov</declname>
+          <array>[NDIM]</array>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>B</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/radiation.h" line="13" column="19" declfile="src/radiation.h" declline="13" declcolumn="19"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declaration<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>radiation.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>RADIATION_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RADIATION_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" kindref="member">GPU_jnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="8" refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" kindref="member">GPU_Bnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae);</highlight></codeline>
+<codeline lineno="9" refid="radiation_8h_1a40dcfb79f016d1e55b17edbf5ae4d23a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a40dcfb79f016d1e55b17edbf5ae4d23a" kindref="member">GPU_kappa_es</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="10" refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" kindref="member">GPU_get_fluid_nu</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="11" refid="radiation_8h_1a584569c2ad5baf1391c7a74a5a0c483f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a584569c2ad5baf1391c7a74a5a0c483f" kindref="member">GPU_alpha_inv_scatt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="12" refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" kindref="member">GPU_alpha_inv_abs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="13" refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" kindref="member">GPU_get_bk_angle</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/radiation.h"/>
+  </compounddef>
+</doxygen>

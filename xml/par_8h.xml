@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="par_8h" kind="file" language="C++">
+    <compoundname>par.h</compoundname>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="par_8h_1a56e5f9a95536838408fcca8f22d541b4" prot="public" static="no">
+        <name>TYPE_INT</name>
+        <initializer>(1)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="4" column="9" bodyfile="src/par.h" bodystart="4" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="par_8h_1a5cb8590e73e060db5976f40e6fd29c3b" prot="public" static="no">
+        <name>TYPE_DBL</name>
+        <initializer>(2)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="5" column="9" bodyfile="src/par.h" bodystart="5" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="par_8h_1ac8135ebece7dbba8045f811da60dfbb9" prot="public" static="no">
+        <name>TYPE_STR</name>
+        <initializer>(3)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="6" column="9" bodyfile="src/par.h" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="par_8h_1ae9d13a99d38dd6d3c6b1f3d64ce7b065" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void load_par_from_argv</definition>
+        <argsstring>(int argc, char *argv[], Params *params)</argsstring>
+        <name>load_par_from_argv</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>argv</declname>
+          <array>[]</array>
+        </param>
+        <param>
+          <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="11" column="15" declfile="src/par.h" declline="11" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="par_8h_1a9d4c82f247597389275d8ee930803710" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void load_par</definition>
+        <argsstring>(const char *, Params *)</argsstring>
+        <name>load_par</name>
+        <param>
+          <type>const char *</type>
+        </param>
+        <param>
+          <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref> *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="12" column="15" declfile="src/par.h" declline="12" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="par_8h_1a087bdbf7ab0c39c7e992b90bac54f8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void read_param</definition>
+        <argsstring>(const char *, const char *, void *, int)</argsstring>
+        <name>read_param</name>
+        <param>
+          <type>const char *</type>
+        </param>
+        <param>
+          <type>const char *</type>
+        </param>
+        <param>
+          <type>void *</type>
+        </param>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="15" column="15" declfile="src/par.h" declline="15" declcolumn="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declaration<sp/>of<sp/>the<sp/>par.cu<sp/>functions</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4" refid="par_8h_1a56e5f9a95536838408fcca8f22d541b4" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TYPE_INT<sp/>(1)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5" refid="par_8h_1a5cb8590e73e060db5976f40e6fd29c3b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TYPE_DBL<sp/>(2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6" refid="par_8h_1ac8135ebece7dbba8045f811da60dfbb9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TYPE_STR<sp/>(3)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>PAR_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PAR_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="par_8h_1ae9d13a99d38dd6d3c6b1f3d64ce7b065" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="par_8h_1ae9d13a99d38dd6d3c6b1f3d64ce7b065" kindref="member">load_par_from_argv</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*argv[],<sp/><ref refid="structparams__t" kindref="compound">Params</ref><sp/>*<ref refid="decs_8h_1a02eb7524df3cdfd7ab32de5b40516106" kindref="member">params</ref>);</highlight></codeline>
+<codeline lineno="12" refid="par_8h_1a9d4c82f247597389275d8ee930803710" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="par_8h_1a9d4c82f247597389275d8ee930803710" kindref="member">load_par</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/><ref refid="structparams__t" kindref="compound">Params</ref><sp/>*);</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>__host__<sp/>void<sp/>try_set_radiation_parameter(const<sp/>char<sp/>*line);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="par_8h_1a087bdbf7ab0c39c7e992b90bac54f8e4" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="par_8h_1a087bdbf7ab0c39c7e992b90bac54f8e4" kindref="member">read_param</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/par.h"/>
+  </compounddef>
+</doxygen>

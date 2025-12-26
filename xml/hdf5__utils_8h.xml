@@ -1,0 +1,514 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="hdf5__utils_8h" kind="file" language="C++">
+    <compoundname>hdf5_utils.h</compoundname>
+    <includes local="no">hdf5.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>hdf5.h</label>
+      </node>
+      <node id="1">
+        <label>src/hdf5_utils.h</label>
+        <link refid="hdf5__utils_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="hdf5__utils_8h_1a3869d282031f6ea6b50fdb980b758420" prot="public" static="no">
+        <name>USE_MPI</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="15" column="9" bodyfile="src/hdf5_utils.h" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="hdf5__utils_8h_1a1496e13732ae46800565796b2ce09a84" prot="public" static="no">
+        <name>HDF5_BLOB</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="19" column="9" bodyfile="src/hdf5_utils.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" prot="public" static="no">
+        <type>hid_t</type>
+        <definition>typedef hid_t hdf5_blob</definition>
+        <argsstring></argsstring>
+        <name>hdf5_blob</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="20" column="15" bodyfile="src/hdf5_utils.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="hdf5__utils_8h_1a9d3a6db741fbf0dac5d89975a73ee527" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref></type>
+        <definition>hdf5_blob hdf5_get_blob</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>hdf5_get_blob</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="22" column="11" declfile="src/hdf5_utils.h" declline="22" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1ac41923f789696f02927d8857838bcd26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_write_blob</definition>
+        <argsstring>(hdf5_blob blob, const char *name)</argsstring>
+        <name>hdf5_write_blob</name>
+        <param>
+          <type><ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref></type>
+          <declname>blob</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="23" column="5" declfile="src/hdf5_utils.h" declline="23" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1acfaf5ad969b528252544d9274ae9fb98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_close_blob</definition>
+        <argsstring>(hdf5_blob blob)</argsstring>
+        <name>hdf5_close_blob</name>
+        <param>
+          <type><ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref></type>
+          <declname>blob</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="24" column="5" declfile="src/hdf5_utils.h" declline="24" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1aa516c64d3d01dab36b6d242bcbd202ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_create</definition>
+        <argsstring>(const char *fname)</argsstring>
+        <name>hdf5_create</name>
+        <param>
+          <type>const char *</type>
+          <declname>fname</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="27" column="5" declfile="src/hdf5_utils.h" declline="27" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a38ed155e4a5caf24f8af82e570a5f517" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_open</definition>
+        <argsstring>(const char *fname)</argsstring>
+        <name>hdf5_open</name>
+        <param>
+          <type>const char *</type>
+          <declname>fname</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="28" column="5" declfile="src/hdf5_utils.h" declline="28" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1ae0f0e281fc647877ec3995288ccc5259" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_close</definition>
+        <argsstring>()</argsstring>
+        <name>hdf5_close</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="29" column="5" declfile="src/hdf5_utils.h" declline="29" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a7bf41478aa1f827d8ded1502defee02a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_make_directory</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>hdf5_make_directory</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="32" column="5" declfile="src/hdf5_utils.h" declline="32" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1ad9a5e5084414804db4ce8bb576232eb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void hdf5_set_directory</definition>
+        <argsstring>(const char *path)</argsstring>
+        <name>hdf5_set_directory</name>
+        <param>
+          <type>const char *</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="33" column="6" declfile="src/hdf5_utils.h" declline="33" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a9a56a32edcb65b35e670d1d849281133" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_write_single_val</definition>
+        <argsstring>(const void *val, const char *name, hsize_t hdf5_type)</argsstring>
+        <name>hdf5_write_single_val</name>
+        <param>
+          <type>const void *</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>hsize_t</type>
+          <declname>hdf5_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="36" column="5" declfile="src/hdf5_utils.h" declline="36" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1aad8483579de5db94021009f1413e641f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_write_array</definition>
+        <argsstring>(const void *data, const char *name, size_t rank, hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims, hsize_t *mstart, hsize_t hdf5_type)</argsstring>
+        <name>hdf5_write_array</name>
+        <param>
+          <type>const void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>rank</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fdims</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fstart</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fcount</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>mdims</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>mstart</declname>
+        </param>
+        <param>
+          <type>hsize_t</type>
+          <declname>hdf5_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="37" column="5" declfile="src/hdf5_utils.h" declline="37" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a856257e4507df8c48f2d100571b42817" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_exists</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>hdf5_exists</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="41" column="5" declfile="src/hdf5_utils.h" declline="41" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1af652f1f1e541a3b6c32dc086a59c7bd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_read_single_val</definition>
+        <argsstring>(void *val, const char *name, hsize_t hdf5_type)</argsstring>
+        <name>hdf5_read_single_val</name>
+        <param>
+          <type>void *</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>hsize_t</type>
+          <declname>hdf5_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="42" column="5" declfile="src/hdf5_utils.h" declline="42" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a4619912aadf4bebe2077a8520b88ac46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_read_array</definition>
+        <argsstring>(void *data, const char *name, size_t rank, hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims, hsize_t *mstart, hsize_t hdf5_type)</argsstring>
+        <name>hdf5_read_array</name>
+        <param>
+          <type>void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>rank</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fdims</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fstart</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>fcount</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>mdims</declname>
+        </param>
+        <param>
+          <type>hsize_t *</type>
+          <declname>mstart</declname>
+        </param>
+        <param>
+          <type>hsize_t</type>
+          <declname>hdf5_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="43" column="5" declfile="src/hdf5_utils.h" declline="43" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a2fd0f5a177d0ce77904a290ed7ab7065" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>hid_t</type>
+        <definition>hid_t hdf5_make_str_type</definition>
+        <argsstring>(size_t len)</argsstring>
+        <name>hdf5_make_str_type</name>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="47" column="7" declfile="src/hdf5_utils.h" declline="47" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1a12b2fc7f278fe0cf1f3f7fd3fd306652" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_write_str_list</definition>
+        <argsstring>(const void *data, const char *name, size_t strlen, size_t len)</argsstring>
+        <name>hdf5_write_str_list</name>
+        <param>
+          <type>const void *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>strlen</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="48" column="5" declfile="src/hdf5_utils.h" declline="48" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1ac1605107076e69f7c00fdecf2bd8a6b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_add_attr</definition>
+        <argsstring>(const void *att, const char *att_name, const char *data_name, hsize_t hdf5_type)</argsstring>
+        <name>hdf5_add_attr</name>
+        <param>
+          <type>const void *</type>
+          <declname>att</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>att_name</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>data_name</declname>
+        </param>
+        <param>
+          <type>hsize_t</type>
+          <declname>hdf5_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="49" column="5" declfile="src/hdf5_utils.h" declline="49" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="hdf5__utils_8h_1aecba6fdc8a0d942b378c6c324533a5ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int hdf5_add_units</definition>
+        <argsstring>(const char *name, const char *unit)</argsstring>
+        <name>hdf5_add_units</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>unit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/hdf5_utils.h" line="50" column="5" declfile="src/hdf5_utils.h" declline="50" declcolumn="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>hdf5_utils.h</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>HDF5_UTILS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HDF5_UTILS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;hdf5.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Define<sp/>a<sp/>debug<sp/>flag<sp/>to<sp/>print<sp/>each<sp/>read/write</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//#define<sp/>DEBUG<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Force<sp/>MPI<sp/>on<sp/>or<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="hdf5__utils_8h_1a3869d282031f6ea6b50fdb980b758420" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>USE_MPI<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Blob<sp/>&quot;copy&quot;<sp/>utility</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>HDF5_BLOB</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="hdf5__utils_8h_1a1496e13732ae46800565796b2ce09a84" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HDF5_BLOB</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>hid_t<sp/><ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="hdf5__utils_8h_1a9d3a6db741fbf0dac5d89975a73ee527" refkind="member"><highlight class="normal"><ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref><sp/><ref refid="hdf5__utils_8h_1a9d3a6db741fbf0dac5d89975a73ee527" kindref="member">hdf5_get_blob</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name);</highlight></codeline>
+<codeline lineno="23" refid="hdf5__utils_8h_1ac41923f789696f02927d8857838bcd26" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1ac41923f789696f02927d8857838bcd26" kindref="member">hdf5_write_blob</ref>(<ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref><sp/>blob,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name);</highlight></codeline>
+<codeline lineno="24" refid="hdf5__utils_8h_1acfaf5ad969b528252544d9274ae9fb98" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1acfaf5ad969b528252544d9274ae9fb98" kindref="member">hdf5_close_blob</ref>(<ref refid="hdf5__utils_8h_1abbd4e0ea8441a4a391c88ed0688689dc" kindref="member">hdf5_blob</ref><sp/>blob);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">//<sp/>File</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="hdf5__utils_8h_1aa516c64d3d01dab36b6d242bcbd202ea" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1aa516c64d3d01dab36b6d242bcbd202ea" kindref="member">hdf5_create</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fname);</highlight></codeline>
+<codeline lineno="28" refid="hdf5__utils_8h_1a38ed155e4a5caf24f8af82e570a5f517" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a38ed155e4a5caf24f8af82e570a5f517" kindref="member">hdf5_open</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fname);</highlight></codeline>
+<codeline lineno="29" refid="hdf5__utils_8h_1ae0f0e281fc647877ec3995288ccc5259" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1ae0f0e281fc647877ec3995288ccc5259" kindref="member">hdf5_close</ref>();</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Directory</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="hdf5__utils_8h_1a7bf41478aa1f827d8ded1502defee02a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a7bf41478aa1f827d8ded1502defee02a" kindref="member">hdf5_make_directory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name);</highlight></codeline>
+<codeline lineno="33" refid="hdf5__utils_8h_1ad9a5e5084414804db4ce8bb576232eb4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1ad9a5e5084414804db4ce8bb576232eb4" kindref="member">hdf5_set_directory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*path);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Write</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="hdf5__utils_8h_1a9a56a32edcb65b35e670d1d849281133" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a9a56a32edcb65b35e670d1d849281133" kindref="member">hdf5_write_single_val</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*val,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/>hsize_t<sp/>hdf5_type);</highlight></codeline>
+<codeline lineno="37" refid="hdf5__utils_8h_1aad8483579de5db94021009f1413e641f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1aad8483579de5db94021009f1413e641f" kindref="member">hdf5_write_array</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*data,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hsize_t<sp/>*fdims,<sp/>hsize_t<sp/>*fstart,<sp/>hsize_t<sp/>*fcount,<sp/>hsize_t<sp/>*mdims,<sp/>hsize_t<sp/>*mstart,<sp/>hsize_t<sp/>hdf5_type);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Read</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="hdf5__utils_8h_1a856257e4507df8c48f2d100571b42817" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a856257e4507df8c48f2d100571b42817" kindref="member">hdf5_exists</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name);</highlight></codeline>
+<codeline lineno="42" refid="hdf5__utils_8h_1af652f1f1e541a3b6c32dc086a59c7bd9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1af652f1f1e541a3b6c32dc086a59c7bd9" kindref="member">hdf5_read_single_val</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*val,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/>hsize_t<sp/>hdf5_type);</highlight></codeline>
+<codeline lineno="43" refid="hdf5__utils_8h_1a4619912aadf4bebe2077a8520b88ac46" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a4619912aadf4bebe2077a8520b88ac46" kindref="member">hdf5_read_array</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*data,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rank,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hsize_t<sp/>*fdims,<sp/>hsize_t<sp/>*fstart,<sp/>hsize_t<sp/>*fcount,<sp/>hsize_t<sp/>*mdims,<sp/>hsize_t<sp/>*mstart,<sp/>hsize_t<sp/>hdf5_type);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Convenience<sp/>and<sp/>annotations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="hdf5__utils_8h_1a2fd0f5a177d0ce77904a290ed7ab7065" refkind="member"><highlight class="normal">hid_t<sp/><ref refid="hdf5__utils_8h_1a2fd0f5a177d0ce77904a290ed7ab7065" kindref="member">hdf5_make_str_type</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>len);</highlight></codeline>
+<codeline lineno="48" refid="hdf5__utils_8h_1a12b2fc7f278fe0cf1f3f7fd3fd306652" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1a12b2fc7f278fe0cf1f3f7fd3fd306652" kindref="member">hdf5_write_str_list</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*data,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>strlen,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>len);</highlight></codeline>
+<codeline lineno="49" refid="hdf5__utils_8h_1ac1605107076e69f7c00fdecf2bd8a6b7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1ac1605107076e69f7c00fdecf2bd8a6b7" kindref="member">hdf5_add_attr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*att,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*att_name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*data_name,<sp/>hsize_t<sp/>hdf5_type);</highlight></codeline>
+<codeline lineno="50" refid="hdf5__utils_8h_1aecba6fdc8a0d942b378c6c324533a5ca" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="hdf5__utils_8h_1aecba6fdc8a0d942b378c6c324533a5ca" kindref="member">hdf5_add_units</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*unit);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>HDF5_UTILS_H</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/hdf5_utils.h"/>
+  </compounddef>
+</doxygen>

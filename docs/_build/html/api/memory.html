@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>memory.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="kernels.cu" href="kernels.html" />
+    <link rel="prev" title="Documentation" href="../documentation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">memory.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/memory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="memory-cu">
+<h1>memory.cu<a class="headerlink" href="#memory-cu" title="Link to this heading"></a></h1>
+<p>This section contains functions defined in the memory.cu file related to GPU memory allocation, host to device global data transfer, and serialized workload calculations.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414transferParamsv">
+<span id="_CPPv314transferParamsv"></span><span id="_CPPv214transferParamsv"></span><span id="transferParams"></span><span class="target" id="memory_8h_1ac8b381d2158fb0e199370c836a9e56a7"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transferParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414transferParamsv" title="Link to this definition"></a><br /></dt>
+<dd><p>Synchronizes global host simulation parameters with device memory symbols. </p>
+<p>Copies physics constants, grid dimensions, lookup tables and model-specific parameters from the host to the device using <code class="docutils literal notranslate"><span class="pre">cudaMemcpyToSymbol</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412setMaxBlocksv">
+<span id="_CPPv312setMaxBlocksv"></span><span id="_CPPv212setMaxBlocksv"></span><span id="setMaxBlocks"></span><span class="target" id="memory_8h_1a67f6f5cf1fea646fd58cffec6e3268c0"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMaxBlocks</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412setMaxBlocksv" title="Link to this definition"></a><br /></dt>
+<dd><p>Configures the optimal number of blocks to be used by CUDA kernels and generates GPU diagnostics. </p>
+<p>It multiplies the maximum number of blocks per multiprocessor by the total number of streaming multiprocessors (SMs) to determine the total maximum number of blocks that can be launched concurrently on the GPU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The calculated maximum number of blocks for kernel launches. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425cummulativePhotonsPerZonePyPy">
+<span id="_CPPv325cummulativePhotonsPerZonePyPy"></span><span id="_CPPv225cummulativePhotonsPerZonePyPy"></span><span id="cummulativePhotonsPerZone__unsigned-l-lP.unsigned-l-lP"></span><span class="target" id="memory_8h_1a8136b0be5f7b0b43408c44287ed9b549"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cummulativePhotonsPerZone</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generated_photons_arr</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_index_to_ijk</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425cummulativePhotonsPerZonePyPy" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes a cumulative sum of superphoton counts for zone-based photon sampling. </p>
+<p>Generates a cumulative sum array where the value at zone i equals the total number of superphotons to be generated up to and including zone i-1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generated_photons_arr</strong> – Array containing the number of photons to generate in each zone. </p></li>
+<li><p><strong>d_index_to_ijk</strong> – Array storing the cumulative sum of photons per zone. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415photonsPerBatchyPi">
+<span id="_CPPv315photonsPerBatchyPi"></span><span id="_CPPv215photonsPerBatchyPi"></span><span id="photonsPerBatch__unsigned-l-l.iP"></span><span class="target" id="memory_8h_1ab32ec81875d7bcc1cf492da3a9c6dcbf"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">photonsPerBatch</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tot_nph</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">batch_divisions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415photonsPerBatchyPi" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the batch size for GPU photon processing. </p>
+<p>Evaluates the available GPU RAM memory to determine the optimal number of partitions. This prevents memory overflows by scaling the batch size against the footprint of the <code class="docutils literal notranslate"><span class="pre">of_photon</span></code> structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tot_nph</strong> – Total number of photons to be processed in the simulation. </p></li>
+<li><p><strong>batch_divisions</strong> – Calculated number of batches. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of photons assigned to each individual GPU batch. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418allocatePhotonDataP12of_photonSOAy">
+<span id="_CPPv318allocatePhotonDataP12of_photonSOAy"></span><span id="_CPPv218allocatePhotonDataP12of_photonSOAy"></span><span id="allocatePhotonData__of_photonSOAP.unsigned-l-l"></span><span class="target" id="memory_8h_1a75477149f6e665fc22861a2ffc04d30b"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocatePhotonData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418allocatePhotonDataP12of_photonSOAy" title="Link to this definition"></a><br /></dt>
+<dd><p>Allocates device memory for photon data using a Structure of Arrays (SoA) layout. </p>
+<p>Initializes a <code class="docutils literal notranslate"><span class="pre">of_photonSOA</span></code> structure by allocating separate memory buffers on the GPU for every photon property for both original and scattered photons at each batch.<ul class="simple">
+<li><p>Using a Structure of Arrays (SoA) instead of an Array of Structures (AoS) is a critical optimization that enables <strong>coalesced memory access</strong> patterns, significantly increasing throughput for CUDA kernels.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – Pointer to the <code class="docutils literal notranslate"><span class="pre">of_photonSOA</span></code> structure to be initialized. </p></li>
+<li><p><strong>size</strong> – The number of photon slots to allocate in each array. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414freePhotonDataP12of_photonSOA">
+<span id="_CPPv314freePhotonDataP12of_photonSOA"></span><span id="_CPPv214freePhotonDataP12of_photonSOA"></span><span id="freePhotonData__of_photonSOAP"></span><span class="target" id="memory_8h_1a83056eb1e471f3b418d1214300eb3626"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">freePhotonData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414freePhotonDataP12of_photonSOA" title="Link to this definition"></a><br /></dt>
+<dd><p>Deallocates device memory for a <code class="docutils literal notranslate"><span class="pre">of_photonSOA</span></code> structure. </p>
+<p>This function releases all individual GPU memory buffers that were previously allocated by <code class="docutils literal notranslate"><span class="pre">allocatePhotonData</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ph</strong> – Pointer to the <code class="docutils literal notranslate"><span class="pre">of_photonSOA</span></code> structure whose device members are to be freed. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t">
+<span id="_CPPv318createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"></span><span id="_CPPv218createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"></span><span id="createdPTextureObj__cudaTextureObject_tP.doubleP.cudaArray_tP"></span><span class="target" id="memory_8h_1abaf6f13eb01390c597e84a0763e4ac55"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createdPTextureObj</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">texObj</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dP</span></span>, <span class="n"><span class="pre">cudaArray_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cuArray</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a 3D texture object from a 4D data grid for the plasma primitive properties. </p>
+<p>Converts input <code class="docutils literal notranslate"><span class="pre">double</span></code> data to <code class="docutils literal notranslate"><span class="pre">float</span></code>, uploads it to a 3D CUDA array, and initializes a texture object with point filtering and clamp addressing.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Maps 4D data into a 3D extent by combining the <code class="docutils literal notranslate"><span class="pre">nx</span></code> and <code class="docutils literal notranslate"><span class="pre">ny</span></code> dimensions. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texObj</strong> – Pointer to the resulting texture object that stores the plasma primitive properties. </p></li>
+<li><p><strong>dP</strong> – Input plasma properties. </p></li>
+<li><p><strong>cuArray</strong> – Pointer to the allocated 3D CUDA array resource.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../documentation.html" class="btn btn-neutral float-left" title="Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kernels.html" class="btn btn-neutral float-right" title="kernels.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

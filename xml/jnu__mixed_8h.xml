@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="jnu__mixed_8h" kind="file" language="C++">
+    <compoundname>jnu_mixed.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="jnu__mixed_8h_1a115f2e03b41ee872a89e0e3770d93322" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double jnu_synch</definition>
+        <argsstring>(const double nu, const double Ne, const double Thetae, const double B, const double theta)</argsstring>
+        <name>jnu_synch</name>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>B</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>theta</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="7" column="28" declfile="src/jnu_mixed.h" declline="7" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1a092b094208fe34f2bb4e04e4e1ee0959" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double int_jnu</definition>
+        <argsstring>(double Ne, double Thetae, double Bmag, double nu)</argsstring>
+        <name>int_jnu</name>
+        <param>
+          <type>double</type>
+          <declname>Ne</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>Bmag</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>nu</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="13" column="28" declfile="src/jnu_mixed.h" declline="13" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double jnu_integrand</definition>
+        <argsstring>(double th, void *params)</argsstring>
+        <name>jnu_integrand</name>
+        <param>
+          <type>double</type>
+          <declname>th</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="14" column="8" declfile="src/jnu_mixed.h" declline="14" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void init_emiss_tables</definition>
+        <argsstring>(void)</argsstring>
+        <name>init_emiss_tables</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="15" column="15" declfile="src/jnu_mixed.h" declline="15" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double K2_eval</definition>
+        <argsstring>(const double Thetae)</argsstring>
+        <name>K2_eval</name>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="16" column="28" declfile="src/jnu_mixed.h" declline="16" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double F_eval</definition>
+        <argsstring>(const double Thetae, const double Bmag, const double nu)</argsstring>
+        <name>F_eval</name>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>Bmag</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>nu</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="21" column="28" declfile="src/jnu_mixed.h" declline="21" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double linear_interp_F</definition>
+        <argsstring>(const double K)</argsstring>
+        <name>linear_interp_F</name>
+        <param>
+          <type>const double</type>
+          <declname>K</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="22" column="28" declfile="src/jnu_mixed.h" declline="22" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ __device__ double</type>
+        <definition>__host__ __device__ double linear_interp_K2</definition>
+        <argsstring>(const double Thetae)</argsstring>
+        <name>linear_interp_K2</name>
+        <param>
+          <type>const double</type>
+          <declname>Thetae</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/jnu_mixed.h" line="24" column="28" declfile="src/jnu_mixed.h" declline="24" declcolumn="28"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">Declaration<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>the<sp/>jnu_mixed.cu<sp/>file</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>JNU_MIXED_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>JNU_MIXED_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="jnu__mixed_8h_1a115f2e03b41ee872a89e0e3770d93322" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a115f2e03b41ee872a89e0e3770d93322" kindref="member">jnu_synch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="13" refid="jnu__mixed_8h_1a092b094208fe34f2bb4e04e4e1ee0959" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a092b094208fe34f2bb4e04e4e1ee0959" kindref="member">int_jnu</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bmag,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu);</highlight></codeline>
+<codeline lineno="14" refid="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d" kindref="member">jnu_integrand</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>th,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="decs_8h_1a02eb7524df3cdfd7ab32de5b40516106" kindref="member">params</ref>);</highlight></codeline>
+<codeline lineno="15" refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" kindref="member">init_emiss_tables</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="16" refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" kindref="member">K2_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="21" refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" kindref="member">F_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bmag,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu);</highlight></codeline>
+<codeline lineno="22" refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" kindref="member">linear_interp_F</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//__host__<sp/>__device__<sp/>double<sp/>linear_interp_K2(const<sp/>double<sp/>Thetae);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" kindref="member">linear_interp_K2</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/jnu_mixed.h"/>
+  </compounddef>
+</doxygen>

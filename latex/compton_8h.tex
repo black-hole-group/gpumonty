@@ -1,0 +1,88 @@
+\hypertarget{compton_8h}{}\doxysection{src/compton.h File Reference}
+\label{compton_8h}\index{src/compton.h@{src/compton.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}{GPU\+\_\+sample\+\_\+scattered\+\_\+photon}} (double k\mbox{[}4\mbox{]}, double \mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}}\mbox{[}4\mbox{]}, double kp\mbox{[}4\mbox{]}, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a23889b06f89c43496986015e13a60f2e}{GPU\+\_\+boost}} (double v\mbox{[}4\mbox{]}, double u\mbox{[}4\mbox{]}, double vp\mbox{[}4\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a95628da4319e226d82f6ea553afea193}{GPU\+\_\+sample\+\_\+thomson}} (curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}{GPU\+\_\+sample\+\_\+klein\+\_\+nishina}} (double k0, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a333330464deee8831babe16f98f16648}{GPU\+\_\+klein\+\_\+nishina}} (const double a, const double ap)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}{GPU\+\_\+sample\+\_\+electron\+\_\+distr\+\_\+p}} (double k\mbox{[}4\mbox{]}, double \mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}}\mbox{[}4\mbox{]}, double Thetae, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a12ee38bdba5375c31513089d65642b5a}{GPU\+\_\+sample\+\_\+beta\+\_\+distr}} (double Thetae, double $\ast$gamma\+\_\+e, double $\ast$beta\+\_\+e, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a38bb950c830af777b12de3eeb4708dcf}{GPU\+\_\+sample\+\_\+y\+\_\+distr}} (const double Thetae, curand\+State $\ast$local\+State)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_acecc256e76033d65ace1140306de801c}{GPU\+\_\+sample\+\_\+mu\+\_\+distr}} (const double beta\+\_\+e, double random)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}{GPU\+\_\+scatter\+\_\+super\+\_\+photon}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} php, double Ne, double Thetae, double B, double Ucon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Bcon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, curand\+State $\ast$local\+State, unsigned long long photon\+\_\+index)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{compton_8h_a23889b06f89c43496986015e13a60f2e}\label{compton_8h_a23889b06f89c43496986015e13a60f2e}} 
+\index{compton.h@{compton.h}!GPU\_boost@{GPU\_boost}}
+\index{GPU\_boost@{GPU\_boost}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_boost()}{GPU\_boost()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+boost (\begin{DoxyParamCaption}\item[{double}]{v\mbox{[}4\mbox{]},  }\item[{double}]{u\mbox{[}4\mbox{]},  }\item[{double}]{vp\mbox{[}4\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a333330464deee8831babe16f98f16648}\label{compton_8h_a333330464deee8831babe16f98f16648}} 
+\index{compton.h@{compton.h}!GPU\_klein\_nishina@{GPU\_klein\_nishina}}
+\index{GPU\_klein\_nishina@{GPU\_klein\_nishina}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_klein\_nishina()}{GPU\_klein\_nishina()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+klein\+\_\+nishina (\begin{DoxyParamCaption}\item[{const double}]{a,  }\item[{const double}]{ap }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a12ee38bdba5375c31513089d65642b5a}\label{compton_8h_a12ee38bdba5375c31513089d65642b5a}} 
+\index{compton.h@{compton.h}!GPU\_sample\_beta\_distr@{GPU\_sample\_beta\_distr}}
+\index{GPU\_sample\_beta\_distr@{GPU\_sample\_beta\_distr}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_beta\_distr()}{GPU\_sample\_beta\_distr()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+beta\+\_\+distr (\begin{DoxyParamCaption}\item[{double}]{Thetae,  }\item[{double $\ast$}]{gamma\+\_\+e,  }\item[{double $\ast$}]{beta\+\_\+e,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}\label{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}} 
+\index{compton.h@{compton.h}!GPU\_sample\_electron\_distr\_p@{GPU\_sample\_electron\_distr\_p}}
+\index{GPU\_sample\_electron\_distr\_p@{GPU\_sample\_electron\_distr\_p}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_electron\_distr\_p()}{GPU\_sample\_electron\_distr\_p()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+electron\+\_\+distr\+\_\+p (\begin{DoxyParamCaption}\item[{double}]{k\mbox{[}4\mbox{]},  }\item[{double}]{p\mbox{[}4\mbox{]},  }\item[{double}]{Thetae,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}\label{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}} 
+\index{compton.h@{compton.h}!GPU\_sample\_klein\_nishina@{GPU\_sample\_klein\_nishina}}
+\index{GPU\_sample\_klein\_nishina@{GPU\_sample\_klein\_nishina}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_klein\_nishina()}{GPU\_sample\_klein\_nishina()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+klein\+\_\+nishina (\begin{DoxyParamCaption}\item[{double}]{k0,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_acecc256e76033d65ace1140306de801c}\label{compton_8h_acecc256e76033d65ace1140306de801c}} 
+\index{compton.h@{compton.h}!GPU\_sample\_mu\_distr@{GPU\_sample\_mu\_distr}}
+\index{GPU\_sample\_mu\_distr@{GPU\_sample\_mu\_distr}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_mu\_distr()}{GPU\_sample\_mu\_distr()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+mu\+\_\+distr (\begin{DoxyParamCaption}\item[{const double}]{beta\+\_\+e,  }\item[{double}]{random }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}\label{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}} 
+\index{compton.h@{compton.h}!GPU\_sample\_scattered\_photon@{GPU\_sample\_scattered\_photon}}
+\index{GPU\_sample\_scattered\_photon@{GPU\_sample\_scattered\_photon}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_scattered\_photon()}{GPU\_sample\_scattered\_photon()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+scattered\+\_\+photon (\begin{DoxyParamCaption}\item[{double}]{k\mbox{[}4\mbox{]},  }\item[{double}]{p\mbox{[}4\mbox{]},  }\item[{double}]{kp\mbox{[}4\mbox{]},  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a95628da4319e226d82f6ea553afea193}\label{compton_8h_a95628da4319e226d82f6ea553afea193}} 
+\index{compton.h@{compton.h}!GPU\_sample\_thomson@{GPU\_sample\_thomson}}
+\index{GPU\_sample\_thomson@{GPU\_sample\_thomson}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_thomson()}{GPU\_sample\_thomson()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+thomson (\begin{DoxyParamCaption}\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a38bb950c830af777b12de3eeb4708dcf}\label{compton_8h_a38bb950c830af777b12de3eeb4708dcf}} 
+\index{compton.h@{compton.h}!GPU\_sample\_y\_distr@{GPU\_sample\_y\_distr}}
+\index{GPU\_sample\_y\_distr@{GPU\_sample\_y\_distr}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_sample\_y\_distr()}{GPU\_sample\_y\_distr()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+y\+\_\+distr (\begin{DoxyParamCaption}\item[{const double}]{Thetae,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}\label{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}} 
+\index{compton.h@{compton.h}!GPU\_scatter\_super\_photon@{GPU\_scatter\_super\_photon}}
+\index{GPU\_scatter\_super\_photon@{GPU\_scatter\_super\_photon}!compton.h@{compton.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_scatter\_super\_photon()}{GPU\_scatter\_super\_photon()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+scatter\+\_\+super\+\_\+photon (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{php,  }\item[{double}]{Ne,  }\item[{double}]{Thetae,  }\item[{double}]{B,  }\item[{double}]{Ucon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Bcon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{curand\+State $\ast$}]{local\+State,  }\item[{unsigned long long}]{photon\+\_\+index }\end{DoxyParamCaption})}
+

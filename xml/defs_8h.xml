@@ -1,0 +1,1399 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="defs_8h" kind="file" language="C++">
+    <compoundname>defs.h</compoundname>
+    <includes refid="config_8h" local="yes">config.h</includes>
+    <incdepgraph>
+      <node id="10">
+        <label>gsl/gsl_vector.h</label>
+      </node>
+      <node id="1">
+        <label>src/defs.h</label>
+        <link refid="defs_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdlib.h</label>
+      </node>
+      <node id="16">
+        <label>cuda_runtime.h</label>
+      </node>
+      <node id="11">
+        <label>gsl/gsl_permutation.h</label>
+      </node>
+      <node id="14">
+        <label>omp.h</label>
+      </node>
+      <node id="13">
+        <label>gsl/gsl_integration.h</label>
+      </node>
+      <node id="2">
+        <label>config.h</label>
+        <link refid="config_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>math.h</label>
+      </node>
+      <node id="15">
+        <label>constants.h</label>
+        <link refid="constants_8h"/>
+      </node>
+      <node id="7">
+        <label>gsl/gsl_math.h</label>
+      </node>
+      <node id="6">
+        <label>gsl/gsl_randist.h</label>
+      </node>
+      <node id="12">
+        <label>gsl/gsl_linalg.h</label>
+      </node>
+      <node id="8">
+        <label>gsl/gsl_sf_bessel.h</label>
+      </node>
+      <node id="3">
+        <label>stdio.h</label>
+      </node>
+      <node id="9">
+        <label>gsl/gsl_matrix.h</label>
+      </node>
+      <node id="17">
+        <label>curand_kernel.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structof__geom" prot="public">of_geom</innerclass>
+    <innerclass refid="structof__spectrum" prot="public">of_spectrum</innerclass>
+    <innerclass refid="structparams__t" prot="public">params_t</innerclass>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="defs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" prot="public" static="no">
+        <type>struct <ref refid="structparams__t" kindref="compound">params_t</ref></type>
+        <definition>typedef struct params_t Params</definition>
+        <argsstring></argsstring>
+        <name>Params</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="110" column="8"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="defs_8h_1ae323db0d410f2ea234b9484acfd333d4" prot="public" static="no" mutable="no">
+        <type>struct <ref refid="structof__geom" kindref="compound">of_geom</ref> *</type>
+        <definition>struct of_geom* geom</definition>
+        <argsstring></argsstring>
+        <name>geom</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="2" column="14" bodyfile="src/defs.h" bodystart="2" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ac34b583787faac6c02ad0438df077b59" prot="public" static="no" mutable="no">
+        <type>gsl_integration_workspace *</type>
+        <definition>gsl_integration_workspace* w</definition>
+        <argsstring></argsstring>
+        <name>w</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="3" column="27" bodyfile="src/defs.h" bodystart="3" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a1b0ec3044652a5d922d8e1a24455df81" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double F[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>F</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="6" column="8" bodyfile="src/defs.h" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a87df3bdc854d088f7b90e59bc034edcc" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double wgt[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>wgt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="6" column="10" bodyfile="src/defs.h" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a665f40c3f8f3a36509e8c74668d398ab" prot="public" static="no" mutable="no">
+        <type>unsigned long long</type>
+        <definition>unsigned long long N_scatt</definition>
+        <argsstring></argsstring>
+        <name>N_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="7" column="20" bodyfile="src/defs.h" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a68dd8132a9835dbc463907ffd59958c1" prot="public" static="no" mutable="no">
+        <type>unsigned long long</type>
+        <definition>unsigned long long N_superph_recorded</definition>
+        <argsstring></argsstring>
+        <name>N_superph_recorded</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="8" column="20" bodyfile="src/defs.h" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a37800d14d893b7a8126f821b7a34e1d1" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double R0</definition>
+        <argsstring></argsstring>
+        <name>R0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="11" column="8" bodyfile="src/defs.h" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a5f200d81ca494457b004628aa958bcec" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Rin</definition>
+        <argsstring></argsstring>
+        <name>Rin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="11" column="11" bodyfile="src/defs.h" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Rh</definition>
+        <argsstring></argsstring>
+        <name>Rh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="11" column="15" bodyfile="src/defs.h" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ae38887db77c101efeb7db711a9e856db" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Rout</definition>
+        <argsstring></argsstring>
+        <name>Rout</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="11" column="18" bodyfile="src/defs.h" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a147f35f70045c8c403c380ba83176093" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Rms</definition>
+        <argsstring></argsstring>
+        <name>Rms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="11" column="23" bodyfile="src/defs.h" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aec158415808eb5ddb908cdeb7bf9c343" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double hslope</definition>
+        <argsstring></argsstring>
+        <name>hslope</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="12" column="8" bodyfile="src/defs.h" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a22a1624b7aadab4136bba181b4644564" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double startx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>startx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="13" column="8" bodyfile="src/defs.h" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ab72209febcbdc5407955e21864ab504b" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double stopx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>stopx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="13" column="15" bodyfile="src/defs.h" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>dx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="13" column="21" bodyfile="src/defs.h" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a45d60151fb0572200ad00231c304aaf0" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double gam</definition>
+        <argsstring></argsstring>
+        <name>gam</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="15" column="8" bodyfile="src/defs.h" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1af1b6f6b5c562420d01bcadcc0ba72453" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dMsim</definition>
+        <argsstring></argsstring>
+        <name>dMsim</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="16" column="8" bodyfile="src/defs.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Thetae_unit</definition>
+        <argsstring></argsstring>
+        <name>Thetae_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="17" column="8" bodyfile="src/defs.h" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a1a12d1761d2fcb9a5ba79ae0724b4caa" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double max_tau_scatt</definition>
+        <argsstring></argsstring>
+        <name>max_tau_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="18" column="8" bodyfile="src/defs.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1af3e2dd1b08fb33fd5973be4a0260a1ec" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Ladv</definition>
+        <argsstring></argsstring>
+        <name>Ladv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="18" column="22" bodyfile="src/defs.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ac95deac65effbea484bf30e539c1b62b" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dMact</definition>
+        <argsstring></argsstring>
+        <name>dMact</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="18" column="27" bodyfile="src/defs.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a35b2d6b30ef375b6b18f546dc98357b2" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double bias_norm</definition>
+        <argsstring></argsstring>
+        <name>bias_norm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="18" column="33" bodyfile="src/defs.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aaec46a71b387d4a2e71769c208112fd3" prot="public" static="no" mutable="no">
+        <type>double *****</type>
+        <definition>double***** econ</definition>
+        <argsstring></argsstring>
+        <name>econ</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="20" column="8" bodyfile="src/defs.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a0d976351cecf4528d1cd3d41bea51ed0" prot="public" static="no" mutable="no">
+        <type>double *****</type>
+        <definition>double***** ecov</definition>
+        <argsstring></argsstring>
+        <name>ecov</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="21" column="8" bodyfile="src/defs.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ad8c7a14419937e710e056a1592f8bf8b" prot="public" static="no" mutable="no">
+        <type>double ****</type>
+        <definition>double**** bcon</definition>
+        <argsstring></argsstring>
+        <name>bcon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="22" column="8" bodyfile="src/defs.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8b61d35db7528efda160176a1898fadf" prot="public" static="no" mutable="no">
+        <type>double ****</type>
+        <definition>double**** bcov</definition>
+        <argsstring></argsstring>
+        <name>bcov</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="23" column="8" bodyfile="src/defs.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" prot="public" static="no" mutable="no">
+        <type>double ****</type>
+        <definition>double**** ucon</definition>
+        <argsstring></argsstring>
+        <name>ucon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="24" column="8" bodyfile="src/defs.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" prot="public" static="no" mutable="no">
+        <type>double ****</type>
+        <definition>double**** ucov</definition>
+        <argsstring></argsstring>
+        <name>ucov</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="25" column="8" bodyfile="src/defs.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" prot="public" static="no" mutable="no">
+        <type>double *</type>
+        <definition>double* p</definition>
+        <argsstring></argsstring>
+        <name>p</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="26" column="9" bodyfile="src/defs.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a03b3154ce6226810ae2cbe4b8e5edb0c" prot="public" static="no" mutable="no">
+        <type>double ***</type>
+        <definition>double*** ne</definition>
+        <argsstring></argsstring>
+        <name>ne</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="27" column="8" bodyfile="src/defs.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a96d86c26e48095c968a287e022017016" prot="public" static="no" mutable="no">
+        <type>double ***</type>
+        <definition>double*** thetae</definition>
+        <argsstring></argsstring>
+        <name>thetae</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="28" column="8" bodyfile="src/defs.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" prot="public" static="no" mutable="no">
+        <type>double ***</type>
+        <definition>double*** b</definition>
+        <argsstring></argsstring>
+        <name>b</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="29" column="8" bodyfile="src/defs.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int N1</definition>
+        <argsstring></argsstring>
+        <name>N1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="31" column="5" bodyfile="src/defs.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1adeea8075a0038c985c63d45161804d60" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int N2</definition>
+        <argsstring></argsstring>
+        <name>N2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="31" column="8" bodyfile="src/defs.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int N3</definition>
+        <argsstring></argsstring>
+        <name>N3</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="31" column="11" bodyfile="src/defs.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a82fb14569b04b06cb437b3c9391ed3a1" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double L_unit</definition>
+        <argsstring></argsstring>
+        <name>L_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="8" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aa55bd2f4828da46e2cd051edf8f1635e" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double B_unit</definition>
+        <argsstring></argsstring>
+        <name>B_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="15" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8cd0401d02c76917b31197c083fc4103" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Ne_unit</definition>
+        <argsstring></argsstring>
+        <name>Ne_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="22" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8d570719a5e6ac69fc38e8e0d05f7973" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Rho_unit</definition>
+        <argsstring></argsstring>
+        <name>Rho_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="30" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1afbb8cc3c69f9362ac770bae25cc29c28" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double U_unit</definition>
+        <argsstring></argsstring>
+        <name>U_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="39" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a3072f08245495d12fd322f1c4f467765" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double M_unit</definition>
+        <argsstring></argsstring>
+        <name>M_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="46" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aafaa1bab5b6fbd4b1a32f5db78aaf569" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double T_unit</definition>
+        <argsstring></argsstring>
+        <name>T_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="33" column="53" bodyfile="src/defs.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1adb649385fc46caa4ec00d0e0978a916f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double table[220+1][80+1]</definition>
+        <argsstring>[220+1][80+1]</argsstring>
+        <name>table</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="34" column="8" bodyfile="src/defs.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1afc84f8980bb448e4accd61e55ba71d78" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dlw</definition>
+        <argsstring></argsstring>
+        <name>dlw</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="35" column="8" bodyfile="src/defs.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a35d39cb335cfdcf911ef2bcedaf40342" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dlT</definition>
+        <argsstring></argsstring>
+        <name>dlT</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="35" column="12" bodyfile="src/defs.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a44398a98f987d7af5296425e8dd8413a" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double lminw</definition>
+        <argsstring></argsstring>
+        <name>lminw</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="35" column="16" bodyfile="src/defs.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a0b99ff70dfc3b1835de852cf00dad7d4" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double lmint</definition>
+        <argsstring></argsstring>
+        <name>lmint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="35" column="22" bodyfile="src/defs.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a444d08dcccdedf0c1282d34b23965bc3" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double nint[(40000)+1]</definition>
+        <argsstring>[(40000)+1]</argsstring>
+        <name>nint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="36" column="8" bodyfile="src/defs.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6547c87f4689b4642b73c2c250fa83be" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double K2[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>K2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="37" column="8" bodyfile="src/defs.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6068c3307e311182000df32983022b7f" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double dndlnu_max[(40000)+1]</definition>
+        <argsstring>[(40000)+1]</argsstring>
+        <name>dndlnu_max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="38" column="8" bodyfile="src/defs.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a95bc280ba29632fc6e927dfb9dbc6adc" prot="public" static="no" mutable="no">
+        <type>__device__ curandState</type>
+        <definition>__device__ curandState my_curand_state[3456 * 256]</definition>
+        <argsstring>[3456 *256]</argsstring>
+        <name>my_curand_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="40" column="24" bodyfile="src/defs.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6fbfd70ce148bee2d0f9b864ea66e6a4" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_table[220+1][80+1]</definition>
+        <argsstring>[220+1][80+1]</argsstring>
+        <name>d_table</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="42" column="19" bodyfile="src/defs.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long photon_count</definition>
+        <argsstring></argsstring>
+        <name>photon_count</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="44" column="31" bodyfile="src/defs.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6bcce35fba28e9e8136daeb648c76dde" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long generated_sphotons</definition>
+        <argsstring></argsstring>
+        <name>generated_sphotons</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="45" column="31" bodyfile="src/defs.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long d_N_superph_recorded</definition>
+        <argsstring></argsstring>
+        <name>d_N_superph_recorded</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="45" column="50" bodyfile="src/defs.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" prot="public" static="no" mutable="no">
+        <type>__device__ int</type>
+        <definition>__device__ int d_Ns</definition>
+        <argsstring></argsstring>
+        <name>d_Ns</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="46" column="16" bodyfile="src/defs.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aed8971ac92cef3856c889bf508614ff0" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long d_N_scatt</definition>
+        <argsstring></argsstring>
+        <name>d_N_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="47" column="31" bodyfile="src/defs.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7929fa904845ee6867b2ae7d814b66c1" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_thetae_unit</definition>
+        <argsstring></argsstring>
+        <name>d_thetae_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="19" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a1d7a13b3c392d5b1456a136c95f74223" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_startx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>d_startx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="33" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a1148144319f41da988d106074ab1cc15" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_dx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>d_dx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="42" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8edc197f9828749fdacec83c94897ed8" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_wgt[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>d_wgt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="47" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a32bc2b470fa84bd906d0fe0d301f240a" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_F[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>d_F</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="53" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8d36118555dce348aac569423334f743" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_K2[800+1]</definition>
+        <argsstring>[800+1]</argsstring>
+        <name>d_K2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="57" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_bias_norm</definition>
+        <argsstring></argsstring>
+        <name>d_bias_norm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="62" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a540234bcfbc0936b547add8ba066682e" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_stopx[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>d_stopx</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="74" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a742ef4db884976e1496d9dcd0cf7bb49" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_Rh</definition>
+        <argsstring></argsstring>
+        <name>d_Rh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="82" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1af9b8ee4984379bf47ea136962fee273e" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_max_tau_scatt</definition>
+        <argsstring></argsstring>
+        <name>d_max_tau_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="48" column="87" bodyfile="src/defs.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a78c64dac8bec176d822a7a3fa3839005" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long scattering_counter</definition>
+        <argsstring></argsstring>
+        <name>scattering_counter</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="50" column="31" bodyfile="src/defs.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ae3f7504002d5010a87327d32a3255ca0" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long d_num_scat_phs[(3)]</definition>
+        <argsstring>[(3)]</argsstring>
+        <name>d_num_scat_phs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="51" column="31" bodyfile="src/defs.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a68ccb3c564f43896d2410ddd61d21f90" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long tracking_counter</definition>
+        <argsstring></argsstring>
+        <name>tracking_counter</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="52" column="31" bodyfile="src/defs.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1af3623f3cd5730cb8d57c2ed2be1b5ada" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_nint[(40000)+1]</definition>
+        <argsstring>[(40000)+1]</argsstring>
+        <name>d_nint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="53" column="19" bodyfile="src/defs.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7a7952bb165e1171597f761e1e945ef1" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_dndlnu_max[(40000)+1]</definition>
+        <argsstring>[(40000)+1]</argsstring>
+        <name>d_dndlnu_max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="54" column="19" bodyfile="src/defs.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_hslope</definition>
+        <argsstring></argsstring>
+        <name>d_hslope</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="55" column="19" bodyfile="src/defs.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a2b92264ec3008463a5529a4535f369e4" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_R0</definition>
+        <argsstring></argsstring>
+        <name>d_R0</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="56" column="19" bodyfile="src/defs.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a18ecee65560d33d3da019b4e34aee4cb" prot="public" static="no" mutable="no">
+        <type>__device__ int</type>
+        <definition>__device__ int total_sca</definition>
+        <argsstring></argsstring>
+        <name>total_sca</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="57" column="16" bodyfile="src/defs.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1aa8328a2d08bffccbcfb60d960343b21c" prot="public" static="no" mutable="no">
+        <type>__device__ unsigned long long</type>
+        <definition>__device__ unsigned long long tracking_counter_sampling</definition>
+        <argsstring></argsstring>
+        <name>tracking_counter_sampling</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="58" column="31" bodyfile="src/defs.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6b10273d9bb77b624a016098ab2e1151" prot="public" static="no" mutable="no">
+        <type>__device__ int</type>
+        <definition>__device__ int d_N1</definition>
+        <argsstring></argsstring>
+        <name>d_N1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="60" column="16" bodyfile="src/defs.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" prot="public" static="no" mutable="no">
+        <type>__device__ int</type>
+        <definition>__device__ int d_N2</definition>
+        <argsstring></argsstring>
+        <name>d_N2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="60" column="21" bodyfile="src/defs.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" prot="public" static="no" mutable="no">
+        <type>__device__ int</type>
+        <definition>__device__ int d_N3</definition>
+        <argsstring></argsstring>
+        <name>d_N3</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="60" column="26" bodyfile="src/defs.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a40a4a3aa2d0eaf8420ab59fd074a51fd" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_trat_small</definition>
+        <argsstring></argsstring>
+        <name>d_trat_small</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="63" column="19" bodyfile="src/defs.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a6473b9c41ac13c339daecf5f7521bb99" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_trat_large</definition>
+        <argsstring></argsstring>
+        <name>d_trat_large</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="63" column="32" bodyfile="src/defs.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a8a27186bc9fd223c9427acf61a78fda6" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_beta_crit</definition>
+        <argsstring></argsstring>
+        <name>d_beta_crit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="63" column="45" bodyfile="src/defs.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a2536dffcc4e5773ab21b546a6ab92c45" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_thetae_max</definition>
+        <argsstring></argsstring>
+        <name>d_thetae_max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="63" column="57" bodyfile="src/defs.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1ab654fe0b60b7baf8dde19e2ae081623c" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_tp_over_te</definition>
+        <argsstring></argsstring>
+        <name>d_tp_over_te</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="63" column="70" bodyfile="src/defs.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7c8f846e91603646020cec12c0d92338" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_MBH</definition>
+        <argsstring></argsstring>
+        <name>d_MBH</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="64" column="19" bodyfile="src/defs.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7a450efe14c37256eeb7be121aed1eff" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_L_unit</definition>
+        <argsstring></argsstring>
+        <name>d_L_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="64" column="25" bodyfile="src/defs.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_B_unit</definition>
+        <argsstring></argsstring>
+        <name>d_B_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="64" column="34" bodyfile="src/defs.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a31cc8358ceeceb4c8a3a2ab3ac9bfc7b" prot="public" static="no" mutable="no">
+        <type>__device__ double</type>
+        <definition>__device__ double d_Ne_unit</definition>
+        <argsstring></argsstring>
+        <name>d_Ne_unit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="64" column="43" bodyfile="src/defs.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="defs_8h_1a02eb7524df3cdfd7ab32de5b40516106" prot="public" static="no" mutable="no">
+        <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref></type>
+        <definition>Params params</definition>
+        <argsstring></argsstring>
+        <name>params</name>
+        <initializer>= { 0 }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/defs.h" line="111" column="8" bodyfile="src/defs.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="config_8h" kindref="compound">config.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2" refid="decs_8h_1ae323db0d410f2ea234b9484acfd333d4" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>*<ref refid="defs_8h_1ae323db0d410f2ea234b9484acfd333d4" kindref="member">geom</ref>;</highlight></codeline>
+<codeline lineno="3" refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" refkind="member"><highlight class="normal">gsl_integration_workspace<sp/>*<ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>;</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">/*Global<sp/>Variable<sp/>Section*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>defining<sp/>declarations<sp/>for<sp/>global<sp/>variables<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6" refid="decs_8h_1a1b0ec3044652a5d922d8e1a24455df81" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a1b0ec3044652a5d922d8e1a24455df81" kindref="member">F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="defs_8h_1a87df3bdc854d088f7b90e59bc034edcc" kindref="member">wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="7" refid="decs_8h_1a6208c40fc9dbb2a489f76a36c66fa159" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a665f40c3f8f3a36509e8c74668d398ab" kindref="member">N_scatt</ref>;</highlight></codeline>
+<codeline lineno="8" refid="decs_8h_1a68dd8132a9835dbc463907ffd59958c1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a68dd8132a9835dbc463907ffd59958c1" kindref="member">N_superph_recorded</ref>;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>some<sp/>coordinate<sp/>parameters<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="decs_8h_1a37800d14d893b7a8126f821b7a34e1d1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a37800d14d893b7a8126f821b7a34e1d1" kindref="member">R0</ref>,<sp/><ref refid="defs_8h_1a5f200d81ca494457b004628aa958bcec" kindref="member">Rin</ref>,<sp/><ref refid="defs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" kindref="member">Rh</ref>,<sp/><ref refid="defs_8h_1ae38887db77c101efeb7db711a9e856db" kindref="member">Rout</ref>,<sp/><ref refid="defs_8h_1a147f35f70045c8c403c380ba83176093" kindref="member">Rms</ref>;</highlight></codeline>
+<codeline lineno="12" refid="defs_8h_1aec158415808eb5ddb908cdeb7bf9c343" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1aec158415808eb5ddb908cdeb7bf9c343" kindref="member">hslope</ref>;</highlight></codeline>
+<codeline lineno="13" refid="defs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a22a1624b7aadab4136bba181b4644564" kindref="member">startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="defs_8h_1ab72209febcbdc5407955e21864ab504b" kindref="member">stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="defs_8h_1a22ea0840a5ce5fbea6a94a905cd5ec41" kindref="member">dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//double<sp/>dlE,<sp/>lE0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="decs_8h_1a45d60151fb0572200ad00231c304aaf0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a45d60151fb0572200ad00231c304aaf0" kindref="member">gam</ref>;</highlight></codeline>
+<codeline lineno="16" refid="decs_8h_1af1b6f6b5c562420d01bcadcc0ba72453" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1af1b6f6b5c562420d01bcadcc0ba72453" kindref="member">dMsim</ref>;</highlight></codeline>
+<codeline lineno="17" refid="decs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740" kindref="member">Thetae_unit</ref>;</highlight></codeline>
+<codeline lineno="18" refid="defs_8h_1a35b2d6b30ef375b6b18f546dc98357b2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a1a12d1761d2fcb9a5ba79ae0724b4caa" kindref="member">max_tau_scatt</ref>,<sp/><ref refid="defs_8h_1af3e2dd1b08fb33fd5973be4a0260a1ec" kindref="member">Ladv</ref>,<sp/><ref refid="defs_8h_1ac95deac65effbea484bf30e539c1b62b" kindref="member">dMact</ref>,<sp/><ref refid="defs_8h_1a35b2d6b30ef375b6b18f546dc98357b2" kindref="member">bias_norm</ref>;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">/*Model<sp/>Dependent*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="defs_8h_1aaec46a71b387d4a2e71769c208112fd3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*****<ref refid="defs_8h_1aaec46a71b387d4a2e71769c208112fd3" kindref="member">econ</ref>;</highlight></codeline>
+<codeline lineno="21" refid="defs_8h_1a0d976351cecf4528d1cd3d41bea51ed0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*****<ref refid="defs_8h_1a0d976351cecf4528d1cd3d41bea51ed0" kindref="member">ecov</ref>;</highlight></codeline>
+<codeline lineno="22" refid="defs_8h_1ad8c7a14419937e710e056a1592f8bf8b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>****<ref refid="defs_8h_1ad8c7a14419937e710e056a1592f8bf8b" kindref="member">bcon</ref>;</highlight></codeline>
+<codeline lineno="23" refid="defs_8h_1a8b61d35db7528efda160176a1898fadf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>****<ref refid="defs_8h_1a8b61d35db7528efda160176a1898fadf" kindref="member">bcov</ref>;</highlight></codeline>
+<codeline lineno="24" refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>****<ref refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" kindref="member">ucon</ref>;</highlight></codeline>
+<codeline lineno="25" refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>****<ref refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" kindref="member">ucov</ref>;</highlight></codeline>
+<codeline lineno="26" refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/><ref refid="defs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>;</highlight></codeline>
+<codeline lineno="27" refid="defs_8h_1a03b3154ce6226810ae2cbe4b8e5edb0c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>***<ref refid="defs_8h_1a03b3154ce6226810ae2cbe4b8e5edb0c" kindref="member">ne</ref>;</highlight></codeline>
+<codeline lineno="28" refid="defs_8h_1a96d86c26e48095c968a287e022017016" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>***<ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>;</highlight></codeline>
+<codeline lineno="29" refid="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>***<ref refid="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" kindref="member">b</ref>;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="decs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" kindref="member">N1</ref>,<sp/><ref refid="defs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref>,<sp/><ref refid="defs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref>;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="defs_8h_1aa55bd2f4828da46e2cd051edf8f1635e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a82fb14569b04b06cb437b3c9391ed3a1" kindref="member">L_unit</ref>,<sp/><ref refid="defs_8h_1aa55bd2f4828da46e2cd051edf8f1635e" kindref="member">B_unit</ref>,<sp/><ref refid="defs_8h_1a8cd0401d02c76917b31197c083fc4103" kindref="member">Ne_unit</ref>,<sp/><ref refid="defs_8h_1a8d570719a5e6ac69fc38e8e0d05f7973" kindref="member">Rho_unit</ref>,<sp/><ref refid="defs_8h_1afbb8cc3c69f9362ac770bae25cc29c28" kindref="member">U_unit</ref>,<sp/><ref refid="defs_8h_1a3072f08245495d12fd322f1c4f467765" kindref="member">M_unit</ref>,<sp/><ref refid="defs_8h_1aafaa1bab5b6fbd4b1a32f5db78aaf569" kindref="member">T_unit</ref>;</highlight></codeline>
+<codeline lineno="34" refid="decs_8h_1adb649385fc46caa4ec00d0e0978a916f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1adb649385fc46caa4ec00d0e0978a916f" kindref="member">table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="35" refid="defs_8h_1a35d39cb335cfdcf911ef2bcedaf40342" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1afc84f8980bb448e4accd61e55ba71d78" kindref="member">dlw</ref>,<sp/><ref refid="defs_8h_1a35d39cb335cfdcf911ef2bcedaf40342" kindref="member">dlT</ref>,<sp/><ref refid="defs_8h_1a44398a98f987d7af5296425e8dd8413a" kindref="member">lminw</ref>,<sp/><ref refid="defs_8h_1a0b99ff70dfc3b1835de852cf00dad7d4" kindref="member">lmint</ref>;<sp/></highlight></codeline>
+<codeline lineno="36" refid="decs_8h_1a444d08dcccdedf0c1282d34b23965bc3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a444d08dcccdedf0c1282d34b23965bc3" kindref="member">nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="37" refid="decs_8h_1a6547c87f4689b4642b73c2c250fa83be" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6547c87f4689b4642b73c2c250fa83be" kindref="member">K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="38" refid="decs_8h_1a6068c3307e311182000df32983022b7f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6068c3307e311182000df32983022b7f" kindref="member">dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="decs_8h_1a95bc280ba29632fc6e927dfb9dbc6adc" refkind="member"><highlight class="normal">__device__<sp/>curandState<sp/><ref refid="defs_8h_1a95bc280ba29632fc6e927dfb9dbc6adc" kindref="member">my_curand_state</ref>[<ref refid="config_8h_1aa714b8308c6a460183a00af49b098b37" kindref="member">N_BLOCKS</ref><sp/>*<sp/><ref refid="config_8h_1ab60b5074c740fd36061f48f90d1a0b21" kindref="member">N_THREADS</ref>];<sp/></highlight><highlight class="comment">//<sp/>Array<sp/>of<sp/>curandState<sp/>structures</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="decs_8h_1a6fbfd70ce148bee2d0f9b864ea66e6a4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6fbfd70ce148bee2d0f9b864ea66e6a4" kindref="member">d_table</ref>[<ref refid="config_8h_1af9cccf331f045b89a9f12366df5f7687" kindref="member">NW</ref><sp/>+<sp/>1][<ref refid="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605" kindref="member">NT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="decs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" kindref="member">photon_count</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="45" refid="defs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6bcce35fba28e9e8136daeb648c76dde" kindref="member">generated_sphotons</ref>,<sp/><ref refid="defs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" kindref="member">d_N_superph_recorded</ref>;</highlight></codeline>
+<codeline lineno="46" refid="decs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" kindref="member">d_Ns</ref>;</highlight></codeline>
+<codeline lineno="47" refid="decs_8h_1aed8971ac92cef3856c889bf508614ff0" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1aed8971ac92cef3856c889bf508614ff0" kindref="member">d_N_scatt</ref>;</highlight></codeline>
+<codeline lineno="48" refid="defs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a7929fa904845ee6867b2ae7d814b66c1" kindref="member">d_thetae_unit</ref>,<sp/><ref refid="defs_8h_1a1d7a13b3c392d5b1456a136c95f74223" kindref="member">d_startx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="defs_8h_1a1148144319f41da988d106074ab1cc15" kindref="member">d_dx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="defs_8h_1a8edc197f9828749fdacec83c94897ed8" kindref="member">d_wgt</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="defs_8h_1a32bc2b470fa84bd906d0fe0d301f240a" kindref="member">d_F</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="defs_8h_1a8d36118555dce348aac569423334f743" kindref="member">d_K2</ref>[<ref refid="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3" kindref="member">N_ESAMP</ref><sp/>+<sp/>1],<sp/><ref refid="defs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35" kindref="member">d_bias_norm</ref>,<sp/><ref refid="defs_8h_1a540234bcfbc0936b547add8ba066682e" kindref="member">d_stopx</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/><ref refid="defs_8h_1a742ef4db884976e1496d9dcd0cf7bb49" kindref="member">d_Rh</ref>,<sp/><ref refid="defs_8h_1af9b8ee4984379bf47ea136962fee273e" kindref="member">d_max_tau_scatt</ref>;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="50" refid="decs_8h_1a78c64dac8bec176d822a7a3fa3839005" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a78c64dac8bec176d822a7a3fa3839005" kindref="member">scattering_counter</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="51" refid="decs_8h_1ae3f7504002d5010a87327d32a3255ca0" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ae3f7504002d5010a87327d32a3255ca0" kindref="member">d_num_scat_phs</ref>[<ref refid="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa" kindref="member">MAX_LAYER_SCA</ref>];</highlight></codeline>
+<codeline lineno="52" refid="decs_8h_1a68ccb3c564f43896d2410ddd61d21f90" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a68ccb3c564f43896d2410ddd61d21f90" kindref="member">tracking_counter</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="53" refid="decs_8h_1af3623f3cd5730cb8d57c2ed2be1b5ada" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1af3623f3cd5730cb8d57c2ed2be1b5ada" kindref="member">d_nint</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="54" refid="decs_8h_1a7a7952bb165e1171597f761e1e945ef1" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a7a7952bb165e1171597f761e1e945ef1" kindref="member">d_dndlnu_max</ref>[<ref refid="config_8h_1aec1f379db16eab02bf861dad7b97eb06" kindref="member">NINT</ref><sp/>+<sp/>1];</highlight></codeline>
+<codeline lineno="55" refid="decs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" kindref="member">d_hslope</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="56" refid="decs_8h_1a2b92264ec3008463a5529a4535f369e4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a2b92264ec3008463a5529a4535f369e4" kindref="member">d_R0</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="57" refid="decs_8h_1a18ecee65560d33d3da019b4e34aee4cb" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a18ecee65560d33d3da019b4e34aee4cb" kindref="member">total_sca</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="58" refid="decs_8h_1aa8328a2d08bffccbcfb60d960343b21c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1aa8328a2d08bffccbcfb60d960343b21c" kindref="member">tracking_counter_sampling</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="decs_8h_1a6b10273d9bb77b624a016098ab2e1151" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a6b10273d9bb77b624a016098ab2e1151" kindref="member">d_N1</ref>,<sp/><ref refid="defs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref>,<sp/><ref refid="defs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref>;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*iharm<sp/>variables*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="defs_8h_1a8a27186bc9fd223c9427acf61a78fda6" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a40a4a3aa2d0eaf8420ab59fd074a51fd" kindref="member">d_trat_small</ref>,<sp/><ref refid="defs_8h_1a6473b9c41ac13c339daecf5f7521bb99" kindref="member">d_trat_large</ref>,<sp/><ref refid="defs_8h_1a8a27186bc9fd223c9427acf61a78fda6" kindref="member">d_beta_crit</ref>,<sp/><ref refid="defs_8h_1a2536dffcc4e5773ab21b546a6ab92c45" kindref="member">d_thetae_max</ref>,<sp/><ref refid="defs_8h_1ab654fe0b60b7baf8dde19e2ae081623c" kindref="member">d_tp_over_te</ref>;<sp/></highlight></codeline>
+<codeline lineno="64" refid="defs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a7c8f846e91603646020cec12c0d92338" kindref="member">d_MBH</ref>,<sp/><ref refid="defs_8h_1a7a450efe14c37256eeb7be121aed1eff" kindref="member">d_L_unit</ref>,<sp/><ref refid="defs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c" kindref="member">d_B_unit</ref>,<sp/><ref refid="defs_8h_1a31cc8358ceeceb4c8a3a2ab3ac9bfc7b" kindref="member">d_Ne_unit</ref>;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__geom" kindref="compound">of_geom</ref><sp/>{</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" kindref="member">gcon</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" kindref="member">gcov</ref>[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>];</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__geom_1aa63a8d09d767064b96c81da603da93bb" kindref="member">g</ref>;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/>{</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a16aa79bd7abf3e889519f8e1af2fa92e" kindref="member">dNdlE</ref>;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a8cbd11ef210ebd5f419eb4f4f6e54808" kindref="member">dEdlE</ref>;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a3f82e6e96276460bb0076aea56e2991e" kindref="member">nph</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1aa6ebe91a720d169cc2f9dae239099d37" kindref="member">nscatt</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1ad73abbdaee30689dce9245349f19d0c5" kindref="member">X1iav</ref>;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1ad04fea0b1803914bae2b8dc3789b1fd9" kindref="member">X2isq</ref>;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a54e1d39c04e639e41ab6ef6ef4b57986" kindref="member">X3fsq</ref>;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1acc4f615ebcba400cd2e2aaa3efac6bf9" kindref="member">tau_abs</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a94809d6bce1c01e5adee9c6364325f9c" kindref="member">tau_scatt</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum_1a7b15de4e738a27fc57676c1a28a2affe" kindref="member">E0</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structparams__t" kindref="compound">params_t</ref><sp/>{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1aedc69284ea56d4b02256baba42790e4c" kindref="member">seed</ref>;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1ab2015991942ddf3d1c567734ecb77b1d" kindref="member">Ns</ref>;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1aab5c948176f31d12826fe687bd695976" kindref="member">MBH_par</ref>;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a14cd400c000ff72c20fa020a7db55e80" kindref="member">M_unit</ref>;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a9985d6aa5ee2583388c41dfe43ef6301" kindref="member">dump</ref>[256];</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a72e11e1bd4d71459faee5af172564c09" kindref="member">spectrum</ref>[256];</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>bias</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a7edf4766c3233057c4e152a8f5d8d428" kindref="member">biasTuning</ref>;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structparams__t_1a260d9b5b25eeb4c2a7991b2fd046bfd7" kindref="member">fitBias</ref>;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a0730bf84afbc99359d3b45ac08edaaea" kindref="member">fitBiasNs</ref>;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a163d1f3243234430a00cce750c9d9c6f" kindref="member">targetRatio</ref>;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>electron<sp/>temperature<sp/>models</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a73e5c4a29a2e3435e5678aca5ce4467f" kindref="member">tp_over_te</ref>;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a5f123ad5193aee95139a672ef25542f8" kindref="member">beta_crit</ref>;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1aec19e92057ebec2ec193c6ebf6835e49" kindref="member">trat_small</ref>;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a4e014e6b255fa25e2ec8442d7ec46a41" kindref="member">trat_large</ref>;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a323fe075c9e72457b0c92abd0fedf523" kindref="member">Thetae_max</ref>;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/><ref refid="structparams__t_1a72e6746356fb1465ce0ebc66ac6d0bb0" kindref="member">loaded</ref>;</highlight></codeline>
+<codeline lineno="110" refid="defs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" refkind="member"><highlight class="normal">}<sp/><ref refid="defs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref>;</highlight></codeline>
+<codeline lineno="111" refid="decs_8h_1a02eb7524df3cdfd7ab32de5b40516106" refkind="member"><highlight class="normal"><ref refid="structparams__t" kindref="compound">Params</ref><sp/><ref refid="defs_8h_1a02eb7524df3cdfd7ab32de5b40516106" kindref="member">params</ref><sp/>=<sp/>{<sp/>0<sp/>};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/defs.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="structof__geom" kind="struct" language="C++" prot="public">
+    <compoundname>of_geom</compoundname>
+    <includes refid="decs_8h" local="no">decs.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double of_geom::gcon</definition>
+        <argsstring>[4][4]</argsstring>
+        <name>gcon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/decs.h" line="99" column="8" bodyfile="src/decs.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double of_geom::gcov</definition>
+        <argsstring>[4][4]</argsstring>
+        <name>gcov</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/decs.h" line="100" column="8" bodyfile="src/decs.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structof__geom_1aa63a8d09d767064b96c81da603da93bb" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double of_geom::g</definition>
+        <argsstring></argsstring>
+        <name>g</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/decs.h" line="101" column="8" bodyfile="src/decs.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>data structures </para>
+    </detaileddescription>
+    <location file="src/decs.h" line="98" column="1" bodyfile="src/decs.h" bodystart="98" bodyend="102"/>
+    <listofallmembers>
+      <member refid="structof__geom_1aa63a8d09d767064b96c81da603da93bb" prot="public" virt="non-virtual"><scope>of_geom</scope><name>g</name></member>
+      <member refid="structof__geom_1aa0b1002c5228d18cfe63ce9255753593" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcon</name></member>
+      <member refid="structof__geom_1a9f6e8487279bb9526c91c60f2d8cbc08" prot="public" virt="non-virtual"><scope>of_geom</scope><name>gcov</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

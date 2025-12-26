@@ -1,0 +1,32 @@
+\hypertarget{track_8h}{}\doxysection{src/track.h File Reference}
+\label{track_8h}\index{src/track.h@{src/track.h}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{track_8h_a0dd4e8c6ca726f6044b2cc365fb4501d}{GPU\+\_\+track\+\_\+super\+\_\+photon}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, cuda\+Texture\+Object\+\_\+t d\+\_\+p, const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+ d\+\_\+table\+\_\+ptr, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} scat\+\_\+ofphoton, const unsigned long long starting\+\_\+scattering\+\_\+index, const int round\+\_\+scat, const unsigned long long photon\+\_\+index, curand\+State $\ast$local\+State, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{track_8h_a2f00333c98fddddded42de79016275eb}{GPU\+\_\+init\+\_\+d\+Kdlam}} (double X\mbox{[}$\,$\mbox{]}, double Kcon\mbox{[}$\,$\mbox{]}, double dK\mbox{[}$\,$\mbox{]})
+\item 
+\+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{track_8h_aac1a652689ad9f42fe18a5f9c49ef9bc}{GPU\+\_\+push\+\_\+photon}} (double X\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Kcon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double d\+Kcon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double dl, double $\ast$E0)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{track_8h_a2f00333c98fddddded42de79016275eb}\label{track_8h_a2f00333c98fddddded42de79016275eb}} 
+\index{track.h@{track.h}!GPU\_init\_dKdlam@{GPU\_init\_dKdlam}}
+\index{GPU\_init\_dKdlam@{GPU\_init\_dKdlam}!track.h@{track.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_init\_dKdlam()}{GPU\_init\_dKdlam()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+init\+\_\+d\+Kdlam (\begin{DoxyParamCaption}\item[{double}]{X\mbox{[}$\,$\mbox{]},  }\item[{double}]{Kcon\mbox{[}$\,$\mbox{]},  }\item[{double}]{dK\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{track_8h_aac1a652689ad9f42fe18a5f9c49ef9bc}\label{track_8h_aac1a652689ad9f42fe18a5f9c49ef9bc}} 
+\index{track.h@{track.h}!GPU\_push\_photon@{GPU\_push\_photon}}
+\index{GPU\_push\_photon@{GPU\_push\_photon}!track.h@{track.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_push\_photon()}{GPU\_push\_photon()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+push\+\_\+photon (\begin{DoxyParamCaption}\item[{double}]{X\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Kcon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{d\+Kcon\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{dl,  }\item[{double $\ast$}]{E0 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{track_8h_a0dd4e8c6ca726f6044b2cc365fb4501d}\label{track_8h_a0dd4e8c6ca726f6044b2cc365fb4501d}} 
+\index{track.h@{track.h}!GPU\_track\_super\_photon@{GPU\_track\_super\_photon}}
+\index{GPU\_track\_super\_photon@{GPU\_track\_super\_photon}!track.h@{track.h}}
+\doxysubsubsection{\texorpdfstring{GPU\_track\_super\_photon()}{GPU\_track\_super\_photon()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+track\+\_\+super\+\_\+photon (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{cuda\+Texture\+Object\+\_\+t}]{d\+\_\+p,  }\item[{const double $\ast$\+\_\+\+\_\+restrict\+\_\+\+\_\+}]{d\+\_\+table\+\_\+ptr,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{scat\+\_\+ofphoton,  }\item[{const unsigned long long}]{starting\+\_\+scattering\+\_\+index,  }\item[{const int}]{round\+\_\+scat,  }\item[{const unsigned long long}]{photon\+\_\+index,  }\item[{curand\+State $\ast$}]{local\+State,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
+
