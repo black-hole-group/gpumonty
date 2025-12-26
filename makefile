@@ -13,9 +13,9 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
 # Compiler flags
-ARCH = compute_80
-CODE = sm_80
-CODE_LTO = lto_80
+ARCH = compute_75
+CODE = sm_75
+CODE_LTO = lto_75
 
 # Directories
 SRC_DIR = src

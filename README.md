@@ -20,7 +20,14 @@ HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
 ```
 After you have changed all these things, compile with by typing ```make -j 15```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
 
-- Configuration Parameters
+### Multi-Core Acceleration (OpenMP)
+GPUmonty benefits from **OpenMP** for CPU-bound tasks such as data pre-processing and grid initialization. To enable multi-threaded CPU execution:
+
+```export OMP_NUM_THREADS=XX```
+
+Replace ```XX``` with the desired number of threads. It is recommended to set this value equal to the number of physical cores on your CPU.
+
+### Configuration Parameters
 
 Simulation parameters are passed to the executable via a `.par` file. You can find a baseline configuration in `/gpumonty/template.par`. 
 

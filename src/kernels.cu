@@ -1,5 +1,3 @@
-
-
 #include "decs.h"
 #include "memory.h"
 #include "kernels.h"
@@ -134,8 +132,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	while(instant_partition <= batch_divisions){
 		printf("\n\n\033[1m===========================================\033[0m\n");
-		printf("Starting partition %d out of %d\n", instant_partition, batch_divisions);
-
+		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
 			offset = gen_superph % batch_divisions;

@@ -1,5 +1,11 @@
 .vscode/
 
+# Ignore all object files
+*.o
+
+# Ignore the entire build directory
+build/
+
 data/*.h5
 gpumonty
 

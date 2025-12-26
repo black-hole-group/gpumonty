@@ -285,8 +285,7 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 		required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
 		*batch_divisions = *batch_divisions + 1;
 	}
-	printf("Required partitions: %d. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
-
+	printf("\033[1;34mRequired partitions: %d\033[0m. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
 	return (unsigned long long)(tot_nph/(*batch_divisions));
 }
 
