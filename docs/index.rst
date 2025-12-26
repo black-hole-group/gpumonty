@@ -1,7 +1,7 @@
 Home
 ========
 
-**GPUmonty** is a public, GPUmonty is a high-performance, `CUDA <https://docs.nvidia.com/cuda/cuda-c-programming-guide/>`_-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on `igrmonty <https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387>`_.-accelerated relativistic Monte Carlo radiative transfer (MCRT) code designed for the multi-wavelength spectral modeling of accreting black holes[cite: 1]. 
+**GPUmonty** is a public, GPUmonty is a high-performance, `CUDA <https://docs.nvidia.com/cuda/cuda-c-programming-guide/>`_-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on `igrmonty <https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387>`_.-accelerated relativistic Monte Carlo radiative transfer (MCRT) code designed for the multi-wavelength spectral modeling of accreting black holes. 
 
 The code is an evolution of the `grmonty` and `igrmonty` frameworks, assigning the most computationally expensive stages, such as superphoton generation, sampling, geodesic tracking, and scattering, directly to the GPU.
 
@@ -30,6 +30,9 @@ Technical API Reference
 This documentation site is provided as a reference for the **function specifics** only. It details the internal logic of the CUDA kernels, functions, and memory management structures.
 
 * Use the sidebar to explore the specific modules.
+
+**Developed by**: Pedro Naethe Motta
+**Currently maintained by**: Pedro Naethe Motta
 
 .. toctree::
    :maxdepth: 2

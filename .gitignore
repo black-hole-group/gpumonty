@@ -12,9 +12,12 @@ gpumonty
 output/
 !output/example.spec
 
+!Doxyfile
+
+python/*
 python/**/.ipynb_checkpoints/
 
-*.ipynb
+
 *.pdf
 *.png
 *.spec
