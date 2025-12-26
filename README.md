@@ -41,7 +41,7 @@ The following runtime parameters are supported:
 | `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
 
 
-## Analyzing the Output
+## 2. Analyzing the Output
 
 To facilitate data post-processing and visualization, an example Jupyter Notebook is provided in the repository.
 
@@ -52,6 +52,13 @@ To facilitate data post-processing and visualization, an example Jupyter Noteboo
 When analyzing the raw results in Python, please note the relationship between luminosity and the observer's viewing angle:
 * **Indexing:** The luminosity array (`nuLnu`) is multi-dimensional; each index in the array corresponds directly to one of the `theta_bins` defined in your simulation.
 
+## 3. GRMHD data file for testing
+
+To reproduce the tests using the same GRMHD input employed in the **GPUmonty paper**, download the GRMHD dataset from [Prather et al. (2023)](https://iopscience.iop.org/article/10.3847/1538-4357/acc586) via the Harvard Dataverse:
+
+- Dataset: [Harvard Dataverse (DOI: 10.7910/DVN/XZECPF)](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF)
+
+After downloading, place the GRMHD data file in the `data/` directory and run the ./gpumonty -par template.par
 
 # LICENSE
 
