@@ -10,7 +10,7 @@
 <para>Macro to enable or disable the computation of the inverse metric using LU decomposition. </para>
         </briefdescription>
         <detaileddescription>
-<para>if set to 1, the code will compute the inverse metric <formula id="81">$ g^{\mu\nu} $</formula> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </para>
+<para>if set to 1, the code will compute the inverse metric <formula id="119">$ g^{\mu\nu} $</formula> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -29,11 +29,11 @@
           <array>[][NDIM]</array>
         </param>
         <briefdescription>
-<para>Calculates the square root of the absolute determinant of the metric tensor, <formula id="62">$ \sqrt{-g} $</formula>. </para>
+<para>Calculates the square root of the absolute determinant of the metric tensor, <formula id="102">$ \sqrt{-g} $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para><bold>General Case</bold>: Uses GSL-based LU decomposition to compute the determinant of the covariant metric <formula id="82">$ g_{\mu\nu} $</formula>.</para>
+<listitem><para><bold>General Case</bold>: Uses GSL-based LU decomposition to compute the determinant of the covariant metric <formula id="45">$ g_{\mu\nu} $</formula>.</para>
 </listitem><listitem><para><bold>Simplified Case</bold>: If <computeroutput>SPHERE_TEST</computeroutput> is defined, it assumes a diagonal metric for faster computation.</para>
 </listitem></itemizedlist>
 </para>
@@ -42,11 +42,11 @@
 <parametername>gcov</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula>.</para>
+<para>The covariant metric tensor <formula id="45">$ g_{\mu\nu} $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="83">$ \sqrt{| \det(g_{\mu\nu}) |} $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="120">$ \sqrt{| \det(g_{\mu\nu}) |} $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -74,7 +74,7 @@
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function factorizes a square matrix <formula id="84">$ A $</formula> into a lower triangular matrix <formula id="85">$ L $</formula> and an upper triangular matrix <formula id="86">$ U $</formula> such that <formula id="87">$ PA = LU $</formula>. Then it can be used to solve linear systems or invert matrices.</para>
+<listitem><para>This function factorizes a square matrix <formula id="121">$ A $</formula> into a lower triangular matrix <formula id="122">$ L $</formula> and an upper triangular matrix <formula id="123">$ U $</formula> such that <formula id="124">$ PA = LU $</formula>. Then it can be used to solve linear systems or invert matrices.</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -82,7 +82,7 @@
 <parametername>A</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The <formula id="88">$ \rm{NDIM} \times \rm{NDIM} $</formula> matrix to decompose (modified in-place). </para>
+<para>The <formula id="125">$ \rm{NDIM} \times \rm{NDIM} $</formula> matrix to decompose (modified in-place). </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -123,23 +123,23 @@
           <array>[]</array>
         </param>
         <briefdescription>
-<para>Solves a linear system <formula id="89">$ Ax = B $</formula> using forward and backward substitution. </para>
+<para>Solves a linear system <formula id="126">$ Ax = B $</formula> using forward and backward substitution. </para>
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function takes the results of <computeroutput>LU_decompose</computeroutput> (an in-place LU matrix and a permutation vector) and solves for the vector <formula id="35">$ B $</formula>. It is primarily used in the simulation to invert the metric tensor <formula id="82">$ g_{\mu\nu} $</formula> to find its contravariant form <formula id="81">$ g^{\mu\nu} $</formula>.</para>
+<listitem><para>This function takes the results of <computeroutput>LU_decompose</computeroutput> (an in-place LU matrix and a permutation vector) and solves for the vector <formula id="77">$ B $</formula>. It is primarily used in the simulation to invert the metric tensor <formula id="45">$ g_{\mu\nu} $</formula> to find its contravariant form <formula id="119">$ g^{\mu\nu} $</formula>.</para>
 </listitem></itemizedlist>
 </para>
 <para><itemizedlist>
-<listitem><para><bold>Permutation</bold>: Swaps elements of <formula id="35">$ B $</formula> to match the partial pivoting order recorded in <computeroutput>permute</computeroutput>.</para>
-</listitem><listitem><para><bold>Forward Substitution</bold>: Solves the lower triangular system <formula id="90">$ Ly = Pb $</formula>. Since the diagonal elements of <formula id="85">$ L $</formula> are implicitly 1, no division is required.</para>
-</listitem><listitem><para><bold>Backward Substitution</bold>: Solves the upper triangular system <formula id="91">$ Ux = y $</formula>, utilizing the diagonal elements of <formula id="86">$ U $</formula> stored in <computeroutput>A[i][i]</computeroutput>.</para>
+<listitem><para><bold>Permutation</bold>: Swaps elements of <formula id="77">$ B $</formula> to match the partial pivoting order recorded in <computeroutput>permute</computeroutput>.</para>
+</listitem><listitem><para><bold>Forward Substitution</bold>: Solves the lower triangular system <formula id="127">$ Ly = Pb $</formula>. Since the diagonal elements of <formula id="122">$ L $</formula> are implicitly 1, no division is required.</para>
+</listitem><listitem><para><bold>Backward Substitution</bold>: Solves the upper triangular system <formula id="128">$ Ux = y $</formula>, utilizing the diagonal elements of <formula id="123">$ U $</formula> stored in <computeroutput>A[i][i]</computeroutput>.</para>
 </listitem><listitem><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>A</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The <formula id="88">$ \rm{NDIM} \times \rm{NDIM} $</formula> LU-decomposed matrix. </para>
+<para>The <formula id="125">$ \rm{NDIM} \times \rm{NDIM} $</formula> LU-decomposed matrix. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -147,7 +147,7 @@
 <parametername>B</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The right-hand side vector (replaced by the solution vector <formula id="18">$ x $</formula> in-place). </para>
+<para>The right-hand side vector (replaced by the solution vector <formula id="32">$ x $</formula> in-place). </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -188,13 +188,13 @@
 <para>Computes the inverse of a square matrix unifying the usage of <computeroutput>LU decomposition</computeroutput> and <computeroutput>substitution</computeroutput>. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function calculates the inverse of an <formula id="92">$ NDIM \times NDIM $</formula> matrix (typically the covariant metric <formula id="82">$ g_{\mu\nu} $</formula> to obtain the contravariant metric <formula id="81">$ g^{\mu\nu} $</formula>). It solves the matrix equation <formula id="93">$ A \cdot A^{-1} = I $</formula> by treating each column of the identity matrix <formula id="94">$ I $</formula> as a separate linear system.</para>
+<para>This function calculates the inverse of an <formula id="129">$ NDIM \times NDIM $</formula> matrix (typically the covariant metric <formula id="45">$ g_{\mu\nu} $</formula> to obtain the contravariant metric <formula id="119">$ g^{\mu\nu} $</formula>). It solves the matrix equation <formula id="130">$ A \cdot A^{-1} = I $</formula> by treating each column of the identity matrix <formula id="131">$ I $</formula> as a separate linear system.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>Am</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input <formula id="92">$ NDIM \times NDIM $</formula> matrix to be inverted. </para>
+<para>The input <formula id="129">$ NDIM \times NDIM $</formula> matrix to be inverted. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -235,15 +235,15 @@
           <array>[][NDIM]</array>
         </param>
         <briefdescription>
-<para>Computes the contravariant metric tensor <formula id="81">$ g^{\mu\nu} $</formula> using either numerical inversion or analytical expressions. </para>
+<para>Computes the contravariant metric tensor <formula id="119">$ g^{\mu\nu} $</formula> using either numerical inversion or analytical expressions. </para>
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function provides the inverse of the metric tensor at a specific 4-position <formula id="95">$ X^\mu $</formula>. It supports a toggle between a general-purpose numerical solver and optimized analytical formulas for specific spacetimes.</para>
+<listitem><para>This function provides the inverse of the metric tensor at a specific 4-position <formula id="132">$ X^\mu $</formula>. It supports a toggle between a general-purpose numerical solver and optimized analytical formulas for specific spacetimes.</para>
 </listitem></itemizedlist>
 </para>
 <para>if <computeroutput>FIND_GCON_MATRIX_INV</computeroutput> is defined:<itemizedlist>
-<listitem><para>Calls <computeroutput><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix()</ref></computeroutput> to perform a full LU decomposition on <formula id="82">$ g_{\mu\nu} $</formula>. This is the most flexible method and works for any metric, but is computationally more expensive.</para>
+<listitem><para>Calls <computeroutput><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix()</ref></computeroutput> to perform a full LU decomposition on <formula id="45">$ g_{\mu\nu} $</formula>. This is the most flexible method and works for any metric, but is computationally more expensive.</para>
 </listitem></itemizedlist>
 </para>
 <para><bold>Path B: Analytical/Hardcoded</bold> (Default):<itemizedlist>
@@ -256,7 +256,7 @@
 <parametername>X</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The 4-position <formula id="95">$ X^\mu $</formula> in code coordinates. </para>
+<para>The 4-position <formula id="132">$ X^\mu $</formula> in code coordinates. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -264,7 +264,7 @@
 <parametername>gcov</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula> (used for numerical inversion or diagonal tests). </para>
+<para>The covariant metric tensor <formula id="45">$ g_{\mu\nu} $</formula> (used for numerical inversion or diagonal tests). </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -272,7 +272,7 @@
 <parametername>gcon</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Output: The calculated contravariant metric tensor <formula id="81">$ g^{\mu\nu} $</formula>.</para>
+<para>Output: The calculated contravariant metric tensor <formula id="119">$ g^{\mu\nu} $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -300,7 +300,7 @@
           <array>[4][4][4]</array>
         </param>
         <briefdescription>
-<para>Computes the Christoffel symbols (connection coefficients) <formula id="96">$ \Gamma^i_{jk} $</formula> at a given 4-position. </para>
+<para>Computes the Christoffel symbols (connection coefficients) <formula id="133">$ \Gamma^i_{jk} $</formula> at a given 4-position. </para>
         </briefdescription>
         <detaileddescription>
 <para>Analytically: Computed analytically if <computeroutput>SPHERE_TEST</computeroutput> is not defined.</para>
@@ -310,7 +310,7 @@
 <parametername>X</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>4-position <formula id="95">$ X^\mu $</formula> in code coordinates. </para>
+<para>4-position <formula id="132">$ X^\mu $</formula> in code coordinates. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -353,7 +353,7 @@
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function performs the metric mapping <formula id="97">$ u_\mu = g_{\mu\nu} u^\nu $</formula>. It effectively transforms a vector from the tangent space to the cotangent space (one-form) using the local covariant metric tensor.</para>
+<listitem><para>This function performs the metric mapping <formula id="134">$ u_\mu = g_{\mu\nu} u^\nu $</formula>. It effectively transforms a vector from the tangent space to the cotangent space (one-form) using the local covariant metric tensor.</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -361,7 +361,7 @@
 <parametername>ucon</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Input contravariant 4-vector <formula id="98">$ u^\nu $</formula>. </para>
+<para>Input contravariant 4-vector <formula id="135">$ u^\nu $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -369,7 +369,7 @@
 <parametername>Gcov</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Input covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula>. </para>
+<para>Input covariant metric tensor <formula id="45">$ g_{\mu\nu} $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -377,7 +377,7 @@
 <parametername>ucov</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Output covariant 4-vector <formula id="99">$ u_\mu $</formula>.</para>
+<para>Output covariant 4-vector <formula id="136">$ u_\mu $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

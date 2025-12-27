@@ -39,7 +39,7 @@
 <para><itemizedlist>
 <listitem><para>Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.</para>
 </listitem><listitem><para>Calls GPU_init_zone to initialize the photon generation for each zone in the simulation grid.</para>
-</listitem><listitem><para>The loop follows a <bold>grid-stride pattern</bold> to ensure all zones are covered. Each thread <formula id="49">$ n $</formula> processes a sequence of zones defined by: <formula id="50">\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</formula> where <formula id="51">$ {\rm i_n}$</formula> is the current zone <formula id="52">$ \rm i $</formula> that thread <formula id="53">$ \rm n $</formula> is analyzing, <formula id="49">$ n $</formula> is the global thread ID, <formula id="54">$ N_{\text{total}} $</formula> is the total number of threads in the grid, and <formula id="55">$ k \in \{0, 1, 2, \dots\} $</formula>.</para>
+</listitem><listitem><para>The loop follows a <bold>grid-stride pattern</bold> to ensure all zones are covered. Each thread <formula id="89">$ n $</formula> processes a sequence of zones defined by: <formula id="90">\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</formula> where <formula id="91">$ {\rm i_n}$</formula> is the current zone <formula id="92">$ \rm i $</formula> that thread <formula id="93">$ \rm n $</formula> is analyzing, <formula id="89">$ n $</formula> is the global thread ID, <formula id="94">$ N_{\text{total}} $</formula> is the total number of threads in the grid, and <formula id="95">$ k \in \{0, 1, 2, \dots\} $</formula>.</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -47,7 +47,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="56">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="96">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -79,7 +79,7 @@
 <parametername>dnmax_arr</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device array that will store the maximum value of <formula id="57">$ \frac{dN}{d\ln\nu} $</formula> per zone. </para>
+<para>Pointer to the device array that will store the maximum value of <formula id="97">$ \frac{dN}{d\ln\nu} $</formula> per zone. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -149,11 +149,11 @@
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <formula id="58">$(i, j, k)$</formula> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</para>
+<listitem><para>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <formula id="98">$(i, j, k)$</formula> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</para>
 </listitem></itemizedlist>
 </para>
-<para>The expected number of superphotons <formula id="59">$ N_{s,i} $</formula> in zone <formula id="60">$ i $</formula> is governed by: <formula id="61">\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]</formula> where <formula id="62">$ \sqrt{-g} $</formula> is the metric determinant, <formula id="29">$ j_\nu $</formula> is the emissivity, and <formula id="63">$ \omega $</formula> is the superphoton weight.</para>
-<para>The final number of superphotons <formula id="64">$ n_{2gen} $</formula> is determined stochastically to handle the fractional part of the expected count <formula id="65">$ n_z $</formula>: <formula id="66">\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]</formula></para>
+<para>The expected number of superphotons <formula id="99">$ N_{s,i} $</formula> in zone <formula id="100">$ i $</formula> is governed by: <formula id="101">\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]</formula> where <formula id="102">$ \sqrt{-g} $</formula> is the metric determinant, <formula id="71">$ j_\nu $</formula> is the emissivity, and <formula id="103">$ \omega $</formula> is the superphoton weight.</para>
+<para>The final number of superphotons <formula id="104">$ n_{2gen} $</formula> is determined stochastically to handle the fractional part of the expected count <formula id="105">$ n_z $</formula>: <formula id="106">\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>
@@ -191,7 +191,7 @@
 <parametername>dnmax</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to store the maximum of the distribution <formula id="67">$ dN_s/d\ln\nu $</formula>, required for subsequent rejection sampling. </para>
+<para>Pointer to store the maximum of the distribution <formula id="107">$ dN_s/d\ln\nu $</formula>, required for subsequent rejection sampling. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -199,7 +199,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="56">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="96">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -231,7 +231,7 @@
 <parametername>besselTexObj</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Texture object for accelerated Modified Bessel function <formula id="43">$ K_2 $</formula> lookups. </para>
+<para>Texture object for accelerated Modified Bessel function <formula id="83">$ K_2 $</formula> lookups. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -290,7 +290,7 @@
         <detaileddescription>
 <para><itemizedlist>
 <listitem><para>This kernel performs the rejection sampling and initial coordinate assignment for superphotons. Unlike a standard grid-stride pattern where thread work is predetermined by ID, this kernel utilizes a <bold>dynamic workload allocation</bold> strategy since some zones may generate significantly more superphotons than others, leading to extreme load imbalance. To mitigate this, threads fetch work dynamically using an atomic counter. This ensures that as soon as a thread finishes sampling a photon, it immediately pulls the next available index, keeping GPU execution units saturated regardless of the variation in workload per zone.</para>
-</listitem><listitem><para>The kernel maps the superphoton to the grid zone that generated it <formula id="68">$ (i, j, k) $</formula> by performing a binary search on the cumulative distribution array <computeroutput>index_to_ijk</computeroutput>. Once the <computeroutput>zone_index</computeroutput> is retrieved, it is decomposed into 3D grid coordinates:</para>
+</listitem><listitem><para>The kernel maps the superphoton to the grid zone that generated it <formula id="108">$ (i, j, k) $</formula> by performing a binary search on the cumulative distribution array <computeroutput>index_to_ijk</computeroutput>. Once the <computeroutput>zone_index</computeroutput> is retrieved, it is decomposed into 3D grid coordinates:</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -306,7 +306,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="56">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="96">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -330,7 +330,7 @@
 <parametername>dnmax_arr</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The maximum of the distribution <formula id="67">$ dN_s/d\ln\nu $</formula> for each zone, used for rejection sampling. </para>
+<para>The maximum of the distribution <formula id="107">$ dN_s/d\ln\nu $</formula> for each zone, used for rejection sampling. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -362,7 +362,7 @@
 <parametername>besselTexObj</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Texture object for Modified Bessel function <formula id="43">$ K_2 $</formula> lookups. </para>
+<para>Texture object for Modified Bessel function <formula id="83">$ K_2 $</formula> lookups. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -438,9 +438,9 @@
         </briefdescription>
         <detaileddescription>
 <para>It uses a series of rejection sampling loops to determine the frequency and angular distribution of emission, then transforms the resulting momentum vector from the local fluid tetrad into the global coordinate frame.</para>
-<para><bold>Frequency Sampling</bold>: The photon frequency <formula id="36">$ \nu $</formula> is sampled using rejection sampling over the range <formula id="69">$ [\nu_{min}, \nu_{max}] $</formula>. The selection is weighted by the local distribution <formula id="67">$ dN_s/d\ln\nu $</formula>:</para>
-<para><bold>Angular Distribution</bold>: The polar angle <formula id="40">$ \theta $</formula> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <formula id="70">$ j_\nu(\theta) $</formula>. A second rejection sampling loop ensures that: <formula id="71">\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]</formula> where <formula id="72">$ j_{\nu, max} $</formula> is the emissivity at <formula id="73">$ \theta = \pi/2 $</formula>.</para>
-<para><bold>Tetrad Transformation</bold>: The momentum vector <formula id="41">$ K $</formula> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <formula id="74">$ u^\mu $</formula> and the magnetic field <formula id="75">$ b^\mu $</formula>. It is then transformed to the coordinate frame using: <formula id="76">\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]</formula> where <formula id="77">$ e^\mu_{(\alpha)} $</formula> is the tetrad basis built by <computeroutput>GPU_make_tetrad</computeroutput>.</para>
+<para><bold>Frequency Sampling</bold>: The photon frequency <formula id="78">$ \nu $</formula> is sampled using rejection sampling over the range <formula id="109">$ [\nu_{min}, \nu_{max}] $</formula>. The selection is weighted by the local distribution <formula id="107">$ dN_s/d\ln\nu $</formula>:</para>
+<para><bold>Angular Distribution</bold>: The polar angle <formula id="3">$ \theta $</formula> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <formula id="110">$ j_\nu(\theta) $</formula>. A second rejection sampling loop ensures that: <formula id="111">\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]</formula> where <formula id="112">$ j_{\nu, max} $</formula> is the emissivity at <formula id="113">$ \theta = \pi/2 $</formula>.</para>
+<para><bold>Tetrad Transformation</bold>: The momentum vector <formula id="23">$ K $</formula> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <formula id="43">$ u^\mu $</formula> and the magnetic field <formula id="44">$ b^\mu $</formula>. It is then transformed to the coordinate frame using: <formula id="114">\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]</formula> where <formula id="115">$ e^\mu_{(\alpha)} $</formula> is the tetrad basis built by <computeroutput>GPU_make_tetrad</computeroutput>.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>
@@ -470,7 +470,7 @@
 <parametername>dnmax</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The maximum of the distribution <formula id="67">$ dN_s/d\ln\nu $</formula> for this zone. </para>
+<para>The maximum of the distribution <formula id="107">$ dN_s/d\ln\nu $</formula> for this zone. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -486,7 +486,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="56">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="96">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -587,7 +587,7 @@
 <para>Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </para>
         </briefdescription>
         <detaileddescription>
-<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="49">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
+<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="89">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
 <para><simplesect kind="note"><para><bold>Progress Monitoring</bold>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -635,7 +635,7 @@
 <parametername>besselTexObj</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>CUDA texture object for accelerated Modified Bessel function <formula id="43">$ K_2 $</formula> lookups. </para>
+<para>CUDA texture object for accelerated Modified Bessel function <formula id="83">$ K_2 $</formula> lookups. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -688,7 +688,7 @@
 <para>Assign each scattered superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </para>
         </briefdescription>
         <detaileddescription>
-<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="49">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
+<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="89">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
 <para><simplesect kind="note"><para><bold>Progress Monitoring</bold>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -736,7 +736,7 @@
 <parametername>besselTexObj</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>CUDA texture object for accelerated Modified Bessel function <formula id="43">$ K_2 $</formula> lookups. </para>
+<para>CUDA texture object for accelerated Modified Bessel function <formula id="83">$ K_2 $</formula> lookups. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -937,8 +937,8 @@
 <para>This host function aggregates the data stored in the energy and frequency binned spectrum.</para>
 <para><bold>Diagnostic Outputs</bold>: After writing the per-bin data, the function calculates and prints to stderr:<itemizedlist>
 <listitem><para><bold>Total Luminosity</bold>: The integral of the spectrum over all angles and energies.</para>
-</listitem><listitem><para><bold>Accretion Efficiency</bold>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <formula id="78">$ L / \dot{M}c^2 $</formula>).</para>
-</listitem><listitem><para><bold>Optical Depths</bold>: Average scattering ( <formula id="79">$ \tau_{\text{scatt}} $</formula>) and absorption ( <formula id="80">$ \tau_{\text{abs}} $</formula>) depths.</para>
+</listitem><listitem><para><bold>Accretion Efficiency</bold>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <formula id="116">$ L / \dot{M}c^2 $</formula>).</para>
+</listitem><listitem><para><bold>Optical Depths</bold>: Average scattering ( <formula id="117">$ \tau_{\text{scatt}} $</formula>) and absorption ( <formula id="118">$ \tau_{\text{abs}} $</formula>) depths.</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>

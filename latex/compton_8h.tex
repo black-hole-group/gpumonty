@@ -4,25 +4,25 @@
 \begin{DoxyCompactItemize}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}{GPU\+\_\+sample\+\_\+scattered\+\_\+photon}} (double k\mbox{[}4\mbox{]}, double \mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}}\mbox{[}4\mbox{]}, double kp\mbox{[}4\mbox{]}, curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the scattered photon 4-\/momentum after a collision with an electron. This high-\/level routine simulates the physical interaction between a photon and a specific electron. It handles the transition between classical Thomson scattering and quantum Klein-\/\+Nishina scattering based on the photon\textquotesingle{}s energy in the electron rest frame. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a23889b06f89c43496986015e13a60f2e}{GPU\+\_\+boost}} (double v\mbox{[}4\mbox{]}, double u\mbox{[}4\mbox{]}, double vp\mbox{[}4\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Performs a general Lorentz boost into the frame of a given 4-\/velocity. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a95628da4319e226d82f6ea553afea193}{GPU\+\_\+sample\+\_\+thomson}} (curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the scattering angle cosine for Thomson scattering. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}{GPU\+\_\+sample\+\_\+klein\+\_\+nishina}} (double k0, curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the post-\/scattering photon energy using the Klein-\/\+Nishina differential cross-\/section. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a333330464deee8831babe16f98f16648}{GPU\+\_\+klein\+\_\+nishina}} (const double a, const double ap)
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the differential Klein-\/\+Nishina cross-\/section for a given frequency shift. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}{GPU\+\_\+sample\+\_\+electron\+\_\+distr\+\_\+p}} (double k\mbox{[}4\mbox{]}, double \mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}}\mbox{[}4\mbox{]}, double Thetae, curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the 4-\/momentum of a scattering electron from a thermal distribution. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a12ee38bdba5375c31513089d65642b5a}{GPU\+\_\+sample\+\_\+beta\+\_\+distr}} (double Thetae, double $\ast$gamma\+\_\+e, double $\ast$beta\+\_\+e, curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the electron Lorentz factor and velocity from a thermal distribution. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_a38bb950c830af777b12de3eeb4708dcf}{GPU\+\_\+sample\+\_\+y\+\_\+distr}} (const double Thetae, curand\+State $\ast$local\+State)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the auxiliary energy variable $ y $ for the Maxwell-\/\+Jüttner distribution. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{compton_8h_acecc256e76033d65ace1140306de801c}{GPU\+\_\+sample\+\_\+mu\+\_\+distr}} (const double beta\+\_\+e, double random)
-\item 
+\begin{DoxyCompactList}\small\item\em Samples the cosine of the angle between the photon and the electron. This function performs an inversion sampling of the relative orientation angle $ \mu = \cos\alpha $ between the incoming photon and the scattering electron. In the Monte Carlo scattering scheme, the probability of a collision is proportional to the relative velocity factor\+: \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}{GPU\+\_\+scatter\+\_\+super\+\_\+photon}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} php, double Ne, double Thetae, double B, double Ucon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Bcon\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, curand\+State $\ast$local\+State, unsigned long long photon\+\_\+index)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Manages the Compton scattering process for a superphoton on the GPU. This function handles the full scattering pipeline for a single photon indexed in a Structure of Arrays (SOA). It transforms the photon into the local fluid frame, samples a scattering electron, executes the scattering event, and updates the photon\textquotesingle{}s coordinate-\/frame properties. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -32,57 +32,291 @@
 \doxysubsubsection{\texorpdfstring{GPU\_boost()}{GPU\_boost()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+boost (\begin{DoxyParamCaption}\item[{double}]{v\mbox{[}4\mbox{]},  }\item[{double}]{u\mbox{[}4\mbox{]},  }\item[{double}]{vp\mbox{[}4\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Performs a general Lorentz boost into the frame of a given 4-\/velocity. 
+
+Transforms a 4-\/vector $ v $ from the laboratory frame into the frame moving with 4-\/velocity $ u $. The implementation uses the general Lorentz transformation matrix to handle boosts in arbitrary directions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & Input 4-\/vector in the laboratory frame. \\
+\hline
+{\em u} & 4-\/velocity of the frame to boost into (where $ u^0 = \gamma $). \\
+\hline
+{\em vp} & Resulting boosted 4-\/vector in the co-\/moving frame.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a333330464deee8831babe16f98f16648}\label{compton_8h_a333330464deee8831babe16f98f16648}} 
 \index{compton.h@{compton.h}!GPU\_klein\_nishina@{GPU\_klein\_nishina}}
 \index{GPU\_klein\_nishina@{GPU\_klein\_nishina}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_klein\_nishina()}{GPU\_klein\_nishina()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+klein\+\_\+nishina (\begin{DoxyParamCaption}\item[{const double}]{a,  }\item[{const double}]{ap }\end{DoxyParamCaption})}
 
+
+
+Computes the differential Klein-\/\+Nishina cross-\/section for a given frequency shift. 
+
+This function evaluates the probability density of a photon with dimensionless energy $ a $ scattering to energy $ a\textnormal{\textquotesingle} $. It is used as the target distribution for the rejection sampling in the Klein-\/\+Nishina scattering routine.
+
+The implementation calculates\+: \[ \frac{1}{a^2} \left( \frac{a}{a\textnormal{\textquotesingle}} + \frac{a\textnormal{\textquotesingle}}{a} - \sin^2 \theta \right) \] where the scattering angle $ \theta $ is implicitly determined by the Compton formula\+: $ \cos \theta = 1 + \frac{1}{a} - \frac{1}{a\textnormal{\textquotesingle}} $.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & Initial dimensionless photon energy ( $ h\nu / m_e c^2 $). \\
+\hline
+{\em ap} & Scattered dimensionless photon energy ( $ h\nu\textnormal{\textquotesingle} / m_e c^2 $).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of the differential cross-\/section (unnormalized). 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a12ee38bdba5375c31513089d65642b5a}\label{compton_8h_a12ee38bdba5375c31513089d65642b5a}} 
 \index{compton.h@{compton.h}!GPU\_sample\_beta\_distr@{GPU\_sample\_beta\_distr}}
 \index{GPU\_sample\_beta\_distr@{GPU\_sample\_beta\_distr}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_beta\_distr()}{GPU\_sample\_beta\_distr()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+beta\+\_\+distr (\begin{DoxyParamCaption}\item[{double}]{Thetae,  }\item[{double $\ast$}]{gamma\+\_\+e,  }\item[{double $\ast$}]{beta\+\_\+e,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Samples the electron Lorentz factor and velocity from a thermal distribution. 
+
+This function determines the energy state of a scattering electron by sampling a transformed energy variable $ y $ and converting it into the Lorentz factor $ \gamma_e $ and the dimensionless velocity $ \beta_e $.
+
+The sampling is based on the Maxwell-\/\+Jüttner distribution. The transformation used is\+: \[ \gamma_e = y^2 \Theta_e + 1 \].
+
+
+\begin{DoxyParams}{Parameters}
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e = k_B T_e / m_e c^2 $. \\
+\hline
+{\em gamma\+\_\+e} & \mbox{[}out\mbox{]} Pointer to store the sampled Lorentz factor $ \gamma $. \\
+\hline
+{\em beta\+\_\+e} & \mbox{[}out\mbox{]} Pointer to store the sampled dimensionless velocity $ \beta = v/c $. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state for the current thread.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}\label{compton_8h_afda6e9c49fe8a4b909d3d8e1cde56fea}} 
 \index{compton.h@{compton.h}!GPU\_sample\_electron\_distr\_p@{GPU\_sample\_electron\_distr\_p}}
 \index{GPU\_sample\_electron\_distr\_p@{GPU\_sample\_electron\_distr\_p}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_electron\_distr\_p()}{GPU\_sample\_electron\_distr\_p()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+electron\+\_\+distr\+\_\+p (\begin{DoxyParamCaption}\item[{double}]{k\mbox{[}4\mbox{]},  }\item[{double}]{p\mbox{[}4\mbox{]},  }\item[{double}]{Thetae,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Samples the 4-\/momentum of a scattering electron from a thermal distribution. 
+
+Implements the rejection-\/sampling scheme described by Canfield (1987) and Wong (2022). The routine picks an electron velocity and orientation relative to the incoming photon, weighted by the frame-\/dependent Klein-\/\+Nishina cross-\/section.
+
+{\bfseries{Routine}}\+:
+\begin{DoxyEnumerate}
+\item Sample $ \gamma_e $ and $ \beta_e $ from a Maxwell-\/\+Jüttner distribution.
+\item Sample the relative angle cosine $ \mu $ between the photon and electron.
+\item Calculate the rest-\/frame photon energy $ K $.
+\item Accept the candidate electron if a random variable is less than $ \sigma_{KN}(K)/\sigma_T $.
+\item Construct a local orthonormal basis aligned with the photon\textquotesingle{}s direction to assign the electron\textquotesingle{}s spatial momentum components.
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & Incoming photon 4-\/momentum in the local tetrad frame. \\
+\hline
+{\em p} & \mbox{[}out\mbox{]} Sampled electron 4-\/momentum in the local tetrad frame. \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e = k_B T_e / m_e c^2 $. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}\label{compton_8h_ae2982bd7a9cad080026ce883ed21c3ff}} 
 \index{compton.h@{compton.h}!GPU\_sample\_klein\_nishina@{GPU\_sample\_klein\_nishina}}
 \index{GPU\_sample\_klein\_nishina@{GPU\_sample\_klein\_nishina}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_klein\_nishina()}{GPU\_sample\_klein\_nishina()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+klein\+\_\+nishina (\begin{DoxyParamCaption}\item[{double}]{k0,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Samples the post-\/scattering photon energy using the Klein-\/\+Nishina differential cross-\/section. 
+
+This function uses a rejection sampling algorithm to determine the scattered photon frequency $ k\textnormal{\textquotesingle} $ in the electron rest frame. The sampling occurs within the kinematically allowed range\+: \[ \frac{k}{1+2k} \le k\textnormal{\textquotesingle} \le k \] where the lower bound corresponds to a head-\/on collision ( $ \theta = \pi $) and the upper bound corresponds to no deflection ( $ \theta = 0 $).
+
+
+\begin{DoxyParams}{Parameters}
+{\em k0} & Dimensionless photon frequency in the electron rest frame before scattering. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state for the current thread.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sampled dimensionless photon frequency after scattering $ k\textnormal{\textquotesingle} $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_acecc256e76033d65ace1140306de801c}\label{compton_8h_acecc256e76033d65ace1140306de801c}} 
 \index{compton.h@{compton.h}!GPU\_sample\_mu\_distr@{GPU\_sample\_mu\_distr}}
 \index{GPU\_sample\_mu\_distr@{GPU\_sample\_mu\_distr}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_mu\_distr()}{GPU\_sample\_mu\_distr()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+mu\+\_\+distr (\begin{DoxyParamCaption}\item[{const double}]{beta\+\_\+e,  }\item[{double}]{random }\end{DoxyParamCaption})}
 
+
+
+Samples the cosine of the angle between the photon and the electron. This function performs an inversion sampling of the relative orientation angle $ \mu = \cos\alpha $ between the incoming photon and the scattering electron. In the Monte Carlo scattering scheme, the probability of a collision is proportional to the relative velocity factor\+: 
+
+\[ P(\mu) \propto (1 - \beta_e \mu) \] where $ \mu \in [-1, 1] $.
+\begin{DoxyItemize}
+\item {\bfseries{Mathematical Derivation}}\+: The Cumulative Distribution Function (CDF) is obtained by integrating the probability\+: \[ R = \frac{\int_{-1}^{\mu} (1 - \beta_e x) dx}{\int_{-1}^{1} (1 - \beta_e x) dx} \] Solving for $ \mu $ via the quadratic formula yields the implementation\+: \[ \mu = \frac{1 - \sqrt{(1 + \beta_e)^2 - 4 \beta_e R}}{\beta_e} \]
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em beta\+\_\+e} & Electron velocity in units of the speed of light ( $ v/c $). \\
+\hline
+{\em random} & A uniform random number in the range \mbox{[}0, 1\mbox{]}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sampled cosine of the relative angle $ \mu $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}\label{compton_8h_a26a9cb9f50beaa2ef5241961931eefb4}} 
 \index{compton.h@{compton.h}!GPU\_sample\_scattered\_photon@{GPU\_sample\_scattered\_photon}}
 \index{GPU\_sample\_scattered\_photon@{GPU\_sample\_scattered\_photon}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_scattered\_photon()}{GPU\_sample\_scattered\_photon()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+sample\+\_\+scattered\+\_\+photon (\begin{DoxyParamCaption}\item[{double}]{k\mbox{[}4\mbox{]},  }\item[{double}]{p\mbox{[}4\mbox{]},  }\item[{double}]{kp\mbox{[}4\mbox{]},  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Computes the scattered photon 4-\/momentum after a collision with an electron. This high-\/level routine simulates the physical interaction between a photon and a specific electron. It handles the transition between classical Thomson scattering and quantum Klein-\/\+Nishina scattering based on the photon\textquotesingle{}s energy in the electron rest frame. 
+
+{\bfseries{Routine}}\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Frame Shift}}\+: The incoming photon 4-\/momentum $ k^\mu $ is boosted into the electron\textquotesingle{}s rest frame.
+\item {\bfseries{Regime Selection}}\+:
+\end{DoxyEnumerate}
+\begin{DoxyItemize}
+\item If $ E\textnormal{\textquotesingle}_{photon} > 10^{-4} m_e c^2 $\+: Uses {\bfseries{Klein-\/\+Nishina}} sampling for energy loss and angular deflection.
+\item If $ E\textnormal{\textquotesingle}_{photon} \le 10^{-4} m_e c^2 $\+: Uses {\bfseries{Thomson}} sampling (elastic scattering).
+\end{DoxyItemize}
+\begin{DoxyEnumerate}
+\item {\bfseries{Angular Sampling}}\+: Constructs a local coordinate system aligned with the incident photon to sample the scattering angle $ \theta $ and azimuthal angle $ \phi $.
+\item {\bfseries{Inverse Transformation}}\+: The resulting scattered momentum is boosted back from the electron rest frame to the laboratory/fluid frame.
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & Incoming photon 4-\/momentum in the laboratory frame. \\
+\hline
+{\em p} & 4-\/momentum of the scattering electron. \\
+\hline
+{\em kp} & \mbox{[}out\mbox{]} Scattered photon 4-\/momentum in the laboratory frame. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state for the current thread.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a95628da4319e226d82f6ea553afea193}\label{compton_8h_a95628da4319e226d82f6ea553afea193}} 
 \index{compton.h@{compton.h}!GPU\_sample\_thomson@{GPU\_sample\_thomson}}
 \index{GPU\_sample\_thomson@{GPU\_sample\_thomson}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_thomson()}{GPU\_sample\_thomson()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+thomson (\begin{DoxyParamCaption}\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Samples the scattering angle cosine for Thomson scattering. 
+
+Uses rejection sampling to pick the cosine of the scattering angle $ \mu = \cos\theta $ according to the Thomson differential cross-\/section distribution\+: \[ \frac{dP}{d\mu} = \frac{3}{8}(1 + \mu^2) \]
+
+
+\begin{DoxyParams}{Parameters}
+{\em local\+State} & Pointer to the curand RNG state for the current thread.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sampled cosine of the scattering angle $ \mu $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a38bb950c830af777b12de3eeb4708dcf}\label{compton_8h_a38bb950c830af777b12de3eeb4708dcf}} 
 \index{compton.h@{compton.h}!GPU\_sample\_y\_distr@{GPU\_sample\_y\_distr}}
 \index{GPU\_sample\_y\_distr@{GPU\_sample\_y\_distr}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_sample\_y\_distr()}{GPU\_sample\_y\_distr()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+sample\+\_\+y\+\_\+distr (\begin{DoxyParamCaption}\item[{const double}]{Thetae,  }\item[{curand\+State $\ast$}]{local\+State }\end{DoxyParamCaption})}
 
+
+
+Samples the auxiliary energy variable $ y $ for the Maxwell-\/\+Jüttner distribution. 
+
+
+\begin{DoxyItemize}
+\item This function implements the composition-\/rejection algorithm described by \href{https://ui.adsabs.harvard.edu/abs/1987ApJ...323..565C/abstract}{\texttt{ Canfield et al. (1987)}} to efficiently sample electron energies. It decomposes the distribution into a weighted sum of four components, each sampled from a Chi-\/\+Square distribution with varying degrees of freedom.
+\item {\bfseries{Routine}}\+:
+\end{DoxyItemize}
+\begin{DoxyEnumerate}
+\item {\bfseries{Weights}}\+: Calculates weights $ \pi_3, \pi_4, \pi_5, \pi_6 $ based on the dimensionless temperature $ \Theta_e $.
+\item {\bfseries{Composition}}\+: Randomly selects one of the four components based on these weights using a uniform random variable.
+\item {\bfseries{Sampling}}\+: Samples $ x $ from a $ \chi^2 $ distribution with 3, 4, 5, or 6 degrees of freedom.
+\item {\bfseries{Transformation}}\+: Converts $ x $ to the auxiliary variable $ y = \sqrt{x/2} $.
+\item {\bfseries{Rejection}}\+: Applies a final rejection step to correct the shape of the approximated distribution using the probability\+: \[ P = \frac{\sqrt{1 + \frac{1}{2} \Theta_e y^2}}{1 + y \sqrt{\frac{\Theta_e}{2}}} \]
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e = k_B T_e / m_e c^2 $. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state for the current thread.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sampled auxiliary variable $ y $, where $ \gamma_e = y^2 \Theta_e + 1 $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}\label{compton_8h_a00d6da1ba64c514d49a9e0ab9a87936c}} 
 \index{compton.h@{compton.h}!GPU\_scatter\_super\_photon@{GPU\_scatter\_super\_photon}}
 \index{GPU\_scatter\_super\_photon@{GPU\_scatter\_super\_photon}!compton.h@{compton.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_scatter\_super\_photon()}{GPU\_scatter\_super\_photon()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+scatter\+\_\+super\+\_\+photon (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{ph,  }\item[{struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}}]{php,  }\item[{double}]{Ne,  }\item[{double}]{Thetae,  }\item[{double}]{B,  }\item[{double}]{Ucon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Bcon\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{curand\+State $\ast$}]{local\+State,  }\item[{unsigned long long}]{photon\+\_\+index }\end{DoxyParamCaption})}
 
+
+
+Manages the Compton scattering process for a superphoton on the GPU. This function handles the full scattering pipeline for a single photon indexed in a Structure of Arrays (SOA). It transforms the photon into the local fluid frame, samples a scattering electron, executes the scattering event, and updates the photon\textquotesingle{}s coordinate-\/frame properties. 
+
+{\bfseries{Routine}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Tetrad Construction}}\+: Builds a local orthonormal tetrad using the fluid velocity $ u^\mu $ and magnetic field $ b^\mu $.
+\item {\bfseries{Frame Transformation}}\+: Rotates the photon 4-\/momentum $ k^\mu $ from the coordinate basis to the local tetrad basis.
+\item {\bfseries{Electron Sampling}}\+: Select a specific electron momentum from the Maxwell-\/\+Jüttner distribution.
+\item {\bfseries{Scattering}}\+: Executes the scattering selecting the scattered photon momentum.
+\item {\bfseries{Coordinate Recovery}}\+: Transforms the scattered momentum back to the global coordinate frame and updates the photon\textquotesingle{}s scattering history and energy.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em ph} & Input photon Structure of Arrays (SOA). \\
+\hline
+{\em php} & Output (scattered) photon Structure of Arrays (SOA). \\
+\hline
+{\em Ne} & Local electron number density. \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e $. \\
+\hline
+{\em B} & Magnetic field strength in cgs. \\
+\hline
+{\em Ucon} & Fluid 4-\/velocity $ u^\mu $. \\
+\hline
+{\em Bcon} & Magnetic field 4-\/vector $ b^\mu $. \\
+\hline
+{\em Gcov} & Covariant metric tensor $ g_{\mu\nu} $. \\
+\hline
+{\em local\+State} & Pointer to the curand RNG state for this thread. \\
+\hline
+{\em photon\+\_\+index} & The index of the photon within the SOA.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}

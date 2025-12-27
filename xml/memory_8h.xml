@@ -275,7 +275,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Converts input <computeroutput>double</computeroutput> data to <computeroutput>float</computeroutput>, uploads it to a 1D CUDA array, and initializes a texture object with linear filtering and clamp addressing.</para>
-<para>This is used for the Modified Bessel function lookup table ( <formula id="43">$ K_2 $</formula>). <parameterlist kind="param"><parameteritem>
+<para>This is used for the Modified Bessel function lookup table ( <formula id="83">$ K_2 $</formula>). <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>texObj</parametername>
 </parameternamelist>

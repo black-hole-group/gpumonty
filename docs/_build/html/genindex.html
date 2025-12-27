@@ -42,6 +42,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/compton.html">compton.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/compton.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv427GPU_sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_scattered_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv49GPU_boostAL4E_dAL4E_dAL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_boost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv418GPU_sample_thomsonP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_thomson()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv424GPU_sample_klein_nishinadP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv417GPU_klein_nishinaKdKd"><code class="docutils literal notranslate"><span class="pre">GPU_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv427GPU_sample_electron_distr_pAL4E_dAL4E_ddP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_electron_distr_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv421GPU_sample_beta_distrdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_beta_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv418GPU_sample_y_distrKdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_y_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv419GPU_sample_mu_distrKdd"><code class="docutils literal notranslate"><span class="pre">GPU_sample_mu_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/compton.html#_CPPv424GPU_scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey"><code class="docutils literal notranslate"><span class="pre">GPU_scatter_super_photon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api/curand.html">curand.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/curand.html#functions">Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
@@ -176,6 +192,27 @@
 </ul>
 </li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docs_guidelines.html">Documentation Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#guidelines">Guidelines:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docs_guidelines.html#update-workflow-and-repository-structure">Update Workflow and Repository Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#documentation-directories-organization">Documentation Directories Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#website-navigation-and-tabs">Website Navigation and Tabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docs_guidelines.html#local-testing-and-building">Local Testing and Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
         </div>
       </div>
@@ -297,6 +334,8 @@
 </li>
       <li><a href="api/curand.html#_CPPv425generate_random_directionPdPdPdP11curandState">generate_random_direction (C++ function)</a>
 </li>
+      <li><a href="api/compton.html#_CPPv49GPU_boostAL4E_dAL4E_dAL4E_d">GPU_boost (C++ function)</a>
+</li>
       <li><a href="api/kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t">GPU_generate_photons (C++ function)</a>
 </li>
       <li><a href="api/metrics.html#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d">GPU_get_connection (C++ function)</a>
@@ -305,17 +344,35 @@
 </li>
       <li><a href="api/kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t">GPU_init_zone (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/compton.html#_CPPv417GPU_klein_nishinaKdKd">GPU_klein_nishina (C++ function)</a>
+</li>
       <li><a href="api/weight.html#_CPPv424GPU_linear_interp_weightKd">GPU_linear_interp_weight (C++ function)</a>
 </li>
       <li><a href="api/kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi">GPU_record (C++ function)</a>
 </li>
       <li><a href="api/kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi">GPU_record_scattering (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/compton.html#_CPPv421GPU_sample_beta_distrdPdPdP11curandState">GPU_sample_beta_distr (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv427GPU_sample_electron_distr_pAL4E_dAL4E_ddP11curandState">GPU_sample_electron_distr_p (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv424GPU_sample_klein_nishinadP11curandState">GPU_sample_klein_nishina (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv419GPU_sample_mu_distrKdd">GPU_sample_mu_distr (C++ function)</a>
+</li>
       <li><a href="api/kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t">GPU_sample_photons_batch (C++ function)</a>
 </li>
+      <li><a href="api/compton.html#_CPPv427GPU_sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState">GPU_sample_scattered_photon (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv418GPU_sample_thomsonP11curandState">GPU_sample_thomson (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv418GPU_sample_y_distrKdP11curandState">GPU_sample_y_distr (C++ function)</a>
+</li>
       <li><a href="api/kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t">GPU_sample_zone_photon (C++ function)</a>
+</li>
+      <li><a href="api/compton.html#_CPPv424GPU_scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey">GPU_scatter_super_photon (C++ function)</a>
 </li>
       <li><a href="api/kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t">GPU_track (C++ function)</a>
 </li>

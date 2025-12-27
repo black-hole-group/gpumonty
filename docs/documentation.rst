@@ -7,6 +7,7 @@ organized by module.
 .. toctree::
    :maxdepth: 3
    
+   api/compton
    api/curand
    api/hotcross
    api/jnu_mixed

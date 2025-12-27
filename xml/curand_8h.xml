@@ -237,7 +237,7 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
-<para>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <formula id="0">$ \alpha \geq 1 $</formula>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <formula id="1">$ \alpha &lt; 1 $</formula>). </para>
+<para>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <formula id="46">$ \alpha \geq 1 $</formula>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <formula id="47">$ \alpha &lt; 1 $</formula>). </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>

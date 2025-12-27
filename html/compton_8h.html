@@ -77,24 +77,34 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a26a9cb9f50beaa2ef5241961931eefb4"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a26a9cb9f50beaa2ef5241961931eefb4">GPU_sample_scattered_photon</a> (double k[4], double <a class="el" href="defs_8h.html#a581f9e6b0ae1bb5b0a323185403461cf">p</a>[4], double kp[4], curandState *localState)</td></tr>
+<tr class="memdesc:a26a9cb9f50beaa2ef5241961931eefb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the scattered photon 4-momentum after a collision with an electron. This high-level routine simulates the physical interaction between a photon and a specific electron. It handles the transition between classical Thomson scattering and quantum Klein-Nishina scattering based on the photon's energy in the electron rest frame.  <a href="compton_8h.html#a26a9cb9f50beaa2ef5241961931eefb4">More...</a><br /></td></tr>
 <tr class="separator:a26a9cb9f50beaa2ef5241961931eefb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23889b06f89c43496986015e13a60f2e"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a23889b06f89c43496986015e13a60f2e">GPU_boost</a> (double v[4], double u[4], double vp[4])</td></tr>
+<tr class="memdesc:a23889b06f89c43496986015e13a60f2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a general Lorentz boost into the frame of a given 4-velocity.  <a href="compton_8h.html#a23889b06f89c43496986015e13a60f2e">More...</a><br /></td></tr>
 <tr class="separator:a23889b06f89c43496986015e13a60f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95628da4319e226d82f6ea553afea193"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a95628da4319e226d82f6ea553afea193">GPU_sample_thomson</a> (curandState *localState)</td></tr>
+<tr class="memdesc:a95628da4319e226d82f6ea553afea193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the scattering angle cosine for Thomson scattering.  <a href="compton_8h.html#a95628da4319e226d82f6ea553afea193">More...</a><br /></td></tr>
 <tr class="separator:a95628da4319e226d82f6ea553afea193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2982bd7a9cad080026ce883ed21c3ff"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#ae2982bd7a9cad080026ce883ed21c3ff">GPU_sample_klein_nishina</a> (double k0, curandState *localState)</td></tr>
+<tr class="memdesc:ae2982bd7a9cad080026ce883ed21c3ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the post-scattering photon energy using the Klein-Nishina differential cross-section.  <a href="compton_8h.html#ae2982bd7a9cad080026ce883ed21c3ff">More...</a><br /></td></tr>
 <tr class="separator:ae2982bd7a9cad080026ce883ed21c3ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a333330464deee8831babe16f98f16648"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a333330464deee8831babe16f98f16648">GPU_klein_nishina</a> (const double a, const double ap)</td></tr>
+<tr class="memdesc:a333330464deee8831babe16f98f16648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the differential Klein-Nishina cross-section for a given frequency shift.  <a href="compton_8h.html#a333330464deee8831babe16f98f16648">More...</a><br /></td></tr>
 <tr class="separator:a333330464deee8831babe16f98f16648"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afda6e9c49fe8a4b909d3d8e1cde56fea"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#afda6e9c49fe8a4b909d3d8e1cde56fea">GPU_sample_electron_distr_p</a> (double k[4], double <a class="el" href="defs_8h.html#a581f9e6b0ae1bb5b0a323185403461cf">p</a>[4], double Thetae, curandState *localState)</td></tr>
+<tr class="memdesc:afda6e9c49fe8a4b909d3d8e1cde56fea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the 4-momentum of a scattering electron from a thermal distribution.  <a href="compton_8h.html#afda6e9c49fe8a4b909d3d8e1cde56fea">More...</a><br /></td></tr>
 <tr class="separator:afda6e9c49fe8a4b909d3d8e1cde56fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12ee38bdba5375c31513089d65642b5a"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a12ee38bdba5375c31513089d65642b5a">GPU_sample_beta_distr</a> (double Thetae, double *gamma_e, double *beta_e, curandState *localState)</td></tr>
+<tr class="memdesc:a12ee38bdba5375c31513089d65642b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the electron Lorentz factor and velocity from a thermal distribution.  <a href="compton_8h.html#a12ee38bdba5375c31513089d65642b5a">More...</a><br /></td></tr>
 <tr class="separator:a12ee38bdba5375c31513089d65642b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38bb950c830af777b12de3eeb4708dcf"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a38bb950c830af777b12de3eeb4708dcf">GPU_sample_y_distr</a> (const double Thetae, curandState *localState)</td></tr>
+<tr class="memdesc:a38bb950c830af777b12de3eeb4708dcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the auxiliary energy variable <img class="formulaInl" alt="$ y $" src="form_26.png"/> for the Maxwell-Jüttner distribution.  <a href="compton_8h.html#a38bb950c830af777b12de3eeb4708dcf">More...</a><br /></td></tr>
 <tr class="separator:a38bb950c830af777b12de3eeb4708dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acecc256e76033d65ace1140306de801c"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#acecc256e76033d65ace1140306de801c">GPU_sample_mu_distr</a> (const double beta_e, double random)</td></tr>
+<tr class="memdesc:acecc256e76033d65ace1140306de801c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the cosine of the angle between the photon and the electron. This function performs an inversion sampling of the relative orientation angle <img class="formulaInl" alt="$ \mu = \cos\alpha $" src="form_37.png"/> between the incoming photon and the scattering electron. In the Monte Carlo scattering scheme, the probability of a collision is proportional to the relative velocity factor:  <a href="compton_8h.html#acecc256e76033d65ace1140306de801c">More...</a><br /></td></tr>
 <tr class="separator:acecc256e76033d65ace1140306de801c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00d6da1ba64c514d49a9e0ab9a87936c"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compton_8h.html#a00d6da1ba64c514d49a9e0ab9a87936c">GPU_scatter_super_photon</a> (struct <a class="el" href="structof__photonSOA.html">of_photonSOA</a> ph, struct <a class="el" href="structof__photonSOA.html">of_photonSOA</a> php, double Ne, double Thetae, double B, double Ucon[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double Bcon[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double Gcov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], curandState *localState, unsigned long long photon_index)</td></tr>
+<tr class="memdesc:a00d6da1ba64c514d49a9e0ab9a87936c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages the Compton scattering process for a superphoton on the GPU. This function handles the full scattering pipeline for a single photon indexed in a Structure of Arrays (SOA). It transforms the photon into the local fluid frame, samples a scattering electron, executes the scattering event, and updates the photon's coordinate-frame properties.  <a href="compton_8h.html#a00d6da1ba64c514d49a9e0ab9a87936c">More...</a><br /></td></tr>
 <tr class="separator:a00d6da1ba64c514d49a9e0ab9a87936c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -130,6 +140,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Performs a general Lorentz boost into the frame of a given 4-velocity. </p>
+<p>Transforms a 4-vector <img class="formulaInl" alt="$ v $" src="form_5.png"/> from the laboratory frame into the frame moving with 4-velocity <img class="formulaInl" alt="$ u $" src="form_6.png"/>. The implementation uses the general Lorentz transformation matrix to handle boosts in arbitrary directions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">v</td><td>Input 4-vector in the laboratory frame. </td></tr>
+    <tr><td class="paramname">u</td><td>4-velocity of the frame to boost into (where <img class="formulaInl" alt="$ u^0 = \gamma $" src="form_7.png"/>). </td></tr>
+    <tr><td class="paramname">vp</td><td>Resulting boosted 4-vector in the co-moving frame.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a333330464deee8831babe16f98f16648"></a>
@@ -157,6 +179,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Computes the differential Klein-Nishina cross-section for a given frequency shift. </p>
+<p>This function evaluates the probability density of a photon with dimensionless energy <img class="formulaInl" alt="$ a $" src="form_15.png"/> scattering to energy <img class="formulaInl" alt="$ a' $" src="form_16.png"/>. It is used as the target distribution for the rejection sampling in the Klein-Nishina scattering routine.</p>
+<p>The implementation calculates: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \frac{1}{a^2} \left( \frac{a}{a'} + \frac{a'}{a} - \sin^2 \theta \right) \]" src="form_17.png"/>
+</p>
+<p> where the scattering angle <img class="formulaInl" alt="$ \theta $" src="form_3.png"/> is implicitly determined by the Compton formula: <img class="formulaInl" alt="$ \cos \theta = 1 + \frac{1}{a} - \frac{1}{a'} $" src="form_18.png"/>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>Initial dimensionless photon energy ( <img class="formulaInl" alt="$ h\nu / m_e c^2 $" src="form_19.png"/>). </td></tr>
+    <tr><td class="paramname">ap</td><td>Scattered dimensionless photon energy ( <img class="formulaInl" alt="$ h\nu' / m_e c^2 $" src="form_20.png"/>).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the differential cross-section (unnormalized). </dd></dl>
 
 </div>
 </div>
@@ -198,6 +235,23 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Samples the electron Lorentz factor and velocity from a thermal distribution. </p>
+<p>This function determines the energy state of a scattering electron by sampling a transformed energy variable <img class="formulaInl" alt="$ y $" src="form_26.png"/> and converting it into the Lorentz factor <img class="formulaInl" alt="$ \gamma_e $" src="form_21.png"/> and the dimensionless velocity <img class="formulaInl" alt="$ \beta_e $" src="form_22.png"/>.</p>
+<p>The sampling is based on the Maxwell-Jüttner distribution. The transformation used is: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \gamma_e = y^2 \Theta_e + 1 \]" src="form_27.png"/>
+</p>
+<p>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e = k_B T_e / m_e c^2 $" src="form_25.png"/>. </td></tr>
+    <tr><td class="paramname">gamma_e</td><td>[out] Pointer to store the sampled Lorentz factor <img class="formulaInl" alt="$ \gamma $" src="form_28.png"/>. </td></tr>
+    <tr><td class="paramname">beta_e</td><td>[out] Pointer to store the sampled dimensionless velocity <img class="formulaInl" alt="$ \beta = v/c $" src="form_29.png"/>. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for the current thread.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="afda6e9c49fe8a4b909d3d8e1cde56fea"></a>
@@ -238,6 +292,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Samples the 4-momentum of a scattering electron from a thermal distribution. </p>
+<p>Implements the rejection-sampling scheme described by Canfield (1987) and Wong (2022). The routine picks an electron velocity and orientation relative to the incoming photon, weighted by the frame-dependent Klein-Nishina cross-section.</p>
+<p><b>Routine</b>:</p><ol type="1">
+<li>Sample <img class="formulaInl" alt="$ \gamma_e $" src="form_21.png"/> and <img class="formulaInl" alt="$ \beta_e $" src="form_22.png"/> from a Maxwell-Jüttner distribution.</li>
+<li>Sample the relative angle cosine <img class="formulaInl" alt="$ \mu $" src="form_10.png"/> between the photon and electron.</li>
+<li>Calculate the rest-frame photon energy <img class="formulaInl" alt="$ K $" src="form_23.png"/>.</li>
+<li>Accept the candidate electron if a random variable is less than <img class="formulaInl" alt="$ \sigma_{KN}(K)/\sigma_T $" src="form_24.png"/>.</li>
+<li>Construct a local orthonormal basis aligned with the photon's direction to assign the electron's spatial momentum components.</li>
+</ol>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>Incoming photon 4-momentum in the local tetrad frame. </td></tr>
+    <tr><td class="paramname">p</td><td>[out] Sampled electron 4-momentum in the local tetrad frame. </td></tr>
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e = k_B T_e / m_e c^2 $" src="form_25.png"/>. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="ae2982bd7a9cad080026ce883ed21c3ff"></a>
@@ -266,6 +340,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Samples the post-scattering photon energy using the Klein-Nishina differential cross-section. </p>
+<p>This function uses a rejection sampling algorithm to determine the scattered photon frequency <img class="formulaInl" alt="$ k' $" src="form_11.png"/> in the electron rest frame. The sampling occurs within the kinematically allowed range: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \frac{k}{1+2k} \le k' \le k \]" src="form_12.png"/>
+</p>
+<p> where the lower bound corresponds to a head-on collision ( <img class="formulaInl" alt="$ \theta = \pi $" src="form_13.png"/>) and the upper bound corresponds to no deflection ( <img class="formulaInl" alt="$ \theta = 0 $" src="form_14.png"/>).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k0</td><td>Dimensionless photon frequency in the electron rest frame before scattering. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for the current thread.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sampled dimensionless photon frequency after scattering <img class="formulaInl" alt="$ k' $" src="form_11.png"/>. </dd></dl>
+
 </div>
 </div>
 <a id="acecc256e76033d65ace1140306de801c"></a>
@@ -293,6 +381,28 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples the cosine of the angle between the photon and the electron. This function performs an inversion sampling of the relative orientation angle <img class="formulaInl" alt="$ \mu = \cos\alpha $" src="form_37.png"/> between the incoming photon and the scattering electron. In the Monte Carlo scattering scheme, the probability of a collision is proportional to the relative velocity factor: </p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ P(\mu) \propto (1 - \beta_e \mu) \]" src="form_38.png"/>
+</p>
+<p> where <img class="formulaInl" alt="$ \mu \in [-1, 1] $" src="form_39.png"/>.</p><ul>
+<li><b>Mathematical Derivation</b>: The Cumulative Distribution Function (CDF) is obtained by integrating the probability: <p class="formulaDsp">
+<img class="formulaDsp" alt="\[ R = \frac{\int_{-1}^{\mu} (1 - \beta_e x) dx}{\int_{-1}^{1} (1 - \beta_e x) dx} \]" src="form_40.png"/>
+</p>
+ Solving for <img class="formulaInl" alt="$ \mu $" src="form_10.png"/> via the quadratic formula yields the implementation: <p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \mu = \frac{1 - \sqrt{(1 + \beta_e)^2 - 4 \beta_e R}}{\beta_e} \]" src="form_41.png"/>
+</p>
+</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">beta_e</td><td>Electron velocity in units of the speed of light ( <img class="formulaInl" alt="$ v/c $" src="form_42.png"/>). </td></tr>
+    <tr><td class="paramname">random</td><td>A uniform random number in the range [0, 1].</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sampled cosine of the relative angle <img class="formulaInl" alt="$ \mu $" src="form_10.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -334,6 +444,30 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Computes the scattered photon 4-momentum after a collision with an electron. This high-level routine simulates the physical interaction between a photon and a specific electron. It handles the transition between classical Thomson scattering and quantum Klein-Nishina scattering based on the photon's energy in the electron rest frame. </p>
+<p><b>Routine</b>:</p><ol type="1">
+<li><b>Frame Shift</b>: The incoming photon 4-momentum <img class="formulaInl" alt="$ k^\mu $" src="form_0.png"/> is boosted into the electron's rest frame.</li>
+<li><b>Regime Selection</b>:</li>
+</ol>
+<ul>
+<li>If <img class="formulaInl" alt="$ E'_{photon} &gt; 10^{-4} m_e c^2 $" src="form_1.png"/>: Uses <b>Klein-Nishina</b> sampling for energy loss and angular deflection.</li>
+<li>If <img class="formulaInl" alt="$ E'_{photon} \le 10^{-4} m_e c^2 $" src="form_2.png"/>: Uses <b>Thomson</b> sampling (elastic scattering).</li>
+</ul>
+<ol type="1">
+<li><b>Angular Sampling</b>: Constructs a local coordinate system aligned with the incident photon to sample the scattering angle <img class="formulaInl" alt="$ \theta $" src="form_3.png"/> and azimuthal angle <img class="formulaInl" alt="$ \phi $" src="form_4.png"/>.</li>
+<li><b>Inverse Transformation</b>: The resulting scattered momentum is boosted back from the electron rest frame to the laboratory/fluid frame.</li>
+</ol>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>Incoming photon 4-momentum in the laboratory frame. </td></tr>
+    <tr><td class="paramname">p</td><td>4-momentum of the scattering electron. </td></tr>
+    <tr><td class="paramname">kp</td><td>[out] Scattered photon 4-momentum in the laboratory frame. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for the current thread.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a95628da4319e226d82f6ea553afea193"></a>
@@ -351,6 +485,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples the scattering angle cosine for Thomson scattering. </p>
+<p>Uses rejection sampling to pick the cosine of the scattering angle <img class="formulaInl" alt="$ \mu = \cos\theta $" src="form_8.png"/> according to the Thomson differential cross-section distribution: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \frac{dP}{d\mu} = \frac{3}{8}(1 + \mu^2) \]" src="form_9.png"/>
+</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for the current thread.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sampled cosine of the scattering angle <img class="formulaInl" alt="$ \mu $" src="form_10.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -379,6 +525,30 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Samples the auxiliary energy variable <img class="formulaInl" alt="$ y $" src="form_26.png"/> for the Maxwell-Jüttner distribution. </p>
+<ul>
+<li>This function implements the composition-rejection algorithm described by <a href="https://ui.adsabs.harvard.edu/abs/1987ApJ...323..565C/abstract">Canfield et al. (1987)</a> to efficiently sample electron energies. It decomposes the distribution into a weighted sum of four components, each sampled from a Chi-Square distribution with varying degrees of freedom.</li>
+<li><b>Routine</b>:</li>
+</ul>
+<ol type="1">
+<li><b>Weights</b>: Calculates weights <img class="formulaInl" alt="$ \pi_3, \pi_4, \pi_5, \pi_6 $" src="form_30.png"/> based on the dimensionless temperature <img class="formulaInl" alt="$ \Theta_e $" src="form_31.png"/>.</li>
+<li><b>Composition</b>: Randomly selects one of the four components based on these weights using a uniform random variable.</li>
+<li><b>Sampling</b>: Samples <img class="formulaInl" alt="$ x $" src="form_32.png"/> from a <img class="formulaInl" alt="$ \chi^2 $" src="form_33.png"/> distribution with 3, 4, 5, or 6 degrees of freedom.</li>
+<li><b>Transformation</b>: Converts <img class="formulaInl" alt="$ x $" src="form_32.png"/> to the auxiliary variable <img class="formulaInl" alt="$ y = \sqrt{x/2} $" src="form_34.png"/>.</li>
+<li><b>Rejection</b>: Applies a final rejection step to correct the shape of the approximated distribution using the probability: <p class="formulaDsp">
+<img class="formulaDsp" alt="\[ P = \frac{\sqrt{1 + \frac{1}{2} \Theta_e y^2}}{1 + y \sqrt{\frac{\Theta_e}{2}}} \]" src="form_35.png"/>
+</p>
+</li>
+</ol>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e = k_B T_e / m_e c^2 $" src="form_25.png"/>. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for the current thread.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The sampled auxiliary variable <img class="formulaInl" alt="$ y $" src="form_26.png"/>, where <img class="formulaInl" alt="$ \gamma_e = y^2 \Theta_e + 1 $" src="form_36.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -455,6 +625,31 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Manages the Compton scattering process for a superphoton on the GPU. This function handles the full scattering pipeline for a single photon indexed in a Structure of Arrays (SOA). It transforms the photon into the local fluid frame, samples a scattering electron, executes the scattering event, and updates the photon's coordinate-frame properties. </p>
+<p><b>Routine</b>:</p><ul>
+<li><b>Tetrad Construction</b>: Builds a local orthonormal tetrad using the fluid velocity <img class="formulaInl" alt="$ u^\mu $" src="form_43.png"/> and magnetic field <img class="formulaInl" alt="$ b^\mu $" src="form_44.png"/>.</li>
+<li><b>Frame Transformation</b>: Rotates the photon 4-momentum <img class="formulaInl" alt="$ k^\mu $" src="form_0.png"/> from the coordinate basis to the local tetrad basis.</li>
+<li><b>Electron Sampling</b>: Select a specific electron momentum from the Maxwell-Jüttner distribution.</li>
+<li><b>Scattering</b>: Executes the scattering selecting the scattered photon momentum.</li>
+<li><b>Coordinate Recovery</b>: Transforms the scattered momentum back to the global coordinate frame and updates the photon's scattering history and energy.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ph</td><td>Input photon Structure of Arrays (SOA). </td></tr>
+    <tr><td class="paramname">php</td><td>Output (scattered) photon Structure of Arrays (SOA). </td></tr>
+    <tr><td class="paramname">Ne</td><td>Local electron number density. </td></tr>
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e $" src="form_31.png"/>. </td></tr>
+    <tr><td class="paramname">B</td><td>Magnetic field strength in cgs. </td></tr>
+    <tr><td class="paramname">Ucon</td><td>Fluid 4-velocity <img class="formulaInl" alt="$ u^\mu $" src="form_43.png"/>. </td></tr>
+    <tr><td class="paramname">Bcon</td><td>Magnetic field 4-vector <img class="formulaInl" alt="$ b^\mu $" src="form_44.png"/>. </td></tr>
+    <tr><td class="paramname">Gcov</td><td>Covariant metric tensor <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_45.png"/>. </td></tr>
+    <tr><td class="paramname">localState</td><td>Pointer to the curand RNG state for this thread. </td></tr>
+    <tr><td class="paramname">photon_index</td><td>The index of the photon within the SOA.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>

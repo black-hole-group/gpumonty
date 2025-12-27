@@ -15,14 +15,14 @@
 <para>Initializes the Compton cross-section lookup table. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function prepares a 2D lookup table for the total Compton cross-section as a function of dimensionless photon frequency <formula id="2">$ w $</formula> and electron temperature <formula id="3">$ \Theta_e $</formula>.</para>
+<para>This function prepares a 2D lookup table for the total Compton cross-section as a function of dimensionless photon frequency <formula id="48">$ w $</formula> and electron temperature <formula id="31">$ \Theta_e $</formula>.</para>
 <para><bold>Routine</bold>:<orderedlist>
 <listitem><para>Attempts to open the file specified by <computeroutput>HOTCROSS</computeroutput>.</para>
 </listitem><listitem><para>If the file is found, it loads the precomputed values into memory.</para>
 </listitem><listitem><para>If the file is missing, it triggers a numerical calculation of the table using <computeroutput><ref refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" kindref="member">total_compton_cross_num()</ref></computeroutput>.</para>
 </listitem></orderedlist>
 </para>
-<para><simplesect kind="note"><para>The table is stored in <formula id="4">$ \log_{10}-\log_{10} $</formula> space.</para>
+<para><simplesect kind="note"><para>The table is stored in <formula id="49">$ \log_{10}-\log_{10} $</formula> space.</para>
 </simplesect>
 <simplesect kind="return"><para>void </para>
 </simplesect>
@@ -53,11 +53,11 @@
 <para>Computes the total Compton cross-section via lookup table and approximations. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function selects the optimal physical regime to calculate the cross-section based on photon frequency <formula id="2">$ w $</formula> and electron temperature <formula id="3">$ \Theta_e $</formula>.</para>
+<para>This function selects the optimal physical regime to calculate the cross-section based on photon frequency <formula id="48">$ w $</formula> and electron temperature <formula id="31">$ \Theta_e $</formula>.</para>
 <para><bold>Routine</bold>:<orderedlist>
-<listitem><para><bold>Thomson</bold>: If <formula id="5">$ w \Theta_e &lt; 10^{-6} $</formula>, returns the Thomson cross-section.</para>
+<listitem><para><bold>Thomson</bold>: If <formula id="50">$ w \Theta_e &lt; 10^{-6} $</formula>, returns the Thomson cross-section.</para>
 </listitem><listitem><para><bold>Klein-Nishina</bold>: If below table temperature limits, uses analytical expressions.</para>
-</listitem><listitem><para><bold>Interpolation</bold>: If in-bounds, performs bilinear interpolation in <formula id="4">$ \log_{10}-\log_{10} $</formula> space.</para>
+</listitem><listitem><para><bold>Interpolation</bold>: If in-bounds, performs bilinear interpolation in <formula id="49">$ \log_{10}-\log_{10} $</formula> space.</para>
 </listitem><listitem><para><bold>Fallback</bold>: If out-of-bounds, triggers a direct numerical calculation.</para>
 </listitem></orderedlist>
 </para>
@@ -111,7 +111,7 @@
 <para>Performs numerical integration of the total Compton cross-section. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function evaluates the cross-section by integrating over the electron Lorentz factor <formula id="6">$ \gamma_e $</formula> and collision angle <formula id="7">$ \mu_e $</formula>. It utilizes a double loop to sum the contributions of the electron distribution function and includes analytical shortcuts for the Thomson and Klein-Nishina limits in low-temperature regimes.</para>
+<para>This function evaluates the cross-section by integrating over the electron Lorentz factor <formula id="21">$ \gamma_e $</formula> and collision angle <formula id="51">$ \mu_e $</formula>. It utilizes a double loop to sum the contributions of the electron distribution function and includes analytical shortcuts for the Thomson and Klein-Nishina limits in low-temperature regimes.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>w</parametername>
@@ -129,7 +129,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The numerically integrated cross-section normalized by <formula id="8">$ \sigma_T $</formula>. </para>
+<simplesect kind="return"><para>The numerically integrated cross-section normalized by <formula id="52">$ \sigma_T $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -154,13 +154,13 @@
 <para>Calculates the normalized Maxwell-Jüttner electron distribution function. </para>
         </briefdescription>
         <detaileddescription>
-<para>Returns the number of electrons per unit Lorentz factor <formula id="6">$ \gamma_e $</formula>, normalized per unit proper electron number density. The implementation uses the modified Bessel function <formula id="9">$ K_2(1/\Theta_e) \sim \Theta_{\rm e}^2$</formula> approximation to ensure numerical stability in both relativistic and non-relativistic regimes.</para>
+<para>Returns the number of electrons per unit Lorentz factor <formula id="21">$ \gamma_e $</formula>, normalized per unit proper electron number density. The implementation uses the modified Bessel function <formula id="53">$ K_2(1/\Theta_e) \sim \Theta_{\rm e}^2$</formula> approximation to ensure numerical stability in both relativistic and non-relativistic regimes.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>thetae</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Dimensionless electron temperature <formula id="10">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+<para>Dimensionless electron temperature <formula id="25">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -168,11 +168,11 @@
 <parametername>gammae</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Electron Lorentz factor <formula id="6">$ \gamma_e $</formula>.</para>
+<para>Electron Lorentz factor <formula id="21">$ \gamma_e $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="11">$ dN/d\gamma_e $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="54">$ dN/d\gamma_e $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -201,7 +201,7 @@
 <para>Computes the Doppler-boosted Compton cross-section in the lab frame. </para>
         </briefdescription>
         <detaileddescription>
-<para>Transforms the lab-frame photon frequency <formula id="2">$ w $</formula> into the electron rest frame to evaluate the Klein-Nishina cross-section. The result is weighted by the relative interaction rate <formula id="12">$ (1 - \mu_e \beta) $</formula> to account for the beaming and relative velocity of the collision.</para>
+<para>Transforms the lab-frame photon frequency <formula id="48">$ w $</formula> into the electron rest frame to evaluate the Klein-Nishina cross-section. The result is weighted by the relative interaction rate <formula id="55">$ (1 - \mu_e \beta) $</formula> to account for the beaming and relative velocity of the collision.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>w</parametername>
@@ -223,7 +223,7 @@
 <parametername>gammae</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Electron Lorentz factor <formula id="6">$ \gamma_e $</formula>.</para>
+<para>Electron Lorentz factor <formula id="21">$ \gamma_e $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -245,10 +245,10 @@
           <declname>we</declname>
         </param>
         <briefdescription>
-<para>Evaluates the normalized Klein-Nishina cross-section <formula id="13">$ \sigma_{KN} / \sigma_T $</formula>. </para>
+<para>Evaluates the normalized Klein-Nishina cross-section <formula id="56">$ \sigma_{KN} / \sigma_T $</formula>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Computes the total cross-section for a photon with dimensionless energy <formula id="2">$ w $</formula> in the electron rest frame. For <formula id="14">$ w &lt; 10^{-3} $</formula>, it uses the expansion <formula id="15">$ 1 - 2w $</formula>. Otherwise, it calculates: <formula id="16">\[ \sigma = \frac{3}{4} \left[ \frac{2}{w^2} + \left( \frac{1}{2w} - \frac{1+w}{w^3} \right) \ln(1+2w) + \frac{1+w}{(1+2w)^2} \right] \]</formula></para>
+<para>Computes the total cross-section for a photon with dimensionless energy <formula id="48">$ w $</formula> in the electron rest frame. For <formula id="57">$ w &lt; 10^{-3} $</formula>, it uses the expansion <formula id="58">$ 1 - 2w $</formula>. Otherwise, it calculates: <formula id="59">\[ \sigma = \frac{3}{4} \left[ \frac{2}{w^2} + \left( \frac{1}{2w} - \frac{1+w}{w^3} \right) \ln(1+2w) + \frac{1+w}{(1+2w)^2} \right] \]</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>we</parametername>
@@ -276,7 +276,7 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
-<para>Modified Bessel function of the first kind, order zero: <formula id="17">$ I_0(x) $</formula>. </para>
+<para>Modified Bessel function of the first kind, order zero: <formula id="60">$ I_0(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para>Uses polynomial approximations and asymptotic expansions for numerical stability.</para>
@@ -287,11 +287,11 @@
 <parametername>xbess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input value <formula id="18">$ x $</formula>.</para>
+<para>The input value <formula id="32">$ x $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="17">$ I_0(x) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="60">$ I_0(x) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -309,10 +309,10 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
-<para>Modified Bessel function of the first kind, order one: <formula id="19">$ I_1(x) $</formula>. </para>
+<para>Modified Bessel function of the first kind, order one: <formula id="61">$ I_1(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Implemented using polynomial fits for small <formula id="18">$ x $</formula> and asymptotic forms for large <formula id="18">$ x $</formula>.</para>
+<para>Implemented using polynomial fits for small <formula id="32">$ x $</formula> and asymptotic forms for large <formula id="32">$ x $</formula>.</para>
 <para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -320,11 +320,11 @@
 <parametername>xbess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input value <formula id="18">$ x $</formula>.</para>
+<para>The input value <formula id="32">$ x $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="19">$ I_1(x) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="61">$ I_1(x) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -342,7 +342,7 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
-<para>Modified Bessel function of the second kind, order zero: <formula id="20">$ K_0(x) $</formula>. Evaluated via log-polynomial approximations for <formula id="21">$ x \le 2 $</formula> and exponential-asymptotic forms for <formula id="22">$ x &gt; 2 $</formula>. </para>
+<para>Modified Bessel function of the second kind, order zero: <formula id="62">$ K_0(x) $</formula>. Evaluated via log-polynomial approximations for <formula id="63">$ x \le 2 $</formula> and exponential-asymptotic forms for <formula id="64">$ x &gt; 2 $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
@@ -352,11 +352,11 @@
 <parametername>xbess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input value <formula id="18">$ x $</formula>.</para>
+<para>The input value <formula id="32">$ x $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="20">$ K_0(x) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="62">$ K_0(x) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -374,7 +374,7 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
-<para>Modified Bessel function of the second kind, order one: <formula id="23">$ K_1(x) $</formula>. Employs rational approximations and asymptotic expansions to maintain precision across scales. </para>
+<para>Modified Bessel function of the second kind, order one: <formula id="65">$ K_1(x) $</formula>. Employs rational approximations and asymptotic expansions to maintain precision across scales. </para>
         </briefdescription>
         <detaileddescription>
 <para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
@@ -384,11 +384,11 @@
 <parametername>xbess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input value <formula id="18">$ x $</formula>.</para>
+<para>The input value <formula id="32">$ x $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="23">$ K_1(x) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="65">$ K_1(x) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -406,10 +406,10 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
-<para>Modified Bessel function of the second kind, order two: <formula id="24">$ K_2(x) $</formula>. </para>
+<para>Modified Bessel function of the second kind, order two: <formula id="66">$ K_2(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Computed using the recurrence relation: <formula id="25">$ K_{n+1}(x) = K_{n-1}(x) + \frac{2n}{x}K_n(x) $</formula>, starting from the values of <formula id="26">$ K_0 $</formula> and <formula id="27">$ K_1 $</formula>.</para>
+<para>Computed using the recurrence relation: <formula id="67">$ K_{n+1}(x) = K_{n-1}(x) + \frac{2n}{x}K_n(x) $</formula>, starting from the values of <formula id="68">$ K_0 $</formula> and <formula id="69">$ K_1 $</formula>.</para>
 <para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -417,11 +417,11 @@
 <parametername>xbess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The input value <formula id="18">$ x $</formula>.</para>
+<para>The input value <formula id="32">$ x $</formula>.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of <formula id="24">$ K_2(x) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="66">$ K_2(x) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>

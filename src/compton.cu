@@ -332,12 +332,10 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState * localState)
 
 __device__  double GPU_klein_nishina(const double a, const double ap)
 {
-    // Aggressive inlining and direct calculation
     const double inv_a = 1.0 / a;
     const double inv_ap = 1.0 / ap;
     const double ch = 1.0 + inv_a - inv_ap;
     return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
-	//return(fma(a, inv_ap, fma(ap, inv_a, fma(ch, ch, -1.0))) / (a * a));
 }
 
 __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState)
@@ -472,23 +470,6 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
 #define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)
 __device__ double GPU_sample_y_distr(const double Thetae, curandState * localState)
 {
-	/*
-	This function samples the electron Lorentz factor gamma_e
-	from the distribution function f(gamma_e) = (1/S_3) * sum_i pi_i f_i(gamma_e)
-	where f_i(gamma_e) is the distribution function for the i-th component of the sum
-
-	Paramaters:
-	@Thetae: dimensionless electron temperature (kbTe/mec^2)
-	@localState: curandState object for random number generation
-
-	Variables:
-	@S_3: normalization constant for the distribution function
-	@pi_i: weight for the i-th component of the distribution function
-	@prob: probability of accepting the sampled gamma_e
-	@y: sampled gamma_e
-
-	*/
-
 	double S_3, pi_3, pi_4, pi_5, pi_6, prob, y;
 	double sqrt_thetae = sqrt(Thetae);
 
@@ -531,24 +512,9 @@ __device__ double GPU_sample_y_distr(const double Thetae, curandState * localSta
 #undef SQRT_MPI
 #undef INV_SQRT_2
 
+
 __device__ double GPU_sample_mu_distr(const double beta_e, double random)
 {
-	/*
-	This function samples the cosine of the scattering angle mu
-	from the distribution function f(mu) = 1 / (2 * beta_e) * (1 - mu / beta_e)
-	where mu is the cosine of the scattering angle
-
-	Paramaters:
-	@beta_e: electron velocity in units of the speed of light
-	@localState: curandState object for random number generation
-
-	Variables:
-	@mu: cosine of the scattering angle/ mu = (1. - sqrt(det)) / beta_e;
-	@x1: random number in the range [0, 1]
-	@det: determinant of the quadratic equation// 
-
-	*/
-
 	double det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * random;
 	if (det < 0.)
 		printf("det < 0  %g\n\n", beta_e);

@@ -28,12 +28,62 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Computes the scattered photon 4-momentum after a collision with an electron. This high-level routine simulates the physical interaction between a photon and a specific electron. It handles the transition between classical Thomson scattering and quantum Klein-Nishina scattering based on the photon&apos;s energy in the electron rest frame. </para>
         </briefdescription>
         <detaileddescription>
+<para><bold>Routine</bold>:<orderedlist>
+<listitem><para><bold>Frame Shift</bold>: The incoming photon 4-momentum <formula id="0">$ k^\mu $</formula> is boosted into the electron&apos;s rest frame.</para>
+</listitem><listitem><para><bold>Regime Selection</bold>:</para>
+</listitem></orderedlist>
+<itemizedlist>
+<listitem><para>If <formula id="1">$ E&apos;_{photon} &gt; 10^{-4} m_e c^2 $</formula>: Uses <bold>Klein-Nishina</bold> sampling for energy loss and angular deflection.</para>
+</listitem><listitem><para>If <formula id="2">$ E&apos;_{photon} \le 10^{-4} m_e c^2 $</formula>: Uses <bold>Thomson</bold> sampling (elastic scattering).</para>
+</listitem></itemizedlist>
+<orderedlist>
+<listitem><para><bold>Angular Sampling</bold>: Constructs a local coordinate system aligned with the incident photon to sample the scattering angle <formula id="3">$ \theta $</formula> and azimuthal angle <formula id="4">$ \phi $</formula>.</para>
+</listitem><listitem><para><bold>Inverse Transformation</bold>: The resulting scattered momentum is boosted back from the electron rest frame to the laboratory/fluid frame.</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Incoming photon 4-momentum in the laboratory frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>4-momentum of the scattering electron. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>kp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Scattered photon 4-momentum in the laboratory frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for the current thread.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="7" column="17" declfile="src/compton.h" declline="7" declcolumn="17"/>
+        <location file="src/compton.h" line="37" column="17" declfile="src/compton.h" declline="37" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a23889b06f89c43496986015e13a60f2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -56,12 +106,42 @@
           <array>[4]</array>
         </param>
         <briefdescription>
+<para>Performs a general Lorentz boost into the frame of a given 4-velocity. </para>
         </briefdescription>
         <detaileddescription>
+<para>Transforms a 4-vector <formula id="5">$ v $</formula> from the laboratory frame into the frame moving with 4-velocity <formula id="6">$ u $</formula>. The implementation uses the general Lorentz transformation matrix to handle boosts in arbitrary directions.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>v</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input 4-vector in the laboratory frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>u</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>4-velocity of the frame to boost into (where <formula id="7">$ u^0 = \gamma $</formula>). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>vp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Resulting boosted 4-vector in the co-moving frame.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="8" column="17" declfile="src/compton.h" declline="8" declcolumn="17"/>
+        <location file="src/compton.h" line="52" column="17" declfile="src/compton.h" declline="52" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a95628da4319e226d82f6ea553afea193" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -73,12 +153,26 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples the scattering angle cosine for Thomson scattering. </para>
         </briefdescription>
         <detaileddescription>
+<para>Uses rejection sampling to pick the cosine of the scattering angle <formula id="8">$ \mu = \cos\theta $</formula> according to the Thomson differential cross-section distribution: <formula id="9">\[ \frac{dP}{d\mu} = \frac{3}{8}(1 + \mu^2) \]</formula></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for the current thread.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sampled cosine of the scattering angle <formula id="10">$ \mu $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="9" column="19" declfile="src/compton.h" declline="9" declcolumn="19"/>
+        <location file="src/compton.h" line="65" column="19" declfile="src/compton.h" declline="65" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -94,12 +188,34 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples the post-scattering photon energy using the Klein-Nishina differential cross-section. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function uses a rejection sampling algorithm to determine the scattered photon frequency <formula id="11">$ k&apos; $</formula> in the electron rest frame. The sampling occurs within the kinematically allowed range: <formula id="12">\[ \frac{k}{1+2k} \le k&apos; \le k \]</formula> where the lower bound corresponds to a head-on collision ( <formula id="13">$ \theta = \pi $</formula>) and the upper bound corresponds to no deflection ( <formula id="14">$ \theta = 0 $</formula>).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>k0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless photon frequency in the electron rest frame before scattering. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for the current thread.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sampled dimensionless photon frequency after scattering <formula id="11">$ k&apos; $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="10" column="19" declfile="src/compton.h" declline="10" declcolumn="19"/>
+        <location file="src/compton.h" line="81" column="19" declfile="src/compton.h" declline="81" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a333330464deee8831babe16f98f16648" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -115,12 +231,35 @@
           <declname>ap</declname>
         </param>
         <briefdescription>
+<para>Computes the differential Klein-Nishina cross-section for a given frequency shift. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function evaluates the probability density of a photon with dimensionless energy <formula id="15">$ a $</formula> scattering to energy <formula id="16">$ a&apos; $</formula>. It is used as the target distribution for the rejection sampling in the Klein-Nishina scattering routine.</para>
+<para>The implementation calculates: <formula id="17">\[ \frac{1}{a^2} \left( \frac{a}{a&apos;} + \frac{a&apos;}{a} - \sin^2 \theta \right) \]</formula> where the scattering angle <formula id="3">$ \theta $</formula> is implicitly determined by the Compton formula: <formula id="18">$ \cos \theta = 1 + \frac{1}{a} - \frac{1}{a&apos;} $</formula>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>a</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Initial dimensionless photon energy ( <formula id="19">$ h\nu / m_e c^2 $</formula>). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ap</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Scattered dimensionless photon energy ( <formula id="20">$ h\nu&apos; / m_e c^2 $</formula>).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the differential cross-section (unnormalized). </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="11" column="19" declfile="src/compton.h" declline="11" declcolumn="19"/>
+        <location file="src/compton.h" line="100" column="19" declfile="src/compton.h" declline="100" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -146,12 +285,58 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples the 4-momentum of a scattering electron from a thermal distribution. </para>
         </briefdescription>
         <detaileddescription>
+<para>Implements the rejection-sampling scheme described by Canfield (1987) and Wong (2022). The routine picks an electron velocity and orientation relative to the incoming photon, weighted by the frame-dependent Klein-Nishina cross-section.</para>
+<para><bold>Routine</bold>:<orderedlist>
+<listitem><para>Sample <formula id="21">$ \gamma_e $</formula> and <formula id="22">$ \beta_e $</formula> from a Maxwell-Jüttner distribution.</para>
+</listitem><listitem><para>Sample the relative angle cosine <formula id="10">$ \mu $</formula> between the photon and electron.</para>
+</listitem><listitem><para>Calculate the rest-frame photon energy <formula id="23">$ K $</formula>.</para>
+</listitem><listitem><para>Accept the candidate electron if a random variable is less than <formula id="24">$ \sigma_{KN}(K)/\sigma_T $</formula>.</para>
+</listitem><listitem><para>Construct a local orthonormal basis aligned with the photon&apos;s direction to assign the electron&apos;s spatial momentum components.</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Incoming photon 4-momentum in the local tetrad frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Sampled electron 4-momentum in the local tetrad frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="25">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="12" column="17" declfile="src/compton.h" declline="12" declcolumn="17"/>
+        <location file="src/compton.h" line="125" column="17" declfile="src/compton.h" declline="125" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a12ee38bdba5375c31513089d65642b5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -175,12 +360,51 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples the electron Lorentz factor and velocity from a thermal distribution. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function determines the energy state of a scattering electron by sampling a transformed energy variable <formula id="26">$ y $</formula> and converting it into the Lorentz factor <formula id="21">$ \gamma_e $</formula> and the dimensionless velocity <formula id="22">$ \beta_e $</formula>.</para>
+<para>The sampling is based on the Maxwell-Jüttner distribution. The transformation used is: <formula id="27">\[ \gamma_e = y^2 \Theta_e + 1 \]</formula>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="25">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gamma_e</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Pointer to store the sampled Lorentz factor <formula id="28">$ \gamma $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>beta_e</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Pointer to store the sampled dimensionless velocity <formula id="29">$ \beta = v/c $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for the current thread.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="13" column="17" declfile="src/compton.h" declline="13" declcolumn="17"/>
+        <location file="src/compton.h" line="145" column="17" declfile="src/compton.h" declline="145" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -196,12 +420,45 @@
           <declname>localState</declname>
         </param>
         <briefdescription>
+<para>Samples the auxiliary energy variable <formula id="26">$ y $</formula> for the Maxwell-Jüttner distribution. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function implements the composition-rejection algorithm described by <ulink url="https://ui.adsabs.harvard.edu/abs/1987ApJ...323..565C/abstract">Canfield et al. (1987)</ulink> to efficiently sample electron energies. It decomposes the distribution into a weighted sum of four components, each sampled from a Chi-Square distribution with varying degrees of freedom.</para>
+</listitem><listitem><para><bold>Routine</bold>:</para>
+</listitem></itemizedlist>
+<orderedlist>
+<listitem><para><bold>Weights</bold>: Calculates weights <formula id="30">$ \pi_3, \pi_4, \pi_5, \pi_6 $</formula> based on the dimensionless temperature <formula id="31">$ \Theta_e $</formula>.</para>
+</listitem><listitem><para><bold>Composition</bold>: Randomly selects one of the four components based on these weights using a uniform random variable.</para>
+</listitem><listitem><para><bold>Sampling</bold>: Samples <formula id="32">$ x $</formula> from a <formula id="33">$ \chi^2 $</formula> distribution with 3, 4, 5, or 6 degrees of freedom.</para>
+</listitem><listitem><para><bold>Transformation</bold>: Converts <formula id="32">$ x $</formula> to the auxiliary variable <formula id="34">$ y = \sqrt{x/2} $</formula>.</para>
+</listitem><listitem><para><bold>Rejection</bold>: Applies a final rejection step to correct the shape of the approximated distribution using the probability: <formula id="35">\[ P = \frac{\sqrt{1 + \frac{1}{2} \Theta_e y^2}}{1 + y \sqrt{\frac{\Theta_e}{2}}} \]</formula></para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="25">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for the current thread.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sampled auxiliary variable <formula id="26">$ y $</formula>, where <formula id="36">$ \gamma_e = y^2 \Theta_e + 1 $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="14" column="19" declfile="src/compton.h" declline="14" declcolumn="19"/>
+        <location file="src/compton.h" line="171" column="19" declfile="src/compton.h" declline="171" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1acecc256e76033d65ace1140306de801c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -217,12 +474,37 @@
           <declname>random</declname>
         </param>
         <briefdescription>
+<para>Samples the cosine of the angle between the photon and the electron. This function performs an inversion sampling of the relative orientation angle <formula id="37">$ \mu = \cos\alpha $</formula> between the incoming photon and the scattering electron. In the Monte Carlo scattering scheme, the probability of a collision is proportional to the relative velocity factor: </para>
         </briefdescription>
         <detaileddescription>
+<para><formula id="38">\[ P(\mu) \propto (1 - \beta_e \mu) \]</formula> where <formula id="39">$ \mu \in [-1, 1] $</formula>.<itemizedlist>
+<listitem><para><bold>Mathematical Derivation</bold>: The Cumulative Distribution Function (CDF) is obtained by integrating the probability: <formula id="40">\[ R = \frac{\int_{-1}^{\mu} (1 - \beta_e x) dx}{\int_{-1}^{1} (1 - \beta_e x) dx} \]</formula> Solving for <formula id="10">$ \mu $</formula> via the quadratic formula yields the implementation: <formula id="41">\[ \mu = \frac{1 - \sqrt{(1 + \beta_e)^2 - 4 \beta_e R}}{\beta_e} \]</formula></para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>beta_e</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron velocity in units of the speed of light ( <formula id="42">$ v/c $</formula>). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>random</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A uniform random number in the range [0, 1].</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sampled cosine of the relative angle <formula id="10">$ \mu $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="15" column="19" declfile="src/compton.h" declline="15" declcolumn="19"/>
+        <location file="src/compton.h" line="192" column="19" declfile="src/compton.h" declline="192" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -273,12 +555,105 @@
           <declname>photon_index</declname>
         </param>
         <briefdescription>
+<para>Manages the Compton scattering process for a superphoton on the GPU. This function handles the full scattering pipeline for a single photon indexed in a Structure of Arrays (SOA). It transforms the photon into the local fluid frame, samples a scattering electron, executes the scattering event, and updates the photon&apos;s coordinate-frame properties. </para>
         </briefdescription>
         <detaileddescription>
+<para><bold>Routine</bold>:<itemizedlist>
+<listitem><para><bold>Tetrad Construction</bold>: Builds a local orthonormal tetrad using the fluid velocity <formula id="43">$ u^\mu $</formula> and magnetic field <formula id="44">$ b^\mu $</formula>.</para>
+</listitem><listitem><para><bold>Frame Transformation</bold>: Rotates the photon 4-momentum <formula id="0">$ k^\mu $</formula> from the coordinate basis to the local tetrad basis.</para>
+</listitem><listitem><para><bold>Electron Sampling</bold>: Select a specific electron momentum from the Maxwell-Jüttner distribution.</para>
+</listitem><listitem><para><bold>Scattering</bold>: Executes the scattering selecting the scattered photon momentum.</para>
+</listitem><listitem><para><bold>Coordinate Recovery</bold>: Transforms the scattered momentum back to the global coordinate frame and updates the photon&apos;s scattering history and energy.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ph</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input photon Structure of Arrays (SOA). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>php</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output (scattered) photon Structure of Arrays (SOA). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ne</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Local electron number density. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="31">$ \Theta_e $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic field strength in cgs. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ucon</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Fluid 4-velocity <formula id="43">$ u^\mu $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Bcon</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic field 4-vector <formula id="44">$ b^\mu $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Gcov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Covariant metric tensor <formula id="45">$ g_{\mu\nu} $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>localState</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the curand RNG state for this thread. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>photon_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the photon within the SOA.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/compton.h" line="16" column="17" declfile="src/compton.h" declline="16" declcolumn="17"/>
+        <location file="src/compton.h" line="222" column="17" declfile="src/compton.h" declline="222" declcolumn="17"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -292,17 +667,30 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>COMPTON_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>COMPTON_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" kindref="member">GPU_sample_scattered_photon</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>kp[4],<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="8" refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" kindref="member">GPU_boost</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>v[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>vp[4]);</highlight></codeline>
-<codeline lineno="9" refid="compton_8h_1a95628da4319e226d82f6ea553afea193" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a95628da4319e226d82f6ea553afea193" kindref="member">GPU_sample_thomson</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="10" refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" kindref="member">GPU_sample_klein_nishina</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k0,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="11" refid="compton_8h_1a333330464deee8831babe16f98f16648" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a333330464deee8831babe16f98f16648" kindref="member">GPU_klein_nishina</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ap);</highlight></codeline>
-<codeline lineno="12" refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" kindref="member">GPU_sample_electron_distr_p</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="13" refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" kindref="member">GPU_sample_beta_distr</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*gamma_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*beta_e,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="14" refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" kindref="member">GPU_sample_y_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
-<codeline lineno="15" refid="compton_8h_1acecc256e76033d65ace1140306de801c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1acecc256e76033d65ace1140306de801c" kindref="member">GPU_sample_mu_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>beta_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>random);</highlight></codeline>
-<codeline lineno="16" refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" kindref="member">GPU_scatter_super_photon</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>php,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/>curandState<sp/>*<sp/>localState,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photon_index);</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a26a9cb9f50beaa2ef5241961931eefb4" kindref="member">GPU_sample_scattered_photon</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>kp[4],<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a23889b06f89c43496986015e13a60f2e" kindref="member">GPU_boost</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>v[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>vp[4]);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="compton_8h_1a95628da4319e226d82f6ea553afea193" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a95628da4319e226d82f6ea553afea193" kindref="member">GPU_sample_thomson</ref>(curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1ae2982bd7a9cad080026ce883ed21c3ff" kindref="member">GPU_sample_klein_nishina</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k0,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="compton_8h_1a333330464deee8831babe16f98f16648" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a333330464deee8831babe16f98f16648" kindref="member">GPU_klein_nishina</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ap);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125" refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1afda6e9c49fe8a4b909d3d8e1cde56fea" kindref="member">GPU_sample_electron_distr_p</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>k[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145" refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a12ee38bdba5375c31513089d65642b5a" kindref="member">GPU_sample_beta_distr</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*gamma_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*beta_e,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171" refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a38bb950c830af777b12de3eeb4708dcf" kindref="member">GPU_sample_y_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/>curandState<sp/>*<sp/>localState);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192" refid="compton_8h_1acecc256e76033d65ace1140306de801c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1acecc256e76033d65ace1140306de801c" kindref="member">GPU_sample_mu_distr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>beta_e,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>random);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222" refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="compton_8h_1a00d6da1ba64c514d49a9e0ab9a87936c" kindref="member">GPU_scatter_super_photon</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>php,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcon[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/>curandState<sp/>*<sp/>localState,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photon_index);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/compton.h"/>
   </compounddef>
