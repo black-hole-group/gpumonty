@@ -444,7 +444,8 @@
     <member refid="memory_8h_1abbb611fb57df8c4c4842ecbbbf9fad2a" kind="function"><name>create1DTextureObj</name></member>
   </compound>
   <compound refid="metrics_8h" kind="file"><name>metrics.h</name>
-    <member refid="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" kind="function"><name>gdet_func</name></member>
+    <member refid="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92" kind="define"><name>FIND_GCON_MATRIX_INV</name></member>
+    <member refid="metrics_8h_1add65440b63f52ea09e64f5aa0b9ec263" kind="function"><name>gdet_func</name></member>
     <member refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" kind="function"><name>LU_decompose</name></member>
     <member refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" kind="function"><name>LU_substitution</name></member>
     <member refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kind="function"><name>invert_matrix</name></member>
@@ -457,8 +458,8 @@
     <member refid="par_8h_1a5cb8590e73e060db5976f40e6fd29c3b" kind="define"><name>TYPE_DBL</name></member>
     <member refid="par_8h_1ac8135ebece7dbba8045f811da60dfbb9" kind="define"><name>TYPE_STR</name></member>
     <member refid="par_8h_1ae9d13a99d38dd6d3c6b1f3d64ce7b065" kind="function"><name>load_par_from_argv</name></member>
-    <member refid="par_8h_1a9d4c82f247597389275d8ee930803710" kind="function"><name>load_par</name></member>
-    <member refid="par_8h_1a087bdbf7ab0c39c7e992b90bac54f8e4" kind="function"><name>read_param</name></member>
+    <member refid="par_8h_1ab7727cc80912f18c64f6fd054a24df68" kind="function"><name>load_par</name></member>
+    <member refid="par_8h_1aee7b6d04308416871bd70a19e8f06482" kind="function"><name>read_param</name></member>
   </compound>
   <compound refid="radiation_8h" kind="file"><name>radiation.h</name>
     <member refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" kind="function"><name>GPU_jnu_inv</name></member>

@@ -1,0 +1,4 @@
+/* Hides the redundant 'Functions' or 'Defines' titles from Breathe */
+.breathe-sectiondef-title {
+    display: none !important;
+}

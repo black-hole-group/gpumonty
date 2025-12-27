@@ -6,10 +6,11 @@ var searchData=
   ['face2_111',['FACE2',['../config_8h.html#a5b4b42f50fd7667c7d22d8001811bc7e',1,'config.h']]],
   ['face3_112',['FACE3',['../config_8h.html#a630fdcefb04bdca66118cfd21476e8fd',1,'config.h']]],
   ['fast_5fcpy_113',['FAST_CPY',['../config_8h.html#a713a5412e462616801a01bbdc1135218',1,'config.h']]],
-  ['findphotonindex_114',['findPhotonIndex',['../utils_8h.html#a7605ab792917c4d974672e864eb507b1',1,'utils.h']]],
-  ['fitbias_115',['fitBias',['../structparams__t.html#a260d9b5b25eeb4c2a7991b2fd046bfd7',1,'params_t']]],
-  ['fitbiasns_116',['fitBiasNs',['../structparams__t.html#a0730bf84afbc99359d3b45ac08edaaea',1,'params_t']]],
-  ['four_5fpi_117',['FOUR_PI',['../constants_8h.html#ac6b39b7a27b735f3a62be33f38041985',1,'constants.h']]],
-  ['four_5fpisq_118',['FOUR_PISQ',['../constants_8h.html#af1d17d187556a6aa8f125435586d8340',1,'constants.h']]],
-  ['freephotondata_119',['freePhotonData',['../memory_8h.html#a83056eb1e471f3b418d1214300eb3626',1,'memory.h']]]
+  ['find_5fgcon_5fmatrix_5finv_114',['FIND_GCON_MATRIX_INV',['../metrics_8h.html#a48bde1aeb7eb20042a40297d9356bf92',1,'metrics.h']]],
+  ['findphotonindex_115',['findPhotonIndex',['../utils_8h.html#a7605ab792917c4d974672e864eb507b1',1,'utils.h']]],
+  ['fitbias_116',['fitBias',['../structparams__t.html#a260d9b5b25eeb4c2a7991b2fd046bfd7',1,'params_t']]],
+  ['fitbiasns_117',['fitBiasNs',['../structparams__t.html#a0730bf84afbc99359d3b45ac08edaaea',1,'params_t']]],
+  ['four_5fpi_118',['FOUR_PI',['../constants_8h.html#ac6b39b7a27b735f3a62be33f38041985',1,'constants.h']]],
+  ['four_5fpisq_119',['FOUR_PISQ',['../constants_8h.html#af1d17d187556a6aa8f125435586d8340',1,'constants.h']]],
+  ['freephotondata_120',['freePhotonData',['../memory_8h.html#a83056eb1e471f3b418d1214300eb3626',1,'memory.h']]]
 ];

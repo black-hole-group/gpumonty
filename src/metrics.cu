@@ -263,111 +263,65 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 }
 
 
-// __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
-// {
-//   invert_matrix( gcov, gcon );
-// }
 
-__host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
-{
-	int k, l;
-	#ifdef SPHERE_TEST
-	DLOOP gcon[k][l] = 0.;
-	/*Flat space in spherical coordinates for the test*/
-
-    gcon[0][0] = -1.;
-    gcon[1][1] = 1./gcov[1][1];
-    gcon[2][2] = 1./gcov[2][2];
-    gcon[3][3] = 1./gcov[3][3];
-	#else
-		double irho2;
-		double r, th;
-		double hfac;
-		double sth, cth;
-
+#if FIND_GCON_MATRIX_INV
+	__host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
+	{
+	invert_matrix( gcov, gcon );
+	}
+#else
+	__host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
+	{
+		int k, l;
+		#ifdef SPHERE_TEST
 		DLOOP gcon[k][l] = 0.;
-		bl_coord(X, &r, &th);
+		/*Flat space in spherical coordinates for the test*/
 
-	#ifdef __CUDA_ARCH__
-	double thetaslope = d_hslope;
-	#else
-	double thetaslope = hslope;
-	#endif
+		gcon[0][0] = -1.;
+		gcon[1][1] = 1./gcov[1][1];
+		gcon[2][2] = 1./gcov[2][2];
+		gcon[3][3] = 1./gcov[3][3];
+		#else
+			double irho2;
+			double r, th;
+			double hfac;
+			double sth, cth;
 
-		sth = sin(th);
-		cth = cos(th);
+			DLOOP gcon[k][l] = 0.;
+			bl_coord(X, &r, &th);
 
-		sth = fabs(sth) + SMALL;
+		#ifdef __CUDA_ARCH__
+		double thetaslope = d_hslope;
+		#else
+		double thetaslope = hslope;
+		#endif
 
-		irho2 = 1. / (r * r + BHSPIN *BHSPIN * cth * cth);
+			sth = sin(th);
+			cth = cos(th);
 
-		//transformation for Kerr-Schild -> modified Kerr-Schild 
-		hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
+			sth = fabs(sth) + SMALL;
 
-		gcon[0][0] = -1. - 2. * r * irho2;
-		gcon[0][1] = 2. * irho2;
+			irho2 = 1. / (r * r + BHSPIN *BHSPIN * cth * cth);
 
-		gcon[1][0] = gcon[0][1];
-		gcon[1][1] = irho2 * (r * (r - 2.) + BHSPIN * BHSPIN) / (r * r);
-		gcon[1][3] = BHSPIN * irho2 / r;
+			//transformation for Kerr-Schild -> modified Kerr-Schild 
+			hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
 
-		gcon[2][2] = irho2 / (hfac * hfac);
+			gcon[0][0] = -1. - 2. * r * irho2;
+			gcon[0][1] = 2. * irho2;
 
-		gcon[3][1] = gcon[1][3];
-		gcon[3][3] = irho2 / (sth * sth);
-	#endif
-}
+			gcon[1][0] = gcon[0][1];
+			gcon[1][1] = irho2 * (r * (r - 2.) + BHSPIN * BHSPIN) / (r * r);
+			gcon[1][3] = BHSPIN * irho2 / r;
 
+			gcon[2][2] = irho2 / (hfac * hfac);
+
+			gcon[3][1] = gcon[1][3];
+			gcon[3][3] = irho2 / (sth * sth);
+		#endif
+	}
+#endif
 
 #ifndef SPHERE_TEST
-
-// #define DEL (1.e-7)
-// 	__device__ void GPU_get_connection(const double X[NDIM], double conn[NDIM][NDIM][NDIM])
-// 	{
-// 	double tmp[NDIM][NDIM][NDIM];
-// 	double Xh[NDIM], Xl[NDIM];
-// 	double gcon[NDIM][NDIM];
-// 	double gcov[NDIM][NDIM];
-// 	double gh[NDIM][NDIM];
-// 	double gl[NDIM][NDIM];
-
-// 	gcov_func(X, gcov);
-// 	gcon_func(X, gcov, gcon);
-
-// 	// take partial derivatives of metric
-// 	for (int k = 0; k < NDIM; k++) {
-// 		for (int l = 0; l < NDIM; l++)   Xh[l] = X[l];
-// 		for (int l = 0; l < NDIM; l++)   Xl[l] = X[l];
-// 		Xh[k] += DEL;
-// 		Xl[k] -= DEL;
-// 		gcov_func(Xh, gh);
-// 		gcov_func(Xl, gl);
-
-// 		for (int i = 0; i < NDIM; i++){
-// 		for (int j = 0; j < NDIM; j++){
-// 			conn[i][j][k] =  (gh[i][j] - gl[i][j])/(Xh[k] - Xl[k]);
-// 		}
-// 		}
-// 	}
-
-// 	// Rearrange to find \Gamma_{ijk}
-// 	for (int i = 0; i < NDIM; i++)
-// 		for (int j = 0; j < NDIM; j++)
-// 		for (int k = 0; k < NDIM; k++)
-// 			tmp[i][j][k] =  0.5 * (conn[j][i][k] + conn[k][i][j] - conn[k][j][i]);
-
-// 	// G_{ijk} -> G^i_{jk}
-// 	for (int i = 0; i < NDIM; i++) {
-// 		for (int j = 0; j < NDIM; j++) {
-// 		for (int k = 0; k < NDIM; k++) {
-// 			conn[i][j][k] = 0.;
-// 			for (int l = 0; l < NDIM; l++) 
-// 			conn[i][j][k] += gcon[i][l]*tmp[l][j][k];
-// 		}
-// 		}
-// 	}
-// 	}
-// 	#undef DEL
 	__device__ void GPU_get_connection(const double X[4], double lconn[4][4][4])
 	{
 
@@ -514,8 +468,6 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 
 	}
 #else
-	
-
 	#define DEL (1.e-7)
 	__device__ void GPU_get_connection(const double X[NDIM], double lconn[NDIM][NDIM][NDIM])
 	{
@@ -569,6 +521,7 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
 	}
 	#undef DEL
 #endif
+
 
 __host__ __device__ void lower(double *ucon, const double Gcov[NDIM][NDIM], double *ucov)
 {

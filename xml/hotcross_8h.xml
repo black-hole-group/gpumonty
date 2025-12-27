@@ -12,12 +12,25 @@
           <type>void</type>
         </param>
         <briefdescription>
+<para>Initializes the Compton cross-section lookup table. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function prepares a 2D lookup table for the total Compton cross-section as a function of dimensionless photon frequency <formula id="2">$ w $</formula> and electron temperature <formula id="3">$ \Theta_e $</formula>.</para>
+<para><bold>Routine</bold>:<orderedlist>
+<listitem><para>Attempts to open the file specified by <computeroutput>HOTCROSS</computeroutput>.</para>
+</listitem><listitem><para>If the file is found, it loads the precomputed values into memory.</para>
+</listitem><listitem><para>If the file is missing, it triggers a numerical calculation of the table using <computeroutput><ref refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" kindref="member">total_compton_cross_num()</ref></computeroutput>.</para>
+</listitem></orderedlist>
+</para>
+<para><simplesect kind="note"><para>The table is stored in <formula id="4">$ \log_{10}-\log_{10} $</formula> space.</para>
+</simplesect>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="8" column="15" declfile="src/hotcross.h" declline="8" declcolumn="15"/>
+        <location file="src/hotcross.h" line="26" column="15" declfile="src/hotcross.h" declline="26" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -37,12 +50,49 @@
           <declname>d_table_ptr</declname>
         </param>
         <briefdescription>
+<para>Computes the total Compton cross-section via lookup table and approximations. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function selects the optimal physical regime to calculate the cross-section based on photon frequency <formula id="2">$ w $</formula> and electron temperature <formula id="3">$ \Theta_e $</formula>.</para>
+<para><bold>Routine</bold>:<orderedlist>
+<listitem><para><bold>Thomson</bold>: If <formula id="5">$ w \Theta_e &lt; 10^{-6} $</formula>, returns the Thomson cross-section.</para>
+</listitem><listitem><para><bold>Klein-Nishina</bold>: If below table temperature limits, uses analytical expressions.</para>
+</listitem><listitem><para><bold>Interpolation</bold>: If in-bounds, performs bilinear interpolation in <formula id="4">$ \log_{10}-\log_{10} $</formula> space.</para>
+</listitem><listitem><para><bold>Fallback</bold>: If out-of-bounds, triggers a direct numerical calculation.</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless photon frequency. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d_table_ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Restrict-qualified pointer to the device lookup table.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The calculated Compton cross-section. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="9" column="19" declfile="src/hotcross.h" declline="9" declcolumn="19"/>
+        <location file="src/hotcross.h" line="46" column="19" declfile="src/hotcross.h" declline="46" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -58,12 +108,34 @@
           <declname>thetae</declname>
         </param>
         <briefdescription>
+<para>Performs numerical integration of the total Compton cross-section. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function evaluates the cross-section by integrating over the electron Lorentz factor <formula id="6">$ \gamma_e $</formula> and collision angle <formula id="7">$ \mu_e $</formula>. It utilizes a double loop to sum the contributions of the electron distribution function and includes analytical shortcuts for the Thomson and Klein-Nishina limits in low-temperature regimes.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless photon frequency. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The numerically integrated cross-section normalized by <formula id="8">$ \sigma_T $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="10" column="28" declfile="src/hotcross.h" declline="10" declcolumn="28"/>
+        <location file="src/hotcross.h" line="61" column="28" declfile="src/hotcross.h" declline="61" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -79,12 +151,34 @@
           <declname>gammae</declname>
         </param>
         <briefdescription>
+<para>Calculates the normalized Maxwell-Jüttner electron distribution function. </para>
         </briefdescription>
         <detaileddescription>
+<para>Returns the number of electrons per unit Lorentz factor <formula id="6">$ \gamma_e $</formula>, normalized per unit proper electron number density. The implementation uses the modified Bessel function <formula id="9">$ K_2(1/\Theta_e) \sim \Theta_{\rm e}^2$</formula> approximation to ensure numerical stability in both relativistic and non-relativistic regimes.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="10">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gammae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron Lorentz factor <formula id="6">$ \gamma_e $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="11">$ dN/d\gamma_e $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="11" column="28" declfile="src/hotcross.h" declline="11" declcolumn="28"/>
+        <location file="src/hotcross.h" line="75" column="28" declfile="src/hotcross.h" declline="75" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -104,12 +198,42 @@
           <declname>gammae</declname>
         </param>
         <briefdescription>
+<para>Computes the Doppler-boosted Compton cross-section in the lab frame. </para>
         </briefdescription>
         <detaileddescription>
+<para>Transforms the lab-frame photon frequency <formula id="2">$ w $</formula> into the electron rest frame to evaluate the Klein-Nishina cross-section. The result is weighted by the relative interaction rate <formula id="12">$ (1 - \mu_e \beta) $</formula> to account for the beaming and relative velocity of the collision.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless photon frequency in the lab frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mue</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Cosine of the angle between photon and electron velocity. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gammae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron Lorentz factor <formula id="6">$ \gamma_e $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The effective boosted cross-section. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="12" column="28" declfile="src/hotcross.h" declline="12" declcolumn="28"/>
+        <location file="src/hotcross.h" line="91" column="28" declfile="src/hotcross.h" declline="91" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a2ca3478df49f013318abb7cf1b900163" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -121,12 +245,26 @@
           <declname>we</declname>
         </param>
         <briefdescription>
+<para>Evaluates the normalized Klein-Nishina cross-section <formula id="13">$ \sigma_{KN} / \sigma_T $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para>Computes the total cross-section for a photon with dimensionless energy <formula id="2">$ w $</formula> in the electron rest frame. For <formula id="14">$ w &lt; 10^{-3} $</formula>, it uses the expansion <formula id="15">$ 1 - 2w $</formula>. Otherwise, it calculates: <formula id="16">\[ \sigma = \frac{3}{4} \left[ \frac{2}{w^2} + \left( \frac{1}{2w} - \frac{1+w}{w^3} \right) \ln(1+2w) + \frac{1+w}{(1+2w)^2} \right] \]</formula></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>we</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless photon frequency in the electron rest frame.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The total cross-section normalized by the Thomson cross-section. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="13" column="28" declfile="src/hotcross.h" declline="13" declcolumn="28"/>
+        <location file="src/hotcross.h" line="104" column="28" declfile="src/hotcross.h" declline="104" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a13757d5d606695b244e350fc51f5aacf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -138,12 +276,28 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
+<para>Modified Bessel function of the first kind, order zero: <formula id="17">$ I_0(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para>Uses polynomial approximations and asymptotic expansions for numerical stability.</para>
+<para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xbess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input value <formula id="18">$ x $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="17">$ I_0(x) $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="14" column="28" declfile="src/hotcross.h" declline="14" declcolumn="28"/>
+        <location file="src/hotcross.h" line="117" column="28" declfile="src/hotcross.h" declline="117" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a846c30e692fa21d24737c516e70fb861" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -155,12 +309,28 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
+<para>Modified Bessel function of the first kind, order one: <formula id="19">$ I_1(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para>Implemented using polynomial fits for small <formula id="18">$ x $</formula> and asymptotic forms for large <formula id="18">$ x $</formula>.</para>
+<para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xbess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input value <formula id="18">$ x $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="19">$ I_1(x) $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="15" column="28" declfile="src/hotcross.h" declline="15" declcolumn="28"/>
+        <location file="src/hotcross.h" line="130" column="28" declfile="src/hotcross.h" declline="130" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1ab7b4137a545b9c2818d27fb8cf4a6885" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -172,12 +342,27 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
+<para>Modified Bessel function of the second kind, order zero: <formula id="20">$ K_0(x) $</formula>. Evaluated via log-polynomial approximations for <formula id="21">$ x \le 2 $</formula> and exponential-asymptotic forms for <formula id="22">$ x &gt; 2 $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xbess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input value <formula id="18">$ x $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="20">$ K_0(x) $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="16" column="28" declfile="src/hotcross.h" declline="16" declcolumn="28"/>
+        <location file="src/hotcross.h" line="142" column="28" declfile="src/hotcross.h" declline="142" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a611ee8152758385d33a555c7059553f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -189,12 +374,27 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
+<para>Modified Bessel function of the second kind, order one: <formula id="23">$ K_1(x) $</formula>. Employs rational approximations and asymptotic expansions to maintain precision across scales. </para>
         </briefdescription>
         <detaileddescription>
+<para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xbess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input value <formula id="18">$ x $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="23">$ K_1(x) $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="17" column="28" declfile="src/hotcross.h" declline="17" declcolumn="28"/>
+        <location file="src/hotcross.h" line="154" column="28" declfile="src/hotcross.h" declline="154" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="hotcross_8h_1a1edac60ad338e72a59e3ac2edda1fc37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -206,12 +406,28 @@
           <declname>xbess</declname>
         </param>
         <briefdescription>
+<para>Modified Bessel function of the second kind, order two: <formula id="24">$ K_2(x) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para>Computed using the recurrence relation: <formula id="25">$ K_{n+1}(x) = K_{n-1}(x) + \frac{2n}{x}K_n(x) $</formula>, starting from the values of <formula id="26">$ K_0 $</formula> and <formula id="27">$ K_1 $</formula>.</para>
+<para><simplesect kind="see"><para><ulink url="https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract">Numerical Recipes in C</ulink></para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>xbess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input value <formula id="18">$ x $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="24">$ K_2(x) $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/hotcross.h" line="18" column="28" declfile="src/hotcross.h" declline="18" declcolumn="28"/>
+        <location file="src/hotcross.h" line="168" column="28" declfile="src/hotcross.h" declline="168" declcolumn="28"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -226,18 +442,29 @@
 <codeline lineno="5"><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>HOTCROSS_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HOTCROSS_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8" refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" kindref="member">init_hotcross</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="9" refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" kindref="member">total_compton_cross_lkup</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
-<codeline lineno="10" refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" kindref="member">total_compton_cross_num</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>);</highlight></codeline>
-<codeline lineno="11" refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" kindref="member">dNdgammae</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>
-<codeline lineno="12" refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" kindref="member">boostcross</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mue,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>
-<codeline lineno="13" refid="hotcross_8h_1a2ca3478df49f013318abb7cf1b900163" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a2ca3478df49f013318abb7cf1b900163" kindref="member">hc_klein_nishina</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>we);</highlight></codeline>
-<codeline lineno="14" refid="hotcross_8h_1a13757d5d606695b244e350fc51f5aacf" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a13757d5d606695b244e350fc51f5aacf" kindref="member">bessi0</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
-<codeline lineno="15" refid="hotcross_8h_1a846c30e692fa21d24737c516e70fb861" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a846c30e692fa21d24737c516e70fb861" kindref="member">bessi1</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
-<codeline lineno="16" refid="hotcross_8h_1ab7b4137a545b9c2818d27fb8cf4a6885" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1ab7b4137a545b9c2818d27fb8cf4a6885" kindref="member">bessk0</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
-<codeline lineno="17" refid="hotcross_8h_1a611ee8152758385d33a555c7059553f5" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a611ee8152758385d33a555c7059553f5" kindref="member">bessk1</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
-<codeline lineno="18" refid="hotcross_8h_1a1edac60ad338e72a59e3ac2edda1fc37" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a1edac60ad338e72a59e3ac2edda1fc37" kindref="member">bessk2</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" kindref="member">init_hotcross</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a859f826ad10e384da3310b701a67ae3f" kindref="member">total_compton_cross_lkup</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1ab54b19afffd3bd0cb19e5a53d90376ac" kindref="member">total_compton_cross_num</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a0726f891560c4ac0e053ce92ec00a73d" kindref="member">dNdgammae</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1a96d86c26e48095c968a287e022017016" kindref="member">thetae</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a7d5233de4d9aa05e073a8a4a290b3f4f" kindref="member">boostcross</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="defs_8h_1ac34b583787faac6c02ad0438df077b59" kindref="member">w</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mue,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gammae);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="hotcross_8h_1a2ca3478df49f013318abb7cf1b900163" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a2ca3478df49f013318abb7cf1b900163" kindref="member">hc_klein_nishina</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>we);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="hotcross_8h_1a13757d5d606695b244e350fc51f5aacf" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a13757d5d606695b244e350fc51f5aacf" kindref="member">bessi0</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="hotcross_8h_1a846c30e692fa21d24737c516e70fb861" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a846c30e692fa21d24737c516e70fb861" kindref="member">bessi1</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142" refid="hotcross_8h_1ab7b4137a545b9c2818d27fb8cf4a6885" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1ab7b4137a545b9c2818d27fb8cf4a6885" kindref="member">bessk0</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154" refid="hotcross_8h_1a611ee8152758385d33a555c7059553f5" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a611ee8152758385d33a555c7059553f5" kindref="member">bessk1</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168" refid="hotcross_8h_1a1edac60ad338e72a59e3ac2edda1fc37" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="hotcross_8h_1a1edac60ad338e72a59e3ac2edda1fc37" kindref="member">bessk2</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xbess);</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/hotcross.h"/>
   </compounddef>

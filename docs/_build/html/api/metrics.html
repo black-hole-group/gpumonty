@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metrics.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d10b9ea1" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="par.cu" href="par.html" />
+    <link rel="prev" title="memory.cu" href="memory.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">metrics.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/metrics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="metrics-cu">
+<h1>metrics.cu<a class="headerlink" href="#metrics-cu" title="Link to this heading"></a></h1>
+<p>This section contains functions defined in the metrics.cu file related to spacetime metric calculations.</p>
+<section id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.FIND_GCON_MATRIX_INV">
+<span class="target" id="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92"></span><span class="sig-name descname"><span class="n"><span class="pre">FIND_GCON_MATRIX_INV</span></span></span><a class="headerlink" href="#c.FIND_GCON_MATRIX_INV" title="Link to this definition"></a><br /></dt>
+<dd><p>Macro to enable or disable the computation of the inverse metric using LU decomposition. </p>
+<p>if set to 1, the code will compute the inverse metric <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </p>
+</dd></dl>
+
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49gdet_funcA_A4NDIM_d">
+<span id="_CPPv39gdet_funcA_A4NDIM_d"></span><span id="_CPPv29gdet_funcA_ANDIM_d"></span><span id="gdet_func__doubleAA"></span><span class="target" id="metrics_8h_1add65440b63f52ea09e64f5aa0b9ec263"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gdet_func</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gcov</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49gdet_funcA_A4NDIM_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the square root of the absolute determinant of the metric tensor, <span class="math notranslate nohighlight">\( \sqrt{-g} \)</span>. </p>
+<p><ul class="simple">
+<li><p><strong>General Case</strong>: Uses GSL-based LU decomposition to compute the determinant of the covariant metric <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span>.</p></li>
+<li><p><strong>Simplified Case</strong>: If <code class="docutils literal notranslate"><span class="pre">SPHERE_TEST</span></code> is defined, it assumes a diagonal metric for faster computation.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gcov</strong> – The covariant metric tensor <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of <span class="math notranslate nohighlight">\( \sqrt{| \det(g_{\mu\nu}) |} \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412LU_decomposeA_A4NDIM_dA_i">
+<span id="_CPPv312LU_decomposeA_A4NDIM_dA_i"></span><span id="_CPPv212LU_decomposeA_ANDIM_dA_i"></span><span id="LU_decompose__doubleAA.iA"></span><span class="target" id="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LU_decompose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">permute</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412LU_decomposeA_A4NDIM_dA_i" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs in-place LU decomposition with partial pivoting and row-wise normalization. </p>
+<p><ul class="simple">
+<li><p>This function factorizes a square matrix <span class="math notranslate nohighlight">\( A \)</span> into a lower triangular matrix <span class="math notranslate nohighlight">\( L \)</span> and an upper triangular matrix <span class="math notranslate nohighlight">\( U \)</span> such that <span class="math notranslate nohighlight">\( PA = LU \)</span>. Then it can be used to solve linear systems or invert matrices.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The <span class="math notranslate nohighlight">\( \rm{NDIM} \times \rm{NDIM} \)</span> matrix to decompose (modified in-place). </p></li>
+<li><p><strong>permute</strong> – Array to store the row permutation indices (pivoting history).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns 0 for success, 1 if the matrix is singular. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415LU_substitutionA_A4NDIM_dA_dA_i">
+<span id="_CPPv315LU_substitutionA_A4NDIM_dA_dA_i"></span><span id="_CPPv215LU_substitutionA_ANDIM_dA_dA_i"></span><span id="LU_substitution__doubleAA.doubleA.iA"></span><span class="target" id="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LU_substitution</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">A</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">permute</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i" title="Link to this definition"></a><br /></dt>
+<dd><p>Solves a linear system <span class="math notranslate nohighlight">\( Ax = B \)</span> using forward and backward substitution. </p>
+<p><ul class="simple">
+<li><p>This function takes the results of <code class="docutils literal notranslate"><span class="pre">LU_decompose</span></code> (an in-place LU matrix and a permutation vector) and solves for the vector <span class="math notranslate nohighlight">\( B \)</span>. It is primarily used in the simulation to invert the metric tensor <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span> to find its contravariant form <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span>.</p></li>
+</ul>
+</p>
+<p><ul class="simple">
+<li><p><strong>Permutation</strong>: Swaps elements of <span class="math notranslate nohighlight">\( B \)</span> to match the partial pivoting order recorded in <code class="docutils literal notranslate"><span class="pre">permute</span></code>.</p></li>
+<li><p><strong>Forward Substitution</strong>: Solves the lower triangular system <span class="math notranslate nohighlight">\( Ly = Pb \)</span>. Since the diagonal elements of <span class="math notranslate nohighlight">\( L \)</span> are implicitly 1, no division is required.</p></li>
+<li><p><strong>Backward Substitution</strong>: Solves the upper triangular system <span class="math notranslate nohighlight">\( Ux = y \)</span>, utilizing the diagonal elements of <span class="math notranslate nohighlight">\( U \)</span> stored in <code class="docutils literal notranslate"><span class="pre">A[i][i]</span></code>.</p></li>
+<li><p></p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> – The <span class="math notranslate nohighlight">\( \rm{NDIM} \times \rm{NDIM} \)</span> LU-decomposed matrix. </p></li>
+<li><p><strong>B</strong> – The right-hand side vector (replaced by the solution vector <span class="math notranslate nohighlight">\( x \)</span> in-place). </p></li>
+<li><p><strong>permute</strong> – The permutation array generated by <code class="docutils literal notranslate"><span class="pre">LU_decompose</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d">
+<span id="_CPPv313invert_matrixA_A4NDIM_dA_A4NDIM_d"></span><span id="_CPPv213invert_matrixA_ANDIM_dA_ANDIM_d"></span><span id="invert_matrix__doubleAA.doubleAA"></span><span class="target" id="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">invert_matrix</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Am</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Aminv</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the inverse of a square matrix unifying the usage of <code class="docutils literal notranslate"><span class="pre">LU</span> <span class="pre">decomposition</span></code> and <code class="docutils literal notranslate"><span class="pre">substitution</span></code>. </p>
+<p>This function calculates the inverse of an <span class="math notranslate nohighlight">\( NDIM \times NDIM \)</span> matrix (typically the covariant metric <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span> to obtain the contravariant metric <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span>). It solves the matrix equation <span class="math notranslate nohighlight">\( A \cdot A^{-1} = I \)</span> by treating each column of the identity matrix <span class="math notranslate nohighlight">\( I \)</span> as a separate linear system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Am</strong> – The input <span class="math notranslate nohighlight">\( NDIM \times NDIM \)</span> matrix to be inverted. </p></li>
+<li><p><strong>Aminv</strong> – The output matrix where the calculated inverse is stored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 for success; 1 if the matrix is singular or contains invalid values. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d">
+<span id="_CPPv39gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"></span><span id="_CPPv29gcon_funcA4_KdA_ANDIM_dA_ANDIM_d"></span><span id="gcon_func__doubleCA.doubleAA.doubleAA"></span><span class="target" id="metrics_8h_1a2941833c93751da72ab28f1751a79a18"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gcon_func</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gcov</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gcon</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the contravariant metric tensor <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span> using either numerical inversion or analytical expressions. </p>
+<p><ul class="simple">
+<li><p>This function provides the inverse of the metric tensor at a specific 4-position <span class="math notranslate nohighlight">\( X^\mu \)</span>. It supports a toggle between a general-purpose numerical solver and optimized analytical formulas for specific spacetimes.</p></li>
+</ul>
+</p>
+<p>if <code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code> is defined:<ul class="simple">
+<li><p>Calls <code class="docutils literal notranslate"><a class="reference internal" href="#metrics_8h_1a1fdca3775727156f0598d8cc69db4af5"><span class="std std-ref"><span class="pre">invert_matrix()</span></span></a></code> to perform a full LU decomposition on <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span>. This is the most flexible method and works for any metric, but is computationally more expensive.</p></li>
+</ul>
+</p>
+<p><strong>Path B: Analytical/Hardcoded</strong> (Default):<ul class="simple">
+<li><p>SPHERE_TEST: Returns a simple diagonal inverse for flat space in spherical coordinates.</p></li>
+<li><p>Modified Kerr-Schild (MKS): Computes exact contravariant components for a rotating Kerr black hole.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – The 4-position <span class="math notranslate nohighlight">\( X^\mu \)</span> in code coordinates. </p></li>
+<li><p><strong>gcov</strong> – The covariant metric tensor <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span> (used for numerical inversion or diagonal tests). </p></li>
+<li><p><strong>gcon</strong> – Output: The calculated contravariant metric tensor <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d">
+<span id="_CPPv318GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d"></span><span id="_CPPv218GPU_get_connectionA4_KdA4_A4_A4_d"></span><span id="GPU_get_connection__doubleCA.doubleAAA"></span><span class="target" id="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GPU_get_connection</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lconn</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the Christoffel symbols (connection coefficients) <span class="math notranslate nohighlight">\( \Gamma^i_{jk} \)</span> at a given 4-position. </p>
+<p>Analytically: Computed analytically if <code class="docutils literal notranslate"><span class="pre">SPHERE_TEST</span></code> is not defined.</p>
+<p>Numerically: Computed through Finite Differences if <code class="docutils literal notranslate"><span class="pre">SPHERE_TEST</span></code> is defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – 4-position <span class="math notranslate nohighlight">\( X^\mu \)</span> in code coordinates. </p></li>
+<li><p><strong>lconn</strong> – A 3D array <code class="docutils literal notranslate"><span class="pre">[4][4][4]</span></code> populated with the connection coefficients.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45lowerPdA4NDIM_A4NDIM_KdPd">
+<span id="_CPPv35lowerPdA4NDIM_A4NDIM_KdPd"></span><span id="_CPPv25lowerPdANDIM_ANDIM_KdPd"></span><span id="lower__doubleP.doubleCAA.doubleP"></span><span class="target" id="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lower</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ucon</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Gcov</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ucov</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd" title="Link to this definition"></a><br /></dt>
+<dd><p>Lowers the index of a contravariant 4-vector to its covariant form. </p>
+<p><ul class="simple">
+<li><p>This function performs the metric mapping <span class="math notranslate nohighlight">\( u_\mu = g_{\mu\nu} u^\nu \)</span>. It effectively transforms a vector from the tangent space to the cotangent space (one-form) using the local covariant metric tensor.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ucon</strong> – Input contravariant 4-vector <span class="math notranslate nohighlight">\( u^\nu \)</span>. </p></li>
+<li><p><strong>Gcov</strong> – Input covariant metric tensor <span class="math notranslate nohighlight">\( g_{\mu\nu} \)</span>. </p></li>
+<li><p><strong>ucov</strong> – Output covariant 4-vector <span class="math notranslate nohighlight">\( u_\mu \)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="memory.html" class="btn btn-neutral float-left" title="memory.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="par.html" class="btn btn-neutral float-right" title="par.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

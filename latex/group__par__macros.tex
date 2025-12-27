@@ -1,0 +1,151 @@
+\hypertarget{group__par__macros}{}\doxysection{Parameter macros}
+\label{group__par__macros}\index{Parameter macros@{Parameter macros}}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__par__macros_ga56e5f9a95536838408fcca8f22d541b4}{TYPE\+\_\+\+INT}}~(1)
+\begin{DoxyCompactList}\small\item\em Data type definition for integer parameter reading. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__par__macros_ga5cb8590e73e060db5976f40e6fd29c3b}{TYPE\+\_\+\+DBL}}~(2)
+\begin{DoxyCompactList}\small\item\em Data type definition for double parameter reading. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__par__macros_gac8135ebece7dbba8045f811da60dfbb9}{TYPE\+\_\+\+STR}}~(3)
+\begin{DoxyCompactList}\small\item\em Data type definition for string parameter reading. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{group__par__macros_gae9d13a99d38dd6d3c6b1f3d64ce7b065}{load\+\_\+par\+\_\+from\+\_\+argv}} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} $\ast$\mbox{\hyperlink{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}})
+\begin{DoxyCompactList}\small\item\em Initializes simulation parameters with default values and parses command-\/line arguments. \end{DoxyCompactList}\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{group__par__macros_gab7727cc80912f18c64f6fd054a24df68}{load\+\_\+par}} (const char $\ast$fname, \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} $\ast$\mbox{\hyperlink{defs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}})
+\begin{DoxyCompactList}\small\item\em Parses the simulation parameter file and generates a formatted initialization report. \end{DoxyCompactList}\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{group__par__macros_gaee7b6d04308416871bd70a19e8f06482}{read\+\_\+param}} (const char $\ast$line, const char $\ast$key, void $\ast$val, int type)
+\begin{DoxyCompactList}\small\item\em Reads a single parameter from the input file and assigns it to the provided variable. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{group__par__macros_ga5cb8590e73e060db5976f40e6fd29c3b}\label{group__par__macros_ga5cb8590e73e060db5976f40e6fd29c3b}} 
+\index{Parameter macros@{Parameter macros}!TYPE\_DBL@{TYPE\_DBL}}
+\index{TYPE\_DBL@{TYPE\_DBL}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{TYPE\_DBL}{TYPE\_DBL}}
+{\footnotesize\ttfamily \#define TYPE\+\_\+\+DBL~(2)}
+
+
+
+Data type definition for double parameter reading. 
+
+\mbox{\Hypertarget{group__par__macros_ga56e5f9a95536838408fcca8f22d541b4}\label{group__par__macros_ga56e5f9a95536838408fcca8f22d541b4}} 
+\index{Parameter macros@{Parameter macros}!TYPE\_INT@{TYPE\_INT}}
+\index{TYPE\_INT@{TYPE\_INT}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{TYPE\_INT}{TYPE\_INT}}
+{\footnotesize\ttfamily \#define TYPE\+\_\+\+INT~(1)}
+
+
+
+Data type definition for integer parameter reading. 
+
+\mbox{\Hypertarget{group__par__macros_gac8135ebece7dbba8045f811da60dfbb9}\label{group__par__macros_gac8135ebece7dbba8045f811da60dfbb9}} 
+\index{Parameter macros@{Parameter macros}!TYPE\_STR@{TYPE\_STR}}
+\index{TYPE\_STR@{TYPE\_STR}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{TYPE\_STR}{TYPE\_STR}}
+{\footnotesize\ttfamily \#define TYPE\+\_\+\+STR~(3)}
+
+
+
+Data type definition for string parameter reading. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{group__par__macros_gab7727cc80912f18c64f6fd054a24df68}\label{group__par__macros_gab7727cc80912f18c64f6fd054a24df68}} 
+\index{Parameter macros@{Parameter macros}!load\_par@{load\_par}}
+\index{load\_par@{load\_par}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{load\_par()}{load\_par()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void load\+\_\+par (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fname,  }\item[{\mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} $\ast$}]{params }\end{DoxyParamCaption})}
+
+
+
+Parses the simulation parameter file and generates a formatted initialization report. 
+
+
+\begin{DoxyItemize}
+\item {\bfseries{File Parsing}}\+: Scans for keywords defined in the Params structure and reads their corresponding values.
+\item {\bfseries{Validation Report}}\+: Outputs a color-\/coded terminal summary (using ANSI escape codes) to inform the user which parameters were successfully loaded from the file ({\ttfamily \mbox{[}SET\mbox{]}}) and which are falling back to hardcoded defaults ({\ttfamily \mbox{[}MISSING\mbox{]}}).
+\item {\bfseries{Status Flag}}\+: Sets {\ttfamily params-\/$>$loaded = 1} upon completion to signal that the simulation environment is ready. 
+\begin{DoxyParams}{Parameters}
+{\em fname} & Path to the input parameter file. \\
+\hline
+{\em params} & Pointer to the global {\ttfamily Params} structure to be populated.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+\end{DoxyItemize}\mbox{\Hypertarget{group__par__macros_gae9d13a99d38dd6d3c6b1f3d64ce7b065}\label{group__par__macros_gae9d13a99d38dd6d3c6b1f3d64ce7b065}} 
+\index{Parameter macros@{Parameter macros}!load\_par\_from\_argv@{load\_par\_from\_argv}}
+\index{load\_par\_from\_argv@{load\_par\_from\_argv}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{load\_par\_from\_argv()}{load\_par\_from\_argv()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void load\+\_\+par\+\_\+from\+\_\+argv (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]},  }\item[{\mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} $\ast$}]{params }\end{DoxyParamCaption})}
+
+
+
+Initializes simulation parameters with default values and parses command-\/line arguments. 
+
+This function sets up the initial environment for the Monte Carlo simulation.
+
+{\bfseries{Default Parameter Values\+:}}
+\begin{DoxyItemize}
+\item {\bfseries{seed}}\+: If not specified, the random seed is set to -\/1, which triggers time-\/based seeding for randomness.
+\item {\bfseries{bias\+Tuning}}\+: Default bias tuning factor is set to 1.\+0. BIAS TUNING STILL NOT IMPLEMENTED.
+\item {\bfseries{fit\+Bias}}\+: Default fitting bias factor is set to 1.\+0. FITTING BIAS STILL NOT IMPLEMENTED.
+\item {\bfseries{fit\+Bias\+Ns}}\+: Scale input number of superphotons generated in each zone. Default is 1.\+0 (no scaling). FITTING BIAS STILL NOT IMPLEMENTED.
+\item {\bfseries{tp\+\_\+over\+\_\+te}}\+: Sets the default proton-\/to-\/electron temperature ratio $ T_p/T_e $ for the simulation. Default is 3.\+0.
+\item {\bfseries{beta\+\_\+crit}}\+: Sets the default critical plasma beta $ \beta_{\rm crit} $ for R-\/low/\+R-\/high models. Default is 1.\+0.
+\item {\bfseries{trat\+\_\+small}}\+: Sets the minimum proton-\/to-\/electron temperature ratio $ T_p/T_e $ for R-\/low/\+R-\/high models. Default is 1.\+0.
+\item {\bfseries{trat\+\_\+large}}\+: Sets the maximum proton-\/to-\/electron temperature ratio $ T_p/T_e $ for R-\/low/\+R-\/high models. Default is 10.\+0.
+\item {\bfseries{Thetae\+\_\+max}}\+: Sets the maximum electron temperature $ \Theta_e $ for R-\/low/\+R-\/high models. Default is $ 10^{100} $.
+\item {\bfseries{Black Hole Mass}}\+: Defaults to $ 4.1 \times 10^6 M_\odot $ (Sgr A$\ast$).
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+R-\/high and R-\/low models are only applied to iharm\+\_\+model simulations.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Number of command-\/line arguments. \\
+\hline
+{\em argv} & Array of command-\/line argument strings. \\
+\hline
+{\em params} & Pointer to the global {\ttfamily Params} structure to be populated.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{group__par__macros_gaee7b6d04308416871bd70a19e8f06482}\label{group__par__macros_gaee7b6d04308416871bd70a19e8f06482}} 
+\index{Parameter macros@{Parameter macros}!read\_param@{read\_param}}
+\index{read\_param@{read\_param}!Parameter macros@{Parameter macros}}
+\doxysubsubsection{\texorpdfstring{read\_param()}{read\_param()}}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void read\+\_\+param (\begin{DoxyParamCaption}\item[{const char $\ast$}]{line,  }\item[{const char $\ast$}]{key,  }\item[{void $\ast$}]{val,  }\item[{int}]{type }\end{DoxyParamCaption})}
+
+
+
+Reads a single parameter from the input file and assigns it to the provided variable. 
+
+This function supports reading integer, double, and string parameters based on the specified type.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fname} & Path to the input parameter file. \\
+\hline
+{\em parname} & Name of the parameter to read. \\
+\hline
+{\em var} & Pointer to the variable where the read value will be stored. \\
+\hline
+{\em type} & Data type of the parameter (TYPE\+\_\+\+INT, TYPE\+\_\+\+DBL, TYPE\+\_\+\+STR).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}

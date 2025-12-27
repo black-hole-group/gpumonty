@@ -1,23 +1,41 @@
 \hypertarget{metrics_8h}{}\doxysection{src/metrics.h File Reference}
 \label{metrics_8h}\index{src/metrics.h@{src/metrics.h}}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{metrics_8h_a48bde1aeb7eb20042a40297d9356bf92}{FIND\+\_\+\+GCON\+\_\+\+MATRIX\+\_\+\+INV}}~(0)
+\begin{DoxyCompactList}\small\item\em Macro to enable or disable the computation of the inverse metric using LU decomposition. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-double \mbox{\hyperlink{metrics_8h_a45c52226b556bfdefcc172ece54db11c}{gdet\+\_\+func}} (double gcov\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
-\item 
+\+\_\+\+\_\+host\+\_\+\+\_\+ double \mbox{\hyperlink{metrics_8h_add65440b63f52ea09e64f5aa0b9ec263}{gdet\+\_\+func}} (double gcov\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
+\begin{DoxyCompactList}\small\item\em Calculates the square root of the absolute determinant of the metric tensor, $ \sqrt{-g} $. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}{LU\+\_\+decompose}} (double A\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, int permute\mbox{[}$\,$\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Performs in-\/place LU decomposition with partial pivoting and row-\/wise normalization. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}{LU\+\_\+substitution}} (double A\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double B\mbox{[}$\,$\mbox{]}, int permute\mbox{[}$\,$\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Solves a linear system $ Ax = B $ using forward and backward substitution. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}{invert\+\_\+matrix}} (double Am\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double Aminv\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the inverse of a square matrix unifying the usage of {\ttfamily LU decomposition} and {\ttfamily substitution}. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_a2941833c93751da72ab28f1751a79a18}{gcon\+\_\+func}} (const double X\mbox{[}4\mbox{]}, double gcov\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double gcon\mbox{[}$\,$\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the contravariant metric tensor $ g^{\mu\nu} $ using either numerical inversion or analytical expressions. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}{GPU\+\_\+get\+\_\+connection}} (const double X\mbox{[}4\mbox{]}, double lconn\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}\mbox{[}4\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the Christoffel symbols (connection coefficients) $ \Gamma^i_{jk} $ at a given 4-\/position. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void \mbox{\hyperlink{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}{lower}} (double $\ast$\mbox{\hyperlink{defs_8h_acca984f3768575908e2e0dd2f22cbb95}{ucon}}, const double Gcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, double $\ast$\mbox{\hyperlink{defs_8h_a7a49aa3585420e73246460b8ab0a4ca7}{ucov}})
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Lowers the index of a contravariant 4-\/vector to its covariant form. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{metrics_8h_a48bde1aeb7eb20042a40297d9356bf92}\label{metrics_8h_a48bde1aeb7eb20042a40297d9356bf92}} 
+\index{metrics.h@{metrics.h}!FIND\_GCON\_MATRIX\_INV@{FIND\_GCON\_MATRIX\_INV}}
+\index{FIND\_GCON\_MATRIX\_INV@{FIND\_GCON\_MATRIX\_INV}!metrics.h@{metrics.h}}
+\doxysubsubsection{\texorpdfstring{FIND\_GCON\_MATRIX\_INV}{FIND\_GCON\_MATRIX\_INV}}
+{\footnotesize\ttfamily \#define FIND\+\_\+\+GCON\+\_\+\+MATRIX\+\_\+\+INV~(0)}
+
+
+
+Macro to enable or disable the computation of the inverse metric using LU decomposition. 
+
+if set to 1, the code will compute the inverse metric $ g^{\mu\nu} $ through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. 
 
 \doxysubsection{Function Documentation}
 \mbox{\Hypertarget{metrics_8h_a2941833c93751da72ab28f1751a79a18}\label{metrics_8h_a2941833c93751da72ab28f1751a79a18}} 
@@ -26,39 +44,191 @@ double \mbox{\hyperlink{metrics_8h_a45c52226b556bfdefcc172ece54db11c}{gdet\+\_\+
 \doxysubsubsection{\texorpdfstring{gcon\_func()}{gcon\_func()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void gcon\+\_\+func (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}4\mbox{]},  }\item[{double}]{gcov\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{gcon\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{metrics_8h_a45c52226b556bfdefcc172ece54db11c}\label{metrics_8h_a45c52226b556bfdefcc172ece54db11c}} 
+
+
+Computes the contravariant metric tensor $ g^{\mu\nu} $ using either numerical inversion or analytical expressions. 
+
+
+\begin{DoxyItemize}
+\item This function provides the inverse of the metric tensor at a specific 4-\/position $ X^\mu $. It supports a toggle between a general-\/purpose numerical solver and optimized analytical formulas for specific spacetimes.
+\end{DoxyItemize}
+
+if {\ttfamily FIND\+\_\+\+GCON\+\_\+\+MATRIX\+\_\+\+INV} is defined\+:
+\begin{DoxyItemize}
+\item Calls {\ttfamily \mbox{\hyperlink{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}{invert\+\_\+matrix()}}} to perform a full LU decomposition on $ g_{\mu\nu} $. This is the most flexible method and works for any metric, but is computationally more expensive.
+\end{DoxyItemize}
+
+{\bfseries{Path B\+: Analytical/\+Hardcoded}} (Default)\+:
+\begin{DoxyItemize}
+\item SPHERE\+\_\+\+TEST\+: Returns a simple diagonal inverse for flat space in spherical coordinates.
+\item Modified Kerr-\/\+Schild (MKS)\+: Computes exact contravariant components for a rotating Kerr black hole.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & The 4-\/position $ X^\mu $ in code coordinates. \\
+\hline
+{\em gcov} & The covariant metric tensor $ g_{\mu\nu} $ (used for numerical inversion or diagonal tests). \\
+\hline
+{\em gcon} & Output\+: The calculated contravariant metric tensor $ g^{\mu\nu} $.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{metrics_8h_add65440b63f52ea09e64f5aa0b9ec263}\label{metrics_8h_add65440b63f52ea09e64f5aa0b9ec263}} 
 \index{metrics.h@{metrics.h}!gdet\_func@{gdet\_func}}
 \index{gdet\_func@{gdet\_func}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{gdet\_func()}{gdet\_func()}}
-{\footnotesize\ttfamily double gdet\+\_\+func (\begin{DoxyParamCaption}\item[{double}]{gcov\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ double gdet\+\_\+func (\begin{DoxyParamCaption}\item[{double}]{gcov\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Calculates the square root of the absolute determinant of the metric tensor, $ \sqrt{-g} $. 
+
+
+\begin{DoxyItemize}
+\item {\bfseries{General Case}}\+: Uses GSL-\/based LU decomposition to compute the determinant of the covariant metric $ g_{\mu\nu} $.
+\item {\bfseries{Simplified Case}}\+: If {\ttfamily SPHERE\+\_\+\+TEST} is defined, it assumes a diagonal metric for faster computation.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em gcov} & The covariant metric tensor $ g_{\mu\nu} $.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value of $ \sqrt{| \det(g_{\mu\nu}) |} $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}\label{metrics_8h_a2142cb8955a0f488f5c7f1925e10d472}} 
 \index{metrics.h@{metrics.h}!GPU\_get\_connection@{GPU\_get\_connection}}
 \index{GPU\_get\_connection@{GPU\_get\_connection}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_get\_connection()}{GPU\_get\_connection()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ void GPU\+\_\+get\+\_\+connection (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}4\mbox{]},  }\item[{double}]{lconn\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}\mbox{[}4\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Computes the Christoffel symbols (connection coefficients) $ \Gamma^i_{jk} $ at a given 4-\/position. 
+
+Analytically\+: Computed analytically if {\ttfamily SPHERE\+\_\+\+TEST} is not defined.
+
+Numerically\+: Computed through Finite Differences if {\ttfamily SPHERE\+\_\+\+TEST} is defined.
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & 4-\/position $ X^\mu $ in code coordinates. \\
+\hline
+{\em lconn} & A 3D array {\ttfamily \mbox{[}4\mbox{]}\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}} populated with the connection coefficients.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}\label{metrics_8h_a1fdca3775727156f0598d8cc69db4af5}} 
 \index{metrics.h@{metrics.h}!invert\_matrix@{invert\_matrix}}
 \index{invert\_matrix@{invert\_matrix}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{invert\_matrix()}{invert\_matrix()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int invert\+\_\+matrix (\begin{DoxyParamCaption}\item[{double}]{Am\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{Aminv\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Computes the inverse of a square matrix unifying the usage of {\ttfamily LU decomposition} and {\ttfamily substitution}. 
+
+This function calculates the inverse of an $ NDIM \times NDIM $ matrix (typically the covariant metric $ g_{\mu\nu} $ to obtain the contravariant metric $ g^{\mu\nu} $). It solves the matrix equation $ A \cdot A^{-1} = I $ by treating each column of the identity matrix $ I $ as a separate linear system.
+
+
+\begin{DoxyParams}{Parameters}
+{\em Am} & The input $ NDIM \times NDIM $ matrix to be inverted. \\
+\hline
+{\em Aminv} & The output matrix where the calculated inverse is stored.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 for success; 1 if the matrix is singular or contains invalid values. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}\label{metrics_8h_aa72bd3b4880cd5b18656774a25d3d8e2}} 
 \index{metrics.h@{metrics.h}!lower@{lower}}
 \index{lower@{lower}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{lower()}{lower()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void lower (\begin{DoxyParamCaption}\item[{double $\ast$}]{ucon,  }\item[{const double}]{Gcov\mbox{[}\+NDIM\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double $\ast$}]{ucov }\end{DoxyParamCaption})}
 
+
+
+Lowers the index of a contravariant 4-\/vector to its covariant form. 
+
+
+\begin{DoxyItemize}
+\item This function performs the metric mapping $ u_\mu = g_{\mu\nu} u^\nu $. It effectively transforms a vector from the tangent space to the cotangent space (one-\/form) using the local covariant metric tensor.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em ucon} & Input contravariant 4-\/vector $ u^\nu $. \\
+\hline
+{\em Gcov} & Input covariant metric tensor $ g_{\mu\nu} $. \\
+\hline
+{\em ucov} & Output covariant 4-\/vector $ u_\mu $.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
 \mbox{\Hypertarget{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}\label{metrics_8h_ad3d52742591c0c9fbdf0959d07e19974}} 
 \index{metrics.h@{metrics.h}!LU\_decompose@{LU\_decompose}}
 \index{LU\_decompose@{LU\_decompose}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{LU\_decompose()}{LU\_decompose()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int LU\+\_\+decompose (\begin{DoxyParamCaption}\item[{double}]{A\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{int}]{permute\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Performs in-\/place LU decomposition with partial pivoting and row-\/wise normalization. 
+
+
+\begin{DoxyItemize}
+\item This function factorizes a square matrix $ A $ into a lower triangular matrix $ L $ and an upper triangular matrix $ U $ such that $ PA = LU $. Then it can be used to solve linear systems or invert matrices.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The $ \rm{NDIM} \times \rm{NDIM} $ matrix to decompose (modified in-\/place). \\
+\hline
+{\em permute} & Array to store the row permutation indices (pivoting history).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns 0 for success, 1 if the matrix is singular. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}\label{metrics_8h_adb2e93643000bcf3828a39b0d3a1f5f8}} 
 \index{metrics.h@{metrics.h}!LU\_substitution@{LU\_substitution}}
 \index{LU\_substitution@{LU\_substitution}!metrics.h@{metrics.h}}
 \doxysubsubsection{\texorpdfstring{LU\_substitution()}{LU\_substitution()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ void LU\+\_\+substitution (\begin{DoxyParamCaption}\item[{double}]{A\mbox{[}$\,$\mbox{]}\mbox{[}\+NDIM\mbox{]},  }\item[{double}]{B\mbox{[}$\,$\mbox{]},  }\item[{int}]{permute\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Solves a linear system $ Ax = B $ using forward and backward substitution. 
+
+
+\begin{DoxyItemize}
+\item This function takes the results of {\ttfamily LU\+\_\+decompose} (an in-\/place LU matrix and a permutation vector) and solves for the vector $ B $. It is primarily used in the simulation to invert the metric tensor $ g_{\mu\nu} $ to find its contravariant form $ g^{\mu\nu} $.
+\end{DoxyItemize}
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Permutation}}\+: Swaps elements of $ B $ to match the partial pivoting order recorded in {\ttfamily permute}.
+\item {\bfseries{Forward Substitution}}\+: Solves the lower triangular system $ Ly = Pb $. Since the diagonal elements of $ L $ are implicitly 1, no division is required.
+\item {\bfseries{Backward Substitution}}\+: Solves the upper triangular system $ Ux = y $, utilizing the diagonal elements of $ U $ stored in {\ttfamily A\mbox{[}i\mbox{]}\mbox{[}i\mbox{]}}.
+\item 
+\begin{DoxyParams}{Parameters}
+{\em A} & The $ \rm{NDIM} \times \rm{NDIM} $ LU-\/decomposed matrix. \\
+\hline
+{\em B} & The right-\/hand side vector (replaced by the solution vector $ x $ in-\/place). \\
+\hline
+{\em permute} & The permutation array generated by {\ttfamily LU\+\_\+decompose}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+
+\end{DoxyItemize}

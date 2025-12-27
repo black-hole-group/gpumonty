@@ -40,3 +40,9 @@ This documentation site is provided as a reference for the **function specifics*
    :hidden:
 
    documentation
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   quick_start

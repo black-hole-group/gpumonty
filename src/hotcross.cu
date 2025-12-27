@@ -222,15 +222,13 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae)
 	return (cross * SIGMA_THOMSON);
 }
 
-/* normalized (per unit proper electron number density)
-   electron distribution */
+
 __host__ __device__ double dNdgammae(double thetae, double gammae)
 {
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		//K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
-		K2f = bessk2(1. / thetae) * exp(1. / thetae); /*TODO: Check if this function is working correctly*/
+		K2f = bessk2(1. / thetae) * exp(1. / thetae);
 	} else {
 		K2f = sqrt(M_PI * thetae / 2.);
 	}
@@ -238,6 +236,8 @@ __host__ __device__ double dNdgammae(double thetae, double gammae)
 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
 		exp(-(gammae - 1.) / thetae));
 }
+
+
 __host__ __device__ double boostcross(double w, double mue, double gammae)
 {
 	double we, boostcross, v;

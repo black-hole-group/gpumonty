@@ -62,3 +62,8 @@ html_theme_options = {
     # and not every single sub-function until you click.
     'titles_only': False 
 }
+
+html_static_path = ['_static']
+html_css_files = [
+    'custom.css',
+]

@@ -4,6 +4,9 @@ Declaration of the functions used in weights.cu file
 
 #ifndef WEIGHTS_H
 #define WEIGHTS_H
+
+
+
 /**
  * @brief Precomputes the superphoton weight table based on the total integrated emissivity of the fluid.
  * This function evaluates the volume integral of the emissivity function $j_\nu$ across the entire 

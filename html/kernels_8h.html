@@ -162,18 +162,18 @@ Functions</h2></td></tr>
 <ul>
 <li>Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.</li>
 <li>Calls GPU_init_zone to initialize the photon generation for each zone in the simulation grid.</li>
-<li>The loop follows a <b>grid-stride pattern</b> to ensure all zones are covered. Each thread <img class="formulaInl" alt="$ n $" src="form_24.png"/> processes a sequence of zones defined by: <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]" src="form_25.png"/>
+<li>The loop follows a <b>grid-stride pattern</b> to ensure all zones are covered. Each thread <img class="formulaInl" alt="$ n $" src="form_49.png"/> processes a sequence of zones defined by: <p class="formulaDsp">
+<img class="formulaDsp" alt="\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]" src="form_50.png"/>
 </p>
- where <img class="formulaInl" alt="$ {\rm i_n}$" src="form_26.png"/> is the current zone <img class="formulaInl" alt="$ \rm i $" src="form_27.png"/> that thread <img class="formulaInl" alt="$ \rm n $" src="form_28.png"/> is analyzing, <img class="formulaInl" alt="$ n $" src="form_24.png"/> is the global thread ID, <img class="formulaInl" alt="$ N_{\text{total}} $" src="form_29.png"/> is the total number of threads in the grid, and <img class="formulaInl" alt="$ k \in \{0, 1, 2, \dots\} $" src="form_30.png"/>.</li>
+ where <img class="formulaInl" alt="$ {\rm i_n}$" src="form_51.png"/> is the current zone <img class="formulaInl" alt="$ \rm i $" src="form_52.png"/> that thread <img class="formulaInl" alt="$ \rm n $" src="form_53.png"/> is analyzing, <img class="formulaInl" alt="$ n $" src="form_49.png"/> is the global thread ID, <img class="formulaInl" alt="$ N_{\text{total}} $" src="form_54.png"/> is the total number of threads in the grid, and <img class="formulaInl" alt="$ k \in \{0, 1, 2, \dots\} $" src="form_55.png"/>.</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_31.png"/> . </td></tr>
+    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_56.png"/> . </td></tr>
     <tr><td class="paramname">d_p</td><td>Pointer to the device array containing the plasma parameters of the simulation. </td></tr>
     <tr><td class="paramname">time</td><td>Current time used to seed the random number generator for photon generation. </td></tr>
     <tr><td class="paramname">generated_photons_arr</td><td>Pointer to the device array that will store the number of photons generated per zone. </td></tr>
-    <tr><td class="paramname">dnmax_arr</td><td>Pointer to the device array that will store the maximum value of <img class="formulaInl" alt="$ \frac{dN}{d\ln\nu} $" src="form_32.png"/> per zone. </td></tr>
+    <tr><td class="paramname">dnmax_arr</td><td>Pointer to the device array that will store the maximum value of <img class="formulaInl" alt="$ \frac{dN}{d\ln\nu} $" src="form_57.png"/> per zone. </td></tr>
     <tr><td class="paramname">besselTexObj</td><td>CUDA texture object for Bessel function lookups. </td></tr>
   </table>
   </dd>
@@ -258,14 +258,14 @@ Functions</h2></td></tr>
 
 <p>Initializes the photon generation parameters for a specific grid zone. </p>
 <ul>
-<li>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <img class="formulaInl" alt="$(i, j, k)$" src="form_33.png"/> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</li>
+<li>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <img class="formulaInl" alt="$(i, j, k)$" src="form_58.png"/> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</li>
 </ul>
-<p>The expected number of superphotons <img class="formulaInl" alt="$ N_{s,i} $" src="form_34.png"/> in zone <img class="formulaInl" alt="$ i $" src="form_35.png"/> is governed by: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]" src="form_36.png"/>
+<p>The expected number of superphotons <img class="formulaInl" alt="$ N_{s,i} $" src="form_59.png"/> in zone <img class="formulaInl" alt="$ i $" src="form_60.png"/> is governed by: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]" src="form_61.png"/>
 </p>
-<p> where <img class="formulaInl" alt="$ \sqrt{-g} $" src="form_37.png"/> is the metric determinant, <img class="formulaInl" alt="$ j_\nu $" src="form_3.png"/> is the emissivity, and <img class="formulaInl" alt="$ \omega $" src="form_38.png"/> is the superphoton weight.</p>
-<p>The final number of superphotons <img class="formulaInl" alt="$ n_{2gen} $" src="form_39.png"/> is determined stochastically to handle the fractional part of the expected count <img class="formulaInl" alt="$ n_z $" src="form_40.png"/>: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]" src="form_41.png"/>
+<p> where <img class="formulaInl" alt="$ \sqrt{-g} $" src="form_62.png"/> is the metric determinant, <img class="formulaInl" alt="$ j_\nu $" src="form_29.png"/> is the emissivity, and <img class="formulaInl" alt="$ \omega $" src="form_63.png"/> is the superphoton weight.</p>
+<p>The final number of superphotons <img class="formulaInl" alt="$ n_{2gen} $" src="form_64.png"/> is determined stochastically to handle the fractional part of the expected count <img class="formulaInl" alt="$ n_z $" src="form_65.png"/>: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]" src="form_66.png"/>
 </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -273,12 +273,12 @@ Functions</h2></td></tr>
     <tr><td class="paramname">j</td><td>Poloidal grid index. </td></tr>
     <tr><td class="paramname">k</td><td>Azimuthal grid index. </td></tr>
     <tr><td class="paramname">n2gen</td><td>Pointer to store the integer number of superphotons to be generated. </td></tr>
-    <tr><td class="paramname">dnmax</td><td>Pointer to store the maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_42.png"/>, required for subsequent rejection sampling. </td></tr>
-    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_31.png"/> . </td></tr>
+    <tr><td class="paramname">dnmax</td><td>Pointer to store the maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_67.png"/>, required for subsequent rejection sampling. </td></tr>
+    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_56.png"/> . </td></tr>
     <tr><td class="paramname">d_p</td><td>Pointer to the device simulation plasma properties. </td></tr>
     <tr><td class="paramname">d_Ns_par</td><td>Target superphoton count parameter. </td></tr>
     <tr><td class="paramname">localState</td><td>Pointer to the curandState for the current thread. </td></tr>
-    <tr><td class="paramname">besselTexObj</td><td>Texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_17.png"/> lookups. </td></tr>
+    <tr><td class="paramname">besselTexObj</td><td>Texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_43.png"/> lookups. </td></tr>
   </table>
   </dd>
 </dl>
@@ -471,19 +471,19 @@ Functions</h2></td></tr>
 <p>Samples superphoton properties for the current batch using dynamic workload allocation. </p>
 <ul>
 <li>This kernel performs the rejection sampling and initial coordinate assignment for superphotons. Unlike a standard grid-stride pattern where thread work is predetermined by ID, this kernel utilizes a <b>dynamic workload allocation</b> strategy since some zones may generate significantly more superphotons than others, leading to extreme load imbalance. To mitigate this, threads fetch work dynamically using an atomic counter. This ensures that as soon as a thread finishes sampling a photon, it immediately pulls the next available index, keeping GPU execution units saturated regardless of the variation in workload per zone.</li>
-<li>The kernel maps the superphoton to the grid zone that generated it <img class="formulaInl" alt="$ (i, j, k) $" src="form_43.png"/> by performing a binary search on the cumulative distribution array <code>index_to_ijk</code>. Once the <code>zone_index</code> is retrieved, it is decomposed into 3D grid coordinates:</li>
+<li>The kernel maps the superphoton to the grid zone that generated it <img class="formulaInl" alt="$ (i, j, k) $" src="form_68.png"/> by performing a binary search on the cumulative distribution array <code>index_to_ijk</code>. Once the <code>zone_index</code> is retrieved, it is decomposed into 3D grid coordinates:</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ph_init</td><td>The Structure of Arrays (SoA) where sampled photon data is stored. </td></tr>
-    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_31.png"/> . </td></tr>
+    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_56.png"/> . </td></tr>
     <tr><td class="paramname">d_p</td><td>Pointer to the device simulation plasma properties. </td></tr>
     <tr><td class="paramname">generated_photons_arr</td><td>Array containing the number of photons to be generated per zone. </td></tr>
-    <tr><td class="paramname">dnmax_arr</td><td>The maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_42.png"/> for each zone, used for rejection sampling. </td></tr>
+    <tr><td class="paramname">dnmax_arr</td><td>The maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_67.png"/> for each zone, used for rejection sampling. </td></tr>
     <tr><td class="paramname">max_partition_ph</td><td>The maximum number of photons assigned to this batch. </td></tr>
     <tr><td class="paramname">photons_processed_sofar</td><td>Offset for the current batch relative to the total simulation count. </td></tr>
     <tr><td class="paramname">index_to_ijk</td><td>Cumulative sum array mapping global photon indices to zone indices. </td></tr>
-    <tr><td class="paramname">besselTexObj</td><td>Texture object for Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_17.png"/> lookups. </td></tr>
+    <tr><td class="paramname">besselTexObj</td><td>Texture object for Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_43.png"/> lookups. </td></tr>
   </table>
   </dd>
 </dl>
@@ -585,23 +585,23 @@ Functions</h2></td></tr>
 
 <p>Samples the physical properties of a single superphoton within a zone. </p>
 <p>It uses a series of rejection sampling loops to determine the frequency and angular distribution of emission, then transforms the resulting momentum vector from the local fluid tetrad into the global coordinate frame.</p>
-<p><b>Frequency Sampling</b>: The photon frequency <img class="formulaInl" alt="$ \nu $" src="form_10.png"/> is sampled using rejection sampling over the range <img class="formulaInl" alt="$ [\nu_{min}, \nu_{max}] $" src="form_44.png"/>. The selection is weighted by the local distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_42.png"/>:</p>
-<p><b>Angular Distribution</b>: The polar angle <img class="formulaInl" alt="$ \theta $" src="form_14.png"/> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <img class="formulaInl" alt="$ j_\nu(\theta) $" src="form_45.png"/>. A second rejection sampling loop ensures that: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]" src="form_46.png"/>
+<p><b>Frequency Sampling</b>: The photon frequency <img class="formulaInl" alt="$ \nu $" src="form_36.png"/> is sampled using rejection sampling over the range <img class="formulaInl" alt="$ [\nu_{min}, \nu_{max}] $" src="form_69.png"/>. The selection is weighted by the local distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_67.png"/>:</p>
+<p><b>Angular Distribution</b>: The polar angle <img class="formulaInl" alt="$ \theta $" src="form_40.png"/> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <img class="formulaInl" alt="$ j_\nu(\theta) $" src="form_70.png"/>. A second rejection sampling loop ensures that: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]" src="form_71.png"/>
 </p>
-<p> where <img class="formulaInl" alt="$ j_{\nu, max} $" src="form_47.png"/> is the emissivity at <img class="formulaInl" alt="$ \theta = \pi/2 $" src="form_48.png"/>.</p>
-<p><b>Tetrad Transformation</b>: The momentum vector <img class="formulaInl" alt="$ K $" src="form_15.png"/> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <img class="formulaInl" alt="$ u^\mu $" src="form_49.png"/> and the magnetic field <img class="formulaInl" alt="$ b^\mu $" src="form_50.png"/>. It is then transformed to the coordinate frame using: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]" src="form_51.png"/>
+<p> where <img class="formulaInl" alt="$ j_{\nu, max} $" src="form_72.png"/> is the emissivity at <img class="formulaInl" alt="$ \theta = \pi/2 $" src="form_73.png"/>.</p>
+<p><b>Tetrad Transformation</b>: The momentum vector <img class="formulaInl" alt="$ K $" src="form_41.png"/> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <img class="formulaInl" alt="$ u^\mu $" src="form_74.png"/> and the magnetic field <img class="formulaInl" alt="$ b^\mu $" src="form_75.png"/>. It is then transformed to the coordinate frame using: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]" src="form_76.png"/>
 </p>
-<p> where <img class="formulaInl" alt="$ e^\mu_{(\alpha)} $" src="form_52.png"/> is the tetrad basis built by <code>GPU_make_tetrad</code>.</p>
+<p> where <img class="formulaInl" alt="$ e^\mu_{(\alpha)} $" src="form_77.png"/> is the tetrad basis built by <code>GPU_make_tetrad</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>Radial grid index. </td></tr>
     <tr><td class="paramname">j</td><td>Poloidal grid index. </td></tr>
     <tr><td class="paramname">k</td><td>Azimuthal grid index. </td></tr>
-    <tr><td class="paramname">dnmax</td><td>The maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_42.png"/> for this zone. </td></tr>
+    <tr><td class="paramname">dnmax</td><td>The maximum of the distribution <img class="formulaInl" alt="$ dN_s/d\ln\nu $" src="form_67.png"/> for this zone. </td></tr>
     <tr><td class="paramname">ph</td><td>The Structure of Arrays (SoA) used for photon storage. </td></tr>
-    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_31.png"/> . </td></tr>
+    <tr><td class="paramname">d_geom</td><td>Pointer to the device geometry structure that carries the metric information <img class="formulaInl" alt="$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $" src="form_56.png"/> . </td></tr>
     <tr><td class="paramname">d_p</td><td>Pointer to plasma properties array. </td></tr>
     <tr><td class="paramname">zone_flag</td><td>Boolean flag; if true, this is the first photon in this zone for this particular thread and a tetrad must be constructed, otherwise reuse the existing tetrad. </td></tr>
     <tr><td class="paramname">ph_arr_index</td><td>The specific index in the SoA to store this photon. </td></tr>
@@ -667,7 +667,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
-<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <img class="formulaInl" alt="$ n $" src="form_24.png"/> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <img class="formulaInl" alt="$ n $" src="form_49.png"/> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
 <dl class="section note"><dt>Note</dt><dd><b>Progress Monitoring</b>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -676,7 +676,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">d_table_ptr</td><td>Pointer to the scattering probability and cross-section lookup tables. </td></tr>
     <tr><td class="paramname">scat_ofphoton</td><td>A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </td></tr>
     <tr><td class="paramname">max_partition_ph</td><td>Total number of superphotons assigned to this specific tracking batch. </td></tr>
-    <tr><td class="paramname">besselTexObj</td><td>CUDA texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_17.png"/> lookups. </td></tr>
+    <tr><td class="paramname">besselTexObj</td><td>CUDA texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_43.png"/> lookups. </td></tr>
   </table>
   </dd>
 </dl>
@@ -747,7 +747,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Assign each scattered superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
-<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <img class="formulaInl" alt="$ n $" src="form_24.png"/> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <img class="formulaInl" alt="$ n $" src="form_49.png"/> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
 <dl class="section note"><dt>Note</dt><dd><b>Progress Monitoring</b>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -756,7 +756,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">d_table_ptr</td><td>Pointer to the scattering probability and cross-section lookup tables. </td></tr>
     <tr><td class="paramname">scat_ofphoton</td><td>A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </td></tr>
     <tr><td class="paramname">n</td><td>Current scattering layer index. </td></tr>
-    <tr><td class="paramname">besselTexObj</td><td>CUDA texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_17.png"/> lookups. </td></tr>
+    <tr><td class="paramname">besselTexObj</td><td>CUDA texture object for accelerated Modified Bessel function <img class="formulaInl" alt="$ K_2 $" src="form_43.png"/> lookups. </td></tr>
     <tr><td class="paramname">round_num_scat_init</td><td>The starting global photon index for this scattering batch. </td></tr>
     <tr><td class="paramname">round_num_scat_end</td><td>The ending global photon index for this scattering batch. </td></tr>
   </table>
@@ -852,8 +852,8 @@ Functions</h2></td></tr>
 <p>This host function aggregates the data stored in the energy and frequency binned spectrum.</p>
 <p><b>Diagnostic Outputs</b>: After writing the per-bin data, the function calculates and prints to stderr:</p><ul>
 <li><b>Total Luminosity</b>: The integral of the spectrum over all angles and energies.</li>
-<li><b>Accretion Efficiency</b>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <img class="formulaInl" alt="$ L / \dot{M}c^2 $" src="form_53.png"/>).</li>
-<li><b>Optical Depths</b>: Average scattering ( <img class="formulaInl" alt="$ \tau_{\text{scatt}} $" src="form_54.png"/>) and absorption ( <img class="formulaInl" alt="$ \tau_{\text{abs}} $" src="form_55.png"/>) depths.</li>
+<li><b>Accretion Efficiency</b>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <img class="formulaInl" alt="$ L / \dot{M}c^2 $" src="form_78.png"/>).</li>
+<li><b>Optical Depths</b>: Average scattering ( <img class="formulaInl" alt="$ \tau_{\text{scatt}} $" src="form_79.png"/>) and absorption ( <img class="formulaInl" alt="$ \tau_{\text{abs}} $" src="form_80.png"/>) depths.</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

@@ -5,10 +5,13 @@ This section contains the detailed API reference for the GPUmonty source code,
 organized by module.
 
 .. toctree::
-   :maxdepth: 2
-
-   api/memory
-   api/kernels
+   :maxdepth: 3
+   
    api/curand
-   api/weight
+   api/hotcross
    api/jnu_mixed
+   api/kernels
+   api/memory
+   api/metrics
+   api/par
+   api/weight

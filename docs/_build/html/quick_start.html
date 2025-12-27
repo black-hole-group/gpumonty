@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start Guide for GPUmonty &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d10b9ea1" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="weights.cu" href="api/weight.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/kernels.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/metrics.html">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/metrics.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/metrics.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start Guide for GPUmonty</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quick_start.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start-guide-for-gpumonty">
+<h1>Quick Start Guide for GPUmonty<a class="headerlink" href="#quick-start-guide-for-gpumonty" title="Link to this heading"></a></h1>
+<p>GPUmonty is a high-performance, <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">CUDA</a>-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on <a class="reference external" href="https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387">igrmonty</a>.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>Before compiling, ensure your system has the following libraries installed and accessible:</p>
+<ul class="simple">
+<li><p><strong>CUDA Toolkit:</strong> Required for the <code class="docutils literal notranslate"><span class="pre">nvcc</span></code> compiler and GPU kernels (<a class="reference external" href="https://docs.nvidia.com/cuda/cuda-installation-guide-linux/">Install Guide</a>).</p></li>
+<li><p><strong>GNU Scientific Library (GSL):</strong> Required for various mathematical and statistical routines (<a class="reference external" href="https://www.gnu.org/software/gsl/">GSL Home</a>).</p></li>
+<li><p><strong>Hierarchical Data Format v5 (HDF5):</strong> Required for reading GRMHD simulation snapshots (<a class="reference external" href="https://www.hdfgroup.org/solutions/hdf5/">HDF5 Home</a>).</p></li>
+</ul>
+<section id="environment-configuration">
+<h3>Environment Configuration<a class="headerlink" href="#environment-configuration" title="Link to this heading"></a></h3>
+<p>Locate the installation paths for these libraries on your system and update the corresponding variables in the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>:</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_PATH</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>/usr/local/cuda
+<span class="nv">GSL_PATH</span><span class="w">       </span><span class="o">=</span><span class="w"> </span>/usr/local
+<span class="nv">HDF5_INCLUDE</span><span class="w">   </span><span class="o">=</span><span class="w"> </span>/usr/include/hdf5/serial
+<span class="nv">HDF5_LIB</span><span class="w">       </span><span class="o">=</span><span class="w"> </span>/usr/lib/x86_64-linux-gnu/hdf5/serial
+</pre></div>
+</div>
+<p>After you have changed these settings, compile by typing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">15</span>
+</pre></div>
+</div>
+<p>In case you want to compile for debugging, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">BUILD_TYPE</span><span class="o">=</span>debug
+</pre></div>
+</div>
+</section>
+<section id="multi-core-acceleration-openmp">
+<h3>Multi-Core Acceleration (OpenMP)<a class="headerlink" href="#multi-core-acceleration-openmp" title="Link to this heading"></a></h3>
+<p>GPUmonty benefits from <strong>OpenMP</strong> for CPU-bound tasks such as data pre-processing and grid initialization. To enable multi-threaded CPU execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span>XX
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">XX</span></code> with the desired number of threads (recommended: number of physical CPU cores).</p>
+</section>
+<section id="configuration-parameters">
+<h3>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Link to this heading"></a></h3>
+<p>Simulation parameters are passed to the executable via a <code class="docutils literal notranslate"><span class="pre">.par</span></code> file. You can find a baseline configuration in <code class="docutils literal notranslate"><span class="pre">/gpumonty/template.par</span></code>.</p>
+<p>To run a simulation with your custom parameters:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./gpumonty<span class="w"> </span>-par<span class="w"> </span>path/to/your_file.par
+</pre></div>
+</div>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Runtime Parameters</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Ns</span></code></p></td>
+<td><p><strong>Superphoton Count</strong>: The approximated total number of photon packets to be generated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dump</span></code></p></td>
+<td><p><strong>Data Path</strong>: Relative or absolute path to the input GRMHD data file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spectrum</span></code></p></td>
+<td><p><strong>Output Name</strong>: Filename for the output spectral data (e.g., <code class="docutils literal notranslate"><span class="pre">sane.spec</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MBH</span></code></p></td>
+<td><p><strong>Black Hole Mass</strong>: Mass of the central black hole in Solar Masses (<span class="math notranslate nohighlight">\(M_\odot\)</span>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">M_unit</span></code></p></td>
+<td><p><strong>Mass Unit Scale</strong>: Normalization factor (in grams) to scale dimensionless GRMHD density to physical CGS units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tp_over_te</span></code></p></td>
+<td><p><strong>Proton-to-Electron Temperature Ratio</strong>: Constant ratio (<span class="math notranslate nohighlight">\(T_p/T_e\)</span>) used if a dynamic heating model is not active.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Thetae_max</span></code></p></td>
+<td><p><strong>Temperature Ceiling</strong>: Numerical cap for the dimensionless electron temperature (<span class="math notranslate nohighlight">\(\Theta_e = k_B T_e / m_e c^2\)</span>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="analyzing-the-output">
+<h2>Analyzing the Output<a class="headerlink" href="#analyzing-the-output" title="Link to this heading"></a></h2>
+<p>To facilitate data post-processing and visualization, an example Jupyter Notebook is provided in the repository.</p>
+<ul class="simple">
+<li><p><strong>Notebook Location:</strong> <code class="docutils literal notranslate"><span class="pre">python/example.ipynb</span></code></p></li>
+<li><p><strong>Workflow:</strong> This tutorial guides you through opening output files, extracting spectral arrays, and generating plots.</p></li>
+</ul>
+<section id="spectral-data-structure">
+<h3>Spectral Data Structure<a class="headerlink" href="#spectral-data-structure" title="Link to this heading"></a></h3>
+<p>When analyzing the raw results in Python, please note the relationship between luminosity and the observer’s viewing angle:</p>
+<ul class="simple">
+<li><p><strong>Indexing:</strong> The luminosity array (<code class="docutils literal notranslate"><span class="pre">nuLnu</span></code>) is multi-dimensional; each index in the array corresponds directly to one of the <code class="docutils literal notranslate"><span class="pre">theta_bins</span></code> defined in your simulation.</p></li>
+</ul>
+</section>
+</section>
+<section id="grmhd-data-file-for-testing">
+<h2>GRMHD Data File for Testing<a class="headerlink" href="#grmhd-data-file-for-testing" title="Link to this heading"></a></h2>
+<p>To reproduce tests using the same GRMHD input employed in the <strong>GPUmonty paper</strong>, download the dataset from <a class="reference external" href="https://iopscience.iop.org/article/10.3847/1538-4357/acc586">Prather et al. (2023)</a> via the Harvard Dataverse:</p>
+<ul class="simple">
+<li><p><strong>Dataset:</strong> <a class="reference external" href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF">Harvard Dataverse (DOI: 10.7910/DVN/XZECPF)</a></p></li>
+</ul>
+<p>After downloading, place the GRMHD data file in the <code class="docutils literal notranslate"><span class="pre">data/</span></code> directory and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./gpumonty<span class="w"> </span>-par<span class="w"> </span>template.par
+</pre></div>
+</div>
+<p>The resulting spectrum should match the expected output shown below:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/expected_spectrum.png"><img alt="Expected spectrum output for GPUmonty" src="_images/expected_spectrum.png" style="width: 80%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Expected Result:</strong> The resulting spectrum showing the <span class="math notranslate nohighlight">\(\nu L_\nu\)</span> distribution across frequencies.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="license">
+<h2>LICENSE<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GPUmonty</span></code> is free software: you can redistribute it and/or modify it under the terms of the <strong>GNU General Public License</strong> as published by the Free Software Foundation, either <strong>version 2</strong> of the License, or (at your option) any later version.</p>
+<p>See the <a class="reference external" href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GNU General Public License</a> for more details.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api/weight.html" class="btn btn-neutral float-left" title="weights.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

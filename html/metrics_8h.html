@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">metrics.h File Reference</div>  </div>
@@ -74,23 +75,54 @@ $(function() {
 
 <p><a href="metrics_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a48bde1aeb7eb20042a40297d9356bf92"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#a48bde1aeb7eb20042a40297d9356bf92">FIND_GCON_MATRIX_INV</a>&#160;&#160;&#160;(0)</td></tr>
+<tr class="memdesc:a48bde1aeb7eb20042a40297d9356bf92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to enable or disable the computation of the inverse metric using LU decomposition.  <a href="metrics_8h.html#a48bde1aeb7eb20042a40297d9356bf92">More...</a><br /></td></tr>
+<tr class="separator:a48bde1aeb7eb20042a40297d9356bf92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a45c52226b556bfdefcc172ece54db11c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#a45c52226b556bfdefcc172ece54db11c">gdet_func</a> (double gcov[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
-<tr class="separator:a45c52226b556bfdefcc172ece54db11c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add65440b63f52ea09e64f5aa0b9ec263"><td class="memItemLeft" align="right" valign="top">__host__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#add65440b63f52ea09e64f5aa0b9ec263">gdet_func</a> (double gcov[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:add65440b63f52ea09e64f5aa0b9ec263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the square root of the absolute determinant of the metric tensor, <img class="formulaInl" alt="$ \sqrt{-g} $" src="form_62.png"/>.  <a href="metrics_8h.html#add65440b63f52ea09e64f5aa0b9ec263">More...</a><br /></td></tr>
+<tr class="separator:add65440b63f52ea09e64f5aa0b9ec263"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3d52742591c0c9fbdf0959d07e19974"><td class="memItemLeft" align="right" valign="top">__host__ __device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#ad3d52742591c0c9fbdf0959d07e19974">LU_decompose</a> (double A[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], int permute[])</td></tr>
+<tr class="memdesc:ad3d52742591c0c9fbdf0959d07e19974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs in-place LU decomposition with partial pivoting and row-wise normalization.  <a href="metrics_8h.html#ad3d52742591c0c9fbdf0959d07e19974">More...</a><br /></td></tr>
 <tr class="separator:ad3d52742591c0c9fbdf0959d07e19974"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb2e93643000bcf3828a39b0d3a1f5f8"><td class="memItemLeft" align="right" valign="top">__host__ __device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#adb2e93643000bcf3828a39b0d3a1f5f8">LU_substitution</a> (double A[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double B[], int permute[])</td></tr>
+<tr class="memdesc:adb2e93643000bcf3828a39b0d3a1f5f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves a linear system <img class="formulaInl" alt="$ Ax = B $" src="form_89.png"/> using forward and backward substitution.  <a href="metrics_8h.html#adb2e93643000bcf3828a39b0d3a1f5f8">More...</a><br /></td></tr>
 <tr class="separator:adb2e93643000bcf3828a39b0d3a1f5f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fdca3775727156f0598d8cc69db4af5"><td class="memItemLeft" align="right" valign="top">__host__ __device__ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#a1fdca3775727156f0598d8cc69db4af5">invert_matrix</a> (double Am[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double Aminv[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:a1fdca3775727156f0598d8cc69db4af5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse of a square matrix unifying the usage of <code>LU decomposition</code> and <code>substitution</code>.  <a href="metrics_8h.html#a1fdca3775727156f0598d8cc69db4af5">More...</a><br /></td></tr>
 <tr class="separator:a1fdca3775727156f0598d8cc69db4af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2941833c93751da72ab28f1751a79a18"><td class="memItemLeft" align="right" valign="top">__host__ __device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#a2941833c93751da72ab28f1751a79a18">gcon_func</a> (const double X[4], double gcov[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double gcon[][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:a2941833c93751da72ab28f1751a79a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the contravariant metric tensor <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/> using either numerical inversion or analytical expressions.  <a href="metrics_8h.html#a2941833c93751da72ab28f1751a79a18">More...</a><br /></td></tr>
 <tr class="separator:a2941833c93751da72ab28f1751a79a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2142cb8955a0f488f5c7f1925e10d472"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#a2142cb8955a0f488f5c7f1925e10d472">GPU_get_connection</a> (const double X[4], double lconn[4][4][4])</td></tr>
+<tr class="memdesc:a2142cb8955a0f488f5c7f1925e10d472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the Christoffel symbols (connection coefficients) <img class="formulaInl" alt="$ \Gamma^i_{jk} $" src="form_96.png"/> at a given 4-position.  <a href="metrics_8h.html#a2142cb8955a0f488f5c7f1925e10d472">More...</a><br /></td></tr>
 <tr class="separator:a2142cb8955a0f488f5c7f1925e10d472"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa72bd3b4880cd5b18656774a25d3d8e2"><td class="memItemLeft" align="right" valign="top">__host__ __device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metrics_8h.html#aa72bd3b4880cd5b18656774a25d3d8e2">lower</a> (double *<a class="el" href="defs_8h.html#acca984f3768575908e2e0dd2f22cbb95">ucon</a>, const double Gcov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double *<a class="el" href="defs_8h.html#a7a49aa3585420e73246460b8ab0a4ca7">ucov</a>)</td></tr>
+<tr class="memdesc:aa72bd3b4880cd5b18656774a25d3d8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lowers the index of a contravariant 4-vector to its covariant form.  <a href="metrics_8h.html#aa72bd3b4880cd5b18656774a25d3d8e2">More...</a><br /></td></tr>
 <tr class="separator:aa72bd3b4880cd5b18656774a25d3d8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a48bde1aeb7eb20042a40297d9356bf92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48bde1aeb7eb20042a40297d9356bf92">&#9670;&nbsp;</a></span>FIND_GCON_MATRIX_INV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define FIND_GCON_MATRIX_INV&#160;&#160;&#160;(0)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Macro to enable or disable the computation of the inverse metric using LU decomposition. </p>
+<p>if set to 1, the code will compute the inverse metric <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a2941833c93751da72ab28f1751a79a18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2941833c93751da72ab28f1751a79a18">&#9670;&nbsp;</a></span>gcon_func()</h2>
@@ -124,16 +156,37 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Computes the contravariant metric tensor <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/> using either numerical inversion or analytical expressions. </p>
+<ul>
+<li>This function provides the inverse of the metric tensor at a specific 4-position <img class="formulaInl" alt="$ X^\mu $" src="form_95.png"/>. It supports a toggle between a general-purpose numerical solver and optimized analytical formulas for specific spacetimes.</li>
+</ul>
+<p>if <code>FIND_GCON_MATRIX_INV</code> is defined:</p><ul>
+<li>Calls <code><a class="el" href="metrics_8h.html#a1fdca3775727156f0598d8cc69db4af5" title="Computes the inverse of a square matrix unifying the usage of LU decomposition and substitution.">invert_matrix()</a></code> to perform a full LU decomposition on <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/>. This is the most flexible method and works for any metric, but is computationally more expensive.</li>
+</ul>
+<p><b>Path B: Analytical/Hardcoded</b> (Default):</p><ul>
+<li>SPHERE_TEST: Returns a simple diagonal inverse for flat space in spherical coordinates.</li>
+<li>Modified Kerr-Schild (MKS): Computes exact contravariant components for a rotating Kerr black hole.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">X</td><td>The 4-position <img class="formulaInl" alt="$ X^\mu $" src="form_95.png"/> in code coordinates. </td></tr>
+    <tr><td class="paramname">gcov</td><td>The covariant metric tensor <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/> (used for numerical inversion or diagonal tests). </td></tr>
+    <tr><td class="paramname">gcon</td><td>Output: The calculated contravariant metric tensor <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
-<a id="a45c52226b556bfdefcc172ece54db11c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45c52226b556bfdefcc172ece54db11c">&#9670;&nbsp;</a></span>gdet_func()</h2>
+<a id="add65440b63f52ea09e64f5aa0b9ec263"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add65440b63f52ea09e64f5aa0b9ec263">&#9670;&nbsp;</a></span>gdet_func()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double gdet_func </td>
+          <td class="memname">__host__ double gdet_func </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>gcov</em>[][NDIM]</td><td>)</td>
@@ -141,6 +194,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Calculates the square root of the absolute determinant of the metric tensor, <img class="formulaInl" alt="$ \sqrt{-g} $" src="form_62.png"/>. </p>
+<ul>
+<li><b>General Case</b>: Uses GSL-based LU decomposition to compute the determinant of the covariant metric <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/>.</li>
+<li><b>Simplified Case</b>: If <code>SPHERE_TEST</code> is defined, it assumes a diagonal metric for faster computation.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gcov</td><td>The covariant metric tensor <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of <img class="formulaInl" alt="$ \sqrt{| \det(g_{\mu\nu}) |} $" src="form_83.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -170,6 +236,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Computes the Christoffel symbols (connection coefficients) <img class="formulaInl" alt="$ \Gamma^i_{jk} $" src="form_96.png"/> at a given 4-position. </p>
+<p>Analytically: Computed analytically if <code>SPHERE_TEST</code> is not defined.</p>
+<p>Numerically: Computed through Finite Differences if <code>SPHERE_TEST</code> is defined.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">X</td><td>4-position <img class="formulaInl" alt="$ X^\mu $" src="form_95.png"/> in code coordinates. </td></tr>
+    <tr><td class="paramname">lconn</td><td>A 3D array <code>[4][4][4]</code> populated with the connection coefficients.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a1fdca3775727156f0598d8cc69db4af5"></a>
@@ -197,6 +275,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Computes the inverse of a square matrix unifying the usage of <code>LU decomposition</code> and <code>substitution</code>. </p>
+<p>This function calculates the inverse of an <img class="formulaInl" alt="$ NDIM \times NDIM $" src="form_92.png"/> matrix (typically the covariant metric <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/> to obtain the contravariant metric <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/>). It solves the matrix equation <img class="formulaInl" alt="$ A \cdot A^{-1} = I $" src="form_93.png"/> by treating each column of the identity matrix <img class="formulaInl" alt="$ I $" src="form_94.png"/> as a separate linear system.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Am</td><td>The input <img class="formulaInl" alt="$ NDIM \times NDIM $" src="form_92.png"/> matrix to be inverted. </td></tr>
+    <tr><td class="paramname">Aminv</td><td>The output matrix where the calculated inverse is stored.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success; 1 if the matrix is singular or contains invalid values. </dd></dl>
 
 </div>
 </div>
@@ -232,6 +321,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Lowers the index of a contravariant 4-vector to its covariant form. </p>
+<ul>
+<li>This function performs the metric mapping <img class="formulaInl" alt="$ u_\mu = g_{\mu\nu} u^\nu $" src="form_97.png"/>. It effectively transforms a vector from the tangent space to the cotangent space (one-form) using the local covariant metric tensor.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ucon</td><td>Input contravariant 4-vector <img class="formulaInl" alt="$ u^\nu $" src="form_98.png"/>. </td></tr>
+    <tr><td class="paramname">Gcov</td><td>Input covariant metric tensor <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/>. </td></tr>
+    <tr><td class="paramname">ucov</td><td>Output covariant 4-vector <img class="formulaInl" alt="$ u_\mu $" src="form_99.png"/>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="ad3d52742591c0c9fbdf0959d07e19974"></a>
@@ -259,6 +362,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Performs in-place LU decomposition with partial pivoting and row-wise normalization. </p>
+<ul>
+<li>This function factorizes a square matrix <img class="formulaInl" alt="$ A $" src="form_84.png"/> into a lower triangular matrix <img class="formulaInl" alt="$ L $" src="form_85.png"/> and an upper triangular matrix <img class="formulaInl" alt="$ U $" src="form_86.png"/> such that <img class="formulaInl" alt="$ PA = LU $" src="form_87.png"/>. Then it can be used to solve linear systems or invert matrices.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>The <img class="formulaInl" alt="$ \rm{NDIM} \times \rm{NDIM} $" src="form_88.png"/> matrix to decompose (modified in-place). </td></tr>
+    <tr><td class="paramname">permute</td><td>Array to store the row permutation indices (pivoting history).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns 0 for success, 1 if the matrix is singular. </dd></dl>
 
 </div>
 </div>
@@ -293,6 +409,26 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Solves a linear system <img class="formulaInl" alt="$ Ax = B $" src="form_89.png"/> using forward and backward substitution. </p>
+<ul>
+<li>This function takes the results of <code>LU_decompose</code> (an in-place LU matrix and a permutation vector) and solves for the vector <img class="formulaInl" alt="$ B $" src="form_35.png"/>. It is primarily used in the simulation to invert the metric tensor <img class="formulaInl" alt="$ g_{\mu\nu} $" src="form_82.png"/> to find its contravariant form <img class="formulaInl" alt="$ g^{\mu\nu} $" src="form_81.png"/>.</li>
+</ul>
+<ul>
+<li><b>Permutation</b>: Swaps elements of <img class="formulaInl" alt="$ B $" src="form_35.png"/> to match the partial pivoting order recorded in <code>permute</code>.</li>
+<li><b>Forward Substitution</b>: Solves the lower triangular system <img class="formulaInl" alt="$ Ly = Pb $" src="form_90.png"/>. Since the diagonal elements of <img class="formulaInl" alt="$ L $" src="form_85.png"/> are implicitly 1, no division is required.</li>
+<li><b>Backward Substitution</b>: Solves the upper triangular system <img class="formulaInl" alt="$ Ux = y $" src="form_91.png"/>, utilizing the diagonal elements of <img class="formulaInl" alt="$ U $" src="form_86.png"/> stored in <code>A[i][i]</code>.</li>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>The <img class="formulaInl" alt="$ \rm{NDIM} \times \rm{NDIM} $" src="form_88.png"/> LU-decomposed matrix. </td></tr>
+    <tr><td class="paramname">B</td><td>The right-hand side vector (replaced by the solution vector <img class="formulaInl" alt="$ x $" src="form_18.png"/> in-place). </td></tr>
+    <tr><td class="paramname">permute</td><td>The permutation array generated by <code>LU_decompose</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+</li>
+</ul>
 
 </div>
 </div>

@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="group__par__macros" kind="group">
+    <compoundname>par_macros</compoundname>
+    <title>Parameter macros</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__par__macros_1gae9d13a99d38dd6d3c6b1f3d64ce7b065" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void load_par_from_argv</definition>
+        <argsstring>(int argc, char *argv[], Params *params)</argsstring>
+        <name>load_par_from_argv</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>argv</declname>
+          <array>[]</array>
+        </param>
+        <param>
+          <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Initializes simulation parameters with default values and parses command-line arguments. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function sets up the initial environment for the Monte Carlo simulation.</para>
+<para><bold>Default Parameter Values:</bold><itemizedlist>
+<listitem><para><bold>seed</bold>: If not specified, the random seed is set to -1, which triggers time-based seeding for randomness.</para>
+</listitem><listitem><para><bold>biasTuning</bold>: Default bias tuning factor is set to 1.0. BIAS TUNING STILL NOT IMPLEMENTED.</para>
+</listitem><listitem><para><bold>fitBias</bold>: Default fitting bias factor is set to 1.0. FITTING BIAS STILL NOT IMPLEMENTED.</para>
+</listitem><listitem><para><bold>fitBiasNs</bold>: Scale input number of superphotons generated in each zone. Default is 1.0 (no scaling). FITTING BIAS STILL NOT IMPLEMENTED.</para>
+</listitem><listitem><para><bold>tp_over_te</bold>: Sets the default proton-to-electron temperature ratio <formula id="76">$ T_p/T_e $</formula> for the simulation. Default is 3.0.</para>
+</listitem><listitem><para><bold>beta_crit</bold>: Sets the default critical plasma beta <formula id="77">$ \beta_{\rm crit} $</formula> for R-low/R-high models. Default is 1.0.</para>
+</listitem><listitem><para><bold>trat_small</bold>: Sets the minimum proton-to-electron temperature ratio <formula id="76">$ T_p/T_e $</formula> for R-low/R-high models. Default is 1.0.</para>
+</listitem><listitem><para><bold>trat_large</bold>: Sets the maximum proton-to-electron temperature ratio <formula id="76">$ T_p/T_e $</formula> for R-low/R-high models. Default is 10.0.</para>
+</listitem><listitem><para><bold>Thetae_max</bold>: Sets the maximum electron temperature <formula id="20">$ \Theta_e $</formula> for R-low/R-high models. Default is <formula id="78">$ 10^{100} $</formula>.</para>
+</listitem><listitem><para><bold>Black Hole Mass</bold>: Defaults to <formula id="79">$ 4.1 \times 10^6 M_\odot $</formula> (Sgr A*).</para>
+</listitem></itemizedlist>
+</para>
+<para><simplesect kind="note"><para>R-high and R-low models are only applied to iharm_model simulations.</para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>argc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of command-line arguments. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>argv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array of command-line argument strings. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the global <computeroutput>Params</computeroutput> structure to be populated.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="56" column="15" declfile="src/par.h" declline="56" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="group__par__macros_1gab7727cc80912f18c64f6fd054a24df68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void load_par</definition>
+        <argsstring>(const char *fname, Params *params)</argsstring>
+        <name>load_par</name>
+        <param>
+          <type>const char *</type>
+          <declname>fname</declname>
+        </param>
+        <param>
+          <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref> *</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Parses the simulation parameter file and generates a formatted initialization report. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para><bold>File Parsing</bold>: Scans for keywords defined in the Params structure and reads their corresponding values.</para>
+</listitem><listitem><para><bold>Validation Report</bold>: Outputs a color-coded terminal summary (using ANSI escape codes) to inform the user which parameters were successfully loaded from the file (<computeroutput>[SET]</computeroutput>) and which are falling back to hardcoded defaults (<computeroutput>[MISSING]</computeroutput>).</para>
+</listitem><listitem><para><bold>Status Flag</bold>: Sets <computeroutput>params-&gt;loaded = 1</computeroutput> upon completion to signal that the simulation environment is ready. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the input parameter file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the global <computeroutput>Params</computeroutput> structure to be populated.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="69" column="15" declfile="src/par.h" declline="69" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="group__par__macros_1gaee7b6d04308416871bd70a19e8f06482" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void read_param</definition>
+        <argsstring>(const char *line, const char *key, void *val, int type)</argsstring>
+        <name>read_param</name>
+        <param>
+          <type>const char *</type>
+          <declname>line</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>val</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Reads a single parameter from the input file and assigns it to the provided variable. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function supports reading integer, double, and string parameters based on the specified type.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the input parameter file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the parameter to read. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the variable where the read value will be stored. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Data type of the parameter (TYPE_INT, TYPE_DBL, TYPE_STR).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="83" column="15" declfile="src/par.h" declline="83" declcolumn="15"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="group__par__macros_1ga56e5f9a95536838408fcca8f22d541b4" prot="public" static="no">
+        <name>TYPE_INT</name>
+        <initializer>(1)</initializer>
+        <briefdescription>
+<para>Data type definition for integer parameter reading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="14" column="9" bodyfile="src/par.h" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__par__macros_1ga5cb8590e73e060db5976f40e6fd29c3b" prot="public" static="no">
+        <name>TYPE_DBL</name>
+        <initializer>(2)</initializer>
+        <briefdescription>
+<para>Data type definition for double parameter reading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="19" column="9" bodyfile="src/par.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__par__macros_1gac8135ebece7dbba8045f811da60dfbb9" prot="public" static="no">
+        <name>TYPE_STR</name>
+        <initializer>(3)</initializer>
+        <briefdescription>
+<para>Data type definition for string parameter reading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/par.h" line="24" column="9" bodyfile="src/par.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

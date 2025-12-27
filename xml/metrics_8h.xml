@@ -2,10 +2,25 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
   <compounddef id="metrics_8h" kind="file" language="C++">
     <compoundname>metrics.h</compoundname>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92" prot="public" static="no">
+        <name>FIND_GCON_MATRIX_INV</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>Macro to enable or disable the computation of the inverse metric using LU decomposition. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>if set to 1, the code will compute the inverse metric <formula id="81">$ g^{\mu\nu} $</formula> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/metrics.h" line="12" column="9" bodyfile="src/metrics.h" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
       <sectiondef kind="func">
-      <memberdef kind="function" id="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>double</type>
-        <definition>double gdet_func</definition>
+      <memberdef kind="function" id="metrics_8h_1add65440b63f52ea09e64f5aa0b9ec263" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ double</type>
+        <definition>__host__ double gdet_func</definition>
         <argsstring>(double gcov[][NDIM])</argsstring>
         <name>gdet_func</name>
         <param>
@@ -14,12 +29,30 @@
           <array>[][NDIM]</array>
         </param>
         <briefdescription>
+<para>Calculates the square root of the absolute determinant of the metric tensor, <formula id="62">$ \sqrt{-g} $</formula>. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para><bold>General Case</bold>: Uses GSL-based LU decomposition to compute the determinant of the covariant metric <formula id="82">$ g_{\mu\nu} $</formula>.</para>
+</listitem><listitem><para><bold>Simplified Case</bold>: If <computeroutput>SPHERE_TEST</computeroutput> is defined, it assumes a diagonal metric for faster computation.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>gcov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of <formula id="83">$ \sqrt{| \det(g_{\mu\nu}) |} $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="7" column="8" declfile="src/metrics.h" declline="7" declcolumn="8"/>
+        <location file="src/metrics.h" line="29" column="17" declfile="src/metrics.h" declline="29" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ int</type>
@@ -37,12 +70,37 @@
           <array>[]</array>
         </param>
         <briefdescription>
+<para>Performs in-place LU decomposition with partial pivoting and row-wise normalization. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function factorizes a square matrix <formula id="84">$ A $</formula> into a lower triangular matrix <formula id="85">$ L $</formula> and an upper triangular matrix <formula id="86">$ U $</formula> such that <formula id="87">$ PA = LU $</formula>. Then it can be used to solve linear systems or invert matrices.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <formula id="88">$ \rm{NDIM} \times \rm{NDIM} $</formula> matrix to decompose (modified in-place). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>permute</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array to store the row permutation indices (pivoting history).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Returns 0 for success, 1 if the matrix is singular. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="8" column="26" declfile="src/metrics.h" declline="8" declcolumn="26"/>
+        <location file="src/metrics.h" line="41" column="26" declfile="src/metrics.h" declline="41" declcolumn="26"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ void</type>
@@ -65,12 +123,51 @@
           <array>[]</array>
         </param>
         <briefdescription>
+<para>Solves a linear system <formula id="89">$ Ax = B $</formula> using forward and backward substitution. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function takes the results of <computeroutput>LU_decompose</computeroutput> (an in-place LU matrix and a permutation vector) and solves for the vector <formula id="35">$ B $</formula>. It is primarily used in the simulation to invert the metric tensor <formula id="82">$ g_{\mu\nu} $</formula> to find its contravariant form <formula id="81">$ g^{\mu\nu} $</formula>.</para>
+</listitem></itemizedlist>
+</para>
+<para><itemizedlist>
+<listitem><para><bold>Permutation</bold>: Swaps elements of <formula id="35">$ B $</formula> to match the partial pivoting order recorded in <computeroutput>permute</computeroutput>.</para>
+</listitem><listitem><para><bold>Forward Substitution</bold>: Solves the lower triangular system <formula id="90">$ Ly = Pb $</formula>. Since the diagonal elements of <formula id="85">$ L $</formula> are implicitly 1, no division is required.</para>
+</listitem><listitem><para><bold>Backward Substitution</bold>: Solves the upper triangular system <formula id="91">$ Ux = y $</formula>, utilizing the diagonal elements of <formula id="86">$ U $</formula> stored in <computeroutput>A[i][i]</computeroutput>.</para>
+</listitem><listitem><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <formula id="88">$ \rm{NDIM} \times \rm{NDIM} $</formula> LU-decomposed matrix. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The right-hand side vector (replaced by the solution vector <formula id="18">$ x $</formula> in-place). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>permute</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The permutation array generated by <computeroutput>LU_decompose</computeroutput>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+</listitem></itemizedlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="9" column="26" declfile="src/metrics.h" declline="9" declcolumn="26"/>
+        <location file="src/metrics.h" line="62" column="26" declfile="src/metrics.h" declline="62" declcolumn="26"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ int</type>
@@ -88,12 +185,34 @@
           <array>[][NDIM]</array>
         </param>
         <briefdescription>
+<para>Computes the inverse of a square matrix unifying the usage of <computeroutput>LU decomposition</computeroutput> and <computeroutput>substitution</computeroutput>. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function calculates the inverse of an <formula id="92">$ NDIM \times NDIM $</formula> matrix (typically the covariant metric <formula id="82">$ g_{\mu\nu} $</formula> to obtain the contravariant metric <formula id="81">$ g^{\mu\nu} $</formula>). It solves the matrix equation <formula id="93">$ A \cdot A^{-1} = I $</formula> by treating each column of the identity matrix <formula id="94">$ I $</formula> as a separate linear system.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>Am</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <formula id="92">$ NDIM \times NDIM $</formula> matrix to be inverted. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Aminv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The output matrix where the calculated inverse is stored.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 for success; 1 if the matrix is singular or contains invalid values. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="10" column="25" declfile="src/metrics.h" declline="10" declcolumn="25"/>
+        <location file="src/metrics.h" line="79" column="25" declfile="src/metrics.h" declline="79" declcolumn="25"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1a2941833c93751da72ab28f1751a79a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ void</type>
@@ -116,12 +235,54 @@
           <array>[][NDIM]</array>
         </param>
         <briefdescription>
+<para>Computes the contravariant metric tensor <formula id="81">$ g^{\mu\nu} $</formula> using either numerical inversion or analytical expressions. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function provides the inverse of the metric tensor at a specific 4-position <formula id="95">$ X^\mu $</formula>. It supports a toggle between a general-purpose numerical solver and optimized analytical formulas for specific spacetimes.</para>
+</listitem></itemizedlist>
+</para>
+<para>if <computeroutput>FIND_GCON_MATRIX_INV</computeroutput> is defined:<itemizedlist>
+<listitem><para>Calls <computeroutput><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix()</ref></computeroutput> to perform a full LU decomposition on <formula id="82">$ g_{\mu\nu} $</formula>. This is the most flexible method and works for any metric, but is computationally more expensive.</para>
+</listitem></itemizedlist>
+</para>
+<para><bold>Path B: Analytical/Hardcoded</bold> (Default):<itemizedlist>
+<listitem><para>SPHERE_TEST: Returns a simple diagonal inverse for flat space in spherical coordinates.</para>
+</listitem><listitem><para>Modified Kerr-Schild (MKS): Computes exact contravariant components for a rotating Kerr black hole.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>X</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The 4-position <formula id="95">$ X^\mu $</formula> in code coordinates. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gcov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula> (used for numerical inversion or diagonal tests). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>gcon</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output: The calculated contravariant metric tensor <formula id="81">$ g^{\mu\nu} $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="11" column="26" declfile="src/metrics.h" declline="11" declcolumn="26"/>
+        <location file="src/metrics.h" line="102" column="26" declfile="src/metrics.h" declline="102" declcolumn="26"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ void</type>
@@ -139,12 +300,35 @@
           <array>[4][4][4]</array>
         </param>
         <briefdescription>
+<para>Computes the Christoffel symbols (connection coefficients) <formula id="96">$ \Gamma^i_{jk} $</formula> at a given 4-position. </para>
         </briefdescription>
         <detaileddescription>
+<para>Analytically: Computed analytically if <computeroutput>SPHERE_TEST</computeroutput> is not defined.</para>
+<para>Numerically: Computed through Finite Differences if <computeroutput>SPHERE_TEST</computeroutput> is defined.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>X</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>4-position <formula id="95">$ X^\mu $</formula> in code coordinates. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lconn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A 3D array <computeroutput>[4][4][4]</computeroutput> populated with the connection coefficients.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="12" column="17" declfile="src/metrics.h" declline="12" declcolumn="17"/>
+        <location file="src/metrics.h" line="116" column="17" declfile="src/metrics.h" declline="116" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ void</type>
@@ -165,12 +349,45 @@
           <declname>ucov</declname>
         </param>
         <briefdescription>
+<para>Lowers the index of a contravariant 4-vector to its covariant form. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function performs the metric mapping <formula id="97">$ u_\mu = g_{\mu\nu} u^\nu $</formula>. It effectively transforms a vector from the tangent space to the cotangent space (one-form) using the local covariant metric tensor.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ucon</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input contravariant 4-vector <formula id="98">$ u^\nu $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Gcov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input covariant metric tensor <formula id="82">$ g_{\mu\nu} $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ucov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output covariant 4-vector <formula id="99">$ u_\mu $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/metrics.h" line="13" column="26" declfile="src/metrics.h" declline="13" declcolumn="26"/>
+        <location file="src/metrics.h" line="130" column="26" declfile="src/metrics.h" declline="130" declcolumn="26"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -182,16 +399,28 @@
 <codeline lineno="2"><highlight class="comment">Declarations<sp/>of<sp/>the<sp/>functions<sp/>in<sp/>the<sp/>metrics.cu<sp/>file</highlight></codeline>
 <codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a45c52226b556bfdefcc172ece54db11c" kindref="member">gdet_func</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
-<codeline lineno="8" refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" refkind="member"><highlight class="normal">__host__<sp/><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" kindref="member">LU_decompose</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
-<codeline lineno="9" refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" kindref="member">LU_substitution</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B[],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
-<codeline lineno="10" refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Am[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Aminv[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>)<sp/><sp/>;</highlight></codeline>
-<codeline lineno="11" refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" kindref="member">gcon_func</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcon[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
-<codeline lineno="12" refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" kindref="member">GPU_get_connection</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>lconn[4][4][4]);</highlight></codeline>
-<codeline lineno="13" refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" kindref="member">lower</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" kindref="member">ucon</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" kindref="member">ucov</ref>);</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FIND_GCON_MATRIX_INV<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>METRICS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="metrics_8h_1add65440b63f52ea09e64f5aa0b9ec263" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1add65440b63f52ea09e64f5aa0b9ec263" kindref="member">gdet_func</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" refkind="member"><highlight class="normal">__host__<sp/><sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1ad3d52742591c0c9fbdf0959d07e19974" kindref="member">LU_decompose</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1adb2e93643000bcf3828a39b0d3a1f5f8" kindref="member">LU_substitution</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>A[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B[],<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>permute[]<sp/>);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a1fdca3775727156f0598d8cc69db4af5" kindref="member">invert_matrix</ref>(<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Am[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Aminv[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>)<sp/><sp/>;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2941833c93751da72ab28f1751a79a18" kindref="member">gcon_func</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcov[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gcon[][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1a2142cb8955a0f488f5c7f1925e10d472" kindref="member">GPU_get_connection</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[4],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>lconn[4][4][4]);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="metrics_8h_1aa72bd3b4880cd5b18656774a25d3d8e2" kindref="member">lower</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" kindref="member">ucon</ref>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Gcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>][<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<ref refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" kindref="member">ucov</ref>);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/metrics.h"/>
   </compounddef>

@@ -3,11 +3,9 @@
 #include "par.h"
 #include <string.h>
 #include <errno.h>
-// call this to set defaults
 __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 
-  // set default values here
-  params->seed        = -1; // will use time() to randomize seed if set to -1
+  params->seed        = -1;
 
   params->biasTuning  = 1.;
   params->fitBias     = 1.;
