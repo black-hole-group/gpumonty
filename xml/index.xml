@@ -120,15 +120,6 @@
     <member refid="config_8h_1a3f61be3573f9fa597085ba6415ba00f1" kind="define"><name>SLOOP_DEVICE</name></member>
     <member refid="config_8h_1a45d3170540ff56498a43c27851e2c7a0" kind="define"><name>DLOOP</name></member>
     <member refid="config_8h_1afa99ec4acc4ecb2dc3c2d05da15d0e3f" kind="define"><name>MAX</name></member>
-    <member refid="config_8h_1a2d36e086d6758f37464b6644c1038e39" kind="define"><name>REF_2</name></member>
-    <member refid="config_8h_1a56e2cb04a9bcc7821b4620e4a9b1eb8d" kind="define"><name>TILT_ANGLE</name></member>
-    <member refid="config_8h_1a437ef08681e7210d6678427030446a54" kind="define"><name>LEFT</name></member>
-    <member refid="config_8h_1a80fb826a684cf3f0d306b22aa100ddac" kind="define"><name>RIGHT</name></member>
-    <member refid="config_8h_1a1df736ddba855d7b429869f9f09dbd66" kind="define"><name>FACE1</name></member>
-    <member refid="config_8h_1a5b4b42f50fd7667c7d22d8001811bc7e" kind="define"><name>FACE2</name></member>
-    <member refid="config_8h_1a8bd0e356054974167b130739499f2b84" kind="define"><name>CORN</name></member>
-    <member refid="config_8h_1a8936711f57f82d1fc75c21fa2894e1c6" kind="define"><name>CENT</name></member>
-    <member refid="config_8h_1a630fdcefb04bdca66118cfd21476e8fd" kind="define"><name>FACE3</name></member>
     <member refid="config_8h_1a445fb5b45f03dee9be98488977ad56c8" kind="define"><name>d_lmint</name></member>
     <member refid="config_8h_1aaef6bb9ce5780a979999b54ffaeb2e9e" kind="define"><name>d_lminw</name></member>
     <member refid="config_8h_1a6638e06d37d15c15f2f5726e0c281613" kind="define"><name>d_lT_min</name></member>
@@ -432,6 +423,13 @@
     <member refid="kernels_8h_1aa7287dc36ec91a9fc56342eabd1a1463" kind="function"><name>GPU_record_scattering</name></member>
     <member refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kind="function"><name>report_spectrum</name></member>
     <member refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" kind="function"><name>mainFlowControl</name></member>
+  </compound>
+  <compound refid="main_8h" kind="file"><name>main.h</name>
+    <member refid="main_8h_1a10d4a3cce717376d393f770d4f5cf9ed" kind="function"><name>main</name></member>
+    <member refid="main_8h_1ad00c20a219a212a87fd7b3ae7d49f283" kind="function"><name>set_units</name></member>
+    <member refid="main_8h_1afc8b112b77d648762570e580eb6df594" kind="function"><name>init_model</name></member>
+    <member refid="main_8h_1a6eff1ee5c8d00760b1204283f5dd298f" kind="function"><name>init_geometry</name></member>
+    <member refid="main_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kind="function"><name>report_spectrum</name></member>
   </compound>
   <compound refid="memory_8h" kind="file"><name>memory.h</name>
     <member refid="memory_8h_1ac8b381d2158fb0e199370c836a9e56a7" kind="function"><name>transferParams</name></member>

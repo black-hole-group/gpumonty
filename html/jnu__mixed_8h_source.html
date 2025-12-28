@@ -88,25 +88,25 @@ $(function() {
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#ae924d3f3abfdaea7a007babd29eb097d">   60</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#ae924d3f3abfdaea7a007babd29eb097d">jnu_integrand</a>(<span class="keywordtype">double</span> th, <span class="keywordtype">void</span> *<a class="code" href="decs_8h.html#a02eb7524df3cdfd7ab32de5b40516106">params</a>);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a186db3c9d3d5464e8cc08315a867f968">   71</a></span>&#160;__host__ <span class="keywordtype">void</span> <a class="code" href="jnu__mixed_8h.html#a186db3c9d3d5464e8cc08315a867f968">init_emiss_tables</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#ae2c9a720f057f4231ae16f2465285418">   88</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#ae2c9a720f057f4231ae16f2465285418">K2_eval</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    #ifdef __CUDA_ARCH__</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        , cudaTextureObject_t besselTexObj</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    #endif</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        );</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a686392b9766898ebd7dc493489b4008a">  111</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#a686392b9766898ebd7dc493489b4008a">F_eval</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae, <span class="keyword">const</span> <span class="keywordtype">double</span> Bmag, <span class="keyword">const</span> <span class="keywordtype">double</span> nu);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#aa1be441da61055d0e988a7008590f182">  120</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#aa1be441da61055d0e988a7008590f182">linear_interp_F</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> K);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a429d7676ec34cbd6b24473a68e6ef914">  130</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#a429d7676ec34cbd6b24473a68e6ef914">linear_interp_K2</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    #ifdef __CUDA_ARCH__</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        , cudaTextureObject_t besselTexObj</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    #endif</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        );</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a186db3c9d3d5464e8cc08315a867f968">   75</a></span>&#160;__host__ <span class="keywordtype">void</span> <a class="code" href="jnu__mixed_8h.html#a186db3c9d3d5464e8cc08315a867f968">init_emiss_tables</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#ae2c9a720f057f4231ae16f2465285418">   92</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#ae2c9a720f057f4231ae16f2465285418">K2_eval</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    #ifdef __CUDA_ARCH__</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        , cudaTextureObject_t besselTexObj</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    #endif</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        );</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a686392b9766898ebd7dc493489b4008a">  115</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#a686392b9766898ebd7dc493489b4008a">F_eval</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae, <span class="keyword">const</span> <span class="keywordtype">double</span> Bmag, <span class="keyword">const</span> <span class="keywordtype">double</span> nu);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#aa1be441da61055d0e988a7008590f182">  124</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#aa1be441da61055d0e988a7008590f182">linear_interp_F</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> K);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="jnu__mixed_8h.html#a429d7676ec34cbd6b24473a68e6ef914">  134</a></span>&#160;__host__ __device__ <span class="keywordtype">double</span> <a class="code" href="jnu__mixed_8h.html#a429d7676ec34cbd6b24473a68e6ef914">linear_interp_K2</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> Thetae</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    #ifdef __CUDA_ARCH__</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        , cudaTextureObject_t besselTexObj</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    #endif</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        );</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="adecs_8h_html_a02eb7524df3cdfd7ab32de5b40516106"><div class="ttname"><a href="decs_8h.html#a02eb7524df3cdfd7ab32de5b40516106">params</a></div><div class="ttdeci">Params params</div><div class="ttdef"><b>Definition:</b> defs.h:111</div></div>
 <div class="ttc" id="ajnu__mixed_8h_html_a092b094208fe34f2bb4e04e4e1ee0959"><div class="ttname"><a href="jnu__mixed_8h.html#a092b094208fe34f2bb4e04e4e1ee0959">int_jnu</a></div><div class="ttdeci">__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)</div><div class="ttdoc">Calculates the angle-integrated thermal synchrotron emissivity  in CGS units.</div></div>
 <div class="ttc" id="ajnu__mixed_8h_html_a115f2e03b41ee872a89e0e3770d93322"><div class="ttname"><a href="jnu__mixed_8h.html#a115f2e03b41ee872a89e0e3770d93322">jnu_synch</a></div><div class="ttdeci">__host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B, const double theta)</div><div class="ttdoc">Calculates the thermal synchrotron emissivity $j_\nu(\nu, \theta)$ following Leung et al....</div></div>

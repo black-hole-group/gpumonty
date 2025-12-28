@@ -92,7 +92,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5c742f9247534502f6c5e0df8182193d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle.  <a href="curand_8h.html#a5c742f9247534502f6c5e0df8182193d">More...</a><br /></td></tr>
 <tr class="separator:a5c742f9247534502f6c5e0df8182193d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a933acc3f6fe6da53c8ae10278078860e"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="curand_8h.html#a933acc3f6fe6da53c8ae10278078860e">legacy_standard_gamma</a> (double shape, curandState *localState)</td></tr>
-<tr class="memdesc:a933acc3f6fe6da53c8ae10278078860e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_52.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_53.png"/>).  <a href="curand_8h.html#a933acc3f6fe6da53c8ae10278078860e">More...</a><br /></td></tr>
+<tr class="memdesc:a933acc3f6fe6da53c8ae10278078860e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_68.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_69.png"/>).  <a href="curand_8h.html#a933acc3f6fe6da53c8ae10278078860e">More...</a><br /></td></tr>
 <tr class="separator:a933acc3f6fe6da53c8ae10278078860e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -313,7 +313,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_52.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_53.png"/>). </p>
+<p>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <img class="formulaInl" alt="$ \alpha \geq 1 $" src="form_68.png"/>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <img class="formulaInl" alt="$ \alpha &lt; 1 $" src="form_69.png"/>). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">shape</td><td>Shape parameter ($\alpha$) of the distribution. </td></tr>

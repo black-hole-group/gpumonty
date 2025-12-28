@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>config.h &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="constants.h" href="constant.html" />
+    <link rel="prev" title="compton.cu" href="compton.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compton.html">compton.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compton.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv427GPU_sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_scattered_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv49GPU_boostAL4E_dAL4E_dAL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_boost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv418GPU_sample_thomsonP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_thomson()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv424GPU_sample_klein_nishinadP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv417GPU_klein_nishinaKdKd"><code class="docutils literal notranslate"><span class="pre">GPU_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv427GPU_sample_electron_distr_pAL4E_dAL4E_ddP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_electron_distr_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv421GPU_sample_beta_distrdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_beta_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv418GPU_sample_y_distrKdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_y_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv419GPU_sample_mu_distrKdd"><code class="docutils literal notranslate"><span class="pre">GPU_sample_mu_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv424GPU_scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey"><code class="docutils literal notranslate"><span class="pre">GPU_scatter_super_photon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">config.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MINT"><code class="docutils literal notranslate"><span class="pre">MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAXT"><code class="docutils literal notranslate"><span class="pre">MAXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.NW"><code class="docutils literal notranslate"><span class="pre">NW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.NT"><code class="docutils literal notranslate"><span class="pre">NT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.HOTCROSS"><code class="docutils literal notranslate"><span class="pre">HOTCROSS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAXGAMMA"><code class="docutils literal notranslate"><span class="pre">MAXGAMMA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.DMUE"><code class="docutils literal notranslate"><span class="pre">DMUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.DGAMMAE"><code class="docutils literal notranslate"><span class="pre">DGAMMAE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MMW"><code class="docutils literal notranslate"><span class="pre">MMW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.NDIM"><code class="docutils literal notranslate"><span class="pre">NDIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.KRHO"><code class="docutils literal notranslate"><span class="pre">KRHO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.UU"><code class="docutils literal notranslate"><span class="pre">UU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.U1"><code class="docutils literal notranslate"><span class="pre">U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.U2"><code class="docutils literal notranslate"><span class="pre">U2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.U3"><code class="docutils literal notranslate"><span class="pre">U3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.B2"><code class="docutils literal notranslate"><span class="pre">B2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.B3"><code class="docutils literal notranslate"><span class="pre">B3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.KEL"><code class="docutils literal notranslate"><span class="pre">KEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.KTOT"><code class="docutils literal notranslate"><span class="pre">KTOT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.SMALL"><code class="docutils literal notranslate"><span class="pre">SMALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.NPRIM_INDEX"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.SLOOP_DEVICE"><code class="docutils literal notranslate"><span class="pre">SLOOP_DEVICE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.DLOOP"><code class="docutils literal notranslate"><span class="pre">DLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAX"><code class="docutils literal notranslate"><span class="pre">MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_lmint"><code class="docutils literal notranslate"><span class="pre">d_lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_lminw"><code class="docutils literal notranslate"><span class="pre">d_lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_lT_min"><code class="docutils literal notranslate"><span class="pre">d_lT_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_dlw"><code class="docutils literal notranslate"><span class="pre">d_dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_dlT1"><code class="docutils literal notranslate"><span class="pre">d_dlT1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.d_dlT2"><code class="docutils literal notranslate"><span class="pre">d_dlT2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.KMAX"><code class="docutils literal notranslate"><span class="pre">KMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.KMIN"><code class="docutils literal notranslate"><span class="pre">KMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.SMALL_VECTOR"><code class="docutils literal notranslate"><span class="pre">SMALL_VECTOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.EPSABS"><code class="docutils literal notranslate"><span class="pre">EPSABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.EPSREL"><code class="docutils literal notranslate"><span class="pre">EPSREL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.TMIN"><code class="docutils literal notranslate"><span class="pre">TMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.TMAX"><code class="docutils literal notranslate"><span class="pre">TMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.SCATTERINGS_PER_PHOTON"><code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.NINT"><code class="docutils literal notranslate"><span class="pre">NINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.BTHSQMIN"><code class="docutils literal notranslate"><span class="pre">BTHSQMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.BTHSQMAX"><code class="docutils literal notranslate"><span class="pre">BTHSQMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAX_LAYER_SCA"><code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.EPS"><code class="docutils literal notranslate"><span class="pre">EPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.FAST_CPY"><code class="docutils literal notranslate"><span class="pre">FAST_CPY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constant.html">constants.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="constant.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EE"><code class="docutils literal notranslate"><span class="pre">EE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CL"><code class="docutils literal notranslate"><span class="pre">CL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.ME"><code class="docutils literal notranslate"><span class="pre">ME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MP"><code class="docutils literal notranslate"><span class="pre">MP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MN"><code class="docutils literal notranslate"><span class="pre">MN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AMU"><code class="docutils literal notranslate"><span class="pre">AMU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HPL"><code class="docutils literal notranslate"><span class="pre">HPL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HBAR"><code class="docutils literal notranslate"><span class="pre">HBAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KBOL"><code class="docutils literal notranslate"><span class="pre">KBOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.GNEWT"><code class="docutils literal notranslate"><span class="pre">GNEWT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIG"><code class="docutils literal notranslate"><span class="pre">SIG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RGAS"><code class="docutils literal notranslate"><span class="pre">RGAS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EV"><code class="docutils literal notranslate"><span class="pre">EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIGMA_THOMSON"><code class="docutils literal notranslate"><span class="pre">SIGMA_THOMSON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.JY"><code class="docutils literal notranslate"><span class="pre">JY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.PC"><code class="docutils literal notranslate"><span class="pre">PC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AU"><code class="docutils literal notranslate"><span class="pre">AU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.YEAR"><code class="docutils literal notranslate"><span class="pre">YEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DAY"><code class="docutils literal notranslate"><span class="pre">DAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HOUR"><code class="docutils literal notranslate"><span class="pre">HOUR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MSUN"><code class="docutils literal notranslate"><span class="pre">MSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RSUN"><code class="docutils literal notranslate"><span class="pre">RSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.LSUN"><code class="docutils literal notranslate"><span class="pre">LSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TSUN"><code class="docutils literal notranslate"><span class="pre">TSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MEARTH"><code class="docutils literal notranslate"><span class="pre">MEARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.REARTH"><code class="docutils literal notranslate"><span class="pre">REARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DSGRA"><code class="docutils literal notranslate"><span class="pre">DSGRA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TCBR"><code class="docutils literal notranslate"><span class="pre">TCBR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLX"><code class="docutils literal notranslate"><span class="pre">SOLX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLY"><code class="docutils literal notranslate"><span class="pre">SOLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLZ"><code class="docutils literal notranslate"><span class="pre">SOLZ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PI"><code class="docutils literal notranslate"><span class="pre">FOUR_PI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PISQ"><code class="docutils literal notranslate"><span class="pre">FOUR_PISQ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.THREEPI_TWO"><code class="docutils literal notranslate"><span class="pre">THREEPI_TWO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CST"><code class="docutils literal notranslate"><span class="pre">CST</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="main.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv44mainiA_Pc"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="radiation.html">radiation.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="radiation.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv411GPU_jnu_invKdKdKdKdKd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_jnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv411GPU_Bnu_invKdKd"><code class="docutils literal notranslate"><span class="pre">GPU_Bnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412GPU_kappa_esKdKdPKd"><code class="docutils literal notranslate"><span class="pre">GPU_kappa_es()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv416GPU_get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_get_fluid_nu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv419GPU_alpha_inv_scattKdKdKdPKd"><code class="docutils literal notranslate"><span class="pre">GPU_alpha_inv_scatt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv417GPU_alpha_inv_absKdKdKdKdd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_alpha_inv_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv416GPU_get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd"><code class="docutils literal notranslate"><span class="pre">GPU_get_bk_angle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv417GPU_interp_scalar19cudaTextureObject_tKiKiKiKiAL4E_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_interp_scalar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415findPhotonIndexPKyiy"><code class="docutils literal notranslate"><span class="pre">findPhotonIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv425GPU_interp_scalar_pointerPKdKiKiKiKiAL8E_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_interp_scalar_pointer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413NPRIM_INDEX3Diiii"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX2Dii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX3Diii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX3D()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docs_guidelines.html">Documentation Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#guidelines">Guidelines:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#update-workflow-and-repository-structure">Update Workflow and Repository Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#documentation-directories-organization">Documentation Directories Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#website-navigation-and-tabs">Website Navigation and Tabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#local-testing-and-building">Local Testing and Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">config.h</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="config-h">
+<h1>config.h<a class="headerlink" href="#config-h" title="Link to this heading"></a></h1>
+<p>Documentation for the main macros and preprocessor definitions used in the configuration of the GPUmonty code.</p>
+<section id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KFAC">
+<span class="target" id="config_8h_1a6ab7e0600ce055b99f7f13342bace0c8"></span><span class="sig-name descname"><span class="n"><span class="pre">KFAC</span></span></span> <span class="pre">(9*M_PI*</span><a class="reference internal" href="constant.html#constants_8h_1adf8d34f3be20164c292bccfeb72898e5"><span class="std std-ref"><span class="pre">ME</span></span></a><span class="pre">*</span><a class="reference internal" href="constant.html#constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227"><span class="std std-ref"><span class="pre">CL</span></span></a><span class="pre">/</span><a class="reference internal" href="constant.html#constants_8h_1a40069882b1f09d9463acc3acd7b67708"><span class="std std-ref"><span class="pre">EE</span></span></a><span class="pre">)</span><a class="headerlink" href="#c.KFAC" title="Link to this definition"></a><br /></dt>
+<dd><p>Factor used for synchrotron emissivity calculation </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_BLOCKS">
+<span class="target" id="config_8h_1aa714b8308c6a460183a00af49b098b37"></span><span class="sig-name descname"><span class="n"><span class="pre">N_BLOCKS</span></span></span> <span class="pre">3456</span><a class="headerlink" href="#c.N_BLOCKS" title="Link to this definition"></a><br /></dt>
+<dd><p>The number of thread blocks dispatched per kernel call. This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_THREADS">
+<span class="target" id="config_8h_1ab60b5074c740fd36061f48f90d1a0b21"></span><span class="sig-name descname"><span class="n"><span class="pre">N_THREADS</span></span></span> <span class="pre">256</span><a class="headerlink" href="#c.N_THREADS" title="Link to this definition"></a><br /></dt>
+<dd><p>The number of threads per block. This defines the block size and should be chosen as a multiple of the warp size (32 for NVIDIA GPUs) to ensure efficient execution up to 2048 depending on the GPU architecture. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.dlE">
+<span class="target" id="config_8h_1abfdf8549767cfdd4e24b384195d59249"></span><span class="sig-name descname"><span class="n"><span class="pre">dlE</span></span></span> <span class="pre">(0.12)</span><a class="headerlink" href="#c.dlE" title="Link to this definition"></a><br /></dt>
+<dd><p>Size of the energy bin in logarithmic scale for the spectral output binning. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.lE0">
+<span class="target" id="config_8h_1a4020105dca646421d3e1afe990f9fc7b"></span><span class="sig-name descname"><span class="n"><span class="pre">lE0</span></span></span> <span class="pre">(log(1.e-12))</span><a class="headerlink" href="#c.lE0" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum energy of the energy bin in logarithmic scale. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_ESAMP">
+<span class="target" id="config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3"></span><span class="sig-name descname"><span class="n"><span class="pre">N_ESAMP</span></span></span> <span class="pre">800</span><a class="headerlink" href="#c.N_ESAMP" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of energy samples for the emissivity and weight tables. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_EBINS">
+<span class="target" id="config_8h_1af9cf051839fae1fdc190fe02abd595c6"></span><span class="sig-name descname"><span class="n"><span class="pre">N_EBINS</span></span></span> <span class="pre">800</span><a class="headerlink" href="#c.N_EBINS" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of energy bins for the spectral output. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_THBINS">
+<span class="target" id="config_8h_1af52e5601e24f633637c7ef961a01a847"></span><span class="sig-name descname"><span class="n"><span class="pre">N_THBINS</span></span></span> <span class="pre">6</span><a class="headerlink" href="#c.N_THBINS" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of theta bins for angular distribution for the spectral output binning. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MINW">
+<span class="target" id="config_8h_1a2683e456f12803d9aeb4052541491f4a"></span><span class="sig-name descname"><span class="n"><span class="pre">MINW</span></span></span> <span class="pre">1.e-12</span><a class="headerlink" href="#c.MINW" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum dimensionless photon frequency (or energy) used to construct the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAXW">
+<span class="target" id="config_8h_1a62c2a4d9d4dcc85c1cd11951314ba30c"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXW</span></span></span> <span class="pre">1.e15</span><a class="headerlink" href="#c.MAXW" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum dimensionless photon frequency (or energy) used to construct the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MINT">
+<span class="target" id="config_8h_1a82c6557ea3851dd884fe48509d789abf"></span><span class="sig-name descname"><span class="n"><span class="pre">MINT</span></span></span> <span class="pre">1.e-4</span><a class="headerlink" href="#c.MINT" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum dimensionless temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) used to construct the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAXT">
+<span class="target" id="config_8h_1a3f79fdecc884eb98c97d1bdc77455295"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXT</span></span></span> <span class="pre">1.e4</span><a class="headerlink" href="#c.MAXT" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum dimensionless temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) used to construct the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.NW">
+<span class="target" id="config_8h_1af9cccf331f045b89a9f12366df5f7687"></span><span class="sig-name descname"><span class="n"><span class="pre">NW</span></span></span> <span class="pre">220</span><a class="headerlink" href="#c.NW" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of energy bins for the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.NT">
+<span class="target" id="config_8h_1a7d5ef0de19030d43f98042e1c4a9f605"></span><span class="sig-name descname"><span class="n"><span class="pre">NT</span></span></span> <span class="pre">80</span><a class="headerlink" href="#c.NT" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of dimensionless temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) bins for the Compton cross-section lookup table </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.HOTCROSS">
+<span class="target" id="config_8h_1a9e18be7707202e197d9560f0da453a7a"></span><span class="sig-name descname"><span class="n"><span class="pre">HOTCROSS</span></span></span> <span class="pre">&quot;./table/hotcross.dat&quot;</span><a class="headerlink" href="#c.HOTCROSS" title="Link to this definition"></a><br /></dt>
+<dd><p>Standard path to the Compton cross-section table file </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAXGAMMA">
+<span class="target" id="config_8h_1a625b9265e7549c6cdb15ae3e2efd59d0"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXGAMMA</span></span></span> <span class="pre">12.</span><a class="headerlink" href="#c.MAXGAMMA" title="Link to this definition"></a><br /></dt>
+<dd><p>The integration cutoff multiplier for the electron Lorentz factor. MAXGAMMA tells the code how far into the high-energy “tail” of the electron distribution it needs to integrate to get an accurate result. The integration goes up to <span class="math notranslate nohighlight">\(\gamma_\rm{e} = 1 + \text{MAXGAMMA} \Theta_{\rm e}\)</span>. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DMUE">
+<span class="target" id="config_8h_1ada686b7dcca8247d94eb0fae9ce4e427"></span><span class="sig-name descname"><span class="n"><span class="pre">DMUE</span></span></span> <span class="pre">0.05</span><a class="headerlink" href="#c.DMUE" title="Link to this definition"></a><br /></dt>
+<dd><p>The step size for the angular integration variable ( <span class="math notranslate nohighlight">\( \mu_\rm{e} \)</span>), that represents the cosine of the angle between the photon’s direction and the electron’s velocity in the Compton cross-section calculation. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DGAMMAE">
+<span class="target" id="config_8h_1a6e87d3af7570d65c3b5eefa957075870"></span><span class="sig-name descname"><span class="n"><span class="pre">DGAMMAE</span></span></span> <span class="pre">0.05</span><a class="headerlink" href="#c.DGAMMAE" title="Link to this definition"></a><br /></dt>
+<dd><p>The step size resolution for the electron Lorentz factor ( <span class="math notranslate nohighlight">\( \gamma_\rm{e} \)</span>) integration in the Compton cross-section calculation. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MMW">
+<span class="target" id="config_8h_1a3e2b7999e026c8818d56dcebd087125b"></span><span class="sig-name descname"><span class="n"><span class="pre">MMW</span></span></span> <span class="pre">0.5</span><a class="headerlink" href="#c.MMW" title="Link to this definition"></a><br /></dt>
+<dd><p>Mean molecular weight, in units of proton mass ( <span class="math notranslate nohighlight">\( m_p \)</span>). </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.NDIM">
+<span class="target" id="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3"></span><span class="sig-name descname"><span class="n"><span class="pre">NDIM</span></span></span> <span class="pre">4</span><a class="headerlink" href="#c.NDIM" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of dimensions in spacetime, time + 3 spatial dimensions. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KRHO">
+<span class="target" id="config_8h_1aa3ffc0b1e992501802639fb5c919d4e0"></span><span class="sig-name descname"><span class="n"><span class="pre">KRHO</span></span></span> <span class="pre">0</span><a class="headerlink" href="#c.KRHO" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the density primitive variable ( <span class="math notranslate nohighlight">\( \rho \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.UU">
+<span class="target" id="config_8h_1a94db1ec6a412a83becda73ca2a5db0bf"></span><span class="sig-name descname"><span class="n"><span class="pre">UU</span></span></span> <span class="pre">1</span><a class="headerlink" href="#c.UU" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the internal energy primitive variable ( <span class="math notranslate nohighlight">\( u \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.U1">
+<span class="target" id="config_8h_1aacb3eec923047fe7ddf3eda070c600d9"></span><span class="sig-name descname"><span class="n"><span class="pre">U1</span></span></span> <span class="pre">2</span><a class="headerlink" href="#c.U1" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 1st-spatial velocity primitive variable ( <span class="math notranslate nohighlight">\( u^1 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.U2">
+<span class="target" id="config_8h_1ae907e773ef038f3fc0c2ad5de0cb0f07"></span><span class="sig-name descname"><span class="n"><span class="pre">U2</span></span></span> <span class="pre">3</span><a class="headerlink" href="#c.U2" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 2nd-spatial velocity primitive variable ( <span class="math notranslate nohighlight">\( u^2 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.U3">
+<span class="target" id="config_8h_1a8de9104f1fffa59f057b214d74c5cfea"></span><span class="sig-name descname"><span class="n"><span class="pre">U3</span></span></span> <span class="pre">4</span><a class="headerlink" href="#c.U3" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 3rd-spatial velocity primitive variable ( <span class="math notranslate nohighlight">\( u^3 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.B1">
+<span class="target" id="config_8h_1a7b21d6a6a4573b4997b1f04b01cd4efb"></span><span class="sig-name descname"><span class="n"><span class="pre">B1</span></span></span> <span class="pre">5</span><a class="headerlink" href="#c.B1" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 1st-spatial magnetic field primitive variable ( <span class="math notranslate nohighlight">\( B^1 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.B2">
+<span class="target" id="config_8h_1a6945d50f798e1fde624d70c74457090e"></span><span class="sig-name descname"><span class="n"><span class="pre">B2</span></span></span> <span class="pre">6</span><a class="headerlink" href="#c.B2" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 2nd-spatial magnetic field primitive variable ( <span class="math notranslate nohighlight">\( B^2 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.B3">
+<span class="target" id="config_8h_1ae6ac0edb1e2c9c7672ab9488d8b65be9"></span><span class="sig-name descname"><span class="n"><span class="pre">B3</span></span></span> <span class="pre">7</span><a class="headerlink" href="#c.B3" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the 3rd-spatial magnetic field primitive variable ( <span class="math notranslate nohighlight">\( B^3 \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KEL">
+<span class="target" id="config_8h_1acb7cb36f9b09ce9e75195c645e1896ef"></span><span class="sig-name descname"><span class="n"><span class="pre">KEL</span></span></span> <span class="pre">8</span><a class="headerlink" href="#c.KEL" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the electron temperature primitive variable ( <span class="math notranslate nohighlight">\( T_e \)</span>) array index. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KTOT">
+<span class="target" id="config_8h_1ad4518c33117bbd52e7e4201f6a539c6c"></span><span class="sig-name descname"><span class="n"><span class="pre">KTOT</span></span></span> <span class="pre">9</span><a class="headerlink" href="#c.KTOT" title="Link to this definition"></a><br /></dt>
+<dd><p>Mmnemonics for the Ktot </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SMALL">
+<span class="target" id="config_8h_1a09c78d2f8feb311dd9fc969a0bf84979"></span><span class="sig-name descname"><span class="n"><span class="pre">SMALL</span></span></span> <span class="pre">1.e-40</span><a class="headerlink" href="#c.SMALL" title="Link to this definition"></a><br /></dt>
+<dd><p>Small number to avoid division by zero or logarithm of zero. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.NPRIM_INDEX">
+<span class="target" id="config_8h_1ac26246c9115d25d589cbcbccca2c4ec4"></span><span class="sig-name descname"><span class="n"><span class="pre">NPRIM_INDEX</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">i</span></span>, <span class="n"><span class="pre">j</span></span><span class="sig-paren">)</span> <span class="pre">(j</span> <span class="pre">*</span> <span class="pre">NPRIM</span> <span class="pre">+</span> <span class="pre">i)</span><a class="headerlink" href="#c.NPRIM_INDEX" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the 1D index for a 2D array stored in a 1D format. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SLOOP_DEVICE">
+<span class="target" id="config_8h_1a3f61be3573f9fa597085ba6415ba00f1"></span><span class="sig-name descname"><span class="n"><span class="pre">SLOOP_DEVICE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">i</span></span>, <span class="n"><span class="pre">j</span></span>, <span class="n"><span class="pre">k</span></span><span class="sig-paren">)</span> &#160;&#160;&#160; <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">N1</span><span class="pre">;</span> <span class="pre">i++)</span> <span class="pre">\</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">j</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">j</span> <span class="pre">&lt;</span> <span class="pre">N2</span><span class="pre">;</span> <span class="pre">j++)</span> <span class="pre">\</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">k</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">k</span> <span class="pre">&lt;</span> <span class="pre">N3</span><span class="pre">;</span> <span class="pre">k++)</span><a class="headerlink" href="#c.SLOOP_DEVICE" title="Link to this definition"></a><br /></dt>
+<dd><p>Macro to loop over all spatial grid points in device or host code, depending on the compilation context. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DLOOP">
+<span class="target" id="config_8h_1a45d3170540ff56498a43c27851e2c7a0"></span><span class="sig-name descname"><span class="n"><span class="pre">DLOOP</span></span></span> <span class="pre">for(k=0;k&lt;</span><a class="reference internal" href="#config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3"><span class="std std-ref"><span class="pre">NDIM</span></span></a><span class="pre">;k++)for(l=0;l&lt;</span><a class="reference internal" href="#config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3"><span class="std std-ref"><span class="pre">NDIM</span></span></a><span class="pre">;l++)</span><a class="headerlink" href="#c.DLOOP" title="Link to this definition"></a><br /></dt>
+<dd><p>Macro to loop over all dimensions in spacetime twice (used for tensors). </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAX">
+<span class="target" id="config_8h_1afa99ec4acc4ecb2dc3c2d05da15d0e3f"></span><span class="sig-name descname"><span class="n"><span class="pre">MAX</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">a</span></span>, <span class="n"><span class="pre">b</span></span><span class="sig-paren">)</span> <span class="pre">(((a)&gt;(</span><span class="pre">b</span><span class="pre">))?(a):(</span><span class="pre">b</span><span class="pre">))</span><a class="headerlink" href="#c.MAX" title="Link to this definition"></a><br /></dt>
+<dd><p>Macro to compute the maximum of two values. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_lmint">
+<span class="target" id="config_8h_1a445fb5b45f03dee9be98488977ad56c8"></span><span class="sig-name descname"><span class="n"><span class="pre">d_lmint</span></span></span> <span class="pre">(log10(</span><a class="reference internal" href="#config_8h_1a82c6557ea3851dd884fe48509d789abf"><span class="std std-ref"><span class="pre">MINT</span></span></a><span class="pre">))</span><a class="headerlink" href="#c.d_lmint" title="Link to this definition"></a><br /></dt>
+<dd><p>Logarithm of the minimum dimensionless temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) for the Compton cross-section table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_lminw">
+<span class="target" id="config_8h_1aaef6bb9ce5780a979999b54ffaeb2e9e"></span><span class="sig-name descname"><span class="n"><span class="pre">d_lminw</span></span></span> <span class="pre">(log10(</span><a class="reference internal" href="#config_8h_1a2683e456f12803d9aeb4052541491f4a"><span class="std std-ref"><span class="pre">MINW</span></span></a><span class="pre">))</span><a class="headerlink" href="#c.d_lminw" title="Link to this definition"></a><br /></dt>
+<dd><p>Logarithm of the minimum dimensionless photon frequency for the Compton cross-section table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_lT_min">
+<span class="target" id="config_8h_1a6638e06d37d15c15f2f5726e0c281613"></span><span class="sig-name descname"><span class="n"><span class="pre">d_lT_min</span></span></span> <span class="pre">(log(</span><a class="reference internal" href="#config_8h_1af7e87bb3f38e7b4eed703578b90cd3a4"><span class="std std-ref"><span class="pre">TMIN</span></span></a><span class="pre">))</span><a class="headerlink" href="#c.d_lT_min" title="Link to this definition"></a><br /></dt>
+<dd><p>TMIN represents the minimum dimensionless electron temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) used in both <span class="math notranslate nohighlight">\( K_2(1/\Theta_{\rm e}) \)</span> calculations and synchrotron emissivity table generation. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_dlw">
+<span class="target" id="config_8h_1a2eb2e8ba090b5a9fc5ea509a7769dce4"></span><span class="sig-name descname"><span class="n"><span class="pre">d_dlw</span></span></span> <span class="pre">(log10(</span><a class="reference internal" href="#config_8h_1a62c2a4d9d4dcc85c1cd11951314ba30c"><span class="std std-ref"><span class="pre">MAXW</span></span></a> <span class="pre">/</span> <a class="reference internal" href="#config_8h_1a2683e456f12803d9aeb4052541491f4a"><span class="std std-ref"><span class="pre">MINW</span></span></a><span class="pre">)</span> <span class="pre">/</span> <a class="reference internal" href="#config_8h_1af9cccf331f045b89a9f12366df5f7687"><span class="std std-ref"><span class="pre">NW</span></span></a><span class="pre">)</span><a class="headerlink" href="#c.d_dlw" title="Link to this definition"></a><br /></dt>
+<dd><p>Logarithmic step size for the Compton cross-section table in the photon frequency dimension. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_dlT1">
+<span class="target" id="config_8h_1a682c3ba672bcb13cdbcd601a7b35648a"></span><span class="sig-name descname"><span class="n"><span class="pre">d_dlT1</span></span></span> <span class="pre">(1/(log(</span><a class="reference internal" href="#config_8h_1af7a16e2716eaac90fb331c55876cf511"><span class="std std-ref"><span class="pre">TMAX</span></span></a> <span class="pre">/</span> <a class="reference internal" href="#config_8h_1af7e87bb3f38e7b4eed703578b90cd3a4"><span class="std std-ref"><span class="pre">TMIN</span></span></a><span class="pre">)</span> <span class="pre">/</span> <span class="pre">(</span><a class="reference internal" href="#config_8h_1ac5c119234d20f96cd42a8d05feb0f9f3"><span class="std std-ref"><span class="pre">N_ESAMP</span></span></a><span class="pre">)))</span><a class="headerlink" href="#c.d_dlT1" title="Link to this definition"></a><br /></dt>
+<dd><p>Precomputed inverse of the logarithmic temperature step size for emissivity and <span class="math notranslate nohighlight">\( K_2(1/\Theta_{\rm e}) \)</span> calculations. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.d_dlT2">
+<span class="target" id="config_8h_1ac80c6f5d6b0523ed410f312def9887cd"></span><span class="sig-name descname"><span class="n"><span class="pre">d_dlT2</span></span></span> <span class="pre">(log10(</span><a class="reference internal" href="#config_8h_1a3f79fdecc884eb98c97d1bdc77455295"><span class="std std-ref"><span class="pre">MAXT</span></span></a><span class="pre">/</span><a class="reference internal" href="#config_8h_1a82c6557ea3851dd884fe48509d789abf"><span class="std std-ref"><span class="pre">MINT</span></span></a><span class="pre">)</span> <span class="pre">/</span> <a class="reference internal" href="#config_8h_1a7d5ef0de19030d43f98042e1c4a9f605"><span class="std std-ref"><span class="pre">NT</span></span></a><span class="pre">)</span><a class="headerlink" href="#c.d_dlT2" title="Link to this definition"></a><br /></dt>
+<dd><p>Logarithmic step size for the Compton cross-section table in the dimensionless temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) dimension. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KMAX">
+<span class="target" id="config_8h_1a940b85a83458e94519f2685b33ddd276"></span><span class="sig-name descname"><span class="n"><span class="pre">KMAX</span></span></span> <span class="pre">(1.e7)</span><a class="headerlink" href="#c.KMAX" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum boundery for the dimensionless frequency grid used to precompute the synchrotron emissivity table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.KMIN">
+<span class="target" id="config_8h_1ac90a350d957048c5b777f5b18a89d395"></span><span class="sig-name descname"><span class="n"><span class="pre">KMIN</span></span></span> <span class="pre">(0.002)</span><a class="headerlink" href="#c.KMIN" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum boundery for the dimensionless frequency grid used to precompute the synchrotron emissivity table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SMALL_VECTOR">
+<span class="target" id="config_8h_1a0067e5bccce5907b18b870c25c27da10"></span><span class="sig-name descname"><span class="n"><span class="pre">SMALL_VECTOR</span></span></span> <span class="pre">(1.e-30)</span><a class="headerlink" href="#c.SMALL_VECTOR" title="Link to this definition"></a><br /></dt>
+<dd><p>Precomputed definitin of small vector value to avoid numerical issues in tetrad calculations. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EPSABS">
+<span class="target" id="config_8h_1a73454672f06c374413768cbe6e55a56b"></span><span class="sig-name descname"><span class="n"><span class="pre">EPSABS</span></span></span> <span class="pre">(0.)</span><a class="headerlink" href="#c.EPSABS" title="Link to this definition"></a><br /></dt>
+<dd><p>The maximum allowable absolute error. This provides a “floor” for the error. If the result of the integral is very close to zero, this prevents the integrator from working forever to find an infinitely small relative error. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EPSREL">
+<span class="target" id="config_8h_1aa24b9473c200378937469ef60a534e9e"></span><span class="sig-name descname"><span class="n"><span class="pre">EPSREL</span></span></span> <span class="pre">(1.e-6)</span><a class="headerlink" href="#c.EPSREL" title="Link to this definition"></a><br /></dt>
+<dd><p>The maximum allowable relative error (as a fraction). For example, a value of $10^{-6}$ means you want the result to be accurate to within $0.0001%$. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TMIN">
+<span class="target" id="config_8h_1af7e87bb3f38e7b4eed703578b90cd3a4"></span><span class="sig-name descname"><span class="n"><span class="pre">TMIN</span></span></span> <span class="pre">(THETAE_MIN)</span><a class="headerlink" href="#c.TMIN" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum dimensionless electron temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) for the bessel function ( <span class="math notranslate nohighlight">\( K_2 \)</span>) table calculation. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.TMAX">
+<span class="target" id="config_8h_1af7a16e2716eaac90fb331c55876cf511"></span><span class="sig-name descname"><span class="n"><span class="pre">TMAX</span></span></span> <span class="pre">(1.e2)</span><a class="headerlink" href="#c.TMAX" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum dimensionless electron temperature ( <span class="math notranslate nohighlight">\( \Theta_{\rm e} \)</span>) for the bessel function ( <span class="math notranslate nohighlight">\( K_2 \)</span>) table calculation. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SCATTERINGS_PER_PHOTON">
+<span class="target" id="config_8h_1addda3b78cccaf3744a0eff165ac53a29"></span><span class="sig-name descname"><span class="n"><span class="pre">SCATTERINGS_PER_PHOTON</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.SCATTERINGS_PER_PHOTON" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of scatterings each superphoton is allowed to undergo. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This serves as a estimation for memory allocation and should be adjusted based on the specific simulation requirements. If the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value. A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.NINT">
+<span class="target" id="config_8h_1aec1f379db16eab02bf861dad7b97eb06"></span><span class="sig-name descname"><span class="n"><span class="pre">NINT</span></span></span> <span class="pre">(40000)</span><a class="headerlink" href="#c.NINT" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of data points in the Nint table used for solid angle averaged synchrotron emissivity calculations. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.BTHSQMIN">
+<span class="target" id="config_8h_1afa4565b6dc2e785bd055ba0bfe98f3ea"></span><span class="sig-name descname"><span class="n"><span class="pre">BTHSQMIN</span></span></span> <span class="pre">(1.e-8)</span><a class="headerlink" href="#c.BTHSQMIN" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimum value of the product <span class="math notranslate nohighlight">\( B \theta_e^2 \)</span> used in the Nint table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.BTHSQMAX">
+<span class="target" id="config_8h_1a36768ba4c02dc3ab60ebaced991e178e"></span><span class="sig-name descname"><span class="n"><span class="pre">BTHSQMAX</span></span></span> <span class="pre">(1.e9)</span><a class="headerlink" href="#c.BTHSQMAX" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum value of the product <span class="math notranslate nohighlight">\( B \theta_e^2 \)</span> used in the Nint table. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAX_LAYER_SCA">
+<span class="target" id="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa"></span><span class="sig-name descname"><span class="n"><span class="pre">MAX_LAYER_SCA</span></span></span> <span class="pre">(3)</span><a class="headerlink" href="#c.MAX_LAYER_SCA" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum number of scattering layers allowed. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.EPS">
+<span class="target" id="config_8h_1a6ebf6899d6c1c8b7b9d09be872c05aae"></span><span class="sig-name descname"><span class="n"><span class="pre">EPS</span></span></span> <span class="pre">(0.04)</span><a class="headerlink" href="#c.EPS" title="Link to this definition"></a><br /></dt>
+<dd><p>Epsilon parameter used in the photon geodesic integration to scale the stepsize. Decreasing this value increases accuracy but also computational cost. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.FAST_CPY">
+<span class="target" id="config_8h_1a713a5412e462616801a01bbdc1135218"></span><span class="sig-name descname"><span class="n"><span class="pre">FAST_CPY</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">in</span></span>, <span class="n"><span class="pre">out</span></span><span class="sig-paren">)</span> <span class="pre">{out[0]</span> <span class="pre">=</span> <span class="pre">in[0];</span> <span class="pre">out[1]</span> <span class="pre">=</span> <span class="pre">in[1];</span> <span class="pre">out[2]</span> <span class="pre">=</span> <span class="pre">in[2];</span> <span class="pre">out[3]</span> <span class="pre">=</span> <span class="pre">in[3];}</span><a class="headerlink" href="#c.FAST_CPY" title="Link to this definition"></a><br /></dt>
+<dd><p>Macro for fast copying of 4-element arrays. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.ETOL">
+<span class="target" id="config_8h_1a58dc3f6c36e1c0b1820e65d7bd10dee9"></span><span class="sig-name descname"><span class="n"><span class="pre">ETOL</span></span></span> <span class="pre">(1.e-3)</span><a class="headerlink" href="#c.ETOL" title="Link to this definition"></a><br /></dt>
+<dd><p>Tolerance for the geodesic integration error. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAX_ITER">
+<span class="target" id="config_8h_1acd517c6f195c75b9dd0f3aad65326f3b"></span><span class="sig-name descname"><span class="n"><span class="pre">MAX_ITER</span></span></span> <span class="pre">(2)</span><a class="headerlink" href="#c.MAX_ITER" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum number of iterations for the geodesic integration push photon function. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAXNSTEP">
+<span class="target" id="config_8h_1aaedb667de4411b02a53d822e161996d7"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXNSTEP</span></span></span> <span class="pre">(1280000)</span><a class="headerlink" href="#c.MAXNSTEP" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum number of integration steps for photon geodesic integration. </p>
+</dd></dl>
+
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="compton.html" class="btn btn-neutral float-left" title="compton.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constant.html" class="btn btn-neutral float-right" title="constants.h" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

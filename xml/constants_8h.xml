@@ -166,7 +166,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Ideal gas constant ( <formula id="46">$ \rm{erg}\, \rm{K}^{-1}\, \rm{mole}^{-1} $</formula>) </para>
+<para>Ideal gas constant ( <formula id="62">$ \rm{erg}\, \rm{K}^{-1}\, \rm{mole}^{-1} $</formula>) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -190,7 +190,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Thomson cross section in <formula id="47">$ cm^2 $</formula> </para>
+<para>Thomson cross section in <formula id="63">$ cm^2 $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -406,7 +406,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Ratio of <formula id="48">$ 4/π $</formula> </para>
+<para>Ratio of <formula id="64">$ 4/π $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -418,7 +418,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Ratio of <formula id="49">$ 4/\pi^2 $</formula> </para>
+<para>Ratio of <formula id="65">$ 4/\pi^2 $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -430,7 +430,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Ratio of <formula id="50">$ 3\pi/2 $</formula> </para>
+<para>Ratio of <formula id="66">$ 3\pi/2 $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -442,7 +442,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Constant defined as <formula id="51">$ 2^{11/12} $</formula> </para>
+<para>Constant defined as <formula id="67">$ 2^{11/12} $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

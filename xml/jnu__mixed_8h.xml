@@ -32,7 +32,7 @@
 <para>Calculates the thermal synchrotron emissivity $j_\nu(\nu, \theta)$ following <ulink url="https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf">Leung et al.(2011)</ulink>. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function implements the analytical fit for the emissivity of a thermal distribution of electrons: <formula id="76">$ j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) $</formula></para>
+<para>This function implements the analytical fit for the emissivity of a thermal distribution of electrons: <formula id="92">$ j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) $</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nu</parametername>
@@ -82,7 +82,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The local emissivity <formula id="77">$ j_\nu $</formula> in CGS units. </para>
+<simplesect kind="return"><para>The local emissivity <formula id="93">$ j_\nu $</formula> in CGS units. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -112,12 +112,12 @@
           <declname>nu</declname>
         </param>
         <briefdescription>
-<para>Calculates the angle-integrated thermal synchrotron emissivity <formula id="78">$ J_\nu $</formula> in CGS units. </para>
+<para>Calculates the angle-integrated thermal synchrotron emissivity <formula id="94">$ J_\nu $</formula> in CGS units. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function evaluates the total energy emitted per unit time, per unit volume, and per unit frequency, integrated over all solid angles <formula id="79">$ \int j_\nu d\Omega $</formula>.</para>
+<para>This function evaluates the total energy emitted per unit time, per unit volume, and per unit frequency, integrated over all solid angles <formula id="95">$ \int j_\nu d\Omega $</formula>.</para>
 <para><itemizedlist>
-<listitem><para>Implements: <formula id="80">$ J_\nu = \frac{\sqrt{2} e^3 n_e B \Theta_e^2}{27 m_e c^2 K_2(1/\Theta_e)} F(\Theta_e, B, \nu) $</formula></para>
+<listitem><para>Implements: <formula id="96">$ J_\nu = \frac{\sqrt{2} e^3 n_e B \Theta_e^2}{27 m_e c^2 K_2(1/\Theta_e)} F(\Theta_e, B, \nu) $</formula></para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -125,7 +125,7 @@
 <parametername>Ne</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Electron number density <formula id="81">$ n_e $</formula>. </para>
+<para>Electron number density <formula id="97">$ n_e $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -133,7 +133,7 @@
 <parametername>Thetae</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Dimensionless electron temperature <formula id="82">$ \Theta_{\rm e} $</formula>. </para>
+<para>Dimensionless electron temperature <formula id="46">$ \Theta_{\rm e} $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -141,7 +141,7 @@
 <parametername>Bmag</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Magnetic field strength <formula id="83">$ B $</formula>. </para>
+<para>Magnetic field strength <formula id="98">$ B $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -149,7 +149,7 @@
 <parametername>nu</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Photon frequency <formula id="84">$ \nu $</formula> in the plasma frame. </para>
+<para>Photon frequency <formula id="99">$ \nu $</formula> in the plasma frame. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -161,7 +161,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The integrated emissivity in <formula id="85">$ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} $</formula>. </para>
+<simplesect kind="return"><para>The integrated emissivity in <formula id="100">$ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -186,8 +186,8 @@
 <para>Provides the integrand for calculating the angle-integrated thermal synchrotron emissivity. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function is used by the GSL integrator to evaluate the integral over solid angles <formula id="86">$ \int j_\nu \sin\theta d\theta $</formula>.</para>
-<para>The integrand is given by: <formula id="87">\[ \sin^2\theta \left( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6} \right)^2 \exp\left[-(K/\sin\theta)^{1/3}\right] \]</formula></para>
+<para>This function is used by the GSL integrator to evaluate the integral over solid angles <formula id="101">$ \int j_\nu \sin\theta d\theta $</formula>.</para>
+<para>The integrand is given by: <formula id="102">\[ \sin^2\theta \left( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6} \right)^2 \exp\left[-(K/\sin\theta)^{1/3}\right] \]</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>th</parametername>
@@ -222,17 +222,19 @@
           <type>void</type>
         </param>
         <briefdescription>
-<para>Initializes lookup tables for the angle-integrated emissivity function <formula id="88">$ F $</formula> and the modified Bessel function <formula id="89">$ K_2 $</formula>. </para>
+<para>Initializes lookup tables for the angle-integrated emissivity function <formula id="103">$ F $</formula> and the modified Bessel function <formula id="60">$ K_2 $</formula>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Precomputes <formula id="90">$ F(K) $</formula> by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores the second-order modified Bessel function <formula id="91">$ K_2(1/\Theta_e) $</formula> in log-space for rapid retrieval during the simulation.</para>
+<para>Precomputes <formula id="104">$ F(K) $</formula> by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores the second-order modified Bessel function <formula id="105">$ K_2(1/\Theta_e) $</formula> in log-space for rapid retrieval during the simulation.</para>
+<para>The integration goes as:</para>
+<para><formula id="106">$F[k] = \ln \left( 4\pi \int_{0}^{\pi/2} \sin^2\theta \left[ \sqrt{\frac{K}{\sin\theta}} + 2^{11/12} \left( \frac{K}{\sin\theta} \right)^{1/6} \right]^2 \exp\left[ -\left( \frac{K}{\sin\theta} \right)^{1/3} \right] d\theta \right)$</formula></para>
 <para><simplesect kind="return"><para>void </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/jnu_mixed.h" line="71" column="15" declfile="src/jnu_mixed.h" declline="71" declcolumn="15"/>
+        <location file="src/jnu_mixed.h" line="75" column="15" declfile="src/jnu_mixed.h" declline="75" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -244,10 +246,10 @@
           <declname>Thetae</declname>
         </param>
         <briefdescription>
-<para>Evaluation of the modified Bessel function of the second kind, order 2, <formula id="91">$ K_2(1/\Theta_e) $</formula>. </para>
+<para>Evaluation of the modified Bessel function of the second kind, order 2, <formula id="105">$ K_2(1/\Theta_e) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function retrieves the value of <formula id="91">$ K_2(1/\Theta_e) $</formula> from precomputed lookup tables for efficient computation during simulations.</para>
+<para>This function retrieves the value of <formula id="105">$ K_2(1/\Theta_e) $</formula> from precomputed lookup tables for efficient computation during simulations.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>Thetae</parametername>
@@ -265,17 +267,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="note"><para>for large <formula id="31">$ \Theta_e $</formula>, we can use the asymptotic expansion <formula id="92">$ K_2(1/\Theta_e) \approx 2 \Theta_e^2 $</formula>. </para>
+<simplesect kind="note"><para>for large <formula id="31">$ \Theta_e $</formula>, we can use the asymptotic expansion <formula id="107">$ K_2(1/\Theta_e) \approx 2 \Theta_e^2 $</formula>. </para>
 </simplesect>
 <simplesect kind="note"><para>TMAX and THETA_MIN define the valid range for <formula id="31">$ \Theta_e $</formula> in the lookup tables.</para>
 </simplesect>
-<simplesect kind="return"><para>The value of <formula id="91">$ K_2(1/\Theta_e) $</formula>. </para>
+<simplesect kind="return"><para>The value of <formula id="105">$ K_2(1/\Theta_e) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/jnu_mixed.h" line="88" column="28" declfile="src/jnu_mixed.h" declline="88" declcolumn="28"/>
+        <location file="src/jnu_mixed.h" line="92" column="28" declfile="src/jnu_mixed.h" declline="92" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -295,15 +297,15 @@
           <declname>nu</declname>
         </param>
         <briefdescription>
-<para>Evaluates the frequency-dependent component <formula id="90">$ F(K) $</formula> of the angle-integrated emissivity. This function calculates the dimensionless frequency parameter <formula id="23">$ K $</formula> and retrieves the corresponding value of the precomputed integral <formula id="79">$ \int j_\nu d\Omega $</formula>. </para>
+<para>Evaluates the frequency-dependent component <formula id="104">$ F(K) $</formula> of the angle-integrated emissivity. This function calculates the dimensionless frequency parameter <formula id="23">$ K $</formula> and retrieves the corresponding value of the precomputed integral <formula id="95">$ \int j_\nu d\Omega $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
 <listitem></listitem></itemizedlist>
 </para>
 <para><itemizedlist>
-<listitem><para>If <formula id="93">$ K &gt; K_{\rm MAX} $</formula>: Returns 0 due to the exponential decay of the synchrotron spectrum.</para>
-</listitem><listitem><para>If <formula id="94">$ K &lt; K_{\rm MIN} $</formula>: Uses a power-law approximation based on the asymptotic behavior of the emissivity at low frequencies.</para>
+<listitem><para>If <formula id="108">$ K &gt; K_{\rm MAX} $</formula>: Returns 0 due to the exponential decay of the synchrotron spectrum.</para>
+</listitem><listitem><para>If <formula id="109">$ K &lt; K_{\rm MIN} $</formula>: Uses a power-law approximation based on the asymptotic behavior of the emissivity at low frequencies.</para>
 </listitem><listitem><para>Otherwise: Performs a linear interpolation using the precomputed <computeroutput>F</computeroutput> table.</para>
 </listitem></itemizedlist>
 </para>
@@ -320,7 +322,7 @@
 <parametername>Bmag</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Magnetic field strength <formula id="83">$ B $</formula>. </para>
+<para>Magnetic field strength <formula id="98">$ B $</formula>. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -328,17 +330,17 @@
 <parametername>nu</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Photon frequency <formula id="84">$ \nu $</formula> in the plasma frame.</para>
+<para>Photon frequency <formula id="99">$ \nu $</formula> in the plasma frame.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The value of the integrated emissivity function <formula id="88">$ F $</formula>. </para>
+<simplesect kind="return"><para>The value of the integrated emissivity function <formula id="103">$ F $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/jnu_mixed.h" line="111" column="28" declfile="src/jnu_mixed.h" declline="111" declcolumn="28"/>
+        <location file="src/jnu_mixed.h" line="115" column="28" declfile="src/jnu_mixed.h" declline="115" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -350,7 +352,7 @@
           <declname>K</declname>
         </param>
         <briefdescription>
-<para>Performs linear interpolation on the precomputed emissivity function <formula id="90">$ F(K) $</formula>. </para>
+<para>Performs linear interpolation on the precomputed emissivity function <formula id="104">$ F(K) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -362,13 +364,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The interpolated value of <formula id="90">$ F(K) $</formula>. </para>
+<simplesect kind="return"><para>The interpolated value of <formula id="104">$ F(K) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/jnu_mixed.h" line="120" column="28" declfile="src/jnu_mixed.h" declline="120" declcolumn="28"/>
+        <location file="src/jnu_mixed.h" line="124" column="28" declfile="src/jnu_mixed.h" declline="124" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ __device__ double</type>
@@ -380,7 +382,7 @@
           <declname>Thetae</declname>
         </param>
         <briefdescription>
-<para>Performs linear interpolation on the precomputed modified Bessel function <formula id="91">$ K_2(1/\Theta_e) $</formula>. </para>
+<para>Performs linear interpolation on the precomputed modified Bessel function <formula id="105">$ K_2(1/\Theta_e) $</formula>. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -400,13 +402,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>The interpolated value of <formula id="91">$ K_2(1/\Theta_e) $</formula>. </para>
+<simplesect kind="return"><para>The interpolated value of <formula id="105">$ K_2(1/\Theta_e) $</formula>. </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/jnu_mixed.h" line="130" column="28" declfile="src/jnu_mixed.h" declline="130" declcolumn="28"/>
+        <location file="src/jnu_mixed.h" line="134" column="28" declfile="src/jnu_mixed.h" declline="134" declcolumn="28"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -433,25 +435,25 @@
 <codeline lineno="60" refid="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1ae924d3f3abfdaea7a007babd29eb097d" kindref="member">jnu_integrand</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>th,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="decs_8h_1a02eb7524df3cdfd7ab32de5b40516106" kindref="member">params</ref>);</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71" refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" kindref="member">init_emiss_tables</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="88" refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" kindref="member">K2_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111" refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" kindref="member">F_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bmag,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu);</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight></codeline>
-<codeline lineno="120" refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" kindref="member">linear_interp_F</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K);</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight></codeline>
-<codeline lineno="130" refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" kindref="member">linear_interp_K2</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="75" refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" kindref="member">init_emiss_tables</ref>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92" refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1ae2c9a720f057f4231ae16f2465285418" kindref="member">K2_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a686392b9766898ebd7dc493489b4008a" kindref="member">F_eval</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bmag,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1aa1be441da61055d0e988a7008590f182" kindref="member">linear_interp_F</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="jnu__mixed_8h_1a429d7676ec34cbd6b24473a68e6ef914" kindref="member">linear_interp_K2</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>,<sp/>cudaTextureObject_t<sp/>besselTexObj</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>#endif</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/jnu_mixed.h"/>
   </compounddef>

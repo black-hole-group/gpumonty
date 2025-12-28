@@ -4,17 +4,17 @@
 \begin{DoxyCompactItemize}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{utils_8h_abb8287bae64cc59d791cad6286cfa9ea}{GPU\+\_\+interp\+\_\+scalar}} (cuda\+Texture\+Object\+\_\+t var, const int mmenemonics, const int i, const int j, const int k, const double del\mbox{[}4\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Interpolates a scalar field using hardware-\/accelerated CUDA Texture Objects. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{utils_8h_a7605ab792917c4d974672e864eb507b1}{find\+Photon\+Index}} (const unsigned long long $\ast$cumulative\+Array, int array\+Size, unsigned long long photon\+\_\+index)
-\item 
+\begin{DoxyCompactList}\small\item\em Maps a global photon ID to a specific grid cell or source index using binary search. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{utils_8h_a180bbb56408ac2af71ce0638af5ad9df}{GPU\+\_\+interp\+\_\+scalar\+\_\+pointer}} (const double $\ast$var, const int mmenemonics, const int i, const int j, const int k, const double coeff\mbox{[}8\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Performs trilinear interpolation of a scalar field at a sub-\/grid location. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{utils_8h_a55c05a1c45d59249e8ba1b47f9c6f009}{NPRIM\+\_\+\+INDEX3D}} (int v, int i, int j, int k)
-\item 
+\begin{DoxyCompactList}\small\item\em Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{utils_8h_add18509b0bd387ef5fe530218328c53d}{SPATIAL\+\_\+\+INDEX2D}} (int i, int j)
-\item 
+\begin{DoxyCompactList}\small\item\em Maps 2D spatial coordinates (i, j) to a 1D linear memory offset. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{utils_8h_a3e8f26df1c7ecb2476971258ad8077ea}{SPATIAL\+\_\+\+INDEX3D}} (int i, int j, int k)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Maps 3D spatial coordinates (i, j, k) to a 1D linear memory offset. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -24,33 +24,172 @@
 \doxysubsubsection{\texorpdfstring{findPhotonIndex()}{findPhotonIndex()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int find\+Photon\+Index (\begin{DoxyParamCaption}\item[{const unsigned long long $\ast$}]{cumulative\+Array,  }\item[{int}]{array\+Size,  }\item[{unsigned long long}]{photon\+\_\+index }\end{DoxyParamCaption})}
 
+
+
+Maps a global photon ID to a specific grid cell or source index using binary search. 
+
+This function performs a search over a prefix cumulative array to determine which \char`\"{}bucket\char`\"{} a specific superphoton belongs to. This is used to identify at which spatial cell a superphoton was emitted from based on its unique global ID.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cumulative\+Array} & Pointer to the prefix sum array (e.\+g., cumulative photon counts per cell). \\
+\hline
+{\em array\+Size} & The number of elements in the array. \\
+\hline
+{\em photon\+\_\+index} & The unique ID of the photon being processed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The index of the cell or source responsible for this photon. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{utils_8h_abb8287bae64cc59d791cad6286cfa9ea}\label{utils_8h_abb8287bae64cc59d791cad6286cfa9ea}} 
 \index{utils.h@{utils.h}!GPU\_interp\_scalar@{GPU\_interp\_scalar}}
 \index{GPU\_interp\_scalar@{GPU\_interp\_scalar}!utils.h@{utils.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_interp\_scalar()}{GPU\_interp\_scalar()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+interp\+\_\+scalar (\begin{DoxyParamCaption}\item[{cuda\+Texture\+Object\+\_\+t}]{var,  }\item[{const int}]{mmenemonics,  }\item[{const int}]{i,  }\item[{const int}]{j,  }\item[{const int}]{k,  }\item[{const double}]{del\mbox{[}4\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Interpolates a scalar field using hardware-\/accelerated CUDA Texture Objects. 
+
+This function retrieves the value of a physical variable at a sub-\/grid location. Unlike {\ttfamily GPU\+\_\+interp\+\_\+scalar\+\_\+pointer}, which performs a manual 8-\/point trilinear interpolation in software, this version uses the GPU\textquotesingle{}s dedicated texture mapping units (TMUs) to accelerate the lookups.
+
+\begin{DoxyNote}{Note}
+To handle 4D data (3 spatial dimensions + multiple physical variables), the spatial index \textquotesingle{}k\textquotesingle{} and the variable index \textquotesingle{}mmenemonics\textquotesingle{} are flattened into the texture\textquotesingle{}s X-\/axis.
+
+By fetching two discrete points, {\ttfamily k $\ast$ NPRIM} and {\ttfamily (k+1) $\ast$ NPRIM}, and blending them with {\ttfamily del\mbox{[}3\mbox{]}}, we ensure we are only interpolating the {\itshape same} variable across two different spatial slices.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em var} & The CUDA 3D texture object containing the fluid data. \\
+\hline
+{\em mmenemonics} & The index of the specific variable (e.\+g., RHO, UU). \\
+\hline
+{\em i,j,k} & Integer base indices for the grid cell. \\
+\hline
+{\em del\mbox{[}4\mbox{]}} & Array of fractional offsets \mbox{[}0, 1\mbox{]} for the sub-\/grid position at (i,j,k).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The interpolated value of the scalar field. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{utils_8h_a180bbb56408ac2af71ce0638af5ad9df}\label{utils_8h_a180bbb56408ac2af71ce0638af5ad9df}} 
 \index{utils.h@{utils.h}!GPU\_interp\_scalar\_pointer@{GPU\_interp\_scalar\_pointer}}
 \index{GPU\_interp\_scalar\_pointer@{GPU\_interp\_scalar\_pointer}!utils.h@{utils.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_interp\_scalar\_pointer()}{GPU\_interp\_scalar\_pointer()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+interp\+\_\+scalar\+\_\+pointer (\begin{DoxyParamCaption}\item[{const double $\ast$}]{var,  }\item[{const int}]{mmenemonics,  }\item[{const int}]{i,  }\item[{const int}]{j,  }\item[{const int}]{k,  }\item[{const double}]{coeff\mbox{[}8\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Performs trilinear interpolation of a scalar field at a sub-\/grid location. 
+
+This function calculates the value of a specific fluid variable at an arbitrary position within a 3D grid cell. It uses eight precomputed weights (coefficients) and the values at the eight surrounding grid nodes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em var} & Pointer to the flattened 3D array containing the fluid data. \\
+\hline
+{\em mmenemonics} & The index (mnemonic) of the specific scalar variable to interpolate. \\
+\hline
+{\em i} & Base index in the first dimension (\$\+N\+\_\+1\$). \\
+\hline
+{\em j} & Base index in the second dimension (\$\+N\+\_\+2\$). \\
+\hline
+{\em k} & Base index in the third dimension (\$\+N\+\_\+3\$). \\
+\hline
+{\em coeff} & An array of 8 weights representing the volumetric contribution of each corner.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The interpolated scalar value at the target location.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The function assumes periodicity in the third dimension (\$k\$). If the index \$k\$ is at the grid boundary (\$d\+\_\+\+N3 -\/ 1\$), it wraps around to index 0. 
+\end{DoxyNote}
 \mbox{\Hypertarget{utils_8h_a55c05a1c45d59249e8ba1b47f9c6f009}\label{utils_8h_a55c05a1c45d59249e8ba1b47f9c6f009}} 
 \index{utils.h@{utils.h}!NPRIM\_INDEX3D@{NPRIM\_INDEX3D}}
 \index{NPRIM\_INDEX3D@{NPRIM\_INDEX3D}!utils.h@{utils.h}}
 \doxysubsubsection{\texorpdfstring{NPRIM\_INDEX3D()}{NPRIM\_INDEX3D()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int NPRIM\+\_\+\+INDEX3D (\begin{DoxyParamCaption}\item[{int}]{v,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+
+
+Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset. 
+
+
+\begin{DoxyItemize}
+\item This macro implements a \char`\"{}\+Variable-\/\+Major\char`\"{} or \char`\"{}\+Structure of Arrays\char`\"{} (SoA) layout.
+\end{DoxyItemize}
+
+{\bfseries{Memory Layout Order}}\+: \mbox{[}Variable \$v\$\mbox{]}\mbox{[}Dimension \$i\$\mbox{]}\mbox{[}Dimension \$j\$\mbox{]}\mbox{[}Dimension \$k\$\mbox{]}
+\begin{DoxyItemize}
+\item \$k\$ is the fastest-\/varying index (unit stride).
+\item \$v\$ is the slowest-\/varying index.
+
+$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The index of the physical variable (mnemonic). \\
+\hline
+{\em i,j,k} & The 3D spatial coordinates. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The 1D linear index in the primitive variable array. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{utils_8h_add18509b0bd387ef5fe530218328c53d}\label{utils_8h_add18509b0bd387ef5fe530218328c53d}} 
 \index{utils.h@{utils.h}!SPATIAL\_INDEX2D@{SPATIAL\_INDEX2D}}
 \index{SPATIAL\_INDEX2D@{SPATIAL\_INDEX2D}!utils.h@{utils.h}}
 \doxysubsubsection{\texorpdfstring{SPATIAL\_INDEX2D()}{SPATIAL\_INDEX2D()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int SPATIAL\+\_\+\+INDEX2D (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+
+
+Maps 2D spatial coordinates (i, j) to a 1D linear memory offset. 
+
+This function performs a standard row-\/major (or height-\/major) flattening for 2D grids.
+
+{\bfseries{Memory Layout Order}}\+: \mbox{[}Dimension \$i\$\mbox{]}\mbox{[}Dimension \$j\$\mbox{]}
+
+$ \text{Index} = j + (N_2 \times i) $
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The radial spatial index. \\
+\hline
+{\em j} & The angular spatial index.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The 1D linear integer offset for the given coordinates. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{utils_8h_a3e8f26df1c7ecb2476971258ad8077ea}\label{utils_8h_a3e8f26df1c7ecb2476971258ad8077ea}} 
 \index{utils.h@{utils.h}!SPATIAL\_INDEX3D@{SPATIAL\_INDEX3D}}
 \index{SPATIAL\_INDEX3D@{SPATIAL\_INDEX3D}!utils.h@{utils.h}}
 \doxysubsubsection{\texorpdfstring{SPATIAL\_INDEX3D()}{SPATIAL\_INDEX3D()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ \+\_\+\+\_\+device\+\_\+\+\_\+ int SPATIAL\+\_\+\+INDEX3D (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+
+
+Maps 3D spatial coordinates (i, j, k) to a 1D linear memory offset. 
+
+This function flattens a 3D volume into a 1D array.
+
+{\bfseries{Memory Layout Order}}\+: \mbox{[}Dimension \$i\$\mbox{]}\mbox{[}Dimension \$j\$\mbox{]}\mbox{[}Dimension \$k\$\mbox{]}
+
+$ \text{Index} = k + N_3 \times (j + N_2 \times i) $
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The radial spatial index (typically the radial or X dimension). \\
+\hline
+{\em j} & The polar spatial index (typically the polar or Y dimension). \\
+\hline
+{\em k} & The azimuthal spatial index (typically the azimuthal or Z dimension).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The 1D linear integer offset for the given 3D coordinates. 
+\end{DoxyReturn}

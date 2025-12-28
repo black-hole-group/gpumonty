@@ -160,7 +160,7 @@ Macros</h2></td></tr>
 <tr class="separator:ada686b7dcca8247d94eb0fae9ce4e427"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e87d3af7570d65c3b5eefa957075870"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a6e87d3af7570d65c3b5eefa957075870">DGAMMAE</a>&#160;&#160;&#160;0.05</td></tr>
 <tr class="separator:a6e87d3af7570d65c3b5eefa957075870"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e2b7999e026c8818d56dcebd087125b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a3e2b7999e026c8818d56dcebd087125b">MMW</a>&#160;&#160;&#160;0.5		/* mean molecular weight, in units of mp */</td></tr>
+<tr class="memitem:a3e2b7999e026c8818d56dcebd087125b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a3e2b7999e026c8818d56dcebd087125b">MMW</a>&#160;&#160;&#160;0.5</td></tr>
 <tr class="separator:a3e2b7999e026c8818d56dcebd087125b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b1fd2d28c6a7d4a3f7027cc1b6466f3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>&#160;&#160;&#160;4</td></tr>
 <tr class="separator:a2b1fd2d28c6a7d4a3f7027cc1b6466f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,30 +188,12 @@ Macros</h2></td></tr>
 <tr class="separator:a09c78d2f8feb311dd9fc969a0bf84979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac26246c9115d25d589cbcbccca2c4ec4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#ac26246c9115d25d589cbcbccca2c4ec4">NPRIM_INDEX</a>(i,  j)&#160;&#160;&#160;(j * NPRIM + i)</td></tr>
 <tr class="separator:ac26246c9115d25d589cbcbccca2c4ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f61be3573f9fa597085ba6415ba00f1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a3f61be3573f9fa597085ba6415ba00f1">SLOOP_DEVICE</a>(i,  j,  k)</td></tr>
+<tr class="memitem:a3f61be3573f9fa597085ba6415ba00f1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a3f61be3573f9fa597085ba6415ba00f1">SLOOP_DEVICE</a>(i,  j,  k)&#160;&#160;&#160;    for (int i = 0; i &lt; <a class="el" href="defs_8h.html#a5a6a26e0827f9640d2eb7201017f19d7">N1</a>; i++) \ for (int j = 0; j &lt; <a class="el" href="defs_8h.html#adeea8075a0038c985c63d45161804d60">N2</a>; j++) \ for (int k = 0; k &lt; <a class="el" href="defs_8h.html#a4e8e9c2bf9e06ae07ef364c05a073302">N3</a>; k++)</td></tr>
 <tr class="separator:a3f61be3573f9fa597085ba6415ba00f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45d3170540ff56498a43c27851e2c7a0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a45d3170540ff56498a43c27851e2c7a0">DLOOP</a>&#160;&#160;&#160;for(k=0;k&lt;<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>;k++)for(l=0;l&lt;<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>;l++)</td></tr>
 <tr class="separator:a45d3170540ff56498a43c27851e2c7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa99ec4acc4ecb2dc3c2d05da15d0e3f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#afa99ec4acc4ecb2dc3c2d05da15d0e3f">MAX</a>(a,  <a class="el" href="defs_8h.html#ae6c58372b82cfe73d6b1d83e19190b78">b</a>)&#160;&#160;&#160;(((a)&gt;(<a class="el" href="defs_8h.html#ae6c58372b82cfe73d6b1d83e19190b78">b</a>))?(a):(<a class="el" href="defs_8h.html#ae6c58372b82cfe73d6b1d83e19190b78">b</a>))</td></tr>
 <tr class="separator:afa99ec4acc4ecb2dc3c2d05da15d0e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d36e086d6758f37464b6644c1038e39"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a2d36e086d6758f37464b6644c1038e39">REF_2</a>&#160;&#160;&#160;(1)</td></tr>
-<tr class="separator:a2d36e086d6758f37464b6644c1038e39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56e2cb04a9bcc7821b4620e4a9b1eb8d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a56e2cb04a9bcc7821b4620e4a9b1eb8d">TILT_ANGLE</a>&#160;&#160;&#160;(0.0)</td></tr>
-<tr class="separator:a56e2cb04a9bcc7821b4620e4a9b1eb8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a437ef08681e7210d6678427030446a54"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a437ef08681e7210d6678427030446a54">LEFT</a>&#160;&#160;&#160;(0)</td></tr>
-<tr class="separator:a437ef08681e7210d6678427030446a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80fb826a684cf3f0d306b22aa100ddac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a80fb826a684cf3f0d306b22aa100ddac">RIGHT</a>&#160;&#160;&#160;(1)</td></tr>
-<tr class="separator:a80fb826a684cf3f0d306b22aa100ddac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1df736ddba855d7b429869f9f09dbd66"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a1df736ddba855d7b429869f9f09dbd66">FACE1</a>&#160;&#160;&#160;(0)</td></tr>
-<tr class="separator:a1df736ddba855d7b429869f9f09dbd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b4b42f50fd7667c7d22d8001811bc7e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a5b4b42f50fd7667c7d22d8001811bc7e">FACE2</a>&#160;&#160;&#160;(1)</td></tr>
-<tr class="separator:a5b4b42f50fd7667c7d22d8001811bc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bd0e356054974167b130739499f2b84"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a8bd0e356054974167b130739499f2b84">CORN</a>&#160;&#160;&#160;(2)</td></tr>
-<tr class="separator:a8bd0e356054974167b130739499f2b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8936711f57f82d1fc75c21fa2894e1c6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a8936711f57f82d1fc75c21fa2894e1c6">CENT</a>&#160;&#160;&#160;(3)</td></tr>
-<tr class="separator:a8936711f57f82d1fc75c21fa2894e1c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a630fdcefb04bdca66118cfd21476e8fd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a630fdcefb04bdca66118cfd21476e8fd">FACE3</a>&#160;&#160;&#160;(4)</td></tr>
-<tr class="separator:a630fdcefb04bdca66118cfd21476e8fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a445fb5b45f03dee9be98488977ad56c8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#a445fb5b45f03dee9be98488977ad56c8">d_lmint</a>&#160;&#160;&#160;(log10(<a class="el" href="config_8h.html#a82c6557ea3851dd884fe48509d789abf">MINT</a>))</td></tr>
 <tr class="separator:a445fb5b45f03dee9be98488977ad56c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaef6bb9ce5780a979999b54ffaeb2e9e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="config_8h.html#aaef6bb9ce5780a979999b54ffaeb2e9e">d_lminw</a>&#160;&#160;&#160;(log10(<a class="el" href="config_8h.html#a2683e456f12803d9aeb4052541491f4a">MINW</a>))</td></tr>
@@ -271,6 +253,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 1st-spatial magnetic field primitive variable ( <img class="formulaInl" alt="$ B^1 $" src="form_55.png"/>) array index. </p>
 
 </div>
 </div>
@@ -285,6 +268,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 2nd-spatial magnetic field primitive variable ( <img class="formulaInl" alt="$ B^2 $" src="form_56.png"/>) array index. </p>
 
 </div>
 </div>
@@ -299,6 +283,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 3rd-spatial magnetic field primitive variable ( <img class="formulaInl" alt="$ B^3 $" src="form_57.png"/>) array index. </p>
 
 </div>
 </div>
@@ -313,6 +298,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum value of the product <img class="formulaInl" alt="$ B \theta_e^2 $" src="form_61.png"/> used in the Nint table. </p>
 
 </div>
 </div>
@@ -327,34 +313,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8936711f57f82d1fc75c21fa2894e1c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8936711f57f82d1fc75c21fa2894e1c6">&#9670;&nbsp;</a></span>CENT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CENT&#160;&#160;&#160;(3)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8bd0e356054974167b130739499f2b84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8bd0e356054974167b130739499f2b84">&#9670;&nbsp;</a></span>CORN</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define CORN&#160;&#160;&#160;(2)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Minimum value of the product <img class="formulaInl" alt="$ B \theta_e^2 $" src="form_61.png"/> used in the Nint table. </p>
 
 </div>
 </div>
@@ -369,6 +328,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Precomputed inverse of the logarithmic temperature step size for emissivity and <img class="formulaInl" alt="$ K_2(1/\Theta_{\rm e}) $" src="form_59.png"/> calculations. </p>
 
 </div>
 </div>
@@ -383,6 +343,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Logarithmic step size for the Compton cross-section table in the dimensionless temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) dimension. </p>
 
 </div>
 </div>
@@ -397,6 +358,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Logarithmic step size for the Compton cross-section table in the photon frequency dimension. </p>
 
 </div>
 </div>
@@ -411,6 +373,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Logarithm of the minimum dimensionless temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) for the Compton cross-section table. </p>
 
 </div>
 </div>
@@ -425,6 +388,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Logarithm of the minimum dimensionless photon frequency for the Compton cross-section table. </p>
 
 </div>
 </div>
@@ -439,6 +403,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>TMIN represents the minimum dimensionless electron temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) used in both <img class="formulaInl" alt="$ K_2(1/\Theta_{\rm e}) $" src="form_59.png"/> calculations and synchrotron emissivity table generation. </p>
 
 </div>
 </div>
@@ -453,6 +418,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The step size resolution for the electron Lorentz factor ( <img class="formulaInl" alt="$ \gamma_\rm{e} $" src="form_49.png"/>) integration in the Compton cross-section calculation. </p>
 
 </div>
 </div>
@@ -467,6 +433,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Size of the energy bin in logarithmic scale for the spectral output binning. </p>
 
 </div>
 </div>
@@ -481,6 +448,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Macro to loop over all dimensions in spacetime twice (used for tensors). </p>
 
 </div>
 </div>
@@ -495,6 +463,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The step size for the angular integration variable ( <img class="formulaInl" alt="$ \mu_\rm{e} $" src="form_48.png"/>), that represents the cosine of the angle between the photon's direction and the electron's velocity in the Compton cross-section calculation. </p>
 
 </div>
 </div>
@@ -509,6 +478,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Epsilon parameter used in the photon geodesic integration to scale the stepsize. Decreasing this value increases accuracy but also computational cost. </p>
 
 </div>
 </div>
@@ -523,6 +493,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The maximum allowable absolute error. This provides a "floor" for the error. If the result of the integral is very close to zero, this prevents the integrator from working forever to find an infinitely small relative error. </p>
 
 </div>
 </div>
@@ -537,6 +508,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The maximum allowable relative error (as a fraction). For example, a value of $10^{-6}$ means you want the result to be accurate to within $0.0001%$. </p>
 
 </div>
 </div>
@@ -551,48 +523,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1df736ddba855d7b429869f9f09dbd66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1df736ddba855d7b429869f9f09dbd66">&#9670;&nbsp;</a></span>FACE1</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FACE1&#160;&#160;&#160;(0)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5b4b42f50fd7667c7d22d8001811bc7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b4b42f50fd7667c7d22d8001811bc7e">&#9670;&nbsp;</a></span>FACE2</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FACE2&#160;&#160;&#160;(1)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a630fdcefb04bdca66118cfd21476e8fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a630fdcefb04bdca66118cfd21476e8fd">&#9670;&nbsp;</a></span>FACE3</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FACE3&#160;&#160;&#160;(4)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Tolerance for the geodesic integration error. </p>
 
 </div>
 </div>
@@ -621,6 +552,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Macro for fast copying of 4-element arrays. </p>
 
 </div>
 </div>
@@ -635,6 +567,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Standard path to the Compton cross-section table file </p>
 
 </div>
 </div>
@@ -649,6 +582,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the electron temperature primitive variable ( <img class="formulaInl" alt="$ T_e $" src="form_58.png"/>) array index. </p>
 
 </div>
 </div>
@@ -678,6 +612,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum boundery for the dimensionless frequency grid used to precompute the synchrotron emissivity table. </p>
 
 </div>
 </div>
@@ -692,6 +627,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Minimum boundery for the dimensionless frequency grid used to precompute the synchrotron emissivity table. </p>
 
 </div>
 </div>
@@ -706,6 +642,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the density primitive variable ( <img class="formulaInl" alt="$ \rho $" src="form_51.png"/>) array index. </p>
 
 </div>
 </div>
@@ -720,6 +657,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the Ktot </p>
 
 </div>
 </div>
@@ -734,20 +672,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a437ef08681e7210d6678427030446a54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a437ef08681e7210d6678427030446a54">&#9670;&nbsp;</a></span>LEFT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LEFT&#160;&#160;&#160;(0)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Minimum energy of the energy bin in logarithmic scale. </p>
 
 </div>
 </div>
@@ -776,6 +701,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Macro to compute the maximum of two values. </p>
 
 </div>
 </div>
@@ -790,6 +716,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum number of iterations for the geodesic integration push photon function. </p>
 
 </div>
 </div>
@@ -804,6 +731,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum number of scattering layers allowed. </p>
 
 </div>
 </div>
@@ -818,6 +746,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The integration cutoff multiplier for the electron Lorentz factor. MAXGAMMA tells the code how far into the high-energy "tail" of the electron distribution it needs to integrate to get an accurate result. The integration goes up to <img class="formulaInl" alt="$\gamma_\rm{e} = 1 + \text{MAXGAMMA} \Theta_{\rm e}$" src="form_47.png"/>. </p>
 
 </div>
 </div>
@@ -832,6 +761,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum number of integration steps for photon geodesic integration. </p>
 
 </div>
 </div>
@@ -846,6 +776,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum dimensionless temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) used to construct the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -860,6 +791,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum dimensionless photon frequency (or energy) used to construct the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -874,6 +806,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Minimum dimensionless temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) used to construct the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -888,6 +821,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Minimum dimensionless photon frequency (or energy) used to construct the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -898,10 +832,11 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MMW&#160;&#160;&#160;0.5		/* mean molecular weight, in units of mp */</td>
+          <td class="memname">#define MMW&#160;&#160;&#160;0.5</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mean molecular weight, in units of proton mass ( <img class="formulaInl" alt="$ m_p $" src="form_50.png"/>). </p>
 
 </div>
 </div>
@@ -916,6 +851,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The number of thread blocks dispatched per kernel call. This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy. </p>
 
 </div>
 </div>
@@ -930,6 +866,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of energy bins for the spectral output. </p>
 
 </div>
 </div>
@@ -944,6 +881,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of energy samples for the emissivity and weight tables. </p>
 
 </div>
 </div>
@@ -958,6 +896,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of theta bins for angular distribution for the spectral output binning. </p>
 
 </div>
 </div>
@@ -972,6 +911,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>The number of threads per block. This defines the block size and should be chosen as a multiple of the warp size (32 for NVIDIA GPUs) to ensure efficient execution up to 2048 depending on the GPU architecture. </p>
 
 </div>
 </div>
@@ -986,6 +926,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of dimensions in spacetime, time + 3 spatial dimensions. </p>
 
 </div>
 </div>
@@ -1000,6 +941,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of data points in the Nint table used for solid angle averaged synchrotron emissivity calculations. </p>
 
 </div>
 </div>
@@ -1028,6 +970,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Calculates the 1D index for a 2D array stored in a 1D format. </p>
 
 </div>
 </div>
@@ -1042,6 +985,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of dimensionless temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) bins for the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -1056,34 +1000,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2d36e086d6758f37464b6644c1038e39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d36e086d6758f37464b6644c1038e39">&#9670;&nbsp;</a></span>REF_2</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define REF_2&#160;&#160;&#160;(1)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a80fb826a684cf3f0d306b22aa100ddac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80fb826a684cf3f0d306b22aa100ddac">&#9670;&nbsp;</a></span>RIGHT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define RIGHT&#160;&#160;&#160;(1)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Number of energy bins for the Compton cross-section lookup table </p>
 
 </div>
 </div>
@@ -1098,6 +1015,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of scatterings each superphoton is allowed to undergo. </p><dl class="section note"><dt>Note</dt><dd>This serves as a estimation for memory allocation and should be adjusted based on the specific simulation requirements. If the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value. A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches. </dd></dl>
 
 </div>
 </div>
@@ -1128,17 +1046,12 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td>&#160;&#160;&#160;    for (int i = 0; i &lt; <a class="el" href="defs_8h.html#a5a6a26e0827f9640d2eb7201017f19d7">N1</a>; i++) \ for (int j = 0; j &lt; <a class="el" href="defs_8h.html#adeea8075a0038c985c63d45161804d60">N2</a>; j++) \ for (int k = 0; k &lt; <a class="el" href="defs_8h.html#a4e8e9c2bf9e06ae07ef364c05a073302">N3</a>; k++)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="decs_8h.html#a5a6a26e0827f9640d2eb7201017f19d7">N1</a>; i++) \</div>
-<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code" href="decs_8h.html#adeea8075a0038c985c63d45161804d60">N2</a>; j++) \</div>
-<div class="line">            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code" href="decs_8h.html#a4e8e9c2bf9e06ae07ef364c05a073302">N3</a>; k++)</div>
-<div class="ttc" id="adecs_8h_html_a4e8e9c2bf9e06ae07ef364c05a073302"><div class="ttname"><a href="decs_8h.html#a4e8e9c2bf9e06ae07ef364c05a073302">N3</a></div><div class="ttdeci">int N3</div><div class="ttdef"><b>Definition:</b> decs.h:175</div></div>
-<div class="ttc" id="adecs_8h_html_a5a6a26e0827f9640d2eb7201017f19d7"><div class="ttname"><a href="decs_8h.html#a5a6a26e0827f9640d2eb7201017f19d7">N1</a></div><div class="ttdeci">int N1</div><div class="ttdef"><b>Definition:</b> defs.h:31</div></div>
-<div class="ttc" id="adecs_8h_html_adeea8075a0038c985c63d45161804d60"><div class="ttname"><a href="decs_8h.html#adeea8075a0038c985c63d45161804d60">N2</a></div><div class="ttdeci">int N2</div><div class="ttdef"><b>Definition:</b> decs.h:175</div></div>
-</div><!-- fragment -->
+<p>Macro to loop over all spatial grid points in device or host code, depending on the compilation context. </p>
+
 </div>
 </div>
 <a id="a09c78d2f8feb311dd9fc969a0bf84979"></a>
@@ -1152,6 +1065,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Small number to avoid division by zero or logarithm of zero. </p>
 
 </div>
 </div>
@@ -1166,20 +1080,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a56e2cb04a9bcc7821b4620e4a9b1eb8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56e2cb04a9bcc7821b4620e4a9b1eb8d">&#9670;&nbsp;</a></span>TILT_ANGLE</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define TILT_ANGLE&#160;&#160;&#160;(0.0)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Precomputed definitin of small vector value to avoid numerical issues in tetrad calculations. </p>
 
 </div>
 </div>
@@ -1194,6 +1095,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Maximum dimensionless electron temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) for the bessel function ( <img class="formulaInl" alt="$ K_2 $" src="form_60.png"/>) table calculation. </p>
 
 </div>
 </div>
@@ -1208,6 +1110,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Minimum dimensionless electron temperature ( <img class="formulaInl" alt="$ \Theta_{\rm e} $" src="form_46.png"/>) for the bessel function ( <img class="formulaInl" alt="$ K_2 $" src="form_60.png"/>) table calculation. </p>
 
 </div>
 </div>
@@ -1222,6 +1125,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 1st-spatial velocity primitive variable ( <img class="formulaInl" alt="$ u^1 $" src="form_52.png"/>) array index. </p>
 
 </div>
 </div>
@@ -1236,6 +1140,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 2nd-spatial velocity primitive variable ( <img class="formulaInl" alt="$ u^2 $" src="form_53.png"/>) array index. </p>
 
 </div>
 </div>
@@ -1250,6 +1155,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the 3rd-spatial velocity primitive variable ( <img class="formulaInl" alt="$ u^3 $" src="form_54.png"/>) array index. </p>
 
 </div>
 </div>
@@ -1264,6 +1170,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Mmnemonics for the internal energy primitive variable ( <img class="formulaInl" alt="$ u $" src="form_6.png"/>) array index. </p>
 
 </div>
 </div>

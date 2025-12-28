@@ -12,6 +12,7 @@
     <innerfile refid="hotcross_8h">hotcross.h</innerfile>
     <innerfile refid="jnu__mixed_8h">jnu_mixed.h</innerfile>
     <innerfile refid="kernels_8h">kernels.h</innerfile>
+    <innerfile refid="main_8h">main.h</innerfile>
     <innerfile refid="memory_8h">memory.h</innerfile>
     <innerfile refid="metrics_8h">metrics.h</innerfile>
     <innerfile refid="par_8h">par.h</innerfile>

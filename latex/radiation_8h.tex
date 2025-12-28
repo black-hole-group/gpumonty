@@ -4,19 +4,19 @@
 \begin{DoxyCompactItemize}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a4fcb19d59b7ed136e8c940c90a2f57ea}{GPU\+\_\+jnu\+\_\+inv}} (const double nu, const double Thetae, const double Ne, const double B, const double theta, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the invariant emissivity for synchrotron radiation. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}{GPU\+\_\+\+Bnu\+\_\+inv}} (const double nu, const double Thetae)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the invariant Planck source function for a thermal distribution. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}{GPU\+\_\+kappa\+\_\+es}} (const double nu, const double Thetae, const double $\ast$d\+\_\+table\+\_\+ptr)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the electron scattering opacity in CGS units. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a5be615cb47f0652c14f230eaedd45fb5}{GPU\+\_\+get\+\_\+fluid\+\_\+nu}} (const double X\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double K\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double Ucov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]})
-\item 
+\begin{DoxyCompactList}\small\item\em Computes the photon frequency in the local fluid frame (Hz). \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_a29cfae5744717c016c0fc8d38e399575}{GPU\+\_\+alpha\+\_\+inv\+\_\+scatt}} (const double nu, const double Thetae, const double Ne, const double $\ast$d\+\_\+table\+\_\+ptr)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the Lorentz invariant scattering coefficient. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_acb8273fe5b2026c98166e10f887c5948}{GPU\+\_\+alpha\+\_\+inv\+\_\+abs}} (const double nu, const double Thetae, const double Ne, const double B, double theta, cuda\+Texture\+Object\+\_\+t bessel\+Tex\+Obj)
-\item 
+\begin{DoxyCompactList}\small\item\em Calculates the Lorentz invariant absorption coefficient via Kirchhoff\textquotesingle{}s Law. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{radiation_8h_afcd0e317bc7a2aa8324beb0eeb707a2f}{GPU\+\_\+get\+\_\+bk\+\_\+angle}} (const double X\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double K\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double Ucov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double Bcov\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}, const double B)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Calculates the pitch angle between the photon wavevector and the magnetic field. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Function Documentation}
@@ -26,39 +26,205 @@
 \doxysubsubsection{\texorpdfstring{GPU\_alpha\_inv\_abs()}{GPU\_alpha\_inv\_abs()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+alpha\+\_\+inv\+\_\+abs (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double}]{B,  }\item[{double}]{theta,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
 
+
+
+Calculates the Lorentz invariant absorption coefficient via Kirchhoff\textquotesingle{}s Law. 
+
+This function determines the invariant absorption coefficient \$\textbackslash{}nu \textbackslash{}alpha\+\_\+\{a\}\$ by relating the invariant emissivity to the invariant Planck function (source function).
+
+Based on Kirchhoff\textquotesingle{}s Law of Thermal Radiation, the absorption coefficient $\alpha_\nu$ is the ratio of emissivity to the Planck function\+: \mbox{[} \textbackslash{}alpha\+\_\+\textbackslash{}nu = \textbackslash{}frac\{j\+\_\+\textbackslash{}nu\}\{B\+\_\+\textbackslash{}nu\} \mbox{]} In terms of the invariant quantities provided by the internal helper functions\+: \mbox{[} \textbackslash{}nu \textbackslash{}alpha\+\_\+\textbackslash{}nu = \textbackslash{}frac\{j\+\_\+\textbackslash{}nu / \textbackslash{}nu$^\wedge$2\}\{B\+\_\+\textbackslash{}nu / \textbackslash{}nu$^\wedge$3\} \mbox{]}
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency in the fluid frame (Hz). \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $\Theta_\rm{e} $. \\
+\hline
+{\em Ne} & Electron number density $N_e$ (cm $^{-3}$). \\
+\hline
+{\em B} & Magnetic field strength (Gauss). \\
+\hline
+{\em theta} & Pitch angle between photon and magnetic field. \\
+\hline
+{\em bessel\+Tex\+Obj} & CUDA texture for Bessel function lookups. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The invariant absorption coefficient $\nu \alpha_{a}$ \mbox{[}units\+: Hz $ \rm{cm}^{-1} $\mbox{]}.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+A small epsilon ( $ 10^{-100} $) is added to the denominator to prevent division by zero. 
+\end{DoxyNote}
 \mbox{\Hypertarget{radiation_8h_a29cfae5744717c016c0fc8d38e399575}\label{radiation_8h_a29cfae5744717c016c0fc8d38e399575}} 
 \index{radiation.h@{radiation.h}!GPU\_alpha\_inv\_scatt@{GPU\_alpha\_inv\_scatt}}
 \index{GPU\_alpha\_inv\_scatt@{GPU\_alpha\_inv\_scatt}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_alpha\_inv\_scatt()}{GPU\_alpha\_inv\_scatt()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+alpha\+\_\+inv\+\_\+scatt (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double $\ast$}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
 
+
+
+Calculates the Lorentz invariant scattering coefficient. 
+
+This function converts the scattering opacity (cross-\/section per unit mass) into the invariant scattering coefficient $\nu \alpha_{s}$.
+
+\mbox{[} \textbackslash{}text\{Result\} = \textbackslash{}nu \textbackslash{}cdot \textbackslash{}alpha\+\_\+\{s\} = \textbackslash{}nu \textbackslash{}cdot (\textbackslash{}rho \textbackslash{}cdot \textbackslash{}kappa\+\_\+\{es\}) \mbox{]} where $\rho \approx N_e m_p$ (assuming a pure hydrogen plasma).
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency in the fluid frame (Hz). \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $\Theta_\rm{e} $. \\
+\hline
+{\em Ne} & Electron number density $N_e$ (cm $^{-3}$). \\
+\hline
+{\em d\+\_\+table\+\_\+ptr} & Pointer to the Compton cross-\/section lookup table.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The invariant scattering coefficient $\nu \alpha_{s}$ \mbox{[}units\+: Hz $ \rm{cm}^{-1} $\mbox{]}. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}\label{radiation_8h_ae04b35ce5313dc73cce9c0390c3ce099}} 
 \index{radiation.h@{radiation.h}!GPU\_Bnu\_inv@{GPU\_Bnu\_inv}}
 \index{GPU\_Bnu\_inv@{GPU\_Bnu\_inv}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_Bnu\_inv()}{GPU\_Bnu\_inv()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+\+Bnu\+\_\+inv (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae }\end{DoxyParamCaption})}
 
+
+
+Calculates the invariant Planck source function for a thermal distribution. 
+
+This function computes the frequency-\/dependent Planck function $ B_\nu(T) $ and returns it in its Lorentz-\/invariant form\+: $ B_\nu / \nu^3 $. This quantity represents the invariant intensity of a blackbody in thermal equilibrium.
+
+\begin{DoxyNote}{Note}
+To prevent precision loss and division by zero at low frequencies, the function uses a 4th-\/order Taylor expansion of $ e^x - 1 $ when $ x < 10^{-3} $\+: \[ e^x - 1 \approx x + \frac{x^2}{2} + \frac{x^3}{6} + \frac{x^4}{24} \]
+\end{DoxyNote}
+The invariant source function is defined as\+: \[ \mathcal{B} = \frac{B_\nu}{\nu^3} = \frac{2h}{c^2} \frac{1}{\exp\left(\frac{h\nu}{k_B T}\right) - 1} \] where $ k_B T = m_e c^2 \Theta_e $.
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency $ \nu $ in the fluid frame. \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e $.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The invariant Planck function $ B_\nu / \nu^3 $ in CGS units. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{radiation_8h_afcd0e317bc7a2aa8324beb0eeb707a2f}\label{radiation_8h_afcd0e317bc7a2aa8324beb0eeb707a2f}} 
 \index{radiation.h@{radiation.h}!GPU\_get\_bk\_angle@{GPU\_get\_bk\_angle}}
 \index{GPU\_get\_bk\_angle@{GPU\_get\_bk\_angle}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_get\_bk\_angle()}{GPU\_get\_bk\_angle()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+get\+\_\+bk\+\_\+angle (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{K\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{Ucov\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{Bcov\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{B }\end{DoxyParamCaption})}
 
+
+
+Calculates the pitch angle between the photon wavevector and the magnetic field. 
+
+This function determines the angle $\theta$ between the photon\textquotesingle{}s propagation direction and the local magnetic field vector, as measured in the local fluid frame.
+
+
+\begin{DoxyParams}{Parameters}
+{\em X} & Photon 4-\/position. \\
+\hline
+{\em K} & Photon 4-\/wavevector $K^\mu$. \\
+\hline
+{\em Ucov} & Covariant fluid 4-\/velocity $U_\mu$. \\
+\hline
+{\em Bcov} & Covariant magnetic field 4-\/vector $B_\mu$. \\
+\hline
+{\em B} & Magnetic field strength in Gauss (CGS).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The pitch angle $\theta$ in radians $[0, \pi]$. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{radiation_8h_a5be615cb47f0652c14f230eaedd45fb5}\label{radiation_8h_a5be615cb47f0652c14f230eaedd45fb5}} 
 \index{radiation.h@{radiation.h}!GPU\_get\_fluid\_nu@{GPU\_get\_fluid\_nu}}
 \index{GPU\_get\_fluid\_nu@{GPU\_get\_fluid\_nu}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_get\_fluid\_nu()}{GPU\_get\_fluid\_nu()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+get\+\_\+fluid\+\_\+nu (\begin{DoxyParamCaption}\item[{const double}]{X\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{K\mbox{[}\+NDIM\mbox{]},  }\item[{const double}]{Ucov\mbox{[}\+NDIM\mbox{]} }\end{DoxyParamCaption})}
 
+
+
+Computes the photon frequency in the local fluid frame (Hz). 
+
+This function projects the photon 4-\/wavevector $K^\mu$ onto the covariant fluid 4-\/velocity $U_\mu$ to determine the energy as measured by a co-\/moving observer.
+
+The energy of a particle with 4-\/momentum $p^\mu$ measured by an observer with 4-\/velocity $u^\mu$ is given by the scalar $E = -p^\mu u_\mu$.
+
+\begin{DoxyNote}{Note}
+The energy is initially calculated in dimensionless electron rest-\/mass units ( $m_e c^2$). This is converted to physical frequency using the relation $\nu = E \cdot (m_e c^2 / h)$.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em X} & The 4-\/position of the photon (primarily used for diagnostic logging). \\
+\hline
+{\em K} & The photon 4-\/wavevector $K^\mu$. \\
+\hline
+{\em Ucov} & The covariant fluid 4-\/velocity $U_\mu$.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The physical frequency $\nu$ in Hz. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{radiation_8h_a4fcb19d59b7ed136e8c940c90a2f57ea}\label{radiation_8h_a4fcb19d59b7ed136e8c940c90a2f57ea}} 
 \index{radiation.h@{radiation.h}!GPU\_jnu\_inv@{GPU\_jnu\_inv}}
 \index{GPU\_jnu\_inv@{GPU\_jnu\_inv}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_jnu\_inv()}{GPU\_jnu\_inv()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+jnu\+\_\+inv (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double}]{Ne,  }\item[{const double}]{B,  }\item[{const double}]{theta,  }\item[{cuda\+Texture\+Object\+\_\+t}]{bessel\+Tex\+Obj }\end{DoxyParamCaption})}
 
+
+
+Calculates the invariant emissivity for synchrotron radiation. 
+
+This function computes the local synchrotron emissivity $ j_\nu $ through means of the function {\ttfamily jnu\+\_\+synch} and converts it to the Lorentz-\/invariant form $ j_\nu / \nu^2 $.
+
+
+\begin{DoxyItemize}
+\item Emissivity $ j_\nu $ is determined by the local plasma properties ( $ N_e, \Theta_e, B $) and the emission angle $ \theta $ relative to the magnetic field.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency $ \nu $ in the fluid frame. \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_e = k_B T_e / m_e c^2 $. \\
+\hline
+{\em Ne} & Electron number density $ N_e $ in cgs. \\
+\hline
+{\em B} & Magnetic field strength $ B $ in Gauss. \\
+\hline
+{\em theta} & Pitch angle $ \theta $ between the photon wavevector and the magnetic field. \\
+\hline
+{\em bessel\+Tex\+Obj} & CUDA texture object used for fast lookup of modified Bessel functions.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The invariant emissivity $ j_\nu / \nu^2 $. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}\label{radiation_8h_aecaae79ff8525a891104fe68f88bf77e}} 
 \index{radiation.h@{radiation.h}!GPU\_kappa\_es@{GPU\_kappa\_es}}
 \index{GPU\_kappa\_es@{GPU\_kappa\_es}!radiation.h@{radiation.h}}
 \doxysubsubsection{\texorpdfstring{GPU\_kappa\_es()}{GPU\_kappa\_es()}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double GPU\+\_\+kappa\+\_\+es (\begin{DoxyParamCaption}\item[{const double}]{nu,  }\item[{const double}]{Thetae,  }\item[{const double $\ast$}]{d\+\_\+table\+\_\+ptr }\end{DoxyParamCaption})}
 
+
+
+Calculates the electron scattering opacity in CGS units. 
+
+This function determines the scattering opacity \$\textbackslash{}kappa\+\_\+\{es\}\$ by looking up the total Compton cross-\/section for a given photon frequency and electron temperature. It assumes a pure hydrogen composition to convert the cross-\/section (area) into opacity (area per unit mass).
+
+The opacity is calculated as\+: \mbox{[} \textbackslash{}kappa\+\_\+\{es\} = \textbackslash{}frac\{\textbackslash{}sigma\+\_\+\{Compton\}(E\+\_\+g, \textbackslash{}\+Theta\+\_\+e)\}\{m\+\_\+p\} \mbox{]} where $ E_{\rm g} = \frac{h\nu}{m_{\rm e} c^2} $ is the dimensionless photon energy and $ m_{\rm p} $ is the proton mass.
+
+
+\begin{DoxyParams}{Parameters}
+{\em nu} & Photon frequency in the fluid frame (Hz). \\
+\hline
+{\em Thetae} & Dimensionless electron temperature $ \Theta_\rm{e} $. \\
+\hline
+{\em d\+\_\+table\+\_\+ptr} & Pointer to the GPU memory containing the precomputed cross-\/section lookup table.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The electron scattering opacity in $ \text{cm}^2/\text{g} $. 
+\end{DoxyReturn}

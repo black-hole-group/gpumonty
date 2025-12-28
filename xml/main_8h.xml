@@ -1,0 +1,228 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="main_8h" kind="file" language="C++">
+    <compoundname>main.h</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="main_8h_1a10d4a3cce717376d393f770d4f5cf9ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ int</type>
+        <definition>__host__ int main</definition>
+        <argsstring>(int argc, char *argv[])</argsstring>
+        <name>main</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>argv</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+<para>Entry point for the GPUmonty. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This function manages the high-level execution flow of the application.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>argc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Argument count. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>argv</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Argument vector (parameters and model file paths). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>0 on successful completion. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/main.h" line="14" column="14" declfile="src/main.h" declline="14" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8h_1ad00c20a219a212a87fd7b3ae7d49f283" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void set_units</definition>
+        <argsstring>(Params params)</argsstring>
+        <name>set_units</name>
+        <param>
+          <type><ref refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kindref="member">Params</ref></type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+<para>Initializes and synchronizes physical units between the Host and the Device. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function defines the transformation scales between &quot;code units&quot; (dimensionless values used in the GRMHD simulation) and &quot;CGS units&quot; (physical values). The scaling parameters are defined as follows:</para>
+<para><itemizedlist>
+<listitem><para><bold>Mass Scaling</bold> ( <formula id="140">$ M_{\rm unit} $</formula>): User-defined mass unit to scale density and other mass-related quantities.</para>
+</listitem><listitem><para><bold>Black Hole Mass</bold> ( <formula id="141">$ M_{\rm BH} $</formula>): Mass of the central black hole, used to define length and time scales.</para>
+</listitem><listitem><para><bold>Length scale</bold> ( <formula id="142">$ L_{\rm unit} $</formula>): Defined as the gravitational radius <formula id="143">$ R_g = GM_{BH}/c^2 $</formula>.</para>
+</listitem><listitem><para><bold>Time scale</bold> ( <formula id="144">$ T_{\rm unit} $</formula>): Defined as the light-crossing time <formula id="145">$ R_g/c $</formula>.</para>
+</listitem><listitem><para><bold>Density scale</bold> ( <formula id="146">$ \rho_{\rm unit} $</formula>): Calculated as <formula id="147">$ M_{\rm unit}/L_{\rm unit}^3 $</formula>.</para>
+</listitem><listitem><para><bold>Magnetic Field scale</bold> ( <formula id="148">$ B_{\rm unit} $</formula>): Scaled such that the magnetic pressure <formula id="149">$ B^2/4\pi $</formula> matches the energy density scale <formula id="150">$ \rho c^2 $</formula> in Gaussian units.</para>
+</listitem><listitem><para><bold>Energy Density Unit</bold> ( <formula id="151">$ U_{\rm unit} $</formula>): Defined as <formula id="152">$ \rho_{ \rm unit} c^2 $</formula>.</para>
+</listitem><listitem><para><bold>Number Density scale</bold> ( <formula id="153">$ N_{e,\rm unit} $</formula>): Assumes a fully ionized hydrogen plasma ( <formula id="154">$ m_p + m_e $</formula>).</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The simulation parameters containing the Black Hole mass ($M_{BH}$) and the mass scaling unit ($M_{unit}$).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/main.h" line="38" column="15" declfile="src/main.h" declline="38" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8h_1afc8b112b77d648762570e580eb6df594" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void init_model</definition>
+        <argsstring>(char *args[])</argsstring>
+        <name>init_model</name>
+        <param>
+          <type>char *</type>
+          <declname>args</declname>
+          <array>[]</array>
+        </param>
+        <briefdescription>
+<para>Organizes the main CPU tasks of initialization of the simulation environment and precomputed tables. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function is the primary setup routine for the simulation. It prepares the physical units, loads the fluid model, initializes the spacetime geometry (metric), and generates the lookup tables (LUTs).</para>
+<para><bold>Routine</bold>:<orderedlist>
+<listitem><para><bold>Set Unit Scaling</bold>: Establishes the relationship between code units and CGS physical units by means of the function <computeroutput><ref refid="main_8h_1ad00c20a219a212a87fd7b3ae7d49f283" kindref="member">set_units()</ref></computeroutput>.</para>
+</listitem><listitem><para><bold>Data &amp; Geometry</bold>: Loads the GRMHD fluid snapshots and precomputes metric coefficients across the grid by means of the functions <computeroutput><ref refid="main_8h_1afc8b112b77d648762570e580eb6df594" kindref="member">init_model()</ref></computeroutput> and <computeroutput><ref refid="main_8h_1a6eff1ee5c8d00760b1204283f5dd298f" kindref="member">init_geometry()</ref></computeroutput>.</para>
+</listitem><listitem><para><bold>Table Generation</bold>: Precomputes LUTs in the following order: Cross section table, emissivity table, weight table and solid angle integrated emissivity table. This is computed by means of the functions <computeroutput><ref refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" kindref="member">init_hotcross()</ref></computeroutput>, <computeroutput><ref refid="jnu__mixed_8h_1a186db3c9d3d5464e8cc08315a867f968" kindref="member">init_emiss_tables()</ref></computeroutput>, <computeroutput><ref refid="weights_8h_1a83b30654a46ef58fd5aceecb93513d29" kindref="member">init_weight_table()</ref></computeroutput> and <computeroutput><ref refid="weights_8h_1ac06de333fa374fbdae412978d3ac94de" kindref="member">init_nint_table()</ref></computeroutput>.</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Command line arguments. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/main.h" line="56" column="15" declfile="src/main.h" declline="56" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8h_1a6eff1ee5c8d00760b1204283f5dd298f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void init_geometry</definition>
+        <argsstring>()</argsstring>
+        <name>init_geometry</name>
+        <briefdescription>
+<para>Precomputes the spacetime metric components across the simulation grid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function populates the global geometry array (<computeroutput>geom</computeroutput>) with the covariant metric, contravariant metric, and the metric determinant.</para>
+<para><simplesect kind="note"><para>This function assumes <bold>axisymmetry</bold>, where the geometry does not change with the azimuthal angle <formula id="155">$\phi$</formula> (represented by index <formula id="156">$k$</formula>), therefore geom is a 2D array.</para>
+</simplesect>
+<simplesect kind="return"><para>void </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/main.h" line="70" column="15" declfile="src/main.h" declline="70" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="main_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>__host__ void</type>
+        <definition>__host__ void report_spectrum</definition>
+        <argsstring>(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char *filename)</argsstring>
+        <name>report_spectrum</name>
+        <param>
+          <type>unsigned long long</type>
+          <declname>N_superph_made</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref></type>
+          <declname>spect</declname>
+          <array>[N_THBINS][N_EBINS]</array>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Processes energy and angled binned simulation data to generate and save the final spectrum. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function converts the raw energy and photon counts accumulated in the spectral grid into physical units. It calculates the SED across different inclination angles, determines the average optical depths, and computes global simulation diagnostics such as total luminosity and accretion efficiency.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>N_superph_made</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Total number of superphotons generated during the run. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spect</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>2D array containing the accumulated spectral data (Energy/Theta bins). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the output file (saved in the <computeroutput>./output/</computeroutput> directory). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/main.h" line="85" column="15" declfile="src/main.h" declline="85" declcolumn="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>MAIN_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAIN_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="main_8h_1a10d4a3cce717376d393f770d4f5cf9ed" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="main_8h_1a10d4a3cce717376d393f770d4f5cf9ed" kindref="member">main</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*argv[]);</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="main_8h_1ad00c20a219a212a87fd7b3ae7d49f283" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8h_1ad00c20a219a212a87fd7b3ae7d49f283" kindref="member">set_units</ref>(<ref refid="structparams__t" kindref="compound">Params</ref><sp/><ref refid="decs_8h_1a02eb7524df3cdfd7ab32de5b40516106" kindref="member">params</ref>);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="main_8h_1afc8b112b77d648762570e580eb6df594" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8h_1afc8b112b77d648762570e580eb6df594" kindref="member">init_model</ref>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*args[]);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="main_8h_1a6eff1ee5c8d00760b1204283f5dd298f" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8h_1a6eff1ee5c8d00760b1204283f5dd298f" kindref="member">init_geometry</ref>();</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="main_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="main_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kindref="member">report_spectrum</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>N_superph_made,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/><ref refid="decs_8h_1a6b0bc09e401de6b01d58d5e4b4ed71af" kindref="member">spect</ref>[<ref refid="config_8h_1af52e5601e24f633637c7ef961a01a847" kindref="member">N_THBINS</ref>][<ref refid="config_8h_1af9cf051839fae1fdc190fe02abd595c6" kindref="member">N_EBINS</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>filename);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="src/main.h"/>
+  </compounddef>
+</doxygen>

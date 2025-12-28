@@ -66,6 +66,10 @@ double jnu_integrand(double th, void *params);
  * Precomputes \f$ F(K) \f$ by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores 
  * the second-order modified Bessel function \f$ K_2(1/\Theta_e) \f$ in log-space for rapid retrieval during the simulation.
  * 
+ * The integration goes as:
+ * 
+ * \f$F[k] = \ln \left( 4\pi \int_{0}^{\pi/2} \sin^2\theta \left[ \sqrt{\frac{K}{\sin\theta}} + 2^{11/12} \left( \frac{K}{\sin\theta} \right)^{1/6} \right]^2 \exp\left[ -\left( \frac{K}{\sin\theta} \right)^{1/3} \right] d\theta \right)\f$
+ * 
  * @return void
  */
 __host__ void init_emiss_tables(void);

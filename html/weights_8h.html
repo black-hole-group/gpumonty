@@ -134,7 +134,7 @@ Functions</h2></td></tr>
 <p>Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity $j_\nu$ to the precomputed superphoton weights $\omega_\nu$ across all frequency bins for a range of magnetic field strengths. </p>
 <ul>
 <li><p class="startli">Implements the integrated photon density:</p>
-<p class="startli"><img class="formulaInl" alt="$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega $" src="form_148.png"/></p>
+<p class="startli"><img class="formulaInl" alt="$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega $" src="form_217.png"/></p>
 </li>
 <li><code>nint[i]</code>: Stores globally the log of the total number of superphotons to be generated per unit volume.</li>
 <li><code>dndlnu_max[i]</code>: Stores globally the log of the maximum value of $dn/d\ln\nu$, used as the proposal distribution envelope for frequency sampling. </li>
@@ -159,7 +159,7 @@ Functions</h2></td></tr>
 
 <p>Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function $j_\nu$ across the entire simulation grid to determine the weight $\omega_\nu$ for each frequency bin. </p>
 <ul>
-<li>Implements: <img class="formulaInl" alt="$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega $" src="form_147.png"/></li>
+<li>Implements: <img class="formulaInl" alt="$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega $" src="form_216.png"/></li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>The resulting weights are stored in log-space within the global <code>wgt</code> array for faster interpolation. </dd></dl>
 

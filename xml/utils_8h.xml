@@ -34,12 +34,56 @@
           <array>[4]</array>
         </param>
         <briefdescription>
+<para>Interpolates a scalar field using hardware-accelerated CUDA Texture Objects. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function retrieves the value of a physical variable at a sub-grid location. Unlike <computeroutput>GPU_interp_scalar_pointer</computeroutput>, which performs a manual 8-point trilinear interpolation in software, this version uses the GPU&apos;s dedicated texture mapping units (TMUs) to accelerate the lookups.</para>
+<para><simplesect kind="note"><para>To handle 4D data (3 spatial dimensions + multiple physical variables), the spatial index &apos;k&apos; and the variable index &apos;mmenemonics&apos; are flattened into the texture&apos;s X-axis.</para>
+</simplesect>
+<simplesect kind="note"><para>By fetching two discrete points, <computeroutput>k * NPRIM</computeroutput> and <computeroutput>(k+1) * NPRIM</computeroutput>, and blending them with <computeroutput>del[3]</computeroutput>, we ensure we are only interpolating the <emphasis>same</emphasis> variable across two different spatial slices.</para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The CUDA 3D texture object containing the fluid data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mmenemonics</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the specific variable (e.g., RHO, UU). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+<parametername>j</parametername>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Integer base indices for the grid cell. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>del[4]</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array of fractional offsets [0, 1] for the sub-grid position at (i,j,k).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The interpolated value of the scalar field. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="7" column="19" declfile="src/utils.h" declline="7" declcolumn="19"/>
+        <location file="src/utils.h" line="31" column="19" declfile="src/utils.h" declline="31" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="utils_8h_1a7605ab792917c4d974672e864eb507b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ int</type>
@@ -59,12 +103,42 @@
           <declname>photon_index</declname>
         </param>
         <briefdescription>
+<para>Maps a global photon ID to a specific grid cell or source index using binary search. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function performs a search over a prefix cumulative array to determine which &quot;bucket&quot; a specific superphoton belongs to. This is used to identify at which spatial cell a superphoton was emitted from based on its unique global ID.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>cumulativeArray</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the prefix sum array (e.g., cumulative photon counts per cell). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>arraySize</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of elements in the array. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>photon_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unique ID of the photon being processed.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The index of the cell or source responsible for this photon. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="8" column="16" declfile="src/utils.h" declline="8" declcolumn="16"/>
+        <location file="src/utils.h" line="46" column="16" declfile="src/utils.h" declline="46" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="utils_8h_1a180bbb56408ac2af71ce0638af5ad9df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -97,12 +171,68 @@
           <array>[8]</array>
         </param>
         <briefdescription>
+<para>Performs trilinear interpolation of a scalar field at a sub-grid location. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function calculates the value of a specific fluid variable at an arbitrary position within a 3D grid cell. It uses eight precomputed weights (coefficients) and the values at the eight surrounding grid nodes.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>var</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the flattened 3D array containing the fluid data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mmenemonics</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index (mnemonic) of the specific scalar variable to interpolate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Base index in the first dimension ($N_1$). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Base index in the second dimension ($N_2$). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Base index in the third dimension ($N_3$). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>coeff</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An array of 8 weights representing the volumetric contribution of each corner.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The interpolated scalar value at the target location.</para>
+</simplesect>
+<simplesect kind="note"><para>The function assumes periodicity in the third dimension ($k$). If the index $k$ is at the grid boundary ($d_N3 - 1$), it wraps around to index 0. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="9" column="19" declfile="src/utils.h" declline="9" declcolumn="19"/>
+        <location file="src/utils.h" line="67" column="19" declfile="src/utils.h" declline="67" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="utils_8h_1a55c05a1c45d59249e8ba1b47f9c6f009" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>__host__ __device__ int</type>
@@ -126,12 +256,45 @@
           <declname>k</declname>
         </param>
         <briefdescription>
+<para>Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset. </para>
         </briefdescription>
         <detaileddescription>
+<para><itemizedlist>
+<listitem><para>This macro implements a &quot;Variable-Major&quot; or &quot;Structure of Arrays&quot; (SoA) layout.</para>
+</listitem></itemizedlist>
+</para>
+<para><bold>Memory Layout Order</bold>: [Variable $v$][Dimension $i$][Dimension $j$][Dimension $k$]<itemizedlist>
+<listitem><para>$k$ is the fastest-varying index (unit stride).</para>
+</listitem><listitem><para>$v$ is the slowest-varying index.</para>
+<para><formula id="213">$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $</formula></para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>v</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the physical variable (mnemonic). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+<parametername>j</parametername>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The 3D spatial coordinates. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The 1D linear index in the primitive variable array. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="10" column="32" bodyfile="src/utils.h" bodystart="10" bodyend="16"/>
+        <location file="src/utils.h" line="83" column="32" bodyfile="src/utils.h" bodystart="83" bodyend="89"/>
       </memberdef>
       <memberdef kind="function" id="utils_8h_1add18509b0bd387ef5fe530218328c53d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>__host__ __device__ int</type>
@@ -147,12 +310,36 @@
           <declname>j</declname>
         </param>
         <briefdescription>
+<para>Maps 2D spatial coordinates (i, j) to a 1D linear memory offset. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function performs a standard row-major (or height-major) flattening for 2D grids.</para>
+<para><bold>Memory Layout Order</bold>: [Dimension $i$][Dimension $j$]</para>
+<para><formula id="214">$ \text{Index} = j + (N_2 \times i) $</formula></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radial spatial index. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The angular spatial index.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The 1D linear integer offset for the given coordinates. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="18" column="32" bodyfile="src/utils.h" bodystart="18" bodyend="24"/>
+        <location file="src/utils.h" line="108" column="32" bodyfile="src/utils.h" bodystart="108" bodyend="114"/>
       </memberdef>
       <memberdef kind="function" id="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>__host__ __device__ int</type>
@@ -172,12 +359,44 @@
           <declname>k</declname>
         </param>
         <briefdescription>
+<para>Maps 3D spatial coordinates (i, j, k) to a 1D linear memory offset. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function flattens a 3D volume into a 1D array.</para>
+<para><bold>Memory Layout Order</bold>: [Dimension $i$][Dimension $j$][Dimension $k$]</para>
+<para><formula id="215">$ \text{Index} = k + N_3 \times (j + N_2 \times i) $</formula></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radial spatial index (typically the radial or X dimension). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The polar spatial index (typically the polar or Y dimension). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The azimuthal spatial index (typically the azimuthal or Z dimension).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The 1D linear integer offset for the given 3D coordinates. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/utils.h" line="26" column="32" bodyfile="src/utils.h" bodystart="26" bodyend="32"/>
+        <location file="src/utils.h" line="133" column="32" bodyfile="src/utils.h" bodystart="133" bodyend="139"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -191,33 +410,39 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>UTILS_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>UTILS_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="utils_8h_1abb8287bae64cc59d791cad6286cfa9ea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1abb8287bae64cc59d791cad6286cfa9ea" kindref="member">GPU_interp_scalar</ref>(cudaTextureObject_t<sp/>var,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>mmenemonics,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>del[4]);</highlight></codeline>
-<codeline lineno="8" refid="utils_8h_1a7605ab792917c4d974672e864eb507b1" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a7605ab792917c4d974672e864eb507b1" kindref="member">findPhotonIndex</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*cumulativeArray,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>arraySize,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photon_index);</highlight></codeline>
-<codeline lineno="9" refid="utils_8h_1a180bbb56408ac2af71ce0638af5ad9df" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a180bbb56408ac2af71ce0638af5ad9df" kindref="member">GPU_interp_scalar_pointer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>var,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>mmenemonics,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>coeff[8]);</highlight></codeline>
-<codeline lineno="10" refid="utils_8h_1a55c05a1c45d59249e8ba1b47f9c6f009" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a55c05a1c45d59249e8ba1b47f9c6f009" kindref="member">NPRIM_INDEX3D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>v,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k){</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(((v)<sp/>*<sp/><ref refid="decs_8h_1a6b10273d9bb77b624a016098ab2e1151" kindref="member">d_N1</ref><sp/>*<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref>)<sp/>+<sp/>(k<sp/>+<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i)));</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(((v)<sp/>*<sp/><ref refid="decs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" kindref="member">N1</ref><sp/>*<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref>)<sp/>+<sp/>(k<sp/>+<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i)));</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight></codeline>
-<codeline lineno="18" refid="utils_8h_1add18509b0bd387ef5fe530218328c53d" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1add18509b0bd387ef5fe530218328c53d" kindref="member">SPATIAL_INDEX2D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j){</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i);</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i);</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26" refid="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" kindref="member">SPATIAL_INDEX3D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k){</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(k<sp/>+<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i));</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(k<sp/>+<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i));</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="utils_8h_1abb8287bae64cc59d791cad6286cfa9ea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1abb8287bae64cc59d791cad6286cfa9ea" kindref="member">GPU_interp_scalar</ref>(cudaTextureObject_t<sp/>var,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>mmenemonics,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>del[4]);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="utils_8h_1a7605ab792917c4d974672e864eb507b1" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a7605ab792917c4d974672e864eb507b1" kindref="member">findPhotonIndex</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>*cumulativeArray,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>arraySize,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>photon_index);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="utils_8h_1a180bbb56408ac2af71ce0638af5ad9df" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a180bbb56408ac2af71ce0638af5ad9df" kindref="member">GPU_interp_scalar_pointer</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>var,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>mmenemonics,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>coeff[8]);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="utils_8h_1a55c05a1c45d59249e8ba1b47f9c6f009" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a55c05a1c45d59249e8ba1b47f9c6f009" kindref="member">NPRIM_INDEX3D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>v,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k){</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(((v)<sp/>*<sp/><ref refid="decs_8h_1a6b10273d9bb77b624a016098ab2e1151" kindref="member">d_N1</ref><sp/>*<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref>)<sp/>+<sp/>(k<sp/>+<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i)));</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(((v)<sp/>*<sp/><ref refid="decs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" kindref="member">N1</ref><sp/>*<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref>)<sp/>+<sp/>(k<sp/>+<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i)));</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108" refid="utils_8h_1add18509b0bd387ef5fe530218328c53d" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1add18509b0bd387ef5fe530218328c53d" kindref="member">SPATIAL_INDEX2D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j){</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133" refid="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" refkind="member"><highlight class="normal">__host__<sp/>__device__<sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea" kindref="member">SPATIAL_INDEX3D</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k){</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#ifdef<sp/>__CUDA_ARCH__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(k<sp/>+<sp/><ref refid="decs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd" kindref="member">d_N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kindref="member">d_N2</ref><sp/>*<sp/>i));</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(k<sp/>+<sp/><ref refid="decs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kindref="member">N3</ref><sp/>*<sp/>(j<sp/>+<sp/><ref refid="decs_8h_1adeea8075a0038c985c63d45161804d60" kindref="member">N2</ref><sp/>*<sp/>i));</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor"><sp/><sp/><sp/><sp/>#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/utils.h"/>
   </compounddef>

@@ -7,6 +7,7 @@
 #include "hotcross.h"
 #include "utils.h"
 #include "par.h"
+
 __host__ void init_model(char *args[]);
 __host__ void init_geometry();
 int main(int argc, char *argv[])

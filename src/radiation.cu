@@ -2,6 +2,8 @@
 #include "radiation.h"
 #include "jnu_mixed.h"
 #include "hotcross.h"
+
+
 __device__ double GPU_Bnu_inv(const double nu, const double Thetae)
 {
 
@@ -28,7 +30,6 @@ __device__ double GPU_jnu_inv(const double nu, const double Thetae, const double
 	#else
 	j = jnu_synch(nu, Ne, Thetae, B, theta);
 	#endif
-	//printf("nu = %le, Thetae = %le, Ne = %le, B = %le, result = %le\n", nu, Thetae, Ne, B, j/(nu * nu));
 	return (j / (nu * nu));
 }
 

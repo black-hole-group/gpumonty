@@ -33,12 +33,70 @@
           <declname>besselTexObj</declname>
         </param>
         <briefdescription>
+<para>Calculates the invariant emissivity for synchrotron radiation. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function computes the local synchrotron emissivity <formula id="93">$ j_\nu $</formula> through means of the function <computeroutput>jnu_synch</computeroutput> and converts it to the Lorentz-invariant form <formula id="179">$ j_\nu / \nu^2 $</formula>.</para>
+<para><itemizedlist>
+<listitem><para>Emissivity <formula id="93">$ j_\nu $</formula> is determined by the local plasma properties ( <formula id="180">$ N_e, \Theta_e, B $</formula>) and the emission angle <formula id="3">$ \theta $</formula> relative to the magnetic field.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon frequency <formula id="99">$ \nu $</formula> in the fluid frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="25">$ \Theta_e = k_B T_e / m_e c^2 $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ne</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron number density <formula id="181">$ N_e $</formula> in cgs. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic field strength <formula id="98">$ B $</formula> in Gauss. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pitch angle <formula id="3">$ \theta $</formula> between the photon wavevector and the magnetic field. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>besselTexObj</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CUDA texture object used for fast lookup of modified Bessel functions.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The invariant emissivity <formula id="179">$ j_\nu / \nu^2 $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="7" column="19" declfile="src/radiation.h" declline="7" declcolumn="19"/>
+        <location file="src/radiation.h" line="26" column="19" declfile="src/radiation.h" declline="26" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -54,12 +112,37 @@
           <declname>Thetae</declname>
         </param>
         <briefdescription>
+<para>Calculates the invariant Planck source function for a thermal distribution. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function computes the frequency-dependent Planck function <formula id="182">$ B_\nu(T) $</formula> and returns it in its Lorentz-invariant form: <formula id="183">$ B_\nu / \nu^3 $</formula>. This quantity represents the invariant intensity of a blackbody in thermal equilibrium.</para>
+<para><simplesect kind="note"><para>To prevent precision loss and division by zero at low frequencies, the function uses a 4th-order Taylor expansion of <formula id="184">$ e^x - 1 $</formula> when <formula id="185">$ x &lt; 10^{-3} $</formula>: <formula id="186">\[ e^x - 1 \approx x + \frac{x^2}{2} + \frac{x^3}{6} + \frac{x^4}{24} \]</formula></para>
+</simplesect>
+The invariant source function is defined as: <formula id="187">\[ \mathcal{B} = \frac{B_\nu}{\nu^3} = \frac{2h}{c^2} \frac{1}{\exp\left(\frac{h\nu}{k_B T}\right) - 1} \]</formula> where <formula id="188">$ k_B T = m_e c^2 \Theta_e $</formula>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon frequency <formula id="99">$ \nu $</formula> in the fluid frame. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="31">$ \Theta_e $</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The invariant Planck function <formula id="183">$ B_\nu / \nu^3 $</formula> in CGS units. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="8" column="19" declfile="src/radiation.h" declline="8" declcolumn="19"/>
+        <location file="src/radiation.h" line="48" column="19" declfile="src/radiation.h" declline="48" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1aecaae79ff8525a891104fe68f88bf77e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -79,12 +162,43 @@
           <declname>d_table_ptr</declname>
         </param>
         <briefdescription>
+<para>Calculates the electron scattering opacity in CGS units. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function determines the scattering opacity $\kappa_{es}$ by looking up the total Compton cross-section for a given photon frequency and electron temperature. It assumes a pure hydrogen composition to convert the cross-section (area) into opacity (area per unit mass).</para>
+<para>The opacity is calculated as: [ \kappa_{es} = \frac{\sigma_{Compton}(E_g, \Theta_e)}{m_p} ] where <formula id="189">$ E_{\rm g} = \frac{h\nu}{m_{\rm e} c^2} $</formula> is the dimensionless photon energy and <formula id="190">$ m_{\rm p} $</formula> is the proton mass.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon frequency in the fluid frame (Hz). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="191">$ \Theta_\rm{e} $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d_table_ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the GPU memory containing the precomputed cross-section lookup table.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The electron scattering opacity in <formula id="192">$ \text{cm}^2/\text{g} $</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="9" column="19" declfile="src/radiation.h" declline="9" declcolumn="19"/>
+        <location file="src/radiation.h" line="69" column="19" declfile="src/radiation.h" declline="69" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -107,12 +221,45 @@
           <array>[NDIM]</array>
         </param>
         <briefdescription>
+<para>Computes the photon frequency in the local fluid frame (Hz). </para>
         </briefdescription>
         <detaileddescription>
+<para>This function projects the photon 4-wavevector <formula id="193">$K^\mu$</formula> onto the covariant fluid 4-velocity <formula id="194">$U_\mu$</formula> to determine the energy as measured by a co-moving observer.</para>
+<para>The energy of a particle with 4-momentum <formula id="195">$p^\mu$</formula> measured by an observer with 4-velocity <formula id="196">$u^\mu$</formula> is given by the scalar <formula id="197">$E = -p^\mu u_\mu$</formula>.</para>
+<para><simplesect kind="note"><para>The energy is initially calculated in dimensionless electron rest-mass units ( <formula id="198">$m_e c^2$</formula>). This is converted to physical frequency using the relation <formula id="199">$\nu = E \cdot (m_e c^2 / h)$</formula>.</para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>X</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The 4-position of the photon (primarily used for diagnostic logging). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The photon 4-wavevector <formula id="193">$K^\mu$</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ucov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The covariant fluid 4-velocity <formula id="194">$U_\mu$</formula>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The physical frequency <formula id="200">$\nu$</formula> in Hz. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="10" column="19" declfile="src/radiation.h" declline="10" declcolumn="19"/>
+        <location file="src/radiation.h" line="93" column="19" declfile="src/radiation.h" declline="93" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1a29cfae5744717c016c0fc8d38e399575" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -136,12 +283,51 @@
           <declname>d_table_ptr</declname>
         </param>
         <briefdescription>
+<para>Calculates the Lorentz invariant scattering coefficient. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function converts the scattering opacity (cross-section per unit mass) into the invariant scattering coefficient <formula id="201">$\nu \alpha_{s}$</formula>.</para>
+<para>[ \text{Result} = \nu \cdot \alpha_{s} = \nu \cdot (\rho \cdot \kappa_{es}) ] where <formula id="202">$\rho \approx N_e m_p$</formula> (assuming a pure hydrogen plasma).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon frequency in the fluid frame (Hz). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="203">$\Theta_\rm{e} $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ne</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron number density <formula id="204">$N_e$</formula> (cm <formula id="205">$^{-3}$</formula>). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d_table_ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to the Compton cross-section lookup table.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The invariant scattering coefficient <formula id="201">$\nu \alpha_{s}$</formula> [units: Hz <formula id="206">$ \rm{cm}^{-1} $</formula>]. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="11" column="19" declfile="src/radiation.h" declline="11" declcolumn="19"/>
+        <location file="src/radiation.h" line="111" column="19" declfile="src/radiation.h" declline="111" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -173,12 +359,69 @@
           <declname>besselTexObj</declname>
         </param>
         <briefdescription>
+<para>Calculates the Lorentz invariant absorption coefficient via Kirchhoff&apos;s Law. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function determines the invariant absorption coefficient $\nu \alpha_{a}$ by relating the invariant emissivity to the invariant Planck function (source function).</para>
+<para>Based on Kirchhoff&apos;s Law of Thermal Radiation, the absorption coefficient <formula id="207">$\alpha_\nu$</formula> is the ratio of emissivity to the Planck function: [ \alpha_\nu = \frac{j_\nu}{B_\nu} ] In terms of the invariant quantities provided by the internal helper functions: [ \nu \alpha_\nu = \frac{j_\nu / \nu^2}{B_\nu / \nu^3} ]</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nu</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon frequency in the fluid frame (Hz). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Thetae</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionless electron temperature <formula id="203">$\Theta_\rm{e} $</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ne</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Electron number density <formula id="204">$N_e$</formula> (cm <formula id="205">$^{-3}$</formula>). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic field strength (Gauss). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pitch angle between photon and magnetic field. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>besselTexObj</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>CUDA texture for Bessel function lookups. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The invariant absorption coefficient <formula id="208">$\nu \alpha_{a}$</formula> [units: Hz <formula id="206">$ \rm{cm}^{-1} $</formula>].</para>
+</simplesect>
+<simplesect kind="note"><para>A small epsilon ( <formula id="209">$ 10^{-100} $</formula>) is added to the denominator to prevent division by zero. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="12" column="19" declfile="src/radiation.h" declline="12" declcolumn="19"/>
+        <location file="src/radiation.h" line="136" column="19" declfile="src/radiation.h" declline="136" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__device__ double</type>
@@ -210,12 +453,58 @@
           <declname>B</declname>
         </param>
         <briefdescription>
+<para>Calculates the pitch angle between the photon wavevector and the magnetic field. </para>
         </briefdescription>
         <detaileddescription>
+<para>This function determines the angle <formula id="210">$\theta$</formula> between the photon&apos;s propagation direction and the local magnetic field vector, as measured in the local fluid frame.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>X</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon 4-position. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Photon 4-wavevector <formula id="193">$K^\mu$</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Ucov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Covariant fluid 4-velocity <formula id="194">$U_\mu$</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Bcov</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Covariant magnetic field 4-vector <formula id="211">$B_\mu$</formula>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic field strength in Gauss (CGS).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The pitch angle <formula id="210">$\theta$</formula> in radians <formula id="212">$[0, \pi]$</formula>. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/radiation.h" line="13" column="19" declfile="src/radiation.h" declline="13" declcolumn="19"/>
+        <location file="src/radiation.h" line="156" column="19" declfile="src/radiation.h" declline="156" declcolumn="19"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -229,14 +518,23 @@
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>RADIATION_H</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RADIATION_H</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7" refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" kindref="member">GPU_jnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
-<codeline lineno="8" refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" kindref="member">GPU_Bnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae);</highlight></codeline>
-<codeline lineno="9" refid="radiation_8h_1aecaae79ff8525a891104fe68f88bf77e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1aecaae79ff8525a891104fe68f88bf77e" kindref="member">GPU_kappa_es</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
-<codeline lineno="10" refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" kindref="member">GPU_get_fluid_nu</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
-<codeline lineno="11" refid="radiation_8h_1a29cfae5744717c016c0fc8d38e399575" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a29cfae5744717c016c0fc8d38e399575" kindref="member">GPU_alpha_inv_scatt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
-<codeline lineno="12" refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" kindref="member">GPU_alpha_inv_abs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
-<codeline lineno="13" refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" kindref="member">GPU_get_bk_angle</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B);</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a4fcb19d59b7ed136e8c940c90a2f57ea" kindref="member">GPU_jnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1ae04b35ce5313dc73cce9c0390c3ce099" kindref="member">GPU_Bnu_inv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="radiation_8h_1aecaae79ff8525a891104fe68f88bf77e" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1aecaae79ff8525a891104fe68f88bf77e" kindref="member">GPU_kappa_es</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93" refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a5be615cb47f0652c14f230eaedd45fb5" kindref="member">GPU_get_fluid_nu</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="radiation_8h_1a29cfae5744717c016c0fc8d38e399575" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1a29cfae5744717c016c0fc8d38e399575" kindref="member">GPU_alpha_inv_scatt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/>__restrict__<sp/>d_table_ptr);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136" refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1acb8273fe5b2026c98166e10f887c5948" kindref="member">GPU_alpha_inv_abs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Thetae,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ne,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta,<sp/>cudaTextureObject_t<sp/>besselTexObj);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156" refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" refkind="member"><highlight class="normal">__device__<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="radiation_8h_1afcd0e317bc7a2aa8324beb0eeb707a2f" kindref="member">GPU_get_bk_angle</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>X[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>K[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Ucov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>]<sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>Bcov[<ref refid="config_8h_1a2b1fd2d28c6a7d4a3f7027cc1b6466f3" kindref="member">NDIM</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>B);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/radiation.h"/>
   </compounddef>
