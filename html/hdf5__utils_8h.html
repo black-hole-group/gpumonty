@@ -101,39 +101,26 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a9d3a6db741fbf0dac5d89975a73ee527"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hdf5__utils_8h.html#abbd4e0ea8441a4a391c88ed0688689dc">hdf5_blob</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a9d3a6db741fbf0dac5d89975a73ee527">hdf5_get_blob</a> (const char *name)</td></tr>
+<tr class="memdesc:a9d3a6db741fbf0dac5d89975a73ee527"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts an HDF5 object into an in-memory "blob." This function uses the HDF5 "CORE" Virtual File Driver (VFD) to create a virtual file in RAM. It then copies an object (dataset or group) from the physical file into this virtual file.  <a href="hdf5__utils_8h.html#a9d3a6db741fbf0dac5d89975a73ee527">More...</a><br /></td></tr>
 <tr class="separator:a9d3a6db741fbf0dac5d89975a73ee527"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac41923f789696f02927d8857838bcd26"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#ac41923f789696f02927d8857838bcd26">hdf5_write_blob</a> (<a class="el" href="hdf5__utils_8h.html#abbd4e0ea8441a4a391c88ed0688689dc">hdf5_blob</a> blob, const char *name)</td></tr>
+<tr class="memdesc:ac41923f789696f02927d8857838bcd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes an in-memory HDF5 blob back to the main file. This function saves the data stored in a temporary RAM-resident HDF5 image into the permanent file structure. It is often used to save processed results or updated datasets that were modified in memory for speed.  <a href="hdf5__utils_8h.html#ac41923f789696f02927d8857838bcd26">More...</a><br /></td></tr>
 <tr class="separator:ac41923f789696f02927d8857838bcd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfaf5ad969b528252544d9274ae9fb98"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#acfaf5ad969b528252544d9274ae9fb98">hdf5_close_blob</a> (<a class="el" href="hdf5__utils_8h.html#abbd4e0ea8441a4a391c88ed0688689dc">hdf5_blob</a> blob)</td></tr>
+<tr class="memdesc:acfaf5ad969b528252544d9274ae9fb98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates the in-memory HDF5 blob and releases system RAM.  <a href="hdf5__utils_8h.html#acfaf5ad969b528252544d9274ae9fb98">More...</a><br /></td></tr>
 <tr class="separator:acfaf5ad969b528252544d9274ae9fb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa516c64d3d01dab36b6d242bcbd202ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#aa516c64d3d01dab36b6d242bcbd202ea">hdf5_create</a> (const char *fname)</td></tr>
+<tr class="memdesc:aa516c64d3d01dab36b6d242bcbd202ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new HDF5 file on disk, overwriting any existing file with the same name. This function sets up the environment for writing simulation data. It includes logic for both single-processor and parallel (MPI) environments.  <a href="hdf5__utils_8h.html#aa516c64d3d01dab36b6d242bcbd202ea">More...</a><br /></td></tr>
 <tr class="separator:aa516c64d3d01dab36b6d242bcbd202ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38ed155e4a5caf24f8af82e570a5f517"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a38ed155e4a5caf24f8af82e570a5f517">hdf5_open</a> (const char *fname)</td></tr>
+<tr class="memdesc:a38ed155e4a5caf24f8af82e570a5f517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens an existing HDF5 file for reading. Unlike <code>hdf5_create</code>, this function expects the file to already exist on disk. It uses the <code>Read-Only</code> flag to protect the data. Like the creation function, it supports parallel access if MPI is enabled.  <a href="hdf5__utils_8h.html#a38ed155e4a5caf24f8af82e570a5f517">More...</a><br /></td></tr>
 <tr class="separator:a38ed155e4a5caf24f8af82e570a5f517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0f0e281fc647877ec3995288ccc5259"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#ae0f0e281fc647877ec3995288ccc5259">hdf5_close</a> ()</td></tr>
+<tr class="memdesc:ae0f0e281fc647877ec3995288ccc5259"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes pending data to disk and closes the physical HDF5 file.  <a href="hdf5__utils_8h.html#ae0f0e281fc647877ec3995288ccc5259">More...</a><br /></td></tr>
 <tr class="separator:ae0f0e281fc647877ec3995288ccc5259"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bf41478aa1f827d8ded1502defee02a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a7bf41478aa1f827d8ded1502defee02a">hdf5_make_directory</a> (const char *name)</td></tr>
+<tr class="memdesc:a7bf41478aa1f827d8ded1502defee02a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new HDF5 Group at the current path location. This function builds a hierarchical structure within the file. It does not "move" into the new directory; it simply creates it and then releases the handle.  <a href="hdf5__utils_8h.html#a7bf41478aa1f827d8ded1502defee02a">More...</a><br /></td></tr>
 <tr class="separator:a7bf41478aa1f827d8ded1502defee02a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9a5e5084414804db4ce8bb576232eb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#ad9a5e5084414804db4ce8bb576232eb4">hdf5_set_directory</a> (const char *path)</td></tr>
-<tr class="separator:ad9a5e5084414804db4ce8bb576232eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a56a32edcb65b35e670d1d849281133"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a9a56a32edcb65b35e670d1d849281133">hdf5_write_single_val</a> (const void *val, const char *name, hsize_t hdf5_type)</td></tr>
-<tr class="separator:a9a56a32edcb65b35e670d1d849281133"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad8483579de5db94021009f1413e641f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#aad8483579de5db94021009f1413e641f">hdf5_write_array</a> (const void *data, const char *name, size_t rank, hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims, hsize_t *mstart, hsize_t hdf5_type)</td></tr>
-<tr class="separator:aad8483579de5db94021009f1413e641f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a856257e4507df8c48f2d100571b42817"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a856257e4507df8c48f2d100571b42817">hdf5_exists</a> (const char *name)</td></tr>
-<tr class="separator:a856257e4507df8c48f2d100571b42817"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af652f1f1e541a3b6c32dc086a59c7bd9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#af652f1f1e541a3b6c32dc086a59c7bd9">hdf5_read_single_val</a> (void *val, const char *name, hsize_t hdf5_type)</td></tr>
-<tr class="separator:af652f1f1e541a3b6c32dc086a59c7bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4619912aadf4bebe2077a8520b88ac46"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a4619912aadf4bebe2077a8520b88ac46">hdf5_read_array</a> (void *data, const char *name, size_t rank, hsize_t *fdims, hsize_t *fstart, hsize_t *fcount, hsize_t *mdims, hsize_t *mstart, hsize_t hdf5_type)</td></tr>
-<tr class="separator:a4619912aadf4bebe2077a8520b88ac46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fd0f5a177d0ce77904a290ed7ab7065"><td class="memItemLeft" align="right" valign="top">hid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a2fd0f5a177d0ce77904a290ed7ab7065">hdf5_make_str_type</a> (size_t len)</td></tr>
-<tr class="separator:a2fd0f5a177d0ce77904a290ed7ab7065"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12b2fc7f278fe0cf1f3f7fd3fd306652"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#a12b2fc7f278fe0cf1f3f7fd3fd306652">hdf5_write_str_list</a> (const void *data, const char *name, size_t strlen, size_t len)</td></tr>
-<tr class="separator:a12b2fc7f278fe0cf1f3f7fd3fd306652"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1605107076e69f7c00fdecf2bd8a6b7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#ac1605107076e69f7c00fdecf2bd8a6b7">hdf5_add_attr</a> (const void *att, const char *att_name, const char *data_name, hsize_t hdf5_type)</td></tr>
-<tr class="separator:ac1605107076e69f7c00fdecf2bd8a6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecba6fdc8a0d942b378c6c324533a5ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hdf5__utils_8h.html#aecba6fdc8a0d942b378c6c324533a5ca">hdf5_add_units</a> (const char *name, const char *unit)</td></tr>
-<tr class="separator:aecba6fdc8a0d942b378c6c324533a5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a1496e13732ae46800565796b2ce09a84"></a>
@@ -180,74 +167,6 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ac1605107076e69f7c00fdecf2bd8a6b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1605107076e69f7c00fdecf2bd8a6b7">&#9670;&nbsp;</a></span>hdf5_add_attr()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_add_attr </td>
-          <td>(</td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>att</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>att_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>data_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t&#160;</td>
-          <td class="paramname"><em>hdf5_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aecba6fdc8a0d942b378c6c324533a5ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecba6fdc8a0d942b378c6c324533a5ca">&#9670;&nbsp;</a></span>hdf5_add_units()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_add_units </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>unit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="ae0f0e281fc647877ec3995288ccc5259"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae0f0e281fc647877ec3995288ccc5259">&#9670;&nbsp;</a></span>hdf5_close()</h2>
 
@@ -262,6 +181,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Flushes pending data to disk and closes the physical HDF5 file. </p>
+<p>This is a function for data integrity. It forces the operating system to write any remaining "cached" data to the hard drive.</p>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
 
 </div>
 </div>
@@ -281,6 +204,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Deallocates the in-memory HDF5 blob and releases system RAM. </p>
+<p>Because the blob was created using the H5FD_CORE driver, the "file" exists entirely in a memory buffer. Calling this function tells the HDF5 library that the buffer is no longer needed, effectively performing a 'free()' operation on that block of memory.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">blob</td><td>The handle (hid_t) to the in-memory HDF5 file image. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
+
 </div>
 </div>
 <a id="aa516c64d3d01dab36b6d242bcbd202ea"></a>
@@ -299,23 +232,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a856257e4507df8c48f2d100571b42817"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a856257e4507df8c48f2d100571b42817">&#9670;&nbsp;</a></span>hdf5_exists()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_exists </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Creates a new HDF5 file on disk, overwriting any existing file with the same name. This function sets up the environment for writing simulation data. It includes logic for both single-processor and parallel (MPI) environments. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fname</td><td>The string containing the path/name of the file to create (e.g., "data.h5"). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
 
 </div>
 </div>
@@ -335,6 +259,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Extracts an HDF5 object into an in-memory "blob." This function uses the HDF5 "CORE" Virtual File Driver (VFD) to create a virtual file in RAM. It then copies an object (dataset or group) from the physical file into this virtual file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name of the object to extract. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>hdf5_blob A handle (hid_t) to the new in-memory HDF5 file image. </dd></dl>
+
 </div>
 </div>
 <a id="a7bf41478aa1f827d8ded1502defee02a"></a>
@@ -353,23 +286,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a2fd0f5a177d0ce77904a290ed7ab7065"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fd0f5a177d0ce77904a290ed7ab7065">&#9670;&nbsp;</a></span>hdf5_make_str_type()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">hid_t hdf5_make_str_type </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>len</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Creates a new HDF5 Group at the current path location. This function builds a hierarchical structure within the file. It does not "move" into the new directory; it simply creates it and then releases the handle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The name of the new group to create. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
 
 </div>
 </div>
@@ -389,197 +313,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a4619912aadf4bebe2077a8520b88ac46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4619912aadf4bebe2077a8520b88ac46">&#9670;&nbsp;</a></span>hdf5_read_array()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_read_array </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>rank</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fdims</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fstart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fcount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>mdims</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>mstart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t&#160;</td>
-          <td class="paramname"><em>hdf5_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af652f1f1e541a3b6c32dc086a59c7bd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af652f1f1e541a3b6c32dc086a59c7bd9">&#9670;&nbsp;</a></span>hdf5_read_single_val()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_read_single_val </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>val</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t&#160;</td>
-          <td class="paramname"><em>hdf5_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad9a5e5084414804db4ce8bb576232eb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9a5e5084414804db4ce8bb576232eb4">&#9670;&nbsp;</a></span>hdf5_set_directory()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void hdf5_set_directory </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>path</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aad8483579de5db94021009f1413e641f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad8483579de5db94021009f1413e641f">&#9670;&nbsp;</a></span>hdf5_write_array()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_write_array </td>
-          <td>(</td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>rank</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fdims</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fstart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>fcount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>mdims</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t *&#160;</td>
-          <td class="paramname"><em>mstart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t&#160;</td>
-          <td class="paramname"><em>hdf5_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Opens an existing HDF5 file for reading. Unlike <code>hdf5_create</code>, this function expects the file to already exist on disk. It uses the <code>Read-Only</code> flag to protect the data. Like the creation function, it supports parallel access if MPI is enabled. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fname</td><td>The path/name of the existing file to open. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
 
 </div>
 </div>
@@ -609,79 +350,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a9a56a32edcb65b35e670d1d849281133"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a56a32edcb65b35e670d1d849281133">&#9670;&nbsp;</a></span>hdf5_write_single_val()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_write_single_val </td>
-          <td>(</td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>val</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsize_t&#160;</td>
-          <td class="paramname"><em>hdf5_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a12b2fc7f278fe0cf1f3f7fd3fd306652"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12b2fc7f278fe0cf1f3f7fd3fd306652">&#9670;&nbsp;</a></span>hdf5_write_str_list()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int hdf5_write_str_list </td>
-          <td>(</td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>strlen</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Writes an in-memory HDF5 blob back to the main file. This function saves the data stored in a temporary RAM-resident HDF5 image into the permanent file structure. It is often used to save processed results or updated datasets that were modified in memory for speed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">blob</td><td>The handle (hid_t) to the in-memory HDF5 file image. </td></tr>
+    <tr><td class="paramname">name</td><td>The target name for the object within the main file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success, or a negative error code on failure. </dd></dl>
 
 </div>
 </div>

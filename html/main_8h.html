@@ -110,7 +110,7 @@ Functions</h2></td></tr>
 
 <p>Precomputes the spacetime metric components across the simulation grid. </p>
 <p>This function populates the global geometry array (<code>geom</code>) with the covariant metric, contravariant metric, and the metric determinant.</p>
-<dl class="section note"><dt>Note</dt><dd>This function assumes <b>axisymmetry</b>, where the geometry does not change with the azimuthal angle <img class="formulaInl" alt="$\phi$" src="form_155.png"/> (represented by index <img class="formulaInl" alt="$k$" src="form_156.png"/>), therefore geom is a 2D array.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function assumes <b>axisymmetry</b>, where the geometry does not change with the azimuthal angle <img class="formulaInl" alt="$\phi$" src="form_171.png"/> (represented by index <img class="formulaInl" alt="$k$" src="form_172.png"/>), therefore geom is a 2D array.</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
@@ -252,14 +252,14 @@ Functions</h2></td></tr>
 <p>Initializes and synchronizes physical units between the Host and the Device. </p>
 <p>This function defines the transformation scales between "code units" (dimensionless values used in the GRMHD simulation) and "CGS units" (physical values). The scaling parameters are defined as follows:</p>
 <ul>
-<li><b>Mass Scaling</b> ( <img class="formulaInl" alt="$ M_{\rm unit} $" src="form_140.png"/>): User-defined mass unit to scale density and other mass-related quantities.</li>
-<li><b>Black Hole Mass</b> ( <img class="formulaInl" alt="$ M_{\rm BH} $" src="form_141.png"/>): Mass of the central black hole, used to define length and time scales.</li>
-<li><b>Length scale</b> ( <img class="formulaInl" alt="$ L_{\rm unit} $" src="form_142.png"/>): Defined as the gravitational radius <img class="formulaInl" alt="$ R_g = GM_{BH}/c^2 $" src="form_143.png"/>.</li>
-<li><b>Time scale</b> ( <img class="formulaInl" alt="$ T_{\rm unit} $" src="form_144.png"/>): Defined as the light-crossing time <img class="formulaInl" alt="$ R_g/c $" src="form_145.png"/>.</li>
-<li><b>Density scale</b> ( <img class="formulaInl" alt="$ \rho_{\rm unit} $" src="form_146.png"/>): Calculated as <img class="formulaInl" alt="$ M_{\rm unit}/L_{\rm unit}^3 $" src="form_147.png"/>.</li>
-<li><b>Magnetic Field scale</b> ( <img class="formulaInl" alt="$ B_{\rm unit} $" src="form_148.png"/>): Scaled such that the magnetic pressure <img class="formulaInl" alt="$ B^2/4\pi $" src="form_149.png"/> matches the energy density scale <img class="formulaInl" alt="$ \rho c^2 $" src="form_150.png"/> in Gaussian units.</li>
-<li><b>Energy Density Unit</b> ( <img class="formulaInl" alt="$ U_{\rm unit} $" src="form_151.png"/>): Defined as <img class="formulaInl" alt="$ \rho_{ \rm unit} c^2 $" src="form_152.png"/>.</li>
-<li><b>Number Density scale</b> ( <img class="formulaInl" alt="$ N_{e,\rm unit} $" src="form_153.png"/>): Assumes a fully ionized hydrogen plasma ( <img class="formulaInl" alt="$ m_p + m_e $" src="form_154.png"/>).</li>
+<li><b>Mass Scaling</b> ( <img class="formulaInl" alt="$ M_{\rm unit} $" src="form_156.png"/>): User-defined mass unit to scale density and other mass-related quantities.</li>
+<li><b>Black Hole Mass</b> ( <img class="formulaInl" alt="$ M_{\rm BH} $" src="form_157.png"/>): Mass of the central black hole, used to define length and time scales.</li>
+<li><b>Length scale</b> ( <img class="formulaInl" alt="$ L_{\rm unit} $" src="form_158.png"/>): Defined as the gravitational radius <img class="formulaInl" alt="$ R_g = GM_{BH}/c^2 $" src="form_159.png"/>.</li>
+<li><b>Time scale</b> ( <img class="formulaInl" alt="$ T_{\rm unit} $" src="form_160.png"/>): Defined as the light-crossing time <img class="formulaInl" alt="$ R_g/c $" src="form_161.png"/>.</li>
+<li><b>Density scale</b> ( <img class="formulaInl" alt="$ \rho_{\rm unit} $" src="form_162.png"/>): Calculated as <img class="formulaInl" alt="$ M_{\rm unit}/L_{\rm unit}^3 $" src="form_163.png"/>.</li>
+<li><b>Magnetic Field scale</b> ( <img class="formulaInl" alt="$ B_{\rm unit} $" src="form_164.png"/>): Scaled such that the magnetic pressure <img class="formulaInl" alt="$ B^2/4\pi $" src="form_165.png"/> matches the energy density scale <img class="formulaInl" alt="$ \rho c^2 $" src="form_166.png"/> in Gaussian units.</li>
+<li><b>Energy Density Unit</b> ( <img class="formulaInl" alt="$ U_{\rm unit} $" src="form_167.png"/>): Defined as <img class="formulaInl" alt="$ \rho_{ \rm unit} c^2 $" src="form_168.png"/>.</li>
+<li><b>Number Density scale</b> ( <img class="formulaInl" alt="$ N_{e,\rm unit} $" src="form_169.png"/>): Assumes a fully ionized hydrogen plasma ( <img class="formulaInl" alt="$ m_p + m_e $" src="form_170.png"/>).</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

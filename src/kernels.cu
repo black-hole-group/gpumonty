@@ -10,6 +10,7 @@
 #include "jnu_mixed.h"
 #include "curand.h"
 #include "track.h"
+#include "main.h"
 
 
 __host__ void mainFlowControl(time_t time, double * p){

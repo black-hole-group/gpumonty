@@ -13,7 +13,7 @@
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>Implements: <formula id="216">$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega $</formula></para>
+<listitem><para>Implements: <formula id="245">$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega $</formula></para>
 </listitem></itemizedlist>
 </para>
 <para><simplesect kind="note"><para>The resulting weights are stored in log-space within the global <computeroutput>wgt</computeroutput> array for faster interpolation. </para>
@@ -38,7 +38,7 @@
         <detaileddescription>
 <para><itemizedlist>
 <listitem><para>Implements the integrated photon density:</para>
-<para><formula id="217">$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega $</formula></para>
+<para><formula id="246">$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega $</formula></para>
 </listitem><listitem><para><computeroutput>nint[i]</computeroutput>: Stores globally the log of the total number of superphotons to be generated per unit volume.</para>
 </listitem><listitem><para><computeroutput>dndlnu_max[i]</computeroutput>: Stores globally the log of the maximum value of $dn/d\ln\nu$, used as the proposal distribution envelope for frequency sampling. </para>
 </listitem></itemizedlist>

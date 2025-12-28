@@ -13,15 +13,15 @@ Include dependency graph for decs.\+h\+:\nopagebreak
 \begin{DoxyCompactItemize}
 \item 
 struct \mbox{\hyperlink{structparams__t}{params\+\_\+t}}
-\item 
+\begin{DoxyCompactList}\small\item\em Structure to hold simulation parameters parsed by the parameter file. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structof__photon}{of\+\_\+photon}}
 \item 
 struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}}
 \item 
 struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}}
-\item 
+\begin{DoxyCompactList}\small\item\em Structure to hold the metric components and determinant for a given grid point. \end{DoxyCompactList}\item 
 struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}}
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Structure to hold the spectrum data for a given grid point. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
@@ -53,8 +53,6 @@ void \mbox{\hyperlink{decs_8h_ab73a46ea7eb34f689eb4c09e84b5c3e9}{cuda\+Memcpy\+C
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{decs_8h_a95ef596741a95d1d63302e7253aba118}{d\+\_\+table}} \mbox{[}\mbox{\hyperlink{config_8h_af9cccf331f045b89a9f12366df5f7687}{NW}}+1\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a7d5ef0de19030d43f98042e1c4a9f605}{NT}}+1\mbox{]}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{decs_8h_a11fcc0b80c83537a7a8efaa238550bc0}{photon\+\_\+count}}
-\item 
-\+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{decs_8h_a6bcce35fba28e9e8136daeb648c76dde}{generated\+\_\+sphotons}}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{decs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}{d\+\_\+\+N\+\_\+superph\+\_\+recorded}}
 \item 
@@ -95,8 +93,6 @@ void \mbox{\hyperlink{decs_8h_ab73a46ea7eb34f689eb4c09e84b5c3e9}{cuda\+Memcpy\+C
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{decs_8h_ae4a4d415e471cb2b79c3028e6cf3b3da}{d\+\_\+hslope}}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ double \mbox{\hyperlink{decs_8h_a2b92264ec3008463a5529a4535f369e4}{d\+\_\+\+R0}}
-\item 
-\+\_\+\+\_\+device\+\_\+\+\_\+ int \mbox{\hyperlink{decs_8h_a18ecee65560d33d3da019b4e34aee4cb}{total\+\_\+sca}}
 \item 
 \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long \mbox{\hyperlink{decs_8h_aa8328a2d08bffccbcfb60d960343b21c}{tracking\+\_\+counter\+\_\+sampling}}
 \item 
@@ -139,7 +135,7 @@ double \mbox{\hyperlink{decs_8h_adbeb6461125f4b1f5605e48d0013a35d}{K2}} \mbox{[}
 struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} \mbox{\hyperlink{decs_8h_a6b0bc09e401de6b01d58d5e4b4ed71af}{spect}} \mbox{[}\mbox{\hyperlink{config_8h_af52e5601e24f633637c7ef961a01a847}{N\+\_\+\+THBINS}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_af9cf051839fae1fdc190fe02abd595c6}{N\+\_\+\+EBINS}}\mbox{]}
 \item 
 struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}} $\ast$ \mbox{\hyperlink{decs_8h_ae323db0d410f2ea234b9484acfd333d4}{geom}}
-\item 
+\begin{DoxyCompactList}\small\item\em Global host data that holds the metric components for the simulation grid $ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $ . \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{decs_8h_a9ffffa61db90b62819349ec183c95971}{F}} \mbox{[}\mbox{\hyperlink{config_8h_ac5c119234d20f96cd42a8d05feb0f9f3}{N\+\_\+\+ESAMP}}+1\mbox{]}
 \item 
 double \mbox{\hyperlink{decs_8h_ab9694097c5454a2ef1276844d22694a1}{wgt}} \mbox{[}\mbox{\hyperlink{config_8h_ac5c119234d20f96cd42a8d05feb0f9f3}{N\+\_\+\+ESAMP}}+1\mbox{]}
@@ -149,7 +145,7 @@ double \mbox{\hyperlink{decs_8h_a7055762a2f045edd348adf0251fd54d0}{table}} \mbox
 int \mbox{\hyperlink{decs_8h_a6208c40fc9dbb2a489f76a36c66fa159}{N\+\_\+scatt}}
 \item 
 unsigned long long \mbox{\hyperlink{decs_8h_a68dd8132a9835dbc463907ffd59958c1}{N\+\_\+superph\+\_\+recorded}}
-\item 
+\begin{DoxyCompactList}\small\item\em Global host data that holds the number of superphotons recorded into the spectrum. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{decs_8h_a37800d14d893b7a8126f821b7a34e1d1}{R0}}
 \item 
 double \mbox{\hyperlink{decs_8h_a5f200d81ca494457b004628aa958bcec}{Rin}}
@@ -158,8 +154,6 @@ double \mbox{\hyperlink{decs_8h_aa08ac2c5196daf0cda610def0b1b81fc}{Rh}}
 \item 
 double \mbox{\hyperlink{decs_8h_ae38887db77c101efeb7db711a9e856db}{Rout}}
 \item 
-double \mbox{\hyperlink{decs_8h_a147f35f70045c8c403c380ba83176093}{Rms}}
-\item 
 double \mbox{\hyperlink{decs_8h_a1af6c2233e7accdc7fc859ceb6d4101d}{startx}} \mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}
 \item 
 double \mbox{\hyperlink{decs_8h_a1d062115a0a9faa81b98868d62bab991}{stopx}} \mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}
@@ -167,8 +161,6 @@ double \mbox{\hyperlink{decs_8h_a1d062115a0a9faa81b98868d62bab991}{stopx}} \mbox
 double \mbox{\hyperlink{decs_8h_a907315012a2980e923e1c120d0935b61}{dx}} \mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}
 \item 
 double \mbox{\hyperlink{decs_8h_a45d60151fb0572200ad00231c304aaf0}{gam}}
-\item 
-double \mbox{\hyperlink{decs_8h_af1b6f6b5c562420d01bcadcc0ba72453}{d\+Msim}}
 \item 
 double \mbox{\hyperlink{decs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}{Thetae\+\_\+unit}}
 \item 
@@ -187,7 +179,7 @@ int \mbox{\hyperlink{decs_8h_adeea8075a0038c985c63d45161804d60}{N2}}
 int \mbox{\hyperlink{decs_8h_a4e8e9c2bf9e06ae07ef364c05a073302}{N3}}
 \item 
 \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} \mbox{\hyperlink{decs_8h_a02eb7524df3cdfd7ab32de5b40516106}{params}}
-\item 
+\begin{DoxyCompactList}\small\item\em Global host variable to hold simulation parameters parsed by the parameter file. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{decs_8h_a82fb14569b04b06cb437b3c9391ed3a1}{L\+\_\+unit}}
 \item 
 double \mbox{\hyperlink{decs_8h_aa55bd2f4828da46e2cd051edf8f1635e}{B\+\_\+unit}}
@@ -317,7 +309,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_dndlnu\_max}{d\_dndlnu\_max}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+dndlnu\+\_\+max\mbox{[}\mbox{\hyperlink{config_8h_aec1f379db16eab02bf861dad7b97eb06}{NINT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a806b19125f64305b649724dc510925b6}\label{decs_8h_a806b19125f64305b649724dc510925b6}} 
+Global device array for the maximum values of the differential photon number distribution ( $\frac{dN}{d\ln \nu}$). It mirrors the host array dndlnu\+\_\+max but is accessible on the GPU. \mbox{\Hypertarget{decs_8h_a806b19125f64305b649724dc510925b6}\label{decs_8h_a806b19125f64305b649724dc510925b6}} 
 \index{decs.h@{decs.h}!d\_dx@{d\_dx}}
 \index{d\_dx@{d\_dx}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_dx}{d\_dx}}
@@ -335,7 +327,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_hslope}{d\_hslope}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+hslope\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a8bcadfe9b0014cb019542231f47e30fa}\label{decs_8h_a8bcadfe9b0014cb019542231f47e30fa}} 
+Global device variable for the latitude slope for Modified Kerr-\/\+Schild (MKS) coordinates It mirrors the host variable hslope but is accessible on the GPU. \mbox{\Hypertarget{decs_8h_a8bcadfe9b0014cb019542231f47e30fa}\label{decs_8h_a8bcadfe9b0014cb019542231f47e30fa}} 
 \index{decs.h@{decs.h}!d\_K2@{d\_K2}}
 \index{d\_K2@{d\_K2}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_K2}{d\_K2}}
@@ -359,13 +351,13 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_MBH}{d\_MBH}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+MBH\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a6b10273d9bb77b624a016098ab2e1151}\label{decs_8h_a6b10273d9bb77b624a016098ab2e1151}} 
+Global device variable for the black hole mass in grams (g). \mbox{\Hypertarget{decs_8h_a6b10273d9bb77b624a016098ab2e1151}\label{decs_8h_a6b10273d9bb77b624a016098ab2e1151}} 
 \index{decs.h@{decs.h}!d\_N1@{d\_N1}}
 \index{d\_N1@{d\_N1}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_N1}{d\_N1}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+N1\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}\label{decs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}} 
+Global device variable for the number of grid cells in the radial direction. It mirrors the host variable N1 but is accessible on the GPU. \mbox{\Hypertarget{decs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}\label{decs_8h_a73a5bacc85e3dd0cdbe6275b2dea8636}} 
 \index{decs.h@{decs.h}!d\_N2@{d\_N2}}
 \index{d\_N2@{d\_N2}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_N2}{d\_N2}}
@@ -383,13 +375,13 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_N\_scatt}{d\_N\_scatt}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+\+N\+\_\+scatt\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}\label{decs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}} 
+Global device variable counter to keep track of the total number of scatterings that have occurred during the simulation. \mbox{\Hypertarget{decs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}\label{decs_8h_a2aae4f3496ca7ff7c2430bdb6d7547f9}} 
 \index{decs.h@{decs.h}!d\_N\_superph\_recorded@{d\_N\_superph\_recorded}}
 \index{d\_N\_superph\_recorded@{d\_N\_superph\_recorded}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_N\_superph\_recorded}{d\_N\_superph\_recorded}}
-{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+\+N\+\_\+superph\+\_\+recorded}
+{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+\+N\+\_\+superph\+\_\+recorded\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}\label{decs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}} 
+Global device variable to keep track of the number of superphotons recorded into the spectrum. \mbox{\Hypertarget{decs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}\label{decs_8h_a31cc8358ceeceb4c8a3a2ab3ac9bfc7b}} 
 \index{decs.h@{decs.h}!d\_Ne\_unit@{d\_Ne\_unit}}
 \index{d\_Ne\_unit@{d\_Ne\_unit}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_Ne\_unit}{d\_Ne\_unit}}
@@ -401,25 +393,28 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_nint}{d\_nint}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+nint\mbox{[}\mbox{\hyperlink{config_8h_aec1f379db16eab02bf861dad7b97eb06}{NINT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}\label{decs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}} 
+Global device array for the superphoton density distribution function. It mirrors the host array nint but is accessible on the GPU. \mbox{\Hypertarget{decs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}\label{decs_8h_acd922d47a6e92f8de1b201eac7e9f0b4}} 
 \index{decs.h@{decs.h}!d\_Ns@{d\_Ns}}
 \index{d\_Ns@{d\_Ns}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_Ns}{d\_Ns}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int d\+\_\+\+Ns\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_abe0616d6431e19c68647b1aade2f8ec1}\label{decs_8h_abe0616d6431e19c68647b1aade2f8ec1}} 
+Global device variable for the target input number of superphotons to be generated in the simulation. It\textquotesingle{}s the same as the host variable Ns but accessible on the GPU. \mbox{\Hypertarget{decs_8h_abe0616d6431e19c68647b1aade2f8ec1}\label{decs_8h_abe0616d6431e19c68647b1aade2f8ec1}} 
 \index{decs.h@{decs.h}!d\_num\_scat\_phs@{d\_num\_scat\_phs}}
 \index{d\_num\_scat\_phs@{d\_num\_scat\_phs}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_num\_scat\_phs}{d\_num\_scat\_phs}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long d\+\_\+num\+\_\+scat\+\_\+phs\mbox{[}\mbox{\hyperlink{config_8h_a37d846ac240fba08067a4e18ddb9e8aa}{MAX\+\_\+\+LAYER\+\_\+\+SCA}}\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
+Global device array to keep track of the number of scattered superphotons per scattering layer. \begin{DoxyNote}{Note}
+This is scattering\+\_\+counter because scattered photons are stored layer by layer. 
+\end{DoxyNote}
 \mbox{\Hypertarget{decs_8h_a2b92264ec3008463a5529a4535f369e4}\label{decs_8h_a2b92264ec3008463a5529a4535f369e4}} 
 \index{decs.h@{decs.h}!d\_R0@{d\_R0}}
 \index{d\_R0@{d\_R0}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_R0}{d\_R0}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+\+R0\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a742ef4db884976e1496d9dcd0cf7bb49}\label{decs_8h_a742ef4db884976e1496d9dcd0cf7bb49}} 
+Global device variable representing a shift in the logarithmic radial coordinate. It mirrors the host variable Rin but is accessible on the GPU. \mbox{\Hypertarget{decs_8h_a742ef4db884976e1496d9dcd0cf7bb49}\label{decs_8h_a742ef4db884976e1496d9dcd0cf7bb49}} 
 \index{decs.h@{decs.h}!d\_Rh@{d\_Rh}}
 \index{d\_Rh@{d\_Rh}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_Rh}{d\_Rh}}
@@ -443,7 +438,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_table}{d\_table}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+table\mbox{[}\mbox{\hyperlink{config_8h_af9cccf331f045b89a9f12366df5f7687}{NW}}+1\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a7d5ef0de19030d43f98042e1c4a9f605}{NT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a2536dffcc4e5773ab21b546a6ab92c45}\label{decs_8h_a2536dffcc4e5773ab21b546a6ab92c45}} 
+Global device array for the precomputed hot cross section lookup table. It stores values indexed by photon energy ( $\rm{N}_{\omega}$) and electron temperature ( $\rm{N}_\rm{T}$). It\textquotesingle{}s the same as the host array table but accessible on the GPU. \mbox{\Hypertarget{decs_8h_a2536dffcc4e5773ab21b546a6ab92c45}\label{decs_8h_a2536dffcc4e5773ab21b546a6ab92c45}} 
 \index{decs.h@{decs.h}!d\_thetae\_max@{d\_thetae\_max}}
 \index{d\_thetae\_max@{d\_thetae\_max}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_thetae\_max}{d\_thetae\_max}}
@@ -455,7 +450,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_thetae\_unit}{d\_thetae\_unit}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+thetae\+\_\+unit\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_ab654fe0b60b7baf8dde19e2ae081623c}\label{decs_8h_ab654fe0b60b7baf8dde19e2ae081623c}} 
+Global device variable for the electron temperature unit to translate from cgs to code units. It\textquotesingle{}s the same as the host variable Thetae\+\_\+unit but accessible on the GPU. \mbox{\Hypertarget{decs_8h_ab654fe0b60b7baf8dde19e2ae081623c}\label{decs_8h_ab654fe0b60b7baf8dde19e2ae081623c}} 
 \index{decs.h@{decs.h}!d\_tp\_over\_te@{d\_tp\_over\_te}}
 \index{d\_tp\_over\_te@{d\_tp\_over\_te}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_tp\_over\_te}{d\_tp\_over\_te}}
@@ -473,7 +468,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{d\_trat\_small}{d\_trat\_small}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ double d\+\_\+trat\+\_\+small\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a2f6b6a134b32ab683f420fc0ae510d4c}\label{decs_8h_a2f6b6a134b32ab683f420fc0ae510d4c}} 
+Global device variable for the ion-\/to-\/electron temperature ratio in the low-\/beta limit ( $R_{low}$). This defines the temperature ratio in highly magnetized regions (where $\beta \ll \beta_{\rm crit}$). \mbox{\Hypertarget{decs_8h_a2f6b6a134b32ab683f420fc0ae510d4c}\label{decs_8h_a2f6b6a134b32ab683f420fc0ae510d4c}} 
 \index{decs.h@{decs.h}!d\_wgt@{d\_wgt}}
 \index{d\_wgt@{d\_wgt}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{d\_wgt}{d\_wgt}}
@@ -485,19 +480,13 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{dMact}{dMact}}
 {\footnotesize\ttfamily double d\+Mact}
 
-\mbox{\Hypertarget{decs_8h_af1b6f6b5c562420d01bcadcc0ba72453}\label{decs_8h_af1b6f6b5c562420d01bcadcc0ba72453}} 
-\index{decs.h@{decs.h}!dMsim@{dMsim}}
-\index{dMsim@{dMsim}!decs.h@{decs.h}}
-\doxysubsubsection{\texorpdfstring{dMsim}{dMsim}}
-{\footnotesize\ttfamily double d\+Msim\hspace{0.3cm}{\ttfamily [extern]}}
-
 \mbox{\Hypertarget{decs_8h_ab730c3c176e1935139f79d8881137f34}\label{decs_8h_ab730c3c176e1935139f79d8881137f34}} 
 \index{decs.h@{decs.h}!dndlnu\_max@{dndlnu\_max}}
 \index{dndlnu\_max@{dndlnu\_max}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{dndlnu\_max}{dndlnu\_max}}
 {\footnotesize\ttfamily double dndlnu\+\_\+max\mbox{[}\mbox{\hyperlink{config_8h_aec1f379db16eab02bf861dad7b97eb06}{NINT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a907315012a2980e923e1c120d0935b61}\label{decs_8h_a907315012a2980e923e1c120d0935b61}} 
+Global host array for the maximum values of the differential photon number distribution ( $\frac{dN}{d\ln \nu}$). Used for normalization and sampling in the scattering process. \mbox{\Hypertarget{decs_8h_a907315012a2980e923e1c120d0935b61}\label{decs_8h_a907315012a2980e923e1c120d0935b61}} 
 \index{decs.h@{decs.h}!dx@{dx}}
 \index{dx@{dx}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{dx}{dx}}
@@ -509,23 +498,21 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{F}{F}}
 {\footnotesize\ttfamily double F\mbox{[}\mbox{\hyperlink{config_8h_ac5c119234d20f96cd42a8d05feb0f9f3}{N\+\_\+\+ESAMP}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a45d60151fb0572200ad00231c304aaf0}\label{decs_8h_a45d60151fb0572200ad00231c304aaf0}} 
+Global host data array of precomputed emissivity values binned by frequency. \mbox{\Hypertarget{decs_8h_a45d60151fb0572200ad00231c304aaf0}\label{decs_8h_a45d60151fb0572200ad00231c304aaf0}} 
 \index{decs.h@{decs.h}!gam@{gam}}
 \index{gam@{gam}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{gam}{gam}}
 {\footnotesize\ttfamily double gam\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a6bcce35fba28e9e8136daeb648c76dde}\label{decs_8h_a6bcce35fba28e9e8136daeb648c76dde}} 
-\index{decs.h@{decs.h}!generated\_sphotons@{generated\_sphotons}}
-\index{generated\_sphotons@{generated\_sphotons}!decs.h@{decs.h}}
-\doxysubsubsection{\texorpdfstring{generated\_sphotons}{generated\_sphotons}}
-{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long generated\+\_\+sphotons\hspace{0.3cm}{\ttfamily [extern]}}
-
-\mbox{\Hypertarget{decs_8h_ae323db0d410f2ea234b9484acfd333d4}\label{decs_8h_ae323db0d410f2ea234b9484acfd333d4}} 
+Global host variable for the gas adiabatic index $ \Gamma $. \mbox{\Hypertarget{decs_8h_ae323db0d410f2ea234b9484acfd333d4}\label{decs_8h_ae323db0d410f2ea234b9484acfd333d4}} 
 \index{decs.h@{decs.h}!geom@{geom}}
 \index{geom@{geom}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{geom}{geom}}
 {\footnotesize\ttfamily struct \mbox{\hyperlink{structof__geom}{of\+\_\+geom}}$\ast$ geom\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Global host data that holds the metric components for the simulation grid $ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $ . 
 
 \mbox{\Hypertarget{decs_8h_aec158415808eb5ddb908cdeb7bf9c343}\label{decs_8h_aec158415808eb5ddb908cdeb7bf9c343}} 
 \index{decs.h@{decs.h}!hslope@{hslope}}
@@ -533,19 +520,19 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{hslope}{hslope}}
 {\footnotesize\ttfamily double hslope\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_adbeb6461125f4b1f5605e48d0013a35d}\label{decs_8h_adbeb6461125f4b1f5605e48d0013a35d}} 
+Global host variable for the latitude slope for Modified Kerr-\/\+Schild (MKS) coordinates \mbox{\Hypertarget{decs_8h_adbeb6461125f4b1f5605e48d0013a35d}\label{decs_8h_adbeb6461125f4b1f5605e48d0013a35d}} 
 \index{decs.h@{decs.h}!K2@{K2}}
 \index{K2@{K2}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{K2}{K2}}
 {\footnotesize\ttfamily double K2\mbox{[}\mbox{\hyperlink{config_8h_ac5c119234d20f96cd42a8d05feb0f9f3}{N\+\_\+\+ESAMP}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a82fb14569b04b06cb437b3c9391ed3a1}\label{decs_8h_a82fb14569b04b06cb437b3c9391ed3a1}} 
+Global host array for the precomputed values of the modified Bessel function of the second kind ( $K_2$). \mbox{\Hypertarget{decs_8h_a82fb14569b04b06cb437b3c9391ed3a1}\label{decs_8h_a82fb14569b04b06cb437b3c9391ed3a1}} 
 \index{decs.h@{decs.h}!L\_unit@{L\_unit}}
 \index{L\_unit@{L\_unit}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{L\_unit}{L\_unit}}
 {\footnotesize\ttfamily double L\+\_\+unit\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}\label{decs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}} 
+Global host variable for the length unit conversion factor. Scales code units to centimeters (cm). \mbox{\Hypertarget{decs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}\label{decs_8h_af3e2dd1b08fb33fd5973be4a0260a1ec}} 
 \index{decs.h@{decs.h}!Ladv@{Ladv}}
 \index{Ladv@{Ladv}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{Ladv}{Ladv}}
@@ -563,19 +550,19 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{max\_tau\_scatt}{max\_tau\_scatt}}
 {\footnotesize\ttfamily double max\+\_\+tau\+\_\+scatt\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a3c4b6997b6599853757d218ac7315829}\label{decs_8h_a3c4b6997b6599853757d218ac7315829}} 
+Global host variable for the maximum optical depth found so far, used generally to calculate the biasing factor. \mbox{\Hypertarget{decs_8h_a3c4b6997b6599853757d218ac7315829}\label{decs_8h_a3c4b6997b6599853757d218ac7315829}} 
 \index{decs.h@{decs.h}!my\_curand\_state@{my\_curand\_state}}
 \index{my\_curand\_state@{my\_curand\_state}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{my\_curand\_state}{my\_curand\_state}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ curand\+State my\+\_\+curand\+\_\+state\mbox{[}\mbox{\hyperlink{config_8h_aa714b8308c6a460183a00af49b098b37}{N\+\_\+\+BLOCKS}} $\ast$\mbox{\hyperlink{config_8h_ab60b5074c740fd36061f48f90d1a0b21}{N\+\_\+\+THREADS}}\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a5a6a26e0827f9640d2eb7201017f19d7}\label{decs_8h_a5a6a26e0827f9640d2eb7201017f19d7}} 
+Global device array of curand\+State structures for random number generation on the GPU. It\textquotesingle{}s sized to accommodate all threads across all blocks. \mbox{\Hypertarget{decs_8h_a5a6a26e0827f9640d2eb7201017f19d7}\label{decs_8h_a5a6a26e0827f9640d2eb7201017f19d7}} 
 \index{decs.h@{decs.h}!N1@{N1}}
 \index{N1@{N1}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{N1}{N1}}
 {\footnotesize\ttfamily int N1\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_adeea8075a0038c985c63d45161804d60}\label{decs_8h_adeea8075a0038c985c63d45161804d60}} 
+Global host variable for the number of grid cells in the radial direction. \mbox{\Hypertarget{decs_8h_adeea8075a0038c985c63d45161804d60}\label{decs_8h_adeea8075a0038c985c63d45161804d60}} 
 \index{decs.h@{decs.h}!N2@{N2}}
 \index{N2@{N2}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{N2}{N2}}
@@ -593,11 +580,15 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{N\_scatt}{N\_scatt}}
 {\footnotesize\ttfamily int N\+\_\+scatt\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a68dd8132a9835dbc463907ffd59958c1}\label{decs_8h_a68dd8132a9835dbc463907ffd59958c1}} 
+Global host data counter to keep track of the number of scattered superphotons per scattering layer. \mbox{\Hypertarget{decs_8h_a68dd8132a9835dbc463907ffd59958c1}\label{decs_8h_a68dd8132a9835dbc463907ffd59958c1}} 
 \index{decs.h@{decs.h}!N\_superph\_recorded@{N\_superph\_recorded}}
 \index{N\_superph\_recorded@{N\_superph\_recorded}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{N\_superph\_recorded}{N\_superph\_recorded}}
 {\footnotesize\ttfamily unsigned long long N\+\_\+superph\+\_\+recorded\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Global host data that holds the number of superphotons recorded into the spectrum. 
 
 \mbox{\Hypertarget{decs_8h_a8cd0401d02c76917b31197c083fc4103}\label{decs_8h_a8cd0401d02c76917b31197c083fc4103}} 
 \index{decs.h@{decs.h}!Ne\_unit@{Ne\_unit}}
@@ -611,17 +602,21 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{nint}{nint}}
 {\footnotesize\ttfamily double nint\mbox{[}\mbox{\hyperlink{config_8h_aec1f379db16eab02bf861dad7b97eb06}{NINT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a581f9e6b0ae1bb5b0a323185403461cf}\label{decs_8h_a581f9e6b0ae1bb5b0a323185403461cf}} 
+Global host array for the superphoton density distribution function. \mbox{\Hypertarget{decs_8h_a581f9e6b0ae1bb5b0a323185403461cf}\label{decs_8h_a581f9e6b0ae1bb5b0a323185403461cf}} 
 \index{decs.h@{decs.h}!p@{p}}
 \index{p@{p}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{p}{p}}
 {\footnotesize\ttfamily double$\ast$ p\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a02eb7524df3cdfd7ab32de5b40516106}\label{decs_8h_a02eb7524df3cdfd7ab32de5b40516106}} 
+Global host pointer for accessing plasma properties. \mbox{\Hypertarget{decs_8h_a02eb7524df3cdfd7ab32de5b40516106}\label{decs_8h_a02eb7524df3cdfd7ab32de5b40516106}} 
 \index{decs.h@{decs.h}!params@{params}}
 \index{params@{params}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{params}{params}}
 {\footnotesize\ttfamily \mbox{\hyperlink{decs_8h_adf599310dc2d73d7dea6fe81566f2f1c}{Params}} params\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Global host variable to hold simulation parameters parsed by the parameter file. 
 
 \mbox{\Hypertarget{decs_8h_a11fcc0b80c83537a7a8efaa238550bc0}\label{decs_8h_a11fcc0b80c83537a7a8efaa238550bc0}} 
 \index{decs.h@{decs.h}!photon\_count@{photon\_count}}
@@ -629,13 +624,13 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{photon\_count}{photon\_count}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long photon\+\_\+count\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a37800d14d893b7a8126f821b7a34e1d1}\label{decs_8h_a37800d14d893b7a8126f821b7a34e1d1}} 
+Global device variable counter to keep track of the total number of superphotons generated from the grid during the simulation. \mbox{\Hypertarget{decs_8h_a37800d14d893b7a8126f821b7a34e1d1}\label{decs_8h_a37800d14d893b7a8126f821b7a34e1d1}} 
 \index{decs.h@{decs.h}!R0@{R0}}
 \index{R0@{R0}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{R0}{R0}}
 {\footnotesize\ttfamily double R0\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_aa08ac2c5196daf0cda610def0b1b81fc}\label{decs_8h_aa08ac2c5196daf0cda610def0b1b81fc}} 
+Global host variable representing a shift in the logarithmic radial coordinate. \mbox{\Hypertarget{decs_8h_aa08ac2c5196daf0cda610def0b1b81fc}\label{decs_8h_aa08ac2c5196daf0cda610def0b1b81fc}} 
 \index{decs.h@{decs.h}!Rh@{Rh}}
 \index{Rh@{Rh}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{Rh}{Rh}}
@@ -653,12 +648,6 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{Rin}{Rin}}
 {\footnotesize\ttfamily double Rin}
 
-\mbox{\Hypertarget{decs_8h_a147f35f70045c8c403c380ba83176093}\label{decs_8h_a147f35f70045c8c403c380ba83176093}} 
-\index{decs.h@{decs.h}!Rms@{Rms}}
-\index{Rms@{Rms}!decs.h@{decs.h}}
-\doxysubsubsection{\texorpdfstring{Rms}{Rms}}
-{\footnotesize\ttfamily double Rms}
-
 \mbox{\Hypertarget{decs_8h_ae38887db77c101efeb7db711a9e856db}\label{decs_8h_ae38887db77c101efeb7db711a9e856db}} 
 \index{decs.h@{decs.h}!Rout@{Rout}}
 \index{Rout@{Rout}!decs.h@{decs.h}}
@@ -671,6 +660,9 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{scattering\_counter}{scattering\_counter}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long scattering\+\_\+counter\hspace{0.3cm}{\ttfamily [extern]}}
 
+Global device variable counter to keep track of the number of scattered superphotons in the current scattering layer. \begin{DoxyNote}{Note}
+This is different than d\+\_\+\+N\+\_\+scatt which counts the total number of scattering events in the simulation. 
+\end{DoxyNote}
 \mbox{\Hypertarget{decs_8h_a6b0bc09e401de6b01d58d5e4b4ed71af}\label{decs_8h_a6b0bc09e401de6b01d58d5e4b4ed71af}} 
 \index{decs.h@{decs.h}!spect@{spect}}
 \index{spect@{spect}!decs.h@{decs.h}}
@@ -683,7 +675,7 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{startx}{startx}}
 {\footnotesize\ttfamily double startx\mbox{[}\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}}\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a1d062115a0a9faa81b98868d62bab991}\label{decs_8h_a1d062115a0a9faa81b98868d62bab991}} 
+Global host array defining the start coordinate of the simulation grid in each dimension in native coordinates. \mbox{\Hypertarget{decs_8h_a1d062115a0a9faa81b98868d62bab991}\label{decs_8h_a1d062115a0a9faa81b98868d62bab991}} 
 \index{decs.h@{decs.h}!stopx@{stopx}}
 \index{stopx@{stopx}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{stopx}{stopx}}
@@ -701,31 +693,25 @@ data structures \mbox{\Hypertarget{decs_8h_affa4ba22cd40d0fd29cc743dabbd8703}\la
 \doxysubsubsection{\texorpdfstring{table}{table}}
 {\footnotesize\ttfamily double table\mbox{[}\mbox{\hyperlink{config_8h_af9cccf331f045b89a9f12366df5f7687}{NW}}+1\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_a7d5ef0de19030d43f98042e1c4a9f605}{NT}}+1\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}\label{decs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}} 
+Global host array for the precomputed hot cross section lookup table. It stores values indexed by photon energy ( $\rm{N}_{\omega}$) and electron temperature ( $\rm{N}_\rm{T}$). \mbox{\Hypertarget{decs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}\label{decs_8h_a6ca83d5930b6e96acc8cc98ae89e0740}} 
 \index{decs.h@{decs.h}!Thetae\_unit@{Thetae\_unit}}
 \index{Thetae\_unit@{Thetae\_unit}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{Thetae\_unit}{Thetae\_unit}}
 {\footnotesize\ttfamily double Thetae\+\_\+unit\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_a18ecee65560d33d3da019b4e34aee4cb}\label{decs_8h_a18ecee65560d33d3da019b4e34aee4cb}} 
-\index{decs.h@{decs.h}!total\_sca@{total\_sca}}
-\index{total\_sca@{total\_sca}!decs.h@{decs.h}}
-\doxysubsubsection{\texorpdfstring{total\_sca}{total\_sca}}
-{\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ int total\+\_\+sca\hspace{0.3cm}{\ttfamily [extern]}}
-
-\mbox{\Hypertarget{decs_8h_a68ccb3c564f43896d2410ddd61d21f90}\label{decs_8h_a68ccb3c564f43896d2410ddd61d21f90}} 
+Global host variable for the electron temperature unit to translate from cgs to code units. \mbox{\Hypertarget{decs_8h_a68ccb3c564f43896d2410ddd61d21f90}\label{decs_8h_a68ccb3c564f43896d2410ddd61d21f90}} 
 \index{decs.h@{decs.h}!tracking\_counter@{tracking\_counter}}
 \index{tracking\_counter@{tracking\_counter}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{tracking\_counter}{tracking\_counter}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long tracking\+\_\+counter\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_aa8328a2d08bffccbcfb60d960343b21c}\label{decs_8h_aa8328a2d08bffccbcfb60d960343b21c}} 
+Global device variable counter to keep track of the number of photons being tracked in the current scattering batch. Used to dynamically allocate threads for photon tracking. \mbox{\Hypertarget{decs_8h_aa8328a2d08bffccbcfb60d960343b21c}\label{decs_8h_aa8328a2d08bffccbcfb60d960343b21c}} 
 \index{decs.h@{decs.h}!tracking\_counter\_sampling@{tracking\_counter\_sampling}}
 \index{tracking\_counter\_sampling@{tracking\_counter\_sampling}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{tracking\_counter\_sampling}{tracking\_counter\_sampling}}
 {\footnotesize\ttfamily \+\_\+\+\_\+device\+\_\+\+\_\+ unsigned long long tracking\+\_\+counter\+\_\+sampling\hspace{0.3cm}{\ttfamily [extern]}}
 
-\mbox{\Hypertarget{decs_8h_afbb8cc3c69f9362ac770bae25cc29c28}\label{decs_8h_afbb8cc3c69f9362ac770bae25cc29c28}} 
+Global device variable counter to keep track of the number of photons being sampled in the current tracking batch. Used to dynamically allocate threads for photon sampling. \mbox{\Hypertarget{decs_8h_afbb8cc3c69f9362ac770bae25cc29c28}\label{decs_8h_afbb8cc3c69f9362ac770bae25cc29c28}} 
 \index{decs.h@{decs.h}!U\_unit@{U\_unit}}
 \index{U\_unit@{U\_unit}!decs.h@{decs.h}}
 \doxysubsubsection{\texorpdfstring{U\_unit}{U\_unit}}

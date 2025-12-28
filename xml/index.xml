@@ -198,7 +198,6 @@
     <member refid="decs_8h_1adf599310dc2d73d7dea6fe81566f2f1c" kind="typedef"><name>Params</name></member>
     <member refid="decs_8h_1a95ef596741a95d1d63302e7253aba118" kind="variable"><name>d_table</name></member>
     <member refid="decs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" kind="variable"><name>photon_count</name></member>
-    <member refid="decs_8h_1a6bcce35fba28e9e8136daeb648c76dde" kind="variable"><name>generated_sphotons</name></member>
     <member refid="decs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" kind="variable"><name>d_N_superph_recorded</name></member>
     <member refid="decs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" kind="variable"><name>d_Ns</name></member>
     <member refid="decs_8h_1aed8971ac92cef3856c889bf508614ff0" kind="variable"><name>d_N_scatt</name></member>
@@ -219,7 +218,6 @@
     <member refid="decs_8h_1a72b4989106eb6ea19a8d1c21ad568eef" kind="variable"><name>d_dndlnu_max</name></member>
     <member refid="decs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" kind="variable"><name>d_hslope</name></member>
     <member refid="decs_8h_1a2b92264ec3008463a5529a4535f369e4" kind="variable"><name>d_R0</name></member>
-    <member refid="decs_8h_1a18ecee65560d33d3da019b4e34aee4cb" kind="variable"><name>total_sca</name></member>
     <member refid="decs_8h_1aa8328a2d08bffccbcfb60d960343b21c" kind="variable"><name>tracking_counter_sampling</name></member>
     <member refid="decs_8h_1a3c4b6997b6599853757d218ac7315829" kind="variable"><name>my_curand_state</name></member>
     <member refid="decs_8h_1a6b10273d9bb77b624a016098ab2e1151" kind="variable"><name>d_N1</name></member>
@@ -250,12 +248,10 @@
     <member refid="decs_8h_1a5f200d81ca494457b004628aa958bcec" kind="variable"><name>Rin</name></member>
     <member refid="decs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" kind="variable"><name>Rh</name></member>
     <member refid="decs_8h_1ae38887db77c101efeb7db711a9e856db" kind="variable"><name>Rout</name></member>
-    <member refid="decs_8h_1a147f35f70045c8c403c380ba83176093" kind="variable"><name>Rms</name></member>
     <member refid="decs_8h_1a1af6c2233e7accdc7fc859ceb6d4101d" kind="variable"><name>startx</name></member>
     <member refid="decs_8h_1a1d062115a0a9faa81b98868d62bab991" kind="variable"><name>stopx</name></member>
     <member refid="decs_8h_1a907315012a2980e923e1c120d0935b61" kind="variable"><name>dx</name></member>
     <member refid="decs_8h_1a45d60151fb0572200ad00231c304aaf0" kind="variable"><name>gam</name></member>
-    <member refid="decs_8h_1af1b6f6b5c562420d01bcadcc0ba72453" kind="variable"><name>dMsim</name></member>
     <member refid="decs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740" kind="variable"><name>Thetae_unit</name></member>
     <member refid="decs_8h_1a1a12d1761d2fcb9a5ba79ae0724b4caa" kind="variable"><name>max_tau_scatt</name></member>
     <member refid="decs_8h_1af3e2dd1b08fb33fd5973be4a0260a1ec" kind="variable"><name>Ladv</name></member>
@@ -283,32 +279,21 @@
     <member refid="defs_8h_1ab9694097c5454a2ef1276844d22694a1" kind="variable"><name>wgt</name></member>
     <member refid="defs_8h_1a665f40c3f8f3a36509e8c74668d398ab" kind="variable"><name>N_scatt</name></member>
     <member refid="defs_8h_1a68dd8132a9835dbc463907ffd59958c1" kind="variable"><name>N_superph_recorded</name></member>
-    <member refid="defs_8h_1a37800d14d893b7a8126f821b7a34e1d1" kind="variable"><name>R0</name></member>
     <member refid="defs_8h_1a5f200d81ca494457b004628aa958bcec" kind="variable"><name>Rin</name></member>
-    <member refid="defs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" kind="variable"><name>Rh</name></member>
     <member refid="defs_8h_1ae38887db77c101efeb7db711a9e856db" kind="variable"><name>Rout</name></member>
-    <member refid="defs_8h_1a147f35f70045c8c403c380ba83176093" kind="variable"><name>Rms</name></member>
+    <member refid="defs_8h_1aa08ac2c5196daf0cda610def0b1b81fc" kind="variable"><name>Rh</name></member>
+    <member refid="defs_8h_1a37800d14d893b7a8126f821b7a34e1d1" kind="variable"><name>R0</name></member>
     <member refid="defs_8h_1aec158415808eb5ddb908cdeb7bf9c343" kind="variable"><name>hslope</name></member>
     <member refid="defs_8h_1a1af6c2233e7accdc7fc859ceb6d4101d" kind="variable"><name>startx</name></member>
     <member refid="defs_8h_1a1d062115a0a9faa81b98868d62bab991" kind="variable"><name>stopx</name></member>
     <member refid="defs_8h_1a907315012a2980e923e1c120d0935b61" kind="variable"><name>dx</name></member>
     <member refid="defs_8h_1a45d60151fb0572200ad00231c304aaf0" kind="variable"><name>gam</name></member>
-    <member refid="defs_8h_1af1b6f6b5c562420d01bcadcc0ba72453" kind="variable"><name>dMsim</name></member>
     <member refid="defs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740" kind="variable"><name>Thetae_unit</name></member>
     <member refid="defs_8h_1a1a12d1761d2fcb9a5ba79ae0724b4caa" kind="variable"><name>max_tau_scatt</name></member>
+    <member refid="defs_8h_1a644a367edeb2f1fb87a015d306f5f076" kind="variable"><name>dMact</name></member>
     <member refid="defs_8h_1af3e2dd1b08fb33fd5973be4a0260a1ec" kind="variable"><name>Ladv</name></member>
-    <member refid="defs_8h_1ac95deac65effbea484bf30e539c1b62b" kind="variable"><name>dMact</name></member>
     <member refid="defs_8h_1a35b2d6b30ef375b6b18f546dc98357b2" kind="variable"><name>bias_norm</name></member>
-    <member refid="defs_8h_1aaec46a71b387d4a2e71769c208112fd3" kind="variable"><name>econ</name></member>
-    <member refid="defs_8h_1a0d976351cecf4528d1cd3d41bea51ed0" kind="variable"><name>ecov</name></member>
-    <member refid="defs_8h_1ad8c7a14419937e710e056a1592f8bf8b" kind="variable"><name>bcon</name></member>
-    <member refid="defs_8h_1a8b61d35db7528efda160176a1898fadf" kind="variable"><name>bcov</name></member>
-    <member refid="defs_8h_1acca984f3768575908e2e0dd2f22cbb95" kind="variable"><name>ucon</name></member>
-    <member refid="defs_8h_1a7a49aa3585420e73246460b8ab0a4ca7" kind="variable"><name>ucov</name></member>
     <member refid="defs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kind="variable"><name>p</name></member>
-    <member refid="defs_8h_1a03b3154ce6226810ae2cbe4b8e5edb0c" kind="variable"><name>ne</name></member>
-    <member refid="defs_8h_1a96d86c26e48095c968a287e022017016" kind="variable"><name>thetae</name></member>
-    <member refid="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" kind="variable"><name>b</name></member>
     <member refid="defs_8h_1a5a6a26e0827f9640d2eb7201017f19d7" kind="variable"><name>N1</name></member>
     <member refid="defs_8h_1adeea8075a0038c985c63d45161804d60" kind="variable"><name>N2</name></member>
     <member refid="defs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302" kind="variable"><name>N3</name></member>
@@ -330,7 +315,6 @@
     <member refid="defs_8h_1a3c4b6997b6599853757d218ac7315829" kind="variable"><name>my_curand_state</name></member>
     <member refid="defs_8h_1a95ef596741a95d1d63302e7253aba118" kind="variable"><name>d_table</name></member>
     <member refid="defs_8h_1a11fcc0b80c83537a7a8efaa238550bc0" kind="variable"><name>photon_count</name></member>
-    <member refid="defs_8h_1a6bcce35fba28e9e8136daeb648c76dde" kind="variable"><name>generated_sphotons</name></member>
     <member refid="defs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9" kind="variable"><name>d_N_superph_recorded</name></member>
     <member refid="defs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4" kind="variable"><name>d_Ns</name></member>
     <member refid="defs_8h_1aed8971ac92cef3856c889bf508614ff0" kind="variable"><name>d_N_scatt</name></member>
@@ -351,7 +335,6 @@
     <member refid="defs_8h_1a72b4989106eb6ea19a8d1c21ad568eef" kind="variable"><name>d_dndlnu_max</name></member>
     <member refid="defs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da" kind="variable"><name>d_hslope</name></member>
     <member refid="defs_8h_1a2b92264ec3008463a5529a4535f369e4" kind="variable"><name>d_R0</name></member>
-    <member refid="defs_8h_1a18ecee65560d33d3da019b4e34aee4cb" kind="variable"><name>total_sca</name></member>
     <member refid="defs_8h_1aa8328a2d08bffccbcfb60d960343b21c" kind="variable"><name>tracking_counter_sampling</name></member>
     <member refid="defs_8h_1a6b10273d9bb77b624a016098ab2e1151" kind="variable"><name>d_N1</name></member>
     <member refid="defs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636" kind="variable"><name>d_N2</name></member>
@@ -378,16 +361,6 @@
     <member refid="hdf5__utils_8h_1a38ed155e4a5caf24f8af82e570a5f517" kind="function"><name>hdf5_open</name></member>
     <member refid="hdf5__utils_8h_1ae0f0e281fc647877ec3995288ccc5259" kind="function"><name>hdf5_close</name></member>
     <member refid="hdf5__utils_8h_1a7bf41478aa1f827d8ded1502defee02a" kind="function"><name>hdf5_make_directory</name></member>
-    <member refid="hdf5__utils_8h_1ad9a5e5084414804db4ce8bb576232eb4" kind="function"><name>hdf5_set_directory</name></member>
-    <member refid="hdf5__utils_8h_1a9a56a32edcb65b35e670d1d849281133" kind="function"><name>hdf5_write_single_val</name></member>
-    <member refid="hdf5__utils_8h_1aad8483579de5db94021009f1413e641f" kind="function"><name>hdf5_write_array</name></member>
-    <member refid="hdf5__utils_8h_1a856257e4507df8c48f2d100571b42817" kind="function"><name>hdf5_exists</name></member>
-    <member refid="hdf5__utils_8h_1af652f1f1e541a3b6c32dc086a59c7bd9" kind="function"><name>hdf5_read_single_val</name></member>
-    <member refid="hdf5__utils_8h_1a4619912aadf4bebe2077a8520b88ac46" kind="function"><name>hdf5_read_array</name></member>
-    <member refid="hdf5__utils_8h_1a2fd0f5a177d0ce77904a290ed7ab7065" kind="function"><name>hdf5_make_str_type</name></member>
-    <member refid="hdf5__utils_8h_1a12b2fc7f278fe0cf1f3f7fd3fd306652" kind="function"><name>hdf5_write_str_list</name></member>
-    <member refid="hdf5__utils_8h_1ac1605107076e69f7c00fdecf2bd8a6b7" kind="function"><name>hdf5_add_attr</name></member>
-    <member refid="hdf5__utils_8h_1aecba6fdc8a0d942b378c6c324533a5ca" kind="function"><name>hdf5_add_units</name></member>
   </compound>
   <compound refid="hotcross_8h" kind="file"><name>hotcross.h</name>
     <member refid="hotcross_8h_1abab2cd64f544ce16dca27fabd79c67aa" kind="function"><name>init_hotcross</name></member>
@@ -421,7 +394,6 @@
     <member refid="kernels_8h_1af2452f264b7f0ad396637abcc3e7f43e" kind="function"><name>GPU_track_scat</name></member>
     <member refid="kernels_8h_1ac1c435d0ee5fa5994513454a55466305" kind="function"><name>GPU_record</name></member>
     <member refid="kernels_8h_1aa7287dc36ec91a9fc56342eabd1a1463" kind="function"><name>GPU_record_scattering</name></member>
-    <member refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kind="function"><name>report_spectrum</name></member>
     <member refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" kind="function"><name>mainFlowControl</name></member>
   </compound>
   <compound refid="main_8h" kind="file"><name>main.h</name>

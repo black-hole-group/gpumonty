@@ -24,39 +24,19 @@ typedef hid\+\_\+t \mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed06886
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}} \mbox{\hyperlink{hdf5__utils_8h_a9d3a6db741fbf0dac5d89975a73ee527}{hdf5\+\_\+get\+\_\+blob}} (const char $\ast$name)
-\item 
+\begin{DoxyCompactList}\small\item\em Extracts an HDF5 object into an in-\/memory \char`\"{}blob.\char`\"{} This function uses the HDF5 \char`\"{}\+CORE\char`\"{} Virtual File Driver (VFD) to create a virtual file in RAM. It then copies an object (dataset or group) from the physical file into this virtual file. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_ac41923f789696f02927d8857838bcd26}{hdf5\+\_\+write\+\_\+blob}} (\mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}} blob, const char $\ast$name)
-\item 
+\begin{DoxyCompactList}\small\item\em Writes an in-\/memory HDF5 blob back to the main file. This function saves the data stored in a temporary RAM-\/resident HDF5 image into the permanent file structure. It is often used to save processed results or updated datasets that were modified in memory for speed. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_acfaf5ad969b528252544d9274ae9fb98}{hdf5\+\_\+close\+\_\+blob}} (\mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}} blob)
-\item 
+\begin{DoxyCompactList}\small\item\em Deallocates the in-\/memory HDF5 blob and releases system RAM. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_aa516c64d3d01dab36b6d242bcbd202ea}{hdf5\+\_\+create}} (const char $\ast$fname)
-\item 
+\begin{DoxyCompactList}\small\item\em Creates a new HDF5 file on disk, overwriting any existing file with the same name. This function sets up the environment for writing simulation data. It includes logic for both single-\/processor and parallel (MPI) environments. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_a38ed155e4a5caf24f8af82e570a5f517}{hdf5\+\_\+open}} (const char $\ast$fname)
-\item 
+\begin{DoxyCompactList}\small\item\em Opens an existing HDF5 file for reading. Unlike {\ttfamily hdf5\+\_\+create}, this function expects the file to already exist on disk. It uses the {\ttfamily Read-\/\+Only} flag to protect the data. Like the creation function, it supports parallel access if MPI is enabled. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_ae0f0e281fc647877ec3995288ccc5259}{hdf5\+\_\+close}} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Flushes pending data to disk and closes the physical HDF5 file. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{hdf5__utils_8h_a7bf41478aa1f827d8ded1502defee02a}{hdf5\+\_\+make\+\_\+directory}} (const char $\ast$name)
-\item 
-void \mbox{\hyperlink{hdf5__utils_8h_ad9a5e5084414804db4ce8bb576232eb4}{hdf5\+\_\+set\+\_\+directory}} (const char $\ast$path)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_a9a56a32edcb65b35e670d1d849281133}{hdf5\+\_\+write\+\_\+single\+\_\+val}} (const void $\ast$val, const char $\ast$name, hsize\+\_\+t hdf5\+\_\+type)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_aad8483579de5db94021009f1413e641f}{hdf5\+\_\+write\+\_\+array}} (const void $\ast$data, const char $\ast$name, size\+\_\+t rank, hsize\+\_\+t $\ast$fdims, hsize\+\_\+t $\ast$fstart, hsize\+\_\+t $\ast$fcount, hsize\+\_\+t $\ast$mdims, hsize\+\_\+t $\ast$mstart, hsize\+\_\+t hdf5\+\_\+type)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_a856257e4507df8c48f2d100571b42817}{hdf5\+\_\+exists}} (const char $\ast$name)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_af652f1f1e541a3b6c32dc086a59c7bd9}{hdf5\+\_\+read\+\_\+single\+\_\+val}} (void $\ast$val, const char $\ast$name, hsize\+\_\+t hdf5\+\_\+type)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_a4619912aadf4bebe2077a8520b88ac46}{hdf5\+\_\+read\+\_\+array}} (void $\ast$data, const char $\ast$name, size\+\_\+t rank, hsize\+\_\+t $\ast$fdims, hsize\+\_\+t $\ast$fstart, hsize\+\_\+t $\ast$fcount, hsize\+\_\+t $\ast$mdims, hsize\+\_\+t $\ast$mstart, hsize\+\_\+t hdf5\+\_\+type)
-\item 
-hid\+\_\+t \mbox{\hyperlink{hdf5__utils_8h_a2fd0f5a177d0ce77904a290ed7ab7065}{hdf5\+\_\+make\+\_\+str\+\_\+type}} (size\+\_\+t len)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_a12b2fc7f278fe0cf1f3f7fd3fd306652}{hdf5\+\_\+write\+\_\+str\+\_\+list}} (const void $\ast$data, const char $\ast$name, size\+\_\+t strlen, size\+\_\+t len)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_ac1605107076e69f7c00fdecf2bd8a6b7}{hdf5\+\_\+add\+\_\+attr}} (const void $\ast$att, const char $\ast$att\+\_\+name, const char $\ast$data\+\_\+name, hsize\+\_\+t hdf5\+\_\+type)
-\item 
-int \mbox{\hyperlink{hdf5__utils_8h_aecba6fdc8a0d942b378c6c324533a5ca}{hdf5\+\_\+add\+\_\+units}} (const char $\ast$name, const char $\ast$unit)
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Creates a new HDF5 Group at the current path location. This function builds a hierarchical structure within the file. It does not \char`\"{}move\char`\"{} into the new directory; it simply creates it and then releases the handle. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Macro Definition Documentation}
@@ -84,105 +64,130 @@ int \mbox{\hyperlink{hdf5__utils_8h_aecba6fdc8a0d942b378c6c324533a5ca}{hdf5\+\_\
 
 
 \doxysubsection{Function Documentation}
-\mbox{\Hypertarget{hdf5__utils_8h_ac1605107076e69f7c00fdecf2bd8a6b7}\label{hdf5__utils_8h_ac1605107076e69f7c00fdecf2bd8a6b7}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_add\_attr@{hdf5\_add\_attr}}
-\index{hdf5\_add\_attr@{hdf5\_add\_attr}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_add\_attr()}{hdf5\_add\_attr()}}
-{\footnotesize\ttfamily int hdf5\+\_\+add\+\_\+attr (\begin{DoxyParamCaption}\item[{const void $\ast$}]{att,  }\item[{const char $\ast$}]{att\+\_\+name,  }\item[{const char $\ast$}]{data\+\_\+name,  }\item[{hsize\+\_\+t}]{hdf5\+\_\+type }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{hdf5__utils_8h_aecba6fdc8a0d942b378c6c324533a5ca}\label{hdf5__utils_8h_aecba6fdc8a0d942b378c6c324533a5ca}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_add\_units@{hdf5\_add\_units}}
-\index{hdf5\_add\_units@{hdf5\_add\_units}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_add\_units()}{hdf5\_add\_units()}}
-{\footnotesize\ttfamily int hdf5\+\_\+add\+\_\+units (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const char $\ast$}]{unit }\end{DoxyParamCaption})}
-
 \mbox{\Hypertarget{hdf5__utils_8h_ae0f0e281fc647877ec3995288ccc5259}\label{hdf5__utils_8h_ae0f0e281fc647877ec3995288ccc5259}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_close@{hdf5\_close}}
 \index{hdf5\_close@{hdf5\_close}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_close()}{hdf5\_close()}}
 {\footnotesize\ttfamily int hdf5\+\_\+close (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
+
+
+Flushes pending data to disk and closes the physical HDF5 file. 
+
+This is a function for data integrity. It forces the operating system to write any remaining \char`\"{}cached\char`\"{} data to the hard drive.
+
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_acfaf5ad969b528252544d9274ae9fb98}\label{hdf5__utils_8h_acfaf5ad969b528252544d9274ae9fb98}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_close\_blob@{hdf5\_close\_blob}}
 \index{hdf5\_close\_blob@{hdf5\_close\_blob}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_close\_blob()}{hdf5\_close\_blob()}}
 {\footnotesize\ttfamily int hdf5\+\_\+close\+\_\+blob (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}}}]{blob }\end{DoxyParamCaption})}
 
+
+
+Deallocates the in-\/memory HDF5 blob and releases system RAM. 
+
+Because the blob was created using the H5\+FD\+\_\+\+CORE driver, the \char`\"{}file\char`\"{} exists entirely in a memory buffer. Calling this function tells the HDF5 library that the buffer is no longer needed, effectively performing a \textquotesingle{}free()\textquotesingle{} operation on that block of memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em blob} & The handle (hid\+\_\+t) to the in-\/memory HDF5 file image. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_aa516c64d3d01dab36b6d242bcbd202ea}\label{hdf5__utils_8h_aa516c64d3d01dab36b6d242bcbd202ea}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_create@{hdf5\_create}}
 \index{hdf5\_create@{hdf5\_create}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_create()}{hdf5\_create()}}
 {\footnotesize\ttfamily int hdf5\+\_\+create (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fname }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_a856257e4507df8c48f2d100571b42817}\label{hdf5__utils_8h_a856257e4507df8c48f2d100571b42817}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_exists@{hdf5\_exists}}
-\index{hdf5\_exists@{hdf5\_exists}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_exists()}{hdf5\_exists()}}
-{\footnotesize\ttfamily int hdf5\+\_\+exists (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
 
+
+Creates a new HDF5 file on disk, overwriting any existing file with the same name. This function sets up the environment for writing simulation data. It includes logic for both single-\/processor and parallel (MPI) environments. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fname} & The string containing the path/name of the file to create (e.\+g., \char`\"{}data.\+h5\char`\"{}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_a9d3a6db741fbf0dac5d89975a73ee527}\label{hdf5__utils_8h_a9d3a6db741fbf0dac5d89975a73ee527}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_get\_blob@{hdf5\_get\_blob}}
 \index{hdf5\_get\_blob@{hdf5\_get\_blob}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_get\_blob()}{hdf5\_get\_blob()}}
 {\footnotesize\ttfamily \mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}} hdf5\+\_\+get\+\_\+blob (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
 
+
+
+Extracts an HDF5 object into an in-\/memory \char`\"{}blob.\char`\"{} This function uses the HDF5 \char`\"{}\+CORE\char`\"{} Virtual File Driver (VFD) to create a virtual file in RAM. It then copies an object (dataset or group) from the physical file into this virtual file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the object to extract. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+hdf5\+\_\+blob A handle (hid\+\_\+t) to the new in-\/memory HDF5 file image. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_a7bf41478aa1f827d8ded1502defee02a}\label{hdf5__utils_8h_a7bf41478aa1f827d8ded1502defee02a}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_make\_directory@{hdf5\_make\_directory}}
 \index{hdf5\_make\_directory@{hdf5\_make\_directory}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_make\_directory()}{hdf5\_make\_directory()}}
 {\footnotesize\ttfamily int hdf5\+\_\+make\+\_\+directory (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_a2fd0f5a177d0ce77904a290ed7ab7065}\label{hdf5__utils_8h_a2fd0f5a177d0ce77904a290ed7ab7065}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_make\_str\_type@{hdf5\_make\_str\_type}}
-\index{hdf5\_make\_str\_type@{hdf5\_make\_str\_type}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_make\_str\_type()}{hdf5\_make\_str\_type()}}
-{\footnotesize\ttfamily hid\+\_\+t hdf5\+\_\+make\+\_\+str\+\_\+type (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
 
+
+Creates a new HDF5 Group at the current path location. This function builds a hierarchical structure within the file. It does not \char`\"{}move\char`\"{} into the new directory; it simply creates it and then releases the handle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the new group to create. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_a38ed155e4a5caf24f8af82e570a5f517}\label{hdf5__utils_8h_a38ed155e4a5caf24f8af82e570a5f517}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_open@{hdf5\_open}}
 \index{hdf5\_open@{hdf5\_open}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_open()}{hdf5\_open()}}
 {\footnotesize\ttfamily int hdf5\+\_\+open (\begin{DoxyParamCaption}\item[{const char $\ast$}]{fname }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_a4619912aadf4bebe2077a8520b88ac46}\label{hdf5__utils_8h_a4619912aadf4bebe2077a8520b88ac46}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_read\_array@{hdf5\_read\_array}}
-\index{hdf5\_read\_array@{hdf5\_read\_array}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_read\_array()}{hdf5\_read\_array()}}
-{\footnotesize\ttfamily int hdf5\+\_\+read\+\_\+array (\begin{DoxyParamCaption}\item[{void $\ast$}]{data,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{rank,  }\item[{hsize\+\_\+t $\ast$}]{fdims,  }\item[{hsize\+\_\+t $\ast$}]{fstart,  }\item[{hsize\+\_\+t $\ast$}]{fcount,  }\item[{hsize\+\_\+t $\ast$}]{mdims,  }\item[{hsize\+\_\+t $\ast$}]{mstart,  }\item[{hsize\+\_\+t}]{hdf5\+\_\+type }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_af652f1f1e541a3b6c32dc086a59c7bd9}\label{hdf5__utils_8h_af652f1f1e541a3b6c32dc086a59c7bd9}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_read\_single\_val@{hdf5\_read\_single\_val}}
-\index{hdf5\_read\_single\_val@{hdf5\_read\_single\_val}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_read\_single\_val()}{hdf5\_read\_single\_val()}}
-{\footnotesize\ttfamily int hdf5\+\_\+read\+\_\+single\+\_\+val (\begin{DoxyParamCaption}\item[{void $\ast$}]{val,  }\item[{const char $\ast$}]{name,  }\item[{hsize\+\_\+t}]{hdf5\+\_\+type }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_ad9a5e5084414804db4ce8bb576232eb4}\label{hdf5__utils_8h_ad9a5e5084414804db4ce8bb576232eb4}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_set\_directory@{hdf5\_set\_directory}}
-\index{hdf5\_set\_directory@{hdf5\_set\_directory}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_set\_directory()}{hdf5\_set\_directory()}}
-{\footnotesize\ttfamily void hdf5\+\_\+set\+\_\+directory (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path }\end{DoxyParamCaption})}
+Opens an existing HDF5 file for reading. Unlike {\ttfamily hdf5\+\_\+create}, this function expects the file to already exist on disk. It uses the {\ttfamily Read-\/\+Only} flag to protect the data. Like the creation function, it supports parallel access if MPI is enabled. 
 
-\mbox{\Hypertarget{hdf5__utils_8h_aad8483579de5db94021009f1413e641f}\label{hdf5__utils_8h_aad8483579de5db94021009f1413e641f}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_write\_array@{hdf5\_write\_array}}
-\index{hdf5\_write\_array@{hdf5\_write\_array}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_write\_array()}{hdf5\_write\_array()}}
-{\footnotesize\ttfamily int hdf5\+\_\+write\+\_\+array (\begin{DoxyParamCaption}\item[{const void $\ast$}]{data,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{rank,  }\item[{hsize\+\_\+t $\ast$}]{fdims,  }\item[{hsize\+\_\+t $\ast$}]{fstart,  }\item[{hsize\+\_\+t $\ast$}]{fcount,  }\item[{hsize\+\_\+t $\ast$}]{mdims,  }\item[{hsize\+\_\+t $\ast$}]{mstart,  }\item[{hsize\+\_\+t}]{hdf5\+\_\+type }\end{DoxyParamCaption})}
 
+\begin{DoxyParams}{Parameters}
+{\em fname} & The path/name of the existing file to open. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{hdf5__utils_8h_ac41923f789696f02927d8857838bcd26}\label{hdf5__utils_8h_ac41923f789696f02927d8857838bcd26}} 
 \index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_write\_blob@{hdf5\_write\_blob}}
 \index{hdf5\_write\_blob@{hdf5\_write\_blob}!hdf5\_utils.h@{hdf5\_utils.h}}
 \doxysubsubsection{\texorpdfstring{hdf5\_write\_blob()}{hdf5\_write\_blob()}}
 {\footnotesize\ttfamily int hdf5\+\_\+write\+\_\+blob (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{hdf5__utils_8h_abbd4e0ea8441a4a391c88ed0688689dc}{hdf5\+\_\+blob}}}]{blob,  }\item[{const char $\ast$}]{name }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_a9a56a32edcb65b35e670d1d849281133}\label{hdf5__utils_8h_a9a56a32edcb65b35e670d1d849281133}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_write\_single\_val@{hdf5\_write\_single\_val}}
-\index{hdf5\_write\_single\_val@{hdf5\_write\_single\_val}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_write\_single\_val()}{hdf5\_write\_single\_val()}}
-{\footnotesize\ttfamily int hdf5\+\_\+write\+\_\+single\+\_\+val (\begin{DoxyParamCaption}\item[{const void $\ast$}]{val,  }\item[{const char $\ast$}]{name,  }\item[{hsize\+\_\+t}]{hdf5\+\_\+type }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{hdf5__utils_8h_a12b2fc7f278fe0cf1f3f7fd3fd306652}\label{hdf5__utils_8h_a12b2fc7f278fe0cf1f3f7fd3fd306652}} 
-\index{hdf5\_utils.h@{hdf5\_utils.h}!hdf5\_write\_str\_list@{hdf5\_write\_str\_list}}
-\index{hdf5\_write\_str\_list@{hdf5\_write\_str\_list}!hdf5\_utils.h@{hdf5\_utils.h}}
-\doxysubsubsection{\texorpdfstring{hdf5\_write\_str\_list()}{hdf5\_write\_str\_list()}}
-{\footnotesize\ttfamily int hdf5\+\_\+write\+\_\+str\+\_\+list (\begin{DoxyParamCaption}\item[{const void $\ast$}]{data,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{strlen,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
 
+Writes an in-\/memory HDF5 blob back to the main file. This function saves the data stored in a temporary RAM-\/resident HDF5 image into the permanent file structure. It is often used to save processed results or updated datasets that were modified in memory for speed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em blob} & The handle (hid\+\_\+t) to the in-\/memory HDF5 file image. \\
+\hline
+{\em name} & The target name for the object within the main file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, or a negative error code on failure. 
+\end{DoxyReturn}

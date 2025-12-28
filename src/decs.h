@@ -121,7 +121,7 @@ struct of_spectrum {
 	extern __device__ double d_table[NW + 1][NT + 1];
 
 	extern __device__ unsigned long long photon_count;
-	extern __device__ unsigned long long generated_sphotons, d_N_superph_recorded;
+	extern __device__ unsigned long long d_N_superph_recorded;
 	extern __device__ int d_Ns;
 	extern __device__ unsigned long long d_N_scatt;
 	extern __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
@@ -134,7 +134,6 @@ struct of_spectrum {
 	extern __device__ double d_dndlnu_max[NINT + 1];
 	extern __device__ double d_hslope;
 	extern __device__ double d_R0;
-	extern __device__ int total_sca;
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
@@ -162,13 +161,12 @@ struct of_spectrum {
 	extern unsigned long long N_superph_recorded;
 
 	/* some coordinate parameters */
-	extern double R0, Rin, Rh, Rout, Rms;
+	extern double R0, Rin, Rh, Rout;
 	extern double hslope;
 	extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 
 	//extern double dlE, lE0;
 	extern double gam;
-	extern double dMsim;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
 

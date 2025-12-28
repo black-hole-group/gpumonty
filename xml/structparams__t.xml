@@ -214,6 +214,7 @@
       </memberdef>
       </sectiondef>
     <briefdescription>
+<para>Structure to hold simulation parameters parsed by the parameter file. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>

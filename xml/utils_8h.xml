@@ -266,7 +266,7 @@
 <para><bold>Memory Layout Order</bold>: [Variable $v$][Dimension $i$][Dimension $j$][Dimension $k$]<itemizedlist>
 <listitem><para>$k$ is the fastest-varying index (unit stride).</para>
 </listitem><listitem><para>$v$ is the slowest-varying index.</para>
-<para><formula id="213">$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $</formula></para>
+<para><formula id="242">$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $</formula></para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -315,7 +315,7 @@
         <detaileddescription>
 <para>This function performs a standard row-major (or height-major) flattening for 2D grids.</para>
 <para><bold>Memory Layout Order</bold>: [Dimension $i$][Dimension $j$]</para>
-<para><formula id="214">$ \text{Index} = j + (N_2 \times i) $</formula></para>
+<para><formula id="243">$ \text{Index} = j + (N_2 \times i) $</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>
@@ -364,7 +364,7 @@
         <detaileddescription>
 <para>This function flattens a 3D volume into a 1D array.</para>
 <para><bold>Memory Layout Order</bold>: [Dimension $i$][Dimension $j$][Dimension $k$]</para>
-<para><formula id="215">$ \text{Index} = k + N_3 \times (j + N_2 \times i) $</formula></para>
+<para><formula id="244">$ \text{Index} = k + N_3 \times (j + N_2 \times i) $</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>

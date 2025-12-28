@@ -537,7 +537,7 @@
         <name>MAX</name>
         <param><defname>a</defname></param>
         <param><defname>b</defname></param>
-        <initializer>(((a)&gt;(<ref refid="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" kindref="member">b</ref>))?(a):(<ref refid="defs_8h_1ae6c58372b82cfe73d6b1d83e19190b78" kindref="member">b</ref>))</initializer>
+        <initializer>(((a)&gt;(b))?(a):(b))</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

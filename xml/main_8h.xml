@@ -65,14 +65,14 @@
         <detaileddescription>
 <para>This function defines the transformation scales between &quot;code units&quot; (dimensionless values used in the GRMHD simulation) and &quot;CGS units&quot; (physical values). The scaling parameters are defined as follows:</para>
 <para><itemizedlist>
-<listitem><para><bold>Mass Scaling</bold> ( <formula id="140">$ M_{\rm unit} $</formula>): User-defined mass unit to scale density and other mass-related quantities.</para>
-</listitem><listitem><para><bold>Black Hole Mass</bold> ( <formula id="141">$ M_{\rm BH} $</formula>): Mass of the central black hole, used to define length and time scales.</para>
-</listitem><listitem><para><bold>Length scale</bold> ( <formula id="142">$ L_{\rm unit} $</formula>): Defined as the gravitational radius <formula id="143">$ R_g = GM_{BH}/c^2 $</formula>.</para>
-</listitem><listitem><para><bold>Time scale</bold> ( <formula id="144">$ T_{\rm unit} $</formula>): Defined as the light-crossing time <formula id="145">$ R_g/c $</formula>.</para>
-</listitem><listitem><para><bold>Density scale</bold> ( <formula id="146">$ \rho_{\rm unit} $</formula>): Calculated as <formula id="147">$ M_{\rm unit}/L_{\rm unit}^3 $</formula>.</para>
-</listitem><listitem><para><bold>Magnetic Field scale</bold> ( <formula id="148">$ B_{\rm unit} $</formula>): Scaled such that the magnetic pressure <formula id="149">$ B^2/4\pi $</formula> matches the energy density scale <formula id="150">$ \rho c^2 $</formula> in Gaussian units.</para>
-</listitem><listitem><para><bold>Energy Density Unit</bold> ( <formula id="151">$ U_{\rm unit} $</formula>): Defined as <formula id="152">$ \rho_{ \rm unit} c^2 $</formula>.</para>
-</listitem><listitem><para><bold>Number Density scale</bold> ( <formula id="153">$ N_{e,\rm unit} $</formula>): Assumes a fully ionized hydrogen plasma ( <formula id="154">$ m_p + m_e $</formula>).</para>
+<listitem><para><bold>Mass Scaling</bold> ( <formula id="156">$ M_{\rm unit} $</formula>): User-defined mass unit to scale density and other mass-related quantities.</para>
+</listitem><listitem><para><bold>Black Hole Mass</bold> ( <formula id="157">$ M_{\rm BH} $</formula>): Mass of the central black hole, used to define length and time scales.</para>
+</listitem><listitem><para><bold>Length scale</bold> ( <formula id="158">$ L_{\rm unit} $</formula>): Defined as the gravitational radius <formula id="159">$ R_g = GM_{BH}/c^2 $</formula>.</para>
+</listitem><listitem><para><bold>Time scale</bold> ( <formula id="160">$ T_{\rm unit} $</formula>): Defined as the light-crossing time <formula id="161">$ R_g/c $</formula>.</para>
+</listitem><listitem><para><bold>Density scale</bold> ( <formula id="162">$ \rho_{\rm unit} $</formula>): Calculated as <formula id="163">$ M_{\rm unit}/L_{\rm unit}^3 $</formula>.</para>
+</listitem><listitem><para><bold>Magnetic Field scale</bold> ( <formula id="164">$ B_{\rm unit} $</formula>): Scaled such that the magnetic pressure <formula id="165">$ B^2/4\pi $</formula> matches the energy density scale <formula id="166">$ \rho c^2 $</formula> in Gaussian units.</para>
+</listitem><listitem><para><bold>Energy Density Unit</bold> ( <formula id="167">$ U_{\rm unit} $</formula>): Defined as <formula id="168">$ \rho_{ \rm unit} c^2 $</formula>.</para>
+</listitem><listitem><para><bold>Number Density scale</bold> ( <formula id="169">$ N_{e,\rm unit} $</formula>): Assumes a fully ionized hydrogen plasma ( <formula id="170">$ m_p + m_e $</formula>).</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -138,7 +138,7 @@
         </briefdescription>
         <detaileddescription>
 <para>This function populates the global geometry array (<computeroutput>geom</computeroutput>) with the covariant metric, contravariant metric, and the metric determinant.</para>
-<para><simplesect kind="note"><para>This function assumes <bold>axisymmetry</bold>, where the geometry does not change with the azimuthal angle <formula id="155">$\phi$</formula> (represented by index <formula id="156">$k$</formula>), therefore geom is a 2D array.</para>
+<para><simplesect kind="note"><para>This function assumes <bold>axisymmetry</bold>, where the geometry does not change with the azimuthal angle <formula id="171">$\phi$</formula> (represented by index <formula id="172">$k$</formula>), therefore geom is a 2D array.</para>
 </simplesect>
 <simplesect kind="return"><para>void </para>
 </simplesect>

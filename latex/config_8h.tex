@@ -100,7 +100,7 @@ This graph shows which files directly or indirectly include this file\+:\nopageb
 \item 
 \#define \mbox{\hyperlink{config_8h_a45d3170540ff56498a43c27851e2c7a0}{DLOOP}}~for(k=0;k$<$\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}};k++)for(l=0;l$<$\mbox{\hyperlink{config_8h_a2b1fd2d28c6a7d4a3f7027cc1b6466f3}{NDIM}};l++)
 \item 
-\#define \mbox{\hyperlink{config_8h_afa99ec4acc4ecb2dc3c2d05da15d0e3f}{MAX}}(a,  \mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}})~(((a)$>$(\mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}}))?(a)\+:(\mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}}))
+\#define \mbox{\hyperlink{config_8h_afa99ec4acc4ecb2dc3c2d05da15d0e3f}{MAX}}(a,  b)~(((a)$>$(b))?(a)\+:(b))
 \item 
 \#define \mbox{\hyperlink{config_8h_a445fb5b45f03dee9be98488977ad56c8}{d\+\_\+lmint}}~(log10(\mbox{\hyperlink{config_8h_a82c6557ea3851dd884fe48509d789abf}{MINT}}))
 \item 
@@ -323,7 +323,7 @@ Minimum energy of the energy bin in logarithmic scale. \mbox{\Hypertarget{config
 \index{config.h@{config.h}!MAX@{MAX}}
 \index{MAX@{MAX}!config.h@{config.h}}
 \doxysubsubsection{\texorpdfstring{MAX}{MAX}}
-{\footnotesize\ttfamily \#define MAX(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{\mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}} }\end{DoxyParamCaption})~(((a)$>$(\mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}}))?(a)\+:(\mbox{\hyperlink{defs_8h_ae6c58372b82cfe73d6b1d83e19190b78}{b}}))}
+{\footnotesize\ttfamily \#define MAX(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~(((a)$>$(b))?(a)\+:(b))}
 
 Macro to compute the maximum of two values. \mbox{\Hypertarget{config_8h_acd517c6f195c75b9dd0f3aad65326f3b}\label{config_8h_acd517c6f195c75b9dd0f3aad65326f3b}} 
 \index{config.h@{config.h}!MAX\_ITER@{MAX\_ITER}}

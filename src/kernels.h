@@ -255,25 +255,6 @@ __global__ void GPU_record_scattering(
 );
 __global__ void GPU_record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n);
 
-/**
- * @brief Post-processes simulation results and writes the final spectrum to a file.
- *
- * This host function aggregates the data stored in the energy and frequency binned spectrum.
- *
- * **Diagnostic Outputs**:
- * After writing the per-bin data, the function calculates and prints to stderr:
- * - **Total Luminosity**: The integral of the spectrum over all angles and energies.
- * - **Accretion Efficiency**: The ratio of bolometric luminosity to the available 
- * rest-mass energy flux (\f$ L / \dot{M}c^2 \f$).
- * - **Optical Depths**: Average scattering (\f$ \tau_{\text{scatt}} \f$) and 
- * absorption (\f$ \tau_{\text{abs}} \f$) depths.
- *
- * @param N_superph_made Total number of grid superphotons generated.
- * @param spect 2D array [Theta Bins][Energy Bins] containing the accumulated photon data.
- * @param filename Name of the output file (to be stored in the `./output/` directory).
- * @return void
- */
-__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 
 
 /**

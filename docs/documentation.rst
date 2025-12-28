@@ -11,6 +11,8 @@ organized by module.
    api/config
    api/constant
    api/curand
+   api/defs
+   api/hdf5_utils
    api/hotcross
    api/jnu_mixed
    api/kernels
@@ -19,5 +21,6 @@ organized by module.
    api/metrics
    api/par
    api/radiation
+   api/tetrads
    api/utils
    api/weight

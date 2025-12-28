@@ -45,6 +45,7 @@
       </memberdef>
       </sectiondef>
     <briefdescription>
+<para>Structure to hold the metric components and determinant for a given grid point. </para>
     </briefdescription>
     <detaileddescription>
 <para>data structures </para>

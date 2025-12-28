@@ -39,7 +39,7 @@
 <para><itemizedlist>
 <listitem><para>Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.</para>
 </listitem><listitem><para>Calls GPU_init_zone to initialize the photon generation for each zone in the simulation grid.</para>
-</listitem><listitem><para>The loop follows a <bold>grid-stride pattern</bold> to ensure all zones are covered. Each thread <formula id="110">$ n $</formula> processes a sequence of zones defined by: <formula id="111">\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</formula> where <formula id="112">$ {\rm i_n}$</formula> is the current zone <formula id="113">$ \rm i $</formula> that thread <formula id="114">$ \rm n $</formula> is analyzing, <formula id="110">$ n $</formula> is the global thread ID, <formula id="115">$ N_{\text{total}} $</formula> is the total number of threads in the grid, and <formula id="116">$ k \in \{0, 1, 2, \dots\} $</formula>.</para>
+</listitem><listitem><para>The loop follows a <bold>grid-stride pattern</bold> to ensure all zones are covered. Each thread <formula id="130">$ n $</formula> processes a sequence of zones defined by: <formula id="131">\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</formula> where <formula id="132">$ {\rm i_n}$</formula> is the current zone <formula id="133">$ \rm i $</formula> that thread <formula id="134">$ \rm n $</formula> is analyzing, <formula id="130">$ n $</formula> is the global thread ID, <formula id="135">$ N_{\text{total}} $</formula> is the total number of threads in the grid, and <formula id="136">$ k \in \{0, 1, 2, \dots\} $</formula>.</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -47,7 +47,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="117">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="70">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -79,7 +79,7 @@
 <parametername>dnmax_arr</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device array that will store the maximum value of <formula id="118">$ \frac{dN}{d\ln\nu} $</formula> per zone. </para>
+<para>Pointer to the device array that will store the maximum value of <formula id="137">$ \frac{dN}{d\ln\nu} $</formula> per zone. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -149,11 +149,11 @@
         </briefdescription>
         <detaileddescription>
 <para><itemizedlist>
-<listitem><para>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <formula id="119">$(i, j, k)$</formula> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</para>
+<listitem><para>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <formula id="138">$(i, j, k)$</formula> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</para>
 </listitem></itemizedlist>
 </para>
-<para>The expected number of superphotons <formula id="120">$ N_{s,i} $</formula> in zone <formula id="121">$ i $</formula> is governed by: <formula id="122">\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]</formula> where <formula id="123">$ \sqrt{-g} $</formula> is the metric determinant, <formula id="93">$ j_\nu $</formula> is the emissivity, and <formula id="124">$ \omega $</formula> is the superphoton weight.</para>
-<para>The final number of superphotons <formula id="125">$ n_{2gen} $</formula> is determined stochastically to handle the fractional part of the expected count <formula id="126">$ n_z $</formula>: <formula id="127">\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]</formula></para>
+<para>The expected number of superphotons <formula id="139">$ N_{s,i} $</formula> in zone <formula id="140">$ i $</formula> is governed by: <formula id="141">\[ N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu} \]</formula> where <formula id="142">$ \sqrt{-g} $</formula> is the metric determinant, <formula id="113">$ j_\nu $</formula> is the emissivity, and <formula id="143">$ \omega $</formula> is the superphoton weight.</para>
+<para>The final number of superphotons <formula id="144">$ n_{2gen} $</formula> is determined stochastically to handle the fractional part of the expected count <formula id="145">$ n_z $</formula>: <formula id="146">\[ n_{2gen} = \begin{cases} \lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\ \lfloor n_z \rfloor &amp; \text{otherwise} \end{cases} \]</formula></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>
@@ -191,7 +191,7 @@
 <parametername>dnmax</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to store the maximum of the distribution <formula id="128">$ dN_s/d\ln\nu $</formula>, required for subsequent rejection sampling. </para>
+<para>Pointer to store the maximum of the distribution <formula id="147">$ dN_s/d\ln\nu $</formula>, required for subsequent rejection sampling. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -199,7 +199,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="117">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="70">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -290,7 +290,7 @@
         <detaileddescription>
 <para><itemizedlist>
 <listitem><para>This kernel performs the rejection sampling and initial coordinate assignment for superphotons. Unlike a standard grid-stride pattern where thread work is predetermined by ID, this kernel utilizes a <bold>dynamic workload allocation</bold> strategy since some zones may generate significantly more superphotons than others, leading to extreme load imbalance. To mitigate this, threads fetch work dynamically using an atomic counter. This ensures that as soon as a thread finishes sampling a photon, it immediately pulls the next available index, keeping GPU execution units saturated regardless of the variation in workload per zone.</para>
-</listitem><listitem><para>The kernel maps the superphoton to the grid zone that generated it <formula id="129">$ (i, j, k) $</formula> by performing a binary search on the cumulative distribution array <computeroutput>index_to_ijk</computeroutput>. Once the <computeroutput>zone_index</computeroutput> is retrieved, it is decomposed into 3D grid coordinates:</para>
+</listitem><listitem><para>The kernel maps the superphoton to the grid zone that generated it <formula id="148">$ (i, j, k) $</formula> by performing a binary search on the cumulative distribution array <computeroutput>index_to_ijk</computeroutput>. Once the <computeroutput>zone_index</computeroutput> is retrieved, it is decomposed into 3D grid coordinates:</para>
 </listitem></itemizedlist>
 </para>
 <para><parameterlist kind="param"><parameteritem>
@@ -306,7 +306,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="117">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="70">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -330,7 +330,7 @@
 <parametername>dnmax_arr</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The maximum of the distribution <formula id="128">$ dN_s/d\ln\nu $</formula> for each zone, used for rejection sampling. </para>
+<para>The maximum of the distribution <formula id="147">$ dN_s/d\ln\nu $</formula> for each zone, used for rejection sampling. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -438,9 +438,9 @@
         </briefdescription>
         <detaileddescription>
 <para>It uses a series of rejection sampling loops to determine the frequency and angular distribution of emission, then transforms the resulting momentum vector from the local fluid tetrad into the global coordinate frame.</para>
-<para><bold>Frequency Sampling</bold>: The photon frequency <formula id="99">$ \nu $</formula> is sampled using rejection sampling over the range <formula id="130">$ [\nu_{min}, \nu_{max}] $</formula>. The selection is weighted by the local distribution <formula id="128">$ dN_s/d\ln\nu $</formula>:</para>
-<para><bold>Angular Distribution</bold>: The polar angle <formula id="3">$ \theta $</formula> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <formula id="131">$ j_\nu(\theta) $</formula>. A second rejection sampling loop ensures that: <formula id="132">\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]</formula> where <formula id="133">$ j_{\nu, max} $</formula> is the emissivity at <formula id="134">$ \theta = \pi/2 $</formula>.</para>
-<para><bold>Tetrad Transformation</bold>: The momentum vector <formula id="23">$ K $</formula> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <formula id="43">$ u^\mu $</formula> and the magnetic field <formula id="44">$ b^\mu $</formula>. It is then transformed to the coordinate frame using: <formula id="135">\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]</formula> where <formula id="136">$ e^\mu_{(\alpha)} $</formula> is the tetrad basis built by <computeroutput>GPU_make_tetrad</computeroutput>.</para>
+<para><bold>Frequency Sampling</bold>: The photon frequency <formula id="119">$ \nu $</formula> is sampled using rejection sampling over the range <formula id="149">$ [\nu_{min}, \nu_{max}] $</formula>. The selection is weighted by the local distribution <formula id="147">$ dN_s/d\ln\nu $</formula>:</para>
+<para><bold>Angular Distribution</bold>: The polar angle <formula id="3">$ \theta $</formula> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <formula id="150">$ j_\nu(\theta) $</formula>. A second rejection sampling loop ensures that: <formula id="151">\[ \text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}} \]</formula> where <formula id="152">$ j_{\nu, max} $</formula> is the emissivity at <formula id="153">$ \theta = \pi/2 $</formula>.</para>
+<para><bold>Tetrad Transformation</bold>: The momentum vector <formula id="23">$ K $</formula> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <formula id="43">$ u^\mu $</formula> and the magnetic field <formula id="44">$ b^\mu $</formula>. It is then transformed to the coordinate frame using: <formula id="154">\[ k^\mu = e^\mu_{(\alpha)} k^{(\alpha)} \]</formula> where <formula id="155">$ e^\mu_{(\alpha)} $</formula> is the tetrad basis built by <computeroutput>GPU_make_tetrad</computeroutput>.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>i</parametername>
@@ -470,7 +470,7 @@
 <parametername>dnmax</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>The maximum of the distribution <formula id="128">$ dN_s/d\ln\nu $</formula> for this zone. </para>
+<para>The maximum of the distribution <formula id="147">$ dN_s/d\ln\nu $</formula> for this zone. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -486,7 +486,7 @@
 <parametername>d_geom</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Pointer to the device geometry structure that carries the metric information <formula id="117">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
+<para>Pointer to the device geometry structure that carries the metric information <formula id="70">$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g} $</formula> . </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -587,7 +587,7 @@
 <para>Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </para>
         </briefdescription>
         <detaileddescription>
-<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="110">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
+<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="130">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
 <para><simplesect kind="note"><para><bold>Progress Monitoring</bold>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -688,7 +688,7 @@
 <para>Assign each scattered superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </para>
         </briefdescription>
         <detaileddescription>
-<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="110">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
+<para>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <formula id="130">$ n $</formula> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</para>
 <para><simplesect kind="note"><para><bold>Progress Monitoring</bold>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</para>
 </simplesect>
 <parameterlist kind="param"><parameteritem>
@@ -912,68 +912,6 @@
         </inbodydescription>
         <location file="src/kernels.h" line="249" column="17" declfile="src/kernels.h" declline="249" declcolumn="17"/>
       </memberdef>
-      <memberdef kind="function" id="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>__host__ void</type>
-        <definition>__host__ void report_spectrum</definition>
-        <argsstring>(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char *filename)</argsstring>
-        <name>report_spectrum</name>
-        <param>
-          <type>unsigned long long</type>
-          <declname>N_superph_made</declname>
-        </param>
-        <param>
-          <type>struct <ref refid="structof__spectrum" kindref="compound">of_spectrum</ref></type>
-          <declname>spect</declname>
-          <array>[N_THBINS][N_EBINS]</array>
-        </param>
-        <param>
-          <type>const char *</type>
-          <declname>filename</declname>
-        </param>
-        <briefdescription>
-<para>Post-processes simulation results and writes the final spectrum to a file. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>This host function aggregates the data stored in the energy and frequency binned spectrum.</para>
-<para><bold>Diagnostic Outputs</bold>: After writing the per-bin data, the function calculates and prints to stderr:<itemizedlist>
-<listitem><para><bold>Total Luminosity</bold>: The integral of the spectrum over all angles and energies.</para>
-</listitem><listitem><para><bold>Accretion Efficiency</bold>: The ratio of bolometric luminosity to the available rest-mass energy flux ( <formula id="137">$ L / \dot{M}c^2 $</formula>).</para>
-</listitem><listitem><para><bold>Optical Depths</bold>: Average scattering ( <formula id="138">$ \tau_{\text{scatt}} $</formula>) and absorption ( <formula id="139">$ \tau_{\text{abs}} $</formula>) depths.</para>
-</listitem></itemizedlist>
-</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>N_superph_made</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>Total number of grid superphotons generated. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>spect</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>2D array [Theta Bins][Energy Bins] containing the accumulated photon data. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>filename</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>Name of the output file (to be stored in the <computeroutput>./output/</computeroutput> directory). </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>void </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/kernels.h" line="276" column="15" declfile="src/kernels.h" declline="276" declcolumn="15"/>
-      </memberdef>
       <memberdef kind="function" id="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>__host__ void</type>
         <definition>__host__ void mainFlowControl</definition>
@@ -1027,7 +965,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/kernels.h" line="312" column="15" declfile="src/kernels.h" declline="312" declcolumn="15"/>
+        <location file="src/kernels.h" line="293" column="15" declfile="src/kernels.h" declline="293" declcolumn="15"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -1087,11 +1025,10 @@
 <codeline lineno="255"><highlight class="normal">);</highlight></codeline>
 <codeline lineno="256"><highlight class="normal">__global__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1aa7287dc36ec91a9fc56342eabd1a1463" kindref="member">GPU_record_scattering</ref>(</highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__photonSOA" kindref="compound">of_photonSOA</ref><sp/>ph,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/>*<sp/>__restrict__<sp/><sp/>d_spect,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><sp/>max_partition_ph,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nblocks,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
 <codeline lineno="257"><highlight class="normal"></highlight></codeline>
-<codeline lineno="276" refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1ab70ddb4c03fe20dc74dc4a26f163cc82" kindref="member">report_spectrum</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>N_superph_made,<sp/></highlight><highlight class="keyword">struct</highlight><highlight class="normal"><sp/><ref refid="structof__spectrum" kindref="compound">of_spectrum</ref><sp/><ref refid="decs_8h_1a6b0bc09e401de6b01d58d5e4b4ed71af" kindref="member">spect</ref>[<ref refid="config_8h_1af52e5601e24f633637c7ef961a01a847" kindref="member">N_THBINS</ref>][<ref refid="config_8h_1af9cf051839fae1fdc190fe02abd595c6" kindref="member">N_EBINS</ref>],<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>filename);</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"></highlight></codeline>
-<codeline lineno="278"><highlight class="normal"></highlight></codeline>
-<codeline lineno="312" refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" kindref="member">mainFlowControl</ref>(time_t<sp/>time,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>);</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="293" refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" refkind="member"><highlight class="normal">__host__<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd" kindref="member">mainFlowControl</ref>(time_t<sp/>time,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*<sp/><ref refid="decs_8h_1a581f9e6b0ae1bb5b0a323185403461cf" kindref="member">p</ref>);</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="src/kernels.h"/>
   </compounddef>

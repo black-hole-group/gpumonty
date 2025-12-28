@@ -77,16 +77,22 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ade72d9c30e6aa1a250be2050b34ed12a"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#ade72d9c30e6aa1a250be2050b34ed12a">GPU_make_tetrad</a> (double Ucon[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double trial[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], const double Gcov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double Econ[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double Ecov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:ade72d9c30e6aa1a250be2050b34ed12a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an orthonormal tetrad (local laboratory frame) for a moving observer.  <a href="tetrads_8h.html#ade72d9c30e6aa1a250be2050b34ed12a">More...</a><br /></td></tr>
 <tr class="separator:ade72d9c30e6aa1a250be2050b34ed12a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a0da4e24c190d57ec68a765a8a5de4a"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#a8a0da4e24c190d57ec68a765a8a5de4a">GPU_tetrad_to_coordinate</a> (const double Econ[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], const double K_tetrad[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double K[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:a8a0da4e24c190d57ec68a765a8a5de4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms a vector from the local tetrad (fluid) frame to the global coordinate frame.  <a href="tetrads_8h.html#a8a0da4e24c190d57ec68a765a8a5de4a">More...</a><br /></td></tr>
 <tr class="separator:a8a0da4e24c190d57ec68a765a8a5de4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab80dc45ae288a6dedb2e7286305dbe88"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#ab80dc45ae288a6dedb2e7286305dbe88">GPU_coordinate_to_tetrad</a> (const double Ecov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], const double K[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>], double K_tetrad[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:ab80dc45ae288a6dedb2e7286305dbe88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects a global coordinate vector into the local orthonormal tetrad (fluid) frame. This is the inverse operation of <code>GPU_tetrad_to_coordinate</code>. It is used to "measure" global quantities from the perspective of a local observer moving with the fluid.  <a href="tetrads_8h.html#ab80dc45ae288a6dedb2e7286305dbe88">More...</a><br /></td></tr>
 <tr class="separator:ab80dc45ae288a6dedb2e7286305dbe88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d34ab270232c8dbeef9cec70155d363"><td class="memItemLeft" align="right" valign="top">__device__ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#a4d34ab270232c8dbeef9cec70155d363">GPU_delta</a> (int i, int j)</td></tr>
+<tr class="memdesc:a4d34ab270232c8dbeef9cec70155d363"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the Kronecker delta function <img class="formulaInl" alt="$ \delta_{ij} $" src="form_235.png"/>.  <a href="tetrads_8h.html#a4d34ab270232c8dbeef9cec70155d363">More...</a><br /></td></tr>
 <tr class="separator:a4d34ab270232c8dbeef9cec70155d363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b58a0bd4b68a32510f73d168a8fda4a"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#a7b58a0bd4b68a32510f73d168a8fda4a">GPU_normalize</a> (double *vcon, const double Gcov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:a7b58a0bd4b68a32510f73d168a8fda4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes a contravariant 4-vector to unit length in curved spacetime.  <a href="tetrads_8h.html#a7b58a0bd4b68a32510f73d168a8fda4a">More...</a><br /></td></tr>
 <tr class="separator:a7b58a0bd4b68a32510f73d168a8fda4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff0979a80c6542cf37407f6217103cce"><td class="memItemLeft" align="right" valign="top">__device__ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tetrads_8h.html#aff0979a80c6542cf37407f6217103cce">GPU_project_out</a> (double *vcona, double *vconb, const double Gcov[<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][<a class="el" href="config_8h.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>])</td></tr>
+<tr class="memdesc:aff0979a80c6542cf37407f6217103cce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one vector out of another to ensure orthogonality in curved spacetime. This is used during the Gram-Schmidt process. It modifies vector 'a' such that it becomes perpendicular to vector 'b'. This orthogonality is defined via the metric tensor: <img class="formulaInl" alt="$g_{\mu\nu} A^\mu B^\nu = 0$" src="form_239.png"/>.  <a href="tetrads_8h.html#aff0979a80c6542cf37407f6217103cce">More...</a><br /></td></tr>
 <tr class="separator:aff0979a80c6542cf37407f6217103cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -122,6 +128,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Projects a global coordinate vector into the local orthonormal tetrad (fluid) frame. This is the inverse operation of <code>GPU_tetrad_to_coordinate</code>. It is used to "measure" global quantities from the perspective of a local observer moving with the fluid. </p>
+<p>The projection is defined by the inner product of the coordinate vector with the covariant tetrad basis: <img class="formulaInl" alt="$ K^{(a)} = e_{(a)\mu} K^\mu $" src="form_233.png"/></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Ecov</td><td>The covariant tetrad basis vectors <img class="formulaInl" alt="$ e_{(a)\mu} $" src="form_234.png"/>. </td></tr>
+    <tr><td class="paramname">K</td><td>The components of the vector in the coordinate frame <img class="formulaInl" alt="$ K^\mu $" src="form_232.png"/>. </td></tr>
+    <tr><td class="paramname">K_tetrad</td><td>[Output] The components of the vector in the local frame <img class="formulaInl" alt="$ K^{(a)} $" src="form_231.png"/>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a4d34ab270232c8dbeef9cec70155d363"></a>
@@ -149,6 +167,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Implements the Kronecker delta function <img class="formulaInl" alt="$ \delta_{ij} $" src="form_235.png"/>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>Row or vector index. </td></tr>
+    <tr><td class="paramname">j</td><td>Column or reference index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1.0 if i == j, otherwise 0.0. </dd></dl>
 
 </div>
 </div>
@@ -196,6 +224,21 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Constructs an orthonormal tetrad (local laboratory frame) for a moving observer. </p>
+<p>A tetrad represents a local Minkowski frame $(e_{(0)}, e_{(1)}, e_{(2)}, e_{(3)})$ at a point in curved spacetime.</p>
+<dl class="section note"><dt>Note</dt><dd>This function uses the <b>Gram-Schmidt process</b> to orthogonalize a set of coordinate basis vectors against the fluid's 4-velocity.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Ucon</td><td>The contravariant 4-velocity of the fluid/observer ($u^\mu$). </td></tr>
+    <tr><td class="paramname">trial</td><td>A trial vector used to define the first spatial direction (usually radial). </td></tr>
+    <tr><td class="paramname">Gcov</td><td>The covariant metric tensor ($g_{\mu\nu}$). </td></tr>
+    <tr><td class="paramname">Econ</td><td>[Output] Contravariant tetrad $e^\mu_{(a)}$. First index (k) is the tetrad label, second (l) is the coordinate index. </td></tr>
+    <tr><td class="paramname">Ecov</td><td>[Output] Covariant tetrad $e_{(a)\mu}$.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a7b58a0bd4b68a32510f73d168a8fda4a"></a>
@@ -223,6 +266,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Normalizes a contravariant 4-vector to unit length in curved spacetime. </p>
+<p>It follows the expression in General Relativity:</p>
+<p><img class="formulaInl" alt="$ V^\mu_{\rm norm} = \frac{V^\mu}{\sqrt{\sum^4_{\mu = 0} \sum^4_{\nu = 0} g_{\mu\nu} V^\mu V^\nu}} $" src="form_236.png"/></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vcon</td><td>The contravariant vector <img class="formulaInl" alt="$v^\mu$" src="form_237.png"/> to be normalized (modified in-place). </td></tr>
+    <tr><td class="paramname">Gcov</td><td>The covariant metric tensor <img class="formulaInl" alt="$g_{\mu\nu}$" src="form_238.png"/> at the vector's location.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>
@@ -258,6 +313,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Projects one vector out of another to ensure orthogonality in curved spacetime. This is used during the Gram-Schmidt process. It modifies vector 'a' such that it becomes perpendicular to vector 'b'. This orthogonality is defined via the metric tensor: <img class="formulaInl" alt="$g_{\mu\nu} A^\mu B^\nu = 0$" src="form_239.png"/>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vcona</td><td>The vector to be modified ( <img class="formulaInl" alt="$A^\mu$" src="form_240.png"/>). After the call, it will be orthogonal to vconb. </td></tr>
+    <tr><td class="paramname">vconb</td><td>The reference vector ( <img class="formulaInl" alt="$B^\mu$" src="form_241.png"/>) to project against. </td></tr>
+    <tr><td class="paramname">Gcov</td><td>The covariant metric tensor ( <img class="formulaInl" alt="$g_{\mu\nu}$" src="form_238.png"/>).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
 </div>
 </div>
 <a id="a8a0da4e24c190d57ec68a765a8a5de4a"></a>
@@ -291,6 +357,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Transforms a vector from the local tetrad (fluid) frame to the global coordinate frame. </p>
+<p>This function performs a change of basis. Physical processes are calculated in the local orthonormal.</p>
+<p>The transformation is defined by the sum: <img class="formulaInl" alt="$ K^\mu = \sum_{a=0}^{3} e^\mu_{(a)} K^{(a)} $" src="form_229.png"/></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Econ</td><td>The contravariant tetrad basis vectors <img class="formulaInl" alt="$ e^\mu_{(a)} $" src="form_230.png"/>. </td></tr>
+    <tr><td class="paramname">K_tetrad</td><td>The components of the vector in the local frame <img class="formulaInl" alt="$ K^{(a)} $" src="form_231.png"/>. </td></tr>
+    <tr><td class="paramname">K</td><td>[Output] The components of the vector in the coordinate frame <img class="formulaInl" alt="$ K^\mu $" src="form_232.png"/>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>

@@ -89,31 +89,14 @@ for (l = 0; l < 4; l++) {
    Ecov[0][l] *= -1.;
 }
 
-/* paranoia: check orthonormality */
-/*
-  double sum ;
-  int m ;
-  printf("ortho check:\n") ;
-  for(k=0;k<NDIM;k++)
-  for(l=0;l<NDIM;l++) {
-  sum = 0. ;
-  for(m=0;m<NDIM;m++) {
-  sum += Econ[k][m]*Ecov[l][m] ;
-  }
-  printf("%d %d %g\n",k,l,sum) ;
-  }
-  printf("\n") ;
-  for(k=0;k<NDIM;k++)
-  for(l=0;l<NDIM;l++) {
-  printf("%d %d %g\n",k,l,Econ[k][l]) ;
-  }
-  printf("\n") ;
-*/
+
 
 
 /* done */
 
 }
+
+
 __device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM],
          double K[NDIM])
 {

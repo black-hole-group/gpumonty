@@ -19,8 +19,6 @@
 \begin{DoxyCompactList}\small\item\em Final processing kernel to record escaped superphotons into the observed spectrum by dynamically allocating each superphoton to each thread. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+global\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_aa7287dc36ec91a9fc56342eabd1a1463}{GPU\+\_\+record\+\_\+scattering}} (struct \mbox{\hyperlink{structof__photonSOA}{of\+\_\+photon\+SOA}} ph, struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} $\ast$d\+\_\+spect, const unsigned long long max\+\_\+partition\+\_\+ph, const int nblocks, const int n)
 \begin{DoxyCompactList}\small\item\em Recording kernel for photons that have been created due to scattering events by dynamically allocating each superphoton to each thread. \end{DoxyCompactList}\item 
-\+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}{report\+\_\+spectrum}} (unsigned long long N\+\_\+superph\+\_\+made, struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}} \mbox{\hyperlink{decs_8h_a6b0bc09e401de6b01d58d5e4b4ed71af}{spect}}\mbox{[}\mbox{\hyperlink{config_8h_af52e5601e24f633637c7ef961a01a847}{N\+\_\+\+THBINS}}\mbox{]}\mbox{[}\mbox{\hyperlink{config_8h_af9cf051839fae1fdc190fe02abd595c6}{N\+\_\+\+EBINS}}\mbox{]}, const char $\ast$filename)
-\begin{DoxyCompactList}\small\item\em Post-\/processes simulation results and writes the final spectrum to a file. \end{DoxyCompactList}\item 
 \+\_\+\+\_\+host\+\_\+\+\_\+ void \mbox{\hyperlink{kernels_8h_a726cbb34f438abac82f3977b0ab170dd}{main\+Flow\+Control}} (time\+\_\+t time, double $\ast$\mbox{\hyperlink{defs_8h_a581f9e6b0ae1bb5b0a323185403461cf}{p}})
 \begin{DoxyCompactList}\small\item\em The main host-\/side controller for the GPU-\/accelerated Monte Carlo simulation. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -359,37 +357,6 @@ e) {\bfseries{Finalization}}\+: Transfers the accumulated spectrum back to the h
 {\em time} & Current epoch time used for seeding the random number generators. \\
 \hline
 {\em p} & Pointer to the host-\/side array of primitive fluid variables. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-void 
-\end{DoxyReturn}
-\mbox{\Hypertarget{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}\label{kernels_8h_ab70ddb4c03fe20dc74dc4a26f163cc82}} 
-\index{kernels.h@{kernels.h}!report\_spectrum@{report\_spectrum}}
-\index{report\_spectrum@{report\_spectrum}!kernels.h@{kernels.h}}
-\doxysubsubsection{\texorpdfstring{report\_spectrum()}{report\_spectrum()}}
-{\footnotesize\ttfamily \+\_\+\+\_\+host\+\_\+\+\_\+ void report\+\_\+spectrum (\begin{DoxyParamCaption}\item[{unsigned long long}]{N\+\_\+superph\+\_\+made,  }\item[{struct \mbox{\hyperlink{structof__spectrum}{of\+\_\+spectrum}}}]{spect\mbox{[}\+N\+\_\+\+THBINS\mbox{]}\mbox{[}\+N\+\_\+\+EBINS\mbox{]},  }\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
-
-
-
-Post-\/processes simulation results and writes the final spectrum to a file. 
-
-This host function aggregates the data stored in the energy and frequency binned spectrum.
-
-{\bfseries{Diagnostic Outputs}}\+: After writing the per-\/bin data, the function calculates and prints to stderr\+:
-\begin{DoxyItemize}
-\item {\bfseries{Total Luminosity}}\+: The integral of the spectrum over all angles and energies.
-\item {\bfseries{Accretion Efficiency}}\+: The ratio of bolometric luminosity to the available rest-\/mass energy flux ( $ L / \dot{M}c^2 $).
-\item {\bfseries{Optical Depths}}\+: Average scattering ( $ \tau_{\text{scatt}} $) and absorption ( $ \tau_{\text{abs}} $) depths.
-\end{DoxyItemize}
-
-
-\begin{DoxyParams}{Parameters}
-{\em N\+\_\+superph\+\_\+made} & Total number of grid superphotons generated. \\
-\hline
-{\em spect} & 2D array \mbox{[}Theta Bins\mbox{]}\mbox{[}Energy Bins\mbox{]} containing the accumulated photon data. \\
-\hline
-{\em filename} & Name of the output file (to be stored in the {\ttfamily ./output/} directory). \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}

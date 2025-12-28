@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['photonsperbatch_502',['photonsPerBatch',['../memory_8h.html#ab32ec81875d7bcc1cf492da3a9c6dcbf',1,'memory.h']]]
+  ['photonsperbatch_469',['photonsPerBatch',['../memory_8h.html#ab32ec81875d7bcc1cf492da3a9c6dcbf',1,'memory.h']]]
 ];

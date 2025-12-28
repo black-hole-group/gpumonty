@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hdf5_utils.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="hotcross.cu" href="hotcross.html" />
+    <link rel="prev" title="defs.h" href="defs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compton.html">compton.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compton.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv427GPU_sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_scattered_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv49GPU_boostAL4E_dAL4E_dAL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_boost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv418GPU_sample_thomsonP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_thomson()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv424GPU_sample_klein_nishinadP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv417GPU_klein_nishinaKdKd"><code class="docutils literal notranslate"><span class="pre">GPU_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv427GPU_sample_electron_distr_pAL4E_dAL4E_ddP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_electron_distr_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv421GPU_sample_beta_distrdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_beta_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv418GPU_sample_y_distrKdP11curandState"><code class="docutils literal notranslate"><span class="pre">GPU_sample_y_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv419GPU_sample_mu_distrKdd"><code class="docutils literal notranslate"><span class="pre">GPU_sample_mu_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv424GPU_scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey"><code class="docutils literal notranslate"><span class="pre">GPU_scatter_super_photon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINT"><code class="docutils literal notranslate"><span class="pre">MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXT"><code class="docutils literal notranslate"><span class="pre">MAXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NW"><code class="docutils literal notranslate"><span class="pre">NW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NT"><code class="docutils literal notranslate"><span class="pre">NT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.HOTCROSS"><code class="docutils literal notranslate"><span class="pre">HOTCROSS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXGAMMA"><code class="docutils literal notranslate"><span class="pre">MAXGAMMA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DMUE"><code class="docutils literal notranslate"><span class="pre">DMUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DGAMMAE"><code class="docutils literal notranslate"><span class="pre">DGAMMAE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MMW"><code class="docutils literal notranslate"><span class="pre">MMW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NDIM"><code class="docutils literal notranslate"><span class="pre">NDIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KRHO"><code class="docutils literal notranslate"><span class="pre">KRHO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.UU"><code class="docutils literal notranslate"><span class="pre">UU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U1"><code class="docutils literal notranslate"><span class="pre">U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U2"><code class="docutils literal notranslate"><span class="pre">U2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U3"><code class="docutils literal notranslate"><span class="pre">U3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B2"><code class="docutils literal notranslate"><span class="pre">B2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B3"><code class="docutils literal notranslate"><span class="pre">B3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KEL"><code class="docutils literal notranslate"><span class="pre">KEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KTOT"><code class="docutils literal notranslate"><span class="pre">KTOT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL"><code class="docutils literal notranslate"><span class="pre">SMALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NPRIM_INDEX"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SLOOP_DEVICE"><code class="docutils literal notranslate"><span class="pre">SLOOP_DEVICE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DLOOP"><code class="docutils literal notranslate"><span class="pre">DLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX"><code class="docutils literal notranslate"><span class="pre">MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lmint"><code class="docutils literal notranslate"><span class="pre">d_lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lminw"><code class="docutils literal notranslate"><span class="pre">d_lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lT_min"><code class="docutils literal notranslate"><span class="pre">d_lT_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlw"><code class="docutils literal notranslate"><span class="pre">d_dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT1"><code class="docutils literal notranslate"><span class="pre">d_dlT1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT2"><code class="docutils literal notranslate"><span class="pre">d_dlT2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMAX"><code class="docutils literal notranslate"><span class="pre">KMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMIN"><code class="docutils literal notranslate"><span class="pre">KMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL_VECTOR"><code class="docutils literal notranslate"><span class="pre">SMALL_VECTOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSABS"><code class="docutils literal notranslate"><span class="pre">EPSABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSREL"><code class="docutils literal notranslate"><span class="pre">EPSREL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMIN"><code class="docutils literal notranslate"><span class="pre">TMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMAX"><code class="docutils literal notranslate"><span class="pre">TMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SCATTERINGS_PER_PHOTON"><code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NINT"><code class="docutils literal notranslate"><span class="pre">NINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMIN"><code class="docutils literal notranslate"><span class="pre">BTHSQMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMAX"><code class="docutils literal notranslate"><span class="pre">BTHSQMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_LAYER_SCA"><code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPS"><code class="docutils literal notranslate"><span class="pre">EPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.FAST_CPY"><code class="docutils literal notranslate"><span class="pre">FAST_CPY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constant.html">constants.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="constant.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EE"><code class="docutils literal notranslate"><span class="pre">EE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CL"><code class="docutils literal notranslate"><span class="pre">CL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.ME"><code class="docutils literal notranslate"><span class="pre">ME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MP"><code class="docutils literal notranslate"><span class="pre">MP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MN"><code class="docutils literal notranslate"><span class="pre">MN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AMU"><code class="docutils literal notranslate"><span class="pre">AMU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HPL"><code class="docutils literal notranslate"><span class="pre">HPL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HBAR"><code class="docutils literal notranslate"><span class="pre">HBAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KBOL"><code class="docutils literal notranslate"><span class="pre">KBOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.GNEWT"><code class="docutils literal notranslate"><span class="pre">GNEWT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIG"><code class="docutils literal notranslate"><span class="pre">SIG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RGAS"><code class="docutils literal notranslate"><span class="pre">RGAS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EV"><code class="docutils literal notranslate"><span class="pre">EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIGMA_THOMSON"><code class="docutils literal notranslate"><span class="pre">SIGMA_THOMSON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.JY"><code class="docutils literal notranslate"><span class="pre">JY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.PC"><code class="docutils literal notranslate"><span class="pre">PC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AU"><code class="docutils literal notranslate"><span class="pre">AU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.YEAR"><code class="docutils literal notranslate"><span class="pre">YEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DAY"><code class="docutils literal notranslate"><span class="pre">DAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HOUR"><code class="docutils literal notranslate"><span class="pre">HOUR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MSUN"><code class="docutils literal notranslate"><span class="pre">MSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RSUN"><code class="docutils literal notranslate"><span class="pre">RSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.LSUN"><code class="docutils literal notranslate"><span class="pre">LSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TSUN"><code class="docutils literal notranslate"><span class="pre">TSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MEARTH"><code class="docutils literal notranslate"><span class="pre">MEARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.REARTH"><code class="docutils literal notranslate"><span class="pre">REARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DSGRA"><code class="docutils literal notranslate"><span class="pre">DSGRA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TCBR"><code class="docutils literal notranslate"><span class="pre">TCBR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLX"><code class="docutils literal notranslate"><span class="pre">SOLX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLY"><code class="docutils literal notranslate"><span class="pre">SOLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLZ"><code class="docutils literal notranslate"><span class="pre">SOLZ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PI"><code class="docutils literal notranslate"><span class="pre">FOUR_PI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PISQ"><code class="docutils literal notranslate"><span class="pre">FOUR_PISQ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.THREEPI_TWO"><code class="docutils literal notranslate"><span class="pre">THREEPI_TWO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CST"><code class="docutils literal notranslate"><span class="pre">CST</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv419GPU_init_monty_randi"><code class="docutils literal notranslate"><span class="pre">GPU_init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="defs.html">defs.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="defs.html#global-variables">Global Variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44geom"><code class="docutils literal notranslate"><span class="pre">geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41w"><code class="docutils literal notranslate"><span class="pre">w</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41F"><code class="docutils literal notranslate"><span class="pre">F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43wgt"><code class="docutils literal notranslate"><span class="pre">wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47N_scatt"><code class="docutils literal notranslate"><span class="pre">N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv418N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43Rin"><code class="docutils literal notranslate"><span class="pre">Rin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44Rout"><code class="docutils literal notranslate"><span class="pre">Rout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42Rh"><code class="docutils literal notranslate"><span class="pre">Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42R0"><code class="docutils literal notranslate"><span class="pre">R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46hslope"><code class="docutils literal notranslate"><span class="pre">hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46startx"><code class="docutils literal notranslate"><span class="pre">startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45stopx"><code class="docutils literal notranslate"><span class="pre">stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44Ladv"><code class="docutils literal notranslate"><span class="pre">Ladv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49bias_norm"><code class="docutils literal notranslate"><span class="pre">bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41p"><code class="docutils literal notranslate"><span class="pre">p</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N1"><code class="docutils literal notranslate"><span class="pre">N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N2"><code class="docutils literal notranslate"><span class="pre">N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N3"><code class="docutils literal notranslate"><span class="pre">N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46L_unit"><code class="docutils literal notranslate"><span class="pre">L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46B_unit"><code class="docutils literal notranslate"><span class="pre">B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47Ne_unit"><code class="docutils literal notranslate"><span class="pre">Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48Rho_unit"><code class="docutils literal notranslate"><span class="pre">Rho_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46U_unit"><code class="docutils literal notranslate"><span class="pre">U_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46M_unit"><code class="docutils literal notranslate"><span class="pre">M_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46T_unit"><code class="docutils literal notranslate"><span class="pre">T_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45table"><code class="docutils literal notranslate"><span class="pre">table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43dlw"><code class="docutils literal notranslate"><span class="pre">dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43dlT"><code class="docutils literal notranslate"><span class="pre">dlT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45lminw"><code class="docutils literal notranslate"><span class="pre">lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45lmint"><code class="docutils literal notranslate"><span class="pre">lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44nint"><code class="docutils literal notranslate"><span class="pre">nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42K2"><code class="docutils literal notranslate"><span class="pre">K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv410dndlnu_max"><code class="docutils literal notranslate"><span class="pre">dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv415my_curand_state"><code class="docutils literal notranslate"><span class="pre">my_curand_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47d_table"><code class="docutils literal notranslate"><span class="pre">d_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412photon_count"><code class="docutils literal notranslate"><span class="pre">photon_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv420d_N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">d_N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Ns"><code class="docutils literal notranslate"><span class="pre">d_Ns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_N_scatt"><code class="docutils literal notranslate"><span class="pre">d_N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413d_thetae_unit"><code class="docutils literal notranslate"><span class="pre">d_thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_startx"><code class="docutils literal notranslate"><span class="pre">d_startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_dx"><code class="docutils literal notranslate"><span class="pre">d_dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_wgt"><code class="docutils literal notranslate"><span class="pre">d_wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43d_F"><code class="docutils literal notranslate"><span class="pre">d_F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_K2"><code class="docutils literal notranslate"><span class="pre">d_K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411d_bias_norm"><code class="docutils literal notranslate"><span class="pre">d_bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47d_stopx"><code class="docutils literal notranslate"><span class="pre">d_stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Rh"><code class="docutils literal notranslate"><span class="pre">d_Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv415d_max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">d_max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv418scattering_counter"><code class="docutils literal notranslate"><span class="pre">scattering_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv414d_num_scat_phs"><code class="docutils literal notranslate"><span class="pre">d_num_scat_phs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv416tracking_counter"><code class="docutils literal notranslate"><span class="pre">tracking_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46d_nint"><code class="docutils literal notranslate"><span class="pre">d_nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_dndlnu_max"><code class="docutils literal notranslate"><span class="pre">d_dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_hslope"><code class="docutils literal notranslate"><span class="pre">d_hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_R0"><code class="docutils literal notranslate"><span class="pre">d_R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv425tracking_counter_sampling"><code class="docutils literal notranslate"><span class="pre">tracking_counter_sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N1"><code class="docutils literal notranslate"><span class="pre">d_N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N2"><code class="docutils literal notranslate"><span class="pre">d_N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N3"><code class="docutils literal notranslate"><span class="pre">d_N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_trat_small"><code class="docutils literal notranslate"><span class="pre">d_trat_small</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_trat_large"><code class="docutils literal notranslate"><span class="pre">d_trat_large</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411d_beta_crit"><code class="docutils literal notranslate"><span class="pre">d_beta_crit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_Ne_unit"><code class="docutils literal notranslate"><span class="pre">d_Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46params"><code class="docutils literal notranslate"><span class="pre">params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47of_geom"><code class="docutils literal notranslate"><span class="pre">of_geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411of_spectrum"><code class="docutils literal notranslate"><span class="pre">of_spectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48params_t"><code class="docutils literal notranslate"><span class="pre">params_t</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">hdf5_utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv413hdf5_get_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_get_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415hdf5_write_blob9hdf5_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_write_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415hdf5_close_blob9hdf5_blob"><code class="docutils literal notranslate"><span class="pre">hdf5_close_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv411hdf5_createPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49hdf5_openPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_open()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv410hdf5_closev"><code class="docutils literal notranslate"><span class="pre">hdf5_close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv419hdf5_make_directoryPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_make_directory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420GPU_generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv413GPU_init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv424GPU_sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv422GPU_sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv49GPU_track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv414GPU_track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">GPU_track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410GPU_record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">GPU_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv421GPU_record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">GPU_record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="main.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv44mainiA_Pc"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv418GPU_get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">GPU_get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="radiation.html">radiation.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="radiation.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv411GPU_jnu_invKdKdKdKdKd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_jnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv411GPU_Bnu_invKdKd"><code class="docutils literal notranslate"><span class="pre">GPU_Bnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412GPU_kappa_esKdKdPKd"><code class="docutils literal notranslate"><span class="pre">GPU_kappa_es()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv416GPU_get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_get_fluid_nu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv419GPU_alpha_inv_scattKdKdKdPKd"><code class="docutils literal notranslate"><span class="pre">GPU_alpha_inv_scatt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv417GPU_alpha_inv_absKdKdKdKdd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">GPU_alpha_inv_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv416GPU_get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd"><code class="docutils literal notranslate"><span class="pre">GPU_get_bk_angle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tetrads.html">tetrads.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tetrads.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv415GPU_make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">GPU_make_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv424GPU_tetrad_to_coordinateA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">GPU_tetrad_to_coordinate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv424GPU_coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">GPU_coordinate_to_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv49GPU_deltaii"><code class="docutils literal notranslate"><span class="pre">GPU_delta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv413GPU_normalizePdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_normalize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv415GPU_project_outPdPdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_project_out()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv417GPU_interp_scalar19cudaTextureObject_tKiKiKiKiAL4E_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_interp_scalar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415findPhotonIndexPKyiy"><code class="docutils literal notranslate"><span class="pre">findPhotonIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv425GPU_interp_scalar_pointerPKdKiKiKiKiAL8E_Kd"><code class="docutils literal notranslate"><span class="pre">GPU_interp_scalar_pointer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413NPRIM_INDEX3Diiii"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX2Dii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX3Diii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX3D()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv424GPU_linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">GPU_linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docs_guidelines.html">Documentation Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#guidelines">Guidelines:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#update-workflow-and-repository-structure">Update Workflow and Repository Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#documentation-directories-organization">Documentation Directories Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#website-navigation-and-tabs">Website Navigation and Tabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#local-testing-and-building">Local Testing and Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">hdf5_utils.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/hdf5_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hdf5-utils-cu">
+<h1>hdf5_utils.cu<a class="headerlink" href="#hdf5-utils-cu" title="Link to this heading"></a></h1>
+<p>Documentation for the functions that handle HDF5 file operations.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413hdf5_get_blobPKc">
+<span id="_CPPv313hdf5_get_blobPKc"></span><span id="_CPPv213hdf5_get_blobPKc"></span><span id="hdf5_get_blob__cCP"></span><span class="target" id="hdf5__utils_8h_1a9d3a6db741fbf0dac5d89975a73ee527"></span><span class="n"><span class="pre">hdf5_blob</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_get_blob</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413hdf5_get_blobPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Extracts an HDF5 object into an in-memory “blob.” This function uses the HDF5 “CORE” Virtual File Driver (VFD) to create a virtual file in RAM. It then copies an object (dataset or group) from the physical file into this virtual file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the object to extract. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>hdf5_blob A handle (hid_t) to the new in-memory HDF5 file image. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415hdf5_write_blob9hdf5_blobPKc">
+<span id="_CPPv315hdf5_write_blob9hdf5_blobPKc"></span><span id="_CPPv215hdf5_write_blob9hdf5_blobPKc"></span><span id="hdf5_write_blob__hdf5_blob.cCP"></span><span class="target" id="hdf5__utils_8h_1ac41923f789696f02927d8857838bcd26"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_write_blob</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hdf5_blob</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blob</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415hdf5_write_blob9hdf5_blobPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Writes an in-memory HDF5 blob back to the main file. This function saves the data stored in a temporary RAM-resident HDF5 image into the permanent file structure. It is often used to save processed results or updated datasets that were modified in memory for speed. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blob</strong> – The handle (hid_t) to the in-memory HDF5 file image. </p></li>
+<li><p><strong>name</strong> – The target name for the object within the main file. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415hdf5_close_blob9hdf5_blob">
+<span id="_CPPv315hdf5_close_blob9hdf5_blob"></span><span id="_CPPv215hdf5_close_blob9hdf5_blob"></span><span id="hdf5_close_blob__hdf5_blob"></span><span class="target" id="hdf5__utils_8h_1acfaf5ad969b528252544d9274ae9fb98"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_close_blob</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hdf5_blob</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blob</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415hdf5_close_blob9hdf5_blob" title="Link to this definition"></a><br /></dt>
+<dd><p>Deallocates the in-memory HDF5 blob and releases system RAM. </p>
+<p>Because the blob was created using the H5FD_CORE driver, the “file” exists entirely in a memory buffer. Calling this function tells the HDF5 library that the buffer is no longer needed, effectively performing a ‘free()’ operation on that block of memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>blob</strong> – The handle (hid_t) to the in-memory HDF5 file image. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411hdf5_createPKc">
+<span id="_CPPv311hdf5_createPKc"></span><span id="_CPPv211hdf5_createPKc"></span><span id="hdf5_create__cCP"></span><span class="target" id="hdf5__utils_8h_1aa516c64d3d01dab36b6d242bcbd202ea"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411hdf5_createPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a new HDF5 file on disk, overwriting any existing file with the same name. This function sets up the environment for writing simulation data. It includes logic for both single-processor and parallel (MPI) environments. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> – The string containing the path/name of the file to create (e.g., “data.h5”). </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49hdf5_openPKc">
+<span id="_CPPv39hdf5_openPKc"></span><span id="_CPPv29hdf5_openPKc"></span><span id="hdf5_open__cCP"></span><span class="target" id="hdf5__utils_8h_1a38ed155e4a5caf24f8af82e570a5f517"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_open</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49hdf5_openPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Opens an existing HDF5 file for reading. Unlike <code class="docutils literal notranslate"><span class="pre">hdf5_create</span></code>, this function expects the file to already exist on disk. It uses the <code class="docutils literal notranslate"><span class="pre">Read-Only</span></code> flag to protect the data. Like the creation function, it supports parallel access if MPI is enabled. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> – The path/name of the existing file to open. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410hdf5_closev">
+<span id="_CPPv310hdf5_closev"></span><span id="_CPPv210hdf5_closev"></span><span id="hdf5_close"></span><span class="target" id="hdf5__utils_8h_1ae0f0e281fc647877ec3995288ccc5259"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_close</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410hdf5_closev" title="Link to this definition"></a><br /></dt>
+<dd><p>Flushes pending data to disk and closes the physical HDF5 file. </p>
+<p>This is a function for data integrity. It forces the operating system to write any remaining “cached” data to the hard drive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419hdf5_make_directoryPKc">
+<span id="_CPPv319hdf5_make_directoryPKc"></span><span id="_CPPv219hdf5_make_directoryPKc"></span><span id="hdf5_make_directory__cCP"></span><span class="target" id="hdf5__utils_8h_1a7bf41478aa1f827d8ded1502defee02a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hdf5_make_directory</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419hdf5_make_directoryPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a new HDF5 Group at the current path location. This function builds a hierarchical structure within the file. It does not “move” into the new directory; it simply creates it and then releases the handle. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the new group to create. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, or a negative error code on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="defs.html" class="btn btn-neutral float-left" title="defs.h" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hotcross.html" class="btn btn-neutral float-right" title="hotcross.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

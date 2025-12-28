@@ -22,14 +22,16 @@ The source code is open-source and available under the GNU General Public Licens
 Getting Started
 ---------------
 
-For a quick tutorial, system requirements, and build instructions, please refer to the **README** file in the GitHub repository. It contains the necessary steps to compile the code and run initial simulations.
+For a quick tutorial, system requirements, and build instructions, please refer to the **README** file in the GitHub repository or the `Quick Start <quick_start.html>`_ documentation section. 
 
 Technical API Reference
 -----------------------
 
-This documentation site is provided as a reference for the **function specifics** only. It details the internal logic of the CUDA kernels, functions, and memory management structures.
-
 * Use the sidebar to explore the specific modules.
+
+
+We welcome comments, questions, and contributions! Please feel free to open issues or pull requests on the GitHub repository.
+email for contact: pedronaethemotta@usp.br
 
 **Developed by**: Pedro Naethe Motta
 

@@ -151,20 +151,20 @@ Functions</h2></td></tr>
 
 <p>Calculates the Lorentz invariant absorption coefficient via Kirchhoff's Law. </p>
 <p>This function determines the invariant absorption coefficient $\nu \alpha_{a}$ by relating the invariant emissivity to the invariant Planck function (source function).</p>
-<p>Based on Kirchhoff's Law of Thermal Radiation, the absorption coefficient <img class="formulaInl" alt="$\alpha_\nu$" src="form_207.png"/> is the ratio of emissivity to the Planck function: [ \alpha_\nu = \frac{j_\nu}{B_\nu} ] In terms of the invariant quantities provided by the internal helper functions: [ \nu \alpha_\nu = \frac{j_\nu / \nu^2}{B_\nu / \nu^3} ]</p>
+<p>Based on Kirchhoff's Law of Thermal Radiation, the absorption coefficient <img class="formulaInl" alt="$\alpha_\nu$" src="form_223.png"/> is the ratio of emissivity to the Planck function: [ \alpha_\nu = \frac{j_\nu}{B_\nu} ] In terms of the invariant quantities provided by the internal helper functions: [ \nu \alpha_\nu = \frac{j_\nu / \nu^2}{B_\nu / \nu^3} ]</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">nu</td><td>Photon frequency in the fluid frame (Hz). </td></tr>
-    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$\Theta_\rm{e} $" src="form_203.png"/>. </td></tr>
-    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$N_e$" src="form_204.png"/> (cm <img class="formulaInl" alt="$^{-3}$" src="form_205.png"/>). </td></tr>
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$\Theta_\rm{e} $" src="form_219.png"/>. </td></tr>
+    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$N_e$" src="form_220.png"/> (cm <img class="formulaInl" alt="$^{-3}$" src="form_221.png"/>). </td></tr>
     <tr><td class="paramname">B</td><td>Magnetic field strength (Gauss). </td></tr>
     <tr><td class="paramname">theta</td><td>Pitch angle between photon and magnetic field. </td></tr>
     <tr><td class="paramname">besselTexObj</td><td>CUDA texture for Bessel function lookups. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The invariant absorption coefficient <img class="formulaInl" alt="$\nu \alpha_{a}$" src="form_208.png"/> [units: Hz <img class="formulaInl" alt="$ \rm{cm}^{-1} $" src="form_206.png"/>].</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>A small epsilon ( <img class="formulaInl" alt="$ 10^{-100} $" src="form_209.png"/>) is added to the denominator to prevent division by zero. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The invariant absorption coefficient <img class="formulaInl" alt="$\nu \alpha_{a}$" src="form_224.png"/> [units: Hz <img class="formulaInl" alt="$ \rm{cm}^{-1} $" src="form_222.png"/>].</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>A small epsilon ( <img class="formulaInl" alt="$ 10^{-100} $" src="form_225.png"/>) is added to the denominator to prevent division by zero. </dd></dl>
 
 </div>
 </div>
@@ -207,18 +207,18 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the Lorentz invariant scattering coefficient. </p>
-<p>This function converts the scattering opacity (cross-section per unit mass) into the invariant scattering coefficient <img class="formulaInl" alt="$\nu \alpha_{s}$" src="form_201.png"/>.</p>
-<p>[ \text{Result} = \nu \cdot \alpha_{s} = \nu \cdot (\rho \cdot \kappa_{es}) ] where <img class="formulaInl" alt="$\rho \approx N_e m_p$" src="form_202.png"/> (assuming a pure hydrogen plasma).</p>
+<p>This function converts the scattering opacity (cross-section per unit mass) into the invariant scattering coefficient <img class="formulaInl" alt="$\nu \alpha_{s}$" src="form_217.png"/>.</p>
+<p>[ \text{Result} = \nu \cdot \alpha_{s} = \nu \cdot (\rho \cdot \kappa_{es}) ] where <img class="formulaInl" alt="$\rho \approx N_e m_p$" src="form_218.png"/> (assuming a pure hydrogen plasma).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">nu</td><td>Photon frequency in the fluid frame (Hz). </td></tr>
-    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$\Theta_\rm{e} $" src="form_203.png"/>. </td></tr>
-    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$N_e$" src="form_204.png"/> (cm <img class="formulaInl" alt="$^{-3}$" src="form_205.png"/>). </td></tr>
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$\Theta_\rm{e} $" src="form_219.png"/>. </td></tr>
+    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$N_e$" src="form_220.png"/> (cm <img class="formulaInl" alt="$^{-3}$" src="form_221.png"/>). </td></tr>
     <tr><td class="paramname">d_table_ptr</td><td>Pointer to the Compton cross-section lookup table.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The invariant scattering coefficient <img class="formulaInl" alt="$\nu \alpha_{s}$" src="form_201.png"/> [units: Hz <img class="formulaInl" alt="$ \rm{cm}^{-1} $" src="form_206.png"/>]. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The invariant scattering coefficient <img class="formulaInl" alt="$\nu \alpha_{s}$" src="form_217.png"/> [units: Hz <img class="formulaInl" alt="$ \rm{cm}^{-1} $" src="form_222.png"/>]. </dd></dl>
 
 </div>
 </div>
@@ -249,23 +249,23 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the invariant Planck source function for a thermal distribution. </p>
-<p>This function computes the frequency-dependent Planck function <img class="formulaInl" alt="$ B_\nu(T) $" src="form_182.png"/> and returns it in its Lorentz-invariant form: <img class="formulaInl" alt="$ B_\nu / \nu^3 $" src="form_183.png"/>. This quantity represents the invariant intensity of a blackbody in thermal equilibrium.</p>
-<dl class="section note"><dt>Note</dt><dd>To prevent precision loss and division by zero at low frequencies, the function uses a 4th-order Taylor expansion of <img class="formulaInl" alt="$ e^x - 1 $" src="form_184.png"/> when <img class="formulaInl" alt="$ x &lt; 10^{-3} $" src="form_185.png"/>: <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ e^x - 1 \approx x + \frac{x^2}{2} + \frac{x^3}{6} + \frac{x^4}{24} \]" src="form_186.png"/>
+<p>This function computes the frequency-dependent Planck function <img class="formulaInl" alt="$ B_\nu(T) $" src="form_198.png"/> and returns it in its Lorentz-invariant form: <img class="formulaInl" alt="$ B_\nu / \nu^3 $" src="form_199.png"/>. This quantity represents the invariant intensity of a blackbody in thermal equilibrium.</p>
+<dl class="section note"><dt>Note</dt><dd>To prevent precision loss and division by zero at low frequencies, the function uses a 4th-order Taylor expansion of <img class="formulaInl" alt="$ e^x - 1 $" src="form_200.png"/> when <img class="formulaInl" alt="$ x &lt; 10^{-3} $" src="form_201.png"/>: <p class="formulaDsp">
+<img class="formulaDsp" alt="\[ e^x - 1 \approx x + \frac{x^2}{2} + \frac{x^3}{6} + \frac{x^4}{24} \]" src="form_202.png"/>
 </p>
 </dd></dl>
 <p>The invariant source function is defined as: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \mathcal{B} = \frac{B_\nu}{\nu^3} = \frac{2h}{c^2} \frac{1}{\exp\left(\frac{h\nu}{k_B T}\right) - 1} \]" src="form_187.png"/>
+<img class="formulaDsp" alt="\[ \mathcal{B} = \frac{B_\nu}{\nu^3} = \frac{2h}{c^2} \frac{1}{\exp\left(\frac{h\nu}{k_B T}\right) - 1} \]" src="form_203.png"/>
 </p>
-<p> where <img class="formulaInl" alt="$ k_B T = m_e c^2 \Theta_e $" src="form_188.png"/>.</p>
+<p> where <img class="formulaInl" alt="$ k_B T = m_e c^2 \Theta_e $" src="form_204.png"/>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">nu</td><td>Photon frequency <img class="formulaInl" alt="$ \nu $" src="form_99.png"/> in the fluid frame. </td></tr>
+    <tr><td class="paramname">nu</td><td>Photon frequency <img class="formulaInl" alt="$ \nu $" src="form_119.png"/> in the fluid frame. </td></tr>
     <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e $" src="form_31.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The invariant Planck function <img class="formulaInl" alt="$ B_\nu / \nu^3 $" src="form_183.png"/> in CGS units. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The invariant Planck function <img class="formulaInl" alt="$ B_\nu / \nu^3 $" src="form_199.png"/> in CGS units. </dd></dl>
 
 </div>
 </div>
@@ -314,18 +314,18 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the pitch angle between the photon wavevector and the magnetic field. </p>
-<p>This function determines the angle <img class="formulaInl" alt="$\theta$" src="form_210.png"/> between the photon's propagation direction and the local magnetic field vector, as measured in the local fluid frame.</p>
+<p>This function determines the angle <img class="formulaInl" alt="$\theta$" src="form_226.png"/> between the photon's propagation direction and the local magnetic field vector, as measured in the local fluid frame.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">X</td><td>Photon 4-position. </td></tr>
-    <tr><td class="paramname">K</td><td>Photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_193.png"/>. </td></tr>
-    <tr><td class="paramname">Ucov</td><td>Covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_194.png"/>. </td></tr>
-    <tr><td class="paramname">Bcov</td><td>Covariant magnetic field 4-vector <img class="formulaInl" alt="$B_\mu$" src="form_211.png"/>. </td></tr>
+    <tr><td class="paramname">K</td><td>Photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_209.png"/>. </td></tr>
+    <tr><td class="paramname">Ucov</td><td>Covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_210.png"/>. </td></tr>
+    <tr><td class="paramname">Bcov</td><td>Covariant magnetic field 4-vector <img class="formulaInl" alt="$B_\mu$" src="form_227.png"/>. </td></tr>
     <tr><td class="paramname">B</td><td>Magnetic field strength in Gauss (CGS).</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The pitch angle <img class="formulaInl" alt="$\theta$" src="form_210.png"/> in radians <img class="formulaInl" alt="$[0, \pi]$" src="form_212.png"/>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The pitch angle <img class="formulaInl" alt="$\theta$" src="form_226.png"/> in radians <img class="formulaInl" alt="$[0, \pi]$" src="form_228.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -362,18 +362,18 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Computes the photon frequency in the local fluid frame (Hz). </p>
-<p>This function projects the photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_193.png"/> onto the covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_194.png"/> to determine the energy as measured by a co-moving observer.</p>
-<p>The energy of a particle with 4-momentum <img class="formulaInl" alt="$p^\mu$" src="form_195.png"/> measured by an observer with 4-velocity <img class="formulaInl" alt="$u^\mu$" src="form_196.png"/> is given by the scalar <img class="formulaInl" alt="$E = -p^\mu u_\mu$" src="form_197.png"/>.</p>
-<dl class="section note"><dt>Note</dt><dd>The energy is initially calculated in dimensionless electron rest-mass units ( <img class="formulaInl" alt="$m_e c^2$" src="form_198.png"/>). This is converted to physical frequency using the relation <img class="formulaInl" alt="$\nu = E \cdot (m_e c^2 / h)$" src="form_199.png"/>.</dd></dl>
+<p>This function projects the photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_209.png"/> onto the covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_210.png"/> to determine the energy as measured by a co-moving observer.</p>
+<p>The energy of a particle with 4-momentum <img class="formulaInl" alt="$p^\mu$" src="form_211.png"/> measured by an observer with 4-velocity <img class="formulaInl" alt="$u^\mu$" src="form_212.png"/> is given by the scalar <img class="formulaInl" alt="$E = -p^\mu u_\mu$" src="form_213.png"/>.</p>
+<dl class="section note"><dt>Note</dt><dd>The energy is initially calculated in dimensionless electron rest-mass units ( <img class="formulaInl" alt="$m_e c^2$" src="form_214.png"/>). This is converted to physical frequency using the relation <img class="formulaInl" alt="$\nu = E \cdot (m_e c^2 / h)$" src="form_215.png"/>.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">X</td><td>The 4-position of the photon (primarily used for diagnostic logging). </td></tr>
-    <tr><td class="paramname">K</td><td>The photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_193.png"/>. </td></tr>
-    <tr><td class="paramname">Ucov</td><td>The covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_194.png"/>.</td></tr>
+    <tr><td class="paramname">K</td><td>The photon 4-wavevector <img class="formulaInl" alt="$K^\mu$" src="form_209.png"/>. </td></tr>
+    <tr><td class="paramname">Ucov</td><td>The covariant fluid 4-velocity <img class="formulaInl" alt="$U_\mu$" src="form_210.png"/>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The physical frequency <img class="formulaInl" alt="$\nu$" src="form_200.png"/> in Hz. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The physical frequency <img class="formulaInl" alt="$\nu$" src="form_216.png"/> in Hz. </dd></dl>
 
 </div>
 </div>
@@ -428,22 +428,22 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the invariant emissivity for synchrotron radiation. </p>
-<p>This function computes the local synchrotron emissivity <img class="formulaInl" alt="$ j_\nu $" src="form_93.png"/> through means of the function <code>jnu_synch</code> and converts it to the Lorentz-invariant form <img class="formulaInl" alt="$ j_\nu / \nu^2 $" src="form_179.png"/>.</p>
+<p>This function computes the local synchrotron emissivity <img class="formulaInl" alt="$ j_\nu $" src="form_113.png"/> through means of the function <code>jnu_synch</code> and converts it to the Lorentz-invariant form <img class="formulaInl" alt="$ j_\nu / \nu^2 $" src="form_195.png"/>.</p>
 <ul>
-<li>Emissivity <img class="formulaInl" alt="$ j_\nu $" src="form_93.png"/> is determined by the local plasma properties ( <img class="formulaInl" alt="$ N_e, \Theta_e, B $" src="form_180.png"/>) and the emission angle <img class="formulaInl" alt="$ \theta $" src="form_3.png"/> relative to the magnetic field.</li>
+<li>Emissivity <img class="formulaInl" alt="$ j_\nu $" src="form_113.png"/> is determined by the local plasma properties ( <img class="formulaInl" alt="$ N_e, \Theta_e, B $" src="form_196.png"/>) and the emission angle <img class="formulaInl" alt="$ \theta $" src="form_3.png"/> relative to the magnetic field.</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">nu</td><td>Photon frequency <img class="formulaInl" alt="$ \nu $" src="form_99.png"/> in the fluid frame. </td></tr>
+    <tr><td class="paramname">nu</td><td>Photon frequency <img class="formulaInl" alt="$ \nu $" src="form_119.png"/> in the fluid frame. </td></tr>
     <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_e = k_B T_e / m_e c^2 $" src="form_25.png"/>. </td></tr>
-    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$ N_e $" src="form_181.png"/> in cgs. </td></tr>
-    <tr><td class="paramname">B</td><td>Magnetic field strength <img class="formulaInl" alt="$ B $" src="form_98.png"/> in Gauss. </td></tr>
+    <tr><td class="paramname">Ne</td><td>Electron number density <img class="formulaInl" alt="$ N_e $" src="form_197.png"/> in cgs. </td></tr>
+    <tr><td class="paramname">B</td><td>Magnetic field strength <img class="formulaInl" alt="$ B $" src="form_118.png"/> in Gauss. </td></tr>
     <tr><td class="paramname">theta</td><td>Pitch angle <img class="formulaInl" alt="$ \theta $" src="form_3.png"/> between the photon wavevector and the magnetic field. </td></tr>
     <tr><td class="paramname">besselTexObj</td><td>CUDA texture object used for fast lookup of modified Bessel functions.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The invariant emissivity <img class="formulaInl" alt="$ j_\nu / \nu^2 $" src="form_179.png"/>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The invariant emissivity <img class="formulaInl" alt="$ j_\nu / \nu^2 $" src="form_195.png"/>. </dd></dl>
 
 </div>
 </div>
@@ -481,16 +481,16 @@ Functions</h2></td></tr>
 
 <p>Calculates the electron scattering opacity in CGS units. </p>
 <p>This function determines the scattering opacity $\kappa_{es}$ by looking up the total Compton cross-section for a given photon frequency and electron temperature. It assumes a pure hydrogen composition to convert the cross-section (area) into opacity (area per unit mass).</p>
-<p>The opacity is calculated as: [ \kappa_{es} = \frac{\sigma_{Compton}(E_g, \Theta_e)}{m_p} ] where <img class="formulaInl" alt="$ E_{\rm g} = \frac{h\nu}{m_{\rm e} c^2} $" src="form_189.png"/> is the dimensionless photon energy and <img class="formulaInl" alt="$ m_{\rm p} $" src="form_190.png"/> is the proton mass.</p>
+<p>The opacity is calculated as: [ \kappa_{es} = \frac{\sigma_{Compton}(E_g, \Theta_e)}{m_p} ] where <img class="formulaInl" alt="$ E_{\rm g} = \frac{h\nu}{m_{\rm e} c^2} $" src="form_205.png"/> is the dimensionless photon energy and <img class="formulaInl" alt="$ m_{\rm p} $" src="form_206.png"/> is the proton mass.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">nu</td><td>Photon frequency in the fluid frame (Hz). </td></tr>
-    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_\rm{e} $" src="form_191.png"/>. </td></tr>
+    <tr><td class="paramname">Thetae</td><td>Dimensionless electron temperature <img class="formulaInl" alt="$ \Theta_\rm{e} $" src="form_207.png"/>. </td></tr>
     <tr><td class="paramname">d_table_ptr</td><td>Pointer to the GPU memory containing the precomputed cross-section lookup table.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The electron scattering opacity in <img class="formulaInl" alt="$ \text{cm}^2/\text{g} $" src="form_192.png"/>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The electron scattering opacity in <img class="formulaInl" alt="$ \text{cm}^2/\text{g} $" src="form_208.png"/>. </dd></dl>
 
 </div>
 </div>

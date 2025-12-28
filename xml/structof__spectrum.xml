@@ -136,6 +136,7 @@
       </memberdef>
       </sectiondef>
     <briefdescription>
+<para>Structure to hold the spectrum data for a given grid point. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>

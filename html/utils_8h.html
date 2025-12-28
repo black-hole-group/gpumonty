@@ -331,7 +331,7 @@ By fetching two discrete points, <code>k * NPRIM</code> and <code>(k+1) * NPRIM<
 <p><b>Memory Layout Order</b>: [Variable $v$][Dimension $i$][Dimension $j$][Dimension $k$]</p><ul>
 <li>$k$ is the fastest-varying index (unit stride).</li>
 <li><p class="startli">$v$ is the slowest-varying index.</p>
-<p class="startli"><img class="formulaInl" alt="$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $" src="form_213.png"/></p>
+<p class="startli"><img class="formulaInl" alt="$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k $" src="form_242.png"/></p>
 </li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -382,7 +382,7 @@ By fetching two discrete points, <code>k * NPRIM</code> and <code>(k+1) * NPRIM<
 <p>Maps 2D spatial coordinates (i, j) to a 1D linear memory offset. </p>
 <p>This function performs a standard row-major (or height-major) flattening for 2D grids.</p>
 <p><b>Memory Layout Order</b>: [Dimension $i$][Dimension $j$]</p>
-<p><img class="formulaInl" alt="$ \text{Index} = j + (N_2 \times i) $" src="form_214.png"/></p>
+<p><img class="formulaInl" alt="$ \text{Index} = j + (N_2 \times i) $" src="form_243.png"/></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>The radial spatial index. </td></tr>
@@ -437,7 +437,7 @@ By fetching two discrete points, <code>k * NPRIM</code> and <code>(k+1) * NPRIM<
 <p>Maps 3D spatial coordinates (i, j, k) to a 1D linear memory offset. </p>
 <p>This function flattens a 3D volume into a 1D array.</p>
 <p><b>Memory Layout Order</b>: [Dimension $i$][Dimension $j$][Dimension $k$]</p>
-<p><img class="formulaInl" alt="$ \text{Index} = k + N_3 \times (j + N_2 \times i) $" src="form_215.png"/></p>
+<p><img class="formulaInl" alt="$ \text{Index} = k + N_3 \times (j + N_2 \times i) $" src="form_244.png"/></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>The radial spatial index (typically the radial or X dimension). </td></tr>
