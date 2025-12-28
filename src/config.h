@@ -107,18 +107,6 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 
-/*Mmnemonics for hamr*/
-#define REF_2 (1)
-#define TILT_ANGLE (0.0)
-#define LEFT (0)
-#define RIGHT (1)
-#define FACE1	(0)	
-#define FACE2	(1)
-#define CORN	(2)
-#define CENT	(3)
-#define FACE3	(4)
-
-
 /*Some device global variables definition*/
 #define d_lmint     (log10(MINT))
 #define d_lminw     (log10(MINW))

@@ -69,12 +69,12 @@
 </listitem><listitem><para><bold>biasTuning</bold>: Default bias tuning factor is set to 1.0. BIAS TUNING STILL NOT IMPLEMENTED.</para>
 </listitem><listitem><para><bold>fitBias</bold>: Default fitting bias factor is set to 1.0. FITTING BIAS STILL NOT IMPLEMENTED.</para>
 </listitem><listitem><para><bold>fitBiasNs</bold>: Scale input number of superphotons generated in each zone. Default is 1.0 (no scaling). FITTING BIAS STILL NOT IMPLEMENTED.</para>
-</listitem><listitem><para><bold>tp_over_te</bold>: Sets the default proton-to-electron temperature ratio <formula id="137">$ T_p/T_e $</formula> for the simulation. Default is 3.0.</para>
-</listitem><listitem><para><bold>beta_crit</bold>: Sets the default critical plasma beta <formula id="138">$ \beta_{\rm crit} $</formula> for R-low/R-high models. Default is 1.0.</para>
-</listitem><listitem><para><bold>trat_small</bold>: Sets the minimum proton-to-electron temperature ratio <formula id="137">$ T_p/T_e $</formula> for R-low/R-high models. Default is 1.0.</para>
-</listitem><listitem><para><bold>trat_large</bold>: Sets the maximum proton-to-electron temperature ratio <formula id="137">$ T_p/T_e $</formula> for R-low/R-high models. Default is 10.0.</para>
-</listitem><listitem><para><bold>Thetae_max</bold>: Sets the maximum electron temperature <formula id="31">$ \Theta_e $</formula> for R-low/R-high models. Default is <formula id="139">$ 10^{100} $</formula>.</para>
-</listitem><listitem><para><bold>Black Hole Mass</bold>: Defaults to <formula id="140">$ 4.1 \times 10^6 M_\odot $</formula> (Sgr A*).</para>
+</listitem><listitem><para><bold>tp_over_te</bold>: Sets the default proton-to-electron temperature ratio <formula id="143">$ T_p/T_e $</formula> for the simulation. Default is 3.0.</para>
+</listitem><listitem><para><bold>beta_crit</bold>: Sets the default critical plasma beta <formula id="144">$ \beta_{\rm crit} $</formula> for R-low/R-high models. Default is 1.0.</para>
+</listitem><listitem><para><bold>trat_small</bold>: Sets the minimum proton-to-electron temperature ratio <formula id="143">$ T_p/T_e $</formula> for R-low/R-high models. Default is 1.0.</para>
+</listitem><listitem><para><bold>trat_large</bold>: Sets the maximum proton-to-electron temperature ratio <formula id="143">$ T_p/T_e $</formula> for R-low/R-high models. Default is 10.0.</para>
+</listitem><listitem><para><bold>Thetae_max</bold>: Sets the maximum electron temperature <formula id="31">$ \Theta_e $</formula> for R-low/R-high models. Default is <formula id="145">$ 10^{100} $</formula>.</para>
+</listitem><listitem><para><bold>Black Hole Mass</bold>: Defaults to <formula id="146">$ 4.1 \times 10^6 M_\odot $</formula> (Sgr A*).</para>
 </listitem></itemizedlist>
 </para>
 <para><simplesect kind="note"><para>R-high and R-low models are only applied to iharm_model simulations.</para>

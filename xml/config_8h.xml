@@ -122,14 +122,15 @@
       <sectiondef kind="define">
       <memberdef kind="define" id="config_8h_1a6ab7e0600ce055b99f7f13342bace0c8" prot="public" static="no">
         <name>KFAC</name>
-        <initializer>(9*M_PI*<ref refid="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" kindref="member">ME</ref>*<ref refid="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" kindref="member">CL</ref>/<ref refid="constants_8h_1a40069882b1f09d9463acc3acd7b67708" kindref="member">EE</ref>) /*Used for synchrotron emissivity calculation*/</initializer>
+        <initializer>(9*M_PI*<ref refid="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" kindref="member">ME</ref>*<ref refid="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" kindref="member">CL</ref>/<ref refid="constants_8h_1a40069882b1f09d9463acc3acd7b67708" kindref="member">EE</ref>)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Factor used for synchrotron emissivity calculation </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/config.h" line="14" column="9" bodyfile="src/constants.h" bodystart="93" bodyend="-1"/>
+        <location file="src/config.h" line="14" column="9" bodyfile="src/constants.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="config_8h_1aa714b8308c6a460183a00af49b098b37" prot="public" static="no">
         <name>N_BLOCKS</name>

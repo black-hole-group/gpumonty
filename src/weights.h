@@ -11,7 +11,7 @@ Declaration of the functions used in weights.cu file
  * @brief Precomputes the superphoton weight table based on the total integrated emissivity of the fluid.
  * This function evaluates the volume integral of the emissivity function $j_\nu$ across the entire 
  * simulation grid to determine the weight $\omega_\nu$ for each frequency bin.
- * * Implements: \f$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} dΩ \f$
+ * * Implements: \f$ \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega \f$
  *
  * @note The resulting weights are stored in log-space within the global `wgt` array for faster interpolation.
  */

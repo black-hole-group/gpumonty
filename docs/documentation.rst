@@ -8,6 +8,7 @@ organized by module.
    :maxdepth: 3
    
    api/compton
+   api/constant
    api/curand
    api/hotcross
    api/jnu_mixed

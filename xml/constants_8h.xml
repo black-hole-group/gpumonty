@@ -30,388 +30,423 @@
       <sectiondef kind="define">
       <memberdef kind="define" id="constants_8h_1a40069882b1f09d9463acc3acd7b67708" prot="public" static="no">
         <name>EE</name>
-        <initializer>(4.80320680e-10		)	/* electron charge */</initializer>
+        <initializer>(4.80320680e-10)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Electron charge </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="4" column="9" bodyfile="src/constants.h" bodystart="4" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" prot="public" static="no">
+        <name>CL</name>
+        <initializer>(2.99792458e10)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Speed of light </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="6" column="9" bodyfile="src/constants.h" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" prot="public" static="no">
+        <name>ME</name>
+        <initializer>(9.1093826e-28)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Electron mass </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="8" column="9" bodyfile="src/constants.h" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a597dcd9e5f1de7a7d24b4ce24f1e98c7" prot="public" static="no">
+        <name>MP</name>
+        <initializer>(1.67262171e-24)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Proton mass </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="10" column="9" bodyfile="src/constants.h" bodystart="10" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a12ac315df6e4c45a69d530e9727ac26e" prot="public" static="no">
+        <name>MN</name>
+        <initializer>(1.67492728e-24)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Neutron mass </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="12" column="9" bodyfile="src/constants.h" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ae72e484b3bba78248e0f70f47d11cb43" prot="public" static="no">
+        <name>AMU</name>
+        <initializer>(1.66053886e-24)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Atomic mass unit </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="14" column="9" bodyfile="src/constants.h" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" prot="public" static="no">
+        <name>HPL</name>
+        <initializer>(6.6260693e-27)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Planck constant </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="16" column="9" bodyfile="src/constants.h" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ae65111c61742e1017ae415b5db60b90b" prot="public" static="no">
+        <name>HBAR</name>
+        <initializer>(<ref refid="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" kindref="member">HPL</ref>/(2.*M_PI))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reduced Planck constant (h-bar) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="18" column="9" bodyfile="src/constants.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1afe7acce9a0d846b2f48b22c6bd096dd8" prot="public" static="no">
+        <name>KBOL</name>
+        <initializer>(1.3806505e-16)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Boltzmann constant </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="20" column="9" bodyfile="src/constants.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a9996e4de1a8a98001c7d92c044ff7abd" prot="public" static="no">
+        <name>GNEWT</name>
+        <initializer>(6.6742e-8)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gravitational constant </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="22" column="9" bodyfile="src/constants.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ad6f1d374549d22100d676d5fcac0a7e5" prot="public" static="no">
+        <name>SIG</name>
+        <initializer>(5.670400e-5)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Stefan-Boltzmann constant </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="24" column="9" bodyfile="src/constants.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ac3d4dff0bb456555c1aefa01205d3b87" prot="public" static="no">
+        <name>RGAS</name>
+        <initializer>(8.3143e7)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Ideal gas constant ( <formula id="46">$ \rm{erg}\, \rm{K}^{-1}\, \rm{mole}^{-1} $</formula>) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="26" column="9" bodyfile="src/constants.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a650ef3eff8a2900bef69dae29c05d2dd" prot="public" static="no">
+        <name>EV</name>
+        <initializer>(1.60217653e-12)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Electron volt in ergs </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="28" column="9" bodyfile="src/constants.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a44a4f0acea65a3ff319aad3262ce5f1c" prot="public" static="no">
+        <name>SIGMA_THOMSON</name>
+        <initializer>(0.665245873e-24)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Thomson cross section in <formula id="47">$ cm^2 $</formula> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="30" column="9" bodyfile="src/constants.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ab03428ee7292eb7bc1f40c08b91f49ab" prot="public" static="no">
+        <name>JY</name>
+        <initializer>(1.e-23)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Jansky (flux/frequency unit) in CGS </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="32" column="9" bodyfile="src/constants.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a600721f0222b857dc8a3ae59e5077347" prot="public" static="no">
+        <name>PC</name>
+        <initializer>(3.085678e18)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Parsec </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="35" column="9" bodyfile="src/constants.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1ae992e5b7e1e6bc540e74aa4d3f63a269" prot="public" static="no">
+        <name>AU</name>
+        <initializer>(1.49597870691e13)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Astronomical Unit </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="37" column="9" bodyfile="src/constants.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a5871356500f559add06ea81d60331b1b" prot="public" static="no">
+        <name>YEAR</name>
+        <initializer>(31536000.)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of seconds in a year </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="40" column="9" bodyfile="src/constants.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a509a01c55cbe47386fe24602b7c7fda1" prot="public" static="no">
+        <name>DAY</name>
+        <initializer>(86400.)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of seconds in a day </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="42" column="9" bodyfile="src/constants.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a4698ae12cf6a8acb5886fffd0ec897e6" prot="public" static="no">
+        <name>HOUR</name>
+        <initializer>(3600.)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of seconds in an hour </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.h" line="44" column="9" bodyfile="src/constants.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="constants_8h_1a32a6b190d4d681e2af4c6ce998031557" prot="public" static="no">
+        <name>MSUN</name>
+        <initializer>(1.989e33)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Solar mass </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="46" column="9" bodyfile="src/constants.h" bodystart="46" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" prot="public" static="no">
-        <name>CL</name>
-        <initializer>(2.99792458e10		)	/* speed of light */</initializer>
+      <memberdef kind="define" id="constants_8h_1a735fd180f3bfcca3f2422b1c5e2a3019" prot="public" static="no">
+        <name>RSUN</name>
+        <initializer>(6.96e10)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="47" column="9" bodyfile="src/constants.h" bodystart="47" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" prot="public" static="no">
-        <name>ME</name>
-        <initializer>(9.1093826e-28		)	/* electron mass */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Radius of the Sun </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="48" column="9" bodyfile="src/constants.h" bodystart="48" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a597dcd9e5f1de7a7d24b4ce24f1e98c7" prot="public" static="no">
-        <name>MP</name>
-        <initializer>(1.67262171e-24		)	/* proton mass */</initializer>
+      <memberdef kind="define" id="constants_8h_1af87a66342fbd68797d65af4cdf0fd5fc" prot="public" static="no">
+        <name>LSUN</name>
+        <initializer>(3.827e33)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="49" column="9" bodyfile="src/constants.h" bodystart="49" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a12ac315df6e4c45a69d530e9727ac26e" prot="public" static="no">
-        <name>MN</name>
-        <initializer>(1.67492728e-24		)	/* neutron mass */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Luminosity of the Sun </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="50" column="9" bodyfile="src/constants.h" bodystart="50" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1ae72e484b3bba78248e0f70f47d11cb43" prot="public" static="no">
-        <name>AMU</name>
-        <initializer>(1.66053886e-24		)	/* atomic mass unit */</initializer>
+      <memberdef kind="define" id="constants_8h_1aa5244027c00b642d69d62392f5a60f8b" prot="public" static="no">
+        <name>TSUN</name>
+        <initializer>(5.78e3)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="51" column="9" bodyfile="src/constants.h" bodystart="51" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" prot="public" static="no">
-        <name>HPL</name>
-        <initializer>(6.6260693e-27		)	/* Planck constant */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Temperature of the Sun&apos;s photosphere </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="52" column="9" bodyfile="src/constants.h" bodystart="52" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1ae65111c61742e1017ae415b5db60b90b" prot="public" static="no">
-        <name>HBAR</name>
-        <initializer>(<ref refid="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" kindref="member">HPL</ref>/(2.*M_PI)		)	/* Planck&apos;s consant / 2pi */</initializer>
+      <memberdef kind="define" id="constants_8h_1a829c61a1a58ad57d481bba108e629660" prot="public" static="no">
+        <name>MEARTH</name>
+        <initializer>(5.976e27)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="53" column="9" bodyfile="src/constants.h" bodystart="53" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1afe7acce9a0d846b2f48b22c6bd096dd8" prot="public" static="no">
-        <name>KBOL</name>
-        <initializer>(1.3806505e-16		)	/* Boltzmann constant */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Earth&apos;s mass </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="54" column="9" bodyfile="src/constants.h" bodystart="54" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a9996e4de1a8a98001c7d92c044ff7abd" prot="public" static="no">
-        <name>GNEWT</name>
-        <initializer>(6.6742e-8			)	/* Gravitational constant */</initializer>
+      <memberdef kind="define" id="constants_8h_1a2e63471c2b6c01d98c204c220a31fe8c" prot="public" static="no">
+        <name>REARTH</name>
+        <initializer>(6.378e8)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="55" column="9" bodyfile="src/constants.h" bodystart="55" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1ad6f1d374549d22100d676d5fcac0a7e5" prot="public" static="no">
-        <name>SIG</name>
-        <initializer>(5.670400e-5		)	/* Stefan-Boltzmann constant */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Earth&apos;s radius </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="56" column="9" bodyfile="src/constants.h" bodystart="56" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1ac3d4dff0bb456555c1aefa01205d3b87" prot="public" static="no">
-        <name>RGAS</name>
-        <initializer>(8.3143e7			)	/* erg K^-1 mole^-1: ideal gas const */</initializer>
+      <memberdef kind="define" id="constants_8h_1a4ac4655b4ea675f754044121a64ea531" prot="public" static="no">
+        <name>DSGRA</name>
+        <initializer>(8.4e3 * <ref refid="constants_8h_1a600721f0222b857dc8a3ae59e5077347" kindref="member">PC</ref>)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="57" column="9" bodyfile="src/constants.h" bodystart="57" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a650ef3eff8a2900bef69dae29c05d2dd" prot="public" static="no">
-        <name>EV</name>
-        <initializer>(1.60217653e-12		)	/* electron volt in erg */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Distance from Earth to Sgr A* </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="58" column="9" bodyfile="src/constants.h" bodystart="58" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a44a4f0acea65a3ff319aad3262ce5f1c" prot="public" static="no">
-        <name>SIGMA_THOMSON</name>
-        <initializer>(0.665245873e-24	)	/* Thomson cross section in cm^2 */</initializer>
+      <memberdef kind="define" id="constants_8h_1ac61bc3ce245840bba9ae6be26cc5b79b" prot="public" static="no">
+        <name>TCBR</name>
+        <initializer>(2.726)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Cosmic Background Radiation (CBR) temperature (from COBE) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/constants.h" line="59" column="9" bodyfile="src/constants.h" bodystart="59" bodyend="-1"/>
+        <location file="src/constants.h" line="61" column="9" bodyfile="src/constants.h" bodystart="61" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1ab03428ee7292eb7bc1f40c08b91f49ab" prot="public" static="no">
-        <name>JY</name>
-        <initializer>(1.e-23				)	/* Jansky (flux/freq. unit) in cgs */</initializer>
+      <memberdef kind="define" id="constants_8h_1ab8ac455682cd80dfc10e0f872d9fcc39" prot="public" static="no">
+        <name>SOLX</name>
+        <initializer>(0.70)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="60" column="9" bodyfile="src/constants.h" bodystart="60" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a600721f0222b857dc8a3ae59e5077347" prot="public" static="no">
-        <name>PC</name>
-        <initializer>(3.085678e18		)	/* parsec */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="62" column="9" bodyfile="src/constants.h" bodystart="62" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1ae992e5b7e1e6bc540e74aa4d3f63a269" prot="public" static="no">
-        <name>AU</name>
-        <initializer>(1.49597870691e13	)	/* Astronomical Unit */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="63" column="9" bodyfile="src/constants.h" bodystart="63" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a5871356500f559add06ea81d60331b1b" prot="public" static="no">
-        <name>YEAR</name>
-        <initializer>(31536000.			)	/* No. of seconds in year */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="65" column="9" bodyfile="src/constants.h" bodystart="65" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a509a01c55cbe47386fe24602b7c7fda1" prot="public" static="no">
-        <name>DAY</name>
-        <initializer>(86400.				)	/* No. of seconds in day  */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Hydrogen (H) abundance </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="66" column="9" bodyfile="src/constants.h" bodystart="66" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a4698ae12cf6a8acb5886fffd0ec897e6" prot="public" static="no">
-        <name>HOUR</name>
-        <initializer>(3600.				)	/* No. of seconds in hour */</initializer>
+      <memberdef kind="define" id="constants_8h_1a3edac172dc0f8d84c78d99b7b3a9d7d2" prot="public" static="no">
+        <name>SOLY</name>
+        <initializer>(0.28)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Helium (He) abundance </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/constants.h" line="67" column="9" bodyfile="src/constants.h" bodystart="67" bodyend="-1"/>
+        <location file="src/constants.h" line="68" column="9" bodyfile="src/constants.h" bodystart="68" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a32a6b190d4d681e2af4c6ce998031557" prot="public" static="no">
-        <name>MSUN</name>
-        <initializer>(1.989e33			)	/* solar mass */</initializer>
+      <memberdef kind="define" id="constants_8h_1af960fe026864af1f8a3857067c03bac1" prot="public" static="no">
+        <name>SOLZ</name>
+        <initializer>(0.02)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="69" column="9" bodyfile="src/constants.h" bodystart="69" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a735fd180f3bfcca3f2422b1c5e2a3019" prot="public" static="no">
-        <name>RSUN</name>
-        <initializer>(6.96e10			)	/* Radius of Sun */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Metals abundance </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="70" column="9" bodyfile="src/constants.h" bodystart="70" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1af87a66342fbd68797d65af4cdf0fd5fc" prot="public" static="no">
-        <name>LSUN</name>
-        <initializer>(3.827e33				)	/* Luminousity of Sun */</initializer>
+      <memberdef kind="define" id="constants_8h_1ac6b39b7a27b735f3a62be33f38041985" prot="public" static="no">
+        <name>FOUR_PI</name>
+        <initializer>(1.2732395447351626862)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="71" column="9" bodyfile="src/constants.h" bodystart="71" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1aa5244027c00b642d69d62392f5a60f8b" prot="public" static="no">
-        <name>TSUN</name>
-        <initializer>(5.78e3				)	/* Temperature of Sun&apos;s photosphere */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
+<para>Ratio of <formula id="48">$ 4/π $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="72" column="9" bodyfile="src/constants.h" bodystart="72" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a829c61a1a58ad57d481bba108e629660" prot="public" static="no">
-        <name>MEARTH</name>
-        <initializer>(5.976e27			)	/* Earth&apos;s mass */</initializer>
+      <memberdef kind="define" id="constants_8h_1af1d17d187556a6aa8f125435586d8340" prot="public" static="no">
+        <name>FOUR_PISQ</name>
+        <initializer>(0.40528473456935108578)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Ratio of <formula id="49">$ 4/\pi^2 $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="src/constants.h" line="74" column="9" bodyfile="src/constants.h" bodystart="74" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="constants_8h_1a2e63471c2b6c01d98c204c220a31fe8c" prot="public" static="no">
-        <name>REARTH</name>
-        <initializer>(6.378e8			)	/* Earth&apos;s radius */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="75" column="9" bodyfile="src/constants.h" bodystart="75" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a4ac4655b4ea675f754044121a64ea531" prot="public" static="no">
-        <name>DSGRA</name>
-        <initializer>(8.4e3 * <ref refid="constants_8h_1a600721f0222b857dc8a3ae59e5077347" kindref="member">PC</ref>			)	/* Distance from Earth to Sgr A*  */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="77" column="9" bodyfile="src/constants.h" bodystart="77" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1ac61bc3ce245840bba9ae6be26cc5b79b" prot="public" static="no">
-        <name>TCBR</name>
-        <initializer>(2.726				)	/* CBR temperature, from COBE */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="79" column="9" bodyfile="src/constants.h" bodystart="79" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1ab8ac455682cd80dfc10e0f872d9fcc39" prot="public" static="no">
-        <name>SOLX</name>
-        <initializer>(0.70				)	/* H */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="85" column="9" bodyfile="src/constants.h" bodystart="85" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1a3edac172dc0f8d84c78d99b7b3a9d7d2" prot="public" static="no">
-        <name>SOLY</name>
-        <initializer>(0.28				)	/* He */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="86" column="9" bodyfile="src/constants.h" bodystart="86" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1af960fe026864af1f8a3857067c03bac1" prot="public" static="no">
-        <name>SOLZ</name>
-        <initializer>(0.02				)	/* Metals */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="87" column="9" bodyfile="src/constants.h" bodystart="87" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1ac6b39b7a27b735f3a62be33f38041985" prot="public" static="no">
-        <name>FOUR_PI</name>
-        <initializer>(1.2732395447351626862)	/* 4/pi */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="89" column="9" bodyfile="src/constants.h" bodystart="89" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="constants_8h_1af1d17d187556a6aa8f125435586d8340" prot="public" static="no">
-        <name>FOUR_PISQ</name>
-        <initializer>(0.40528473456935108578)	/* 4/pi^2 */</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="src/constants.h" line="90" column="9" bodyfile="src/constants.h" bodystart="90" bodyend="-1"/>
-      </memberdef>
       <memberdef kind="define" id="constants_8h_1a06830b4bf79e9c1f2506bbf3254919b9" prot="public" static="no">
         <name>THREEPI_TWO</name>
-        <initializer>(4.7123889803846898577)	/* 3pi/2 */</initializer>
+        <initializer>(4.7123889803846898577)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Ratio of <formula id="50">$ 3\pi/2 $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/constants.h" line="91" column="9" bodyfile="src/constants.h" bodystart="91" bodyend="-1"/>
+        <location file="src/constants.h" line="76" column="9" bodyfile="src/constants.h" bodystart="76" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="constants_8h_1a774aa867ffa37c901bcf3db2bc378cc3" prot="public" static="no">
         <name>CST</name>
-        <initializer>1.88774862536	/* 2^{11/12} */</initializer>
+        <initializer>1.88774862536</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Constant defined as <formula id="51">$ 2^{11/12} $</formula> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="src/constants.h" line="92" column="9" bodyfile="src/constants.h" bodystart="92" bodyend="-1"/>
+        <location file="src/constants.h" line="78" column="9" bodyfile="src/constants.h" bodystart="78" bodyend="-1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -419,99 +454,50 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">/***********************************************************************************</highlight></codeline>
-<codeline lineno="3"><highlight class="comment"><sp/><sp/><sp/><sp/>Copyright<sp/>2013<sp/>Joshua<sp/>C.<sp/>Dolence,<sp/>Charles<sp/>F.<sp/>Gammie,<sp/>Monika<sp/>Mo\&apos;scibrodzka,</highlight></codeline>
-<codeline lineno="4"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>and<sp/>Po<sp/>Kin<sp/>Leung</highlight></codeline>
-<codeline lineno="5"><highlight class="comment"></highlight></codeline>
-<codeline lineno="6"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>GRMONTY<sp/><sp/>version<sp/>1.0<sp/><sp/><sp/>(released<sp/>February<sp/>1,<sp/>2013)</highlight></codeline>
-<codeline lineno="7"><highlight class="comment"></highlight></codeline>
-<codeline lineno="8"><highlight class="comment"><sp/><sp/><sp/><sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>GRMONTY.<sp/><sp/>GRMONTY<sp/>v1.0<sp/>is<sp/>a<sp/>program<sp/>that<sp/>calculates<sp/>the</highlight></codeline>
-<codeline lineno="9"><highlight class="comment"><sp/><sp/><sp/><sp/>emergent<sp/>spectrum<sp/>from<sp/>a<sp/>model<sp/>using<sp/>a<sp/>Monte<sp/>Carlo<sp/>technique.</highlight></codeline>
-<codeline lineno="10"><highlight class="comment"></highlight></codeline>
-<codeline lineno="11"><highlight class="comment"><sp/><sp/><sp/><sp/>This<sp/>version<sp/>of<sp/>GRMONTY<sp/>is<sp/>configured<sp/>to<sp/>use<sp/>input<sp/>files<sp/>from<sp/>the<sp/>HARM<sp/>code</highlight></codeline>
-<codeline lineno="12"><highlight class="comment"><sp/><sp/><sp/><sp/>available<sp/>on<sp/>the<sp/>same<sp/>site.<sp/><sp/><sp/>It<sp/>assumes<sp/>that<sp/>the<sp/>source<sp/>is<sp/>a<sp/>plasma<sp/>near<sp/>a</highlight></codeline>
-<codeline lineno="13"><highlight class="comment"><sp/><sp/><sp/><sp/>black<sp/>hole<sp/>described<sp/>by<sp/>Kerr-Schild<sp/>coordinates<sp/>that<sp/>radiates<sp/>via<sp/>thermal<sp/></highlight></codeline>
-<codeline lineno="14"><highlight class="comment"><sp/><sp/><sp/><sp/>synchrotron<sp/>and<sp/>inverse<sp/>compton<sp/>scattering.</highlight></codeline>
-<codeline lineno="15"><highlight class="comment"><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="16"><highlight class="comment"><sp/><sp/><sp/><sp/>You<sp/>are<sp/>morally<sp/>obligated<sp/>to<sp/>cite<sp/>the<sp/>following<sp/>paper<sp/>in<sp/>any</highlight></codeline>
-<codeline lineno="17"><highlight class="comment"><sp/><sp/><sp/><sp/>scientific<sp/>literature<sp/>that<sp/>results<sp/>from<sp/>use<sp/>of<sp/>any<sp/>part<sp/>of<sp/>GRMONTY:</highlight></codeline>
-<codeline lineno="18"><highlight class="comment"></highlight></codeline>
-<codeline lineno="19"><highlight class="comment"><sp/><sp/><sp/><sp/>Dolence,<sp/>J.C.,<sp/>Gammie,<sp/>C.F.,<sp/>Mo\&apos;scibrodzka,<sp/>M.,<sp/>\&amp;<sp/>Leung,<sp/>P.-K.<sp/>2009,</highlight></codeline>
-<codeline lineno="20"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Astrophysical<sp/>Journal<sp/>Supplement,<sp/>184,<sp/>387</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"></highlight></codeline>
-<codeline lineno="22"><highlight class="comment"><sp/><sp/><sp/><sp/>Further,<sp/>we<sp/>strongly<sp/>encourage<sp/>you<sp/>to<sp/>obtain<sp/>the<sp/>latest<sp/>version<sp/>of<sp/></highlight></codeline>
-<codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>GRMONTY<sp/>directly<sp/>from<sp/>our<sp/>distribution<sp/>website:</highlight></codeline>
-<codeline lineno="24"><highlight class="comment"><sp/><sp/><sp/><sp/>http://rainman.astro.illinois.edu/codelib/</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"></highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>GRMONTY<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published<sp/>by</highlight></codeline>
-<codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either<sp/>version<sp/>2<sp/>of<sp/>the<sp/>License,<sp/>or</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"></highlight></codeline>
-<codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/>GRMONTY<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>GNU<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"></highlight></codeline>
-<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>General<sp/>Public<sp/>License</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>along<sp/>with<sp/>GRMONTY;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"></highlight></codeline>
-<codeline lineno="40"><highlight class="comment">***********************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"></highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>==<sp/>Definition<sp/>of<sp/>constants<sp/>in<sp/>CGS<sp/>units<sp/>==<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight></codeline>
-<codeline lineno="46" refid="constants_8h_1a40069882b1f09d9463acc3acd7b67708" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>EE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(4.80320680e-10<sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>electron<sp/>charge<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="47" refid="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(2.99792458e10<sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>speed<sp/>of<sp/>light<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48" refid="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ME<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(9.1093826e-28<sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>electron<sp/>mass<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="49" refid="constants_8h_1a597dcd9e5f1de7a7d24b4ce24f1e98c7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MP<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.67262171e-24<sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>proton<sp/>mass<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="50" refid="constants_8h_1a12ac315df6e4c45a69d530e9727ac26e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.67492728e-24<sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>neutron<sp/>mass<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="51" refid="constants_8h_1ae72e484b3bba78248e0f70f47d11cb43" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>AMU<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.66053886e-24<sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>atomic<sp/>mass<sp/>unit<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52" refid="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HPL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.6260693e-27<sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Planck<sp/>constant<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="53" refid="constants_8h_1ae65111c61742e1017ae415b5db60b90b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HBAR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(HPL/(2.*M_PI)<sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Planck&apos;s<sp/>consant<sp/>/<sp/>2pi<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54" refid="constants_8h_1afe7acce9a0d846b2f48b22c6bd096dd8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>KBOL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.3806505e-16<sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Boltzmann<sp/>constant<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="55" refid="constants_8h_1a9996e4de1a8a98001c7d92c044ff7abd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GNEWT<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.6742e-8<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Gravitational<sp/>constant<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="56" refid="constants_8h_1ad6f1d374549d22100d676d5fcac0a7e5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SIG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.670400e-5<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Stefan-Boltzmann<sp/>constant<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57" refid="constants_8h_1ac3d4dff0bb456555c1aefa01205d3b87" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RGAS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(8.3143e7<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>erg<sp/>K^-1<sp/>mole^-1:<sp/>ideal<sp/>gas<sp/>const<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="58" refid="constants_8h_1a650ef3eff8a2900bef69dae29c05d2dd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>EV<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.60217653e-12<sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>electron<sp/>volt<sp/>in<sp/>erg<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59" refid="constants_8h_1a44a4f0acea65a3ff319aad3262ce5f1c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SIGMA_THOMSON<sp/><sp/><sp/>(0.665245873e-24<sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Thomson<sp/>cross<sp/>section<sp/>in<sp/>cm^2<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60" refid="constants_8h_1ab03428ee7292eb7bc1f40c08b91f49ab" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>JY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.e-23<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Jansky<sp/>(flux/freq.<sp/>unit)<sp/>in<sp/>cgs<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62" refid="constants_8h_1a600721f0222b857dc8a3ae59e5077347" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PC<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3.085678e18<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>parsec<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="63" refid="constants_8h_1ae992e5b7e1e6bc540e74aa4d3f63a269" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>AU<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.49597870691e13<sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Astronomical<sp/>Unit<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="comment">/*<sp/>==<sp/>Definition<sp/>of<sp/>constants<sp/>in<sp/>CGS<sp/>units<sp/>==<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4" refid="constants_8h_1a40069882b1f09d9463acc3acd7b67708" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>EE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(4.80320680e-10)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6" refid="constants_8h_1a8f4ea5fa21d42f950b5f95a91e9ff227" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(2.99792458e10)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="constants_8h_1adf8d34f3be20164c292bccfeb72898e5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ME<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(9.1093826e-28)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10" refid="constants_8h_1a597dcd9e5f1de7a7d24b4ce24f1e98c7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MP<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.67262171e-24)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12" refid="constants_8h_1a12ac315df6e4c45a69d530e9727ac26e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.67492728e-24)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="constants_8h_1ae72e484b3bba78248e0f70f47d11cb43" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>AMU<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.66053886e-24)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="constants_8h_1a5524d41aa238a97effd0cdf14342ad5b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HPL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.6260693e-27)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="constants_8h_1ae65111c61742e1017ae415b5db60b90b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HBAR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(HPL/(2.*M_PI))<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="constants_8h_1afe7acce9a0d846b2f48b22c6bd096dd8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>KBOL<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.3806505e-16)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="constants_8h_1a9996e4de1a8a98001c7d92c044ff7abd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GNEWT<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.6742e-8)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="constants_8h_1ad6f1d374549d22100d676d5fcac0a7e5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SIG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.670400e-5)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="constants_8h_1ac3d4dff0bb456555c1aefa01205d3b87" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RGAS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(8.3143e7)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="constants_8h_1a650ef3eff8a2900bef69dae29c05d2dd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>EV<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.60217653e-12)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="constants_8h_1a44a4f0acea65a3ff319aad3262ce5f1c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SIGMA_THOMSON<sp/><sp/><sp/>(0.665245873e-24)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="constants_8h_1ab03428ee7292eb7bc1f40c08b91f49ab" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>JY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.e-23)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="constants_8h_1a600721f0222b857dc8a3ae59e5077347" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PC<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3.085678e18)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="constants_8h_1ae992e5b7e1e6bc540e74aa4d3f63a269" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>AU<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.49597870691e13)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="constants_8h_1a5871356500f559add06ea81d60331b1b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>YEAR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(31536000.)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="constants_8h_1a509a01c55cbe47386fe24602b7c7fda1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DAY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(86400.)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="constants_8h_1a4698ae12cf6a8acb5886fffd0ec897e6" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HOUR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3600.)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="constants_8h_1a32a6b190d4d681e2af4c6ce998031557" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.989e33)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="constants_8h_1a735fd180f3bfcca3f2422b1c5e2a3019" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.96e10)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="constants_8h_1af87a66342fbd68797d65af4cdf0fd5fc" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3.827e33)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="constants_8h_1aa5244027c00b642d69d62392f5a60f8b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.78e3)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="constants_8h_1a829c61a1a58ad57d481bba108e629660" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MEARTH<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.976e27)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="constants_8h_1a2e63471c2b6c01d98c204c220a31fe8c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>REARTH<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.378e8)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="constants_8h_1a4ac4655b4ea675f754044121a64ea531" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DSGRA<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(8.4e3<sp/>*<sp/>PC)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="constants_8h_1ac61bc3ce245840bba9ae6be26cc5b79b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TCBR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(2.726)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Abundances<sp/>(from<sp/>M<sp/>&amp;<sp/>B,<sp/>p.<sp/>99)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
-<codeline lineno="65" refid="constants_8h_1a5871356500f559add06ea81d60331b1b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>YEAR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(31536000.<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>No.<sp/>of<sp/>seconds<sp/>in<sp/>year<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="66" refid="constants_8h_1a509a01c55cbe47386fe24602b7c7fda1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DAY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(86400.<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>No.<sp/>of<sp/>seconds<sp/>in<sp/>day<sp/><sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67" refid="constants_8h_1a4698ae12cf6a8acb5886fffd0ec897e6" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>HOUR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3600.<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>No.<sp/>of<sp/>seconds<sp/>in<sp/>hour<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69" refid="constants_8h_1a32a6b190d4d681e2af4c6ce998031557" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.989e33<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>solar<sp/>mass<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="70" refid="constants_8h_1a735fd180f3bfcca3f2422b1c5e2a3019" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.96e10<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Radius<sp/>of<sp/>Sun<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="71" refid="constants_8h_1af87a66342fbd68797d65af4cdf0fd5fc" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3.827e33<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Luminousity<sp/>of<sp/>Sun<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72" refid="constants_8h_1aa5244027c00b642d69d62392f5a60f8b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TSUN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.78e3<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Temperature<sp/>of<sp/>Sun&apos;s<sp/>photosphere<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74" refid="constants_8h_1a829c61a1a58ad57d481bba108e629660" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MEARTH<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(5.976e27<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Earth&apos;s<sp/>mass<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75" refid="constants_8h_1a2e63471c2b6c01d98c204c220a31fe8c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>REARTH<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6.378e8<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Earth&apos;s<sp/>radius<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"></highlight></codeline>
-<codeline lineno="77" refid="constants_8h_1a4ac4655b4ea675f754044121a64ea531" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DSGRA<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(8.4e3<sp/>*<sp/>PC<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Distance<sp/>from<sp/>Earth<sp/>to<sp/>Sgr<sp/>A*<sp/><sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79" refid="constants_8h_1ac61bc3ce245840bba9ae6be26cc5b79b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TCBR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(2.726<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>CBR<sp/>temperature,<sp/>from<sp/>COBE<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment">/*<sp/></highlight></codeline>
-<codeline lineno="82"><highlight class="comment"><sp/><sp/><sp/>abundances,<sp/>from<sp/>M<sp/>&amp;<sp/>B,<sp/>p.<sp/>99</highlight></codeline>
-<codeline lineno="83"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight></codeline>
-<codeline lineno="85" refid="constants_8h_1ab8ac455682cd80dfc10e0f872d9fcc39" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLX<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.70<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>H<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86" refid="constants_8h_1a3edac172dc0f8d84c78d99b7b3a9d7d2" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.28<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>He<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="87" refid="constants_8h_1af960fe026864af1f8a3857067c03bac1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLZ<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.02<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Metals<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight></codeline>
-<codeline lineno="89" refid="constants_8h_1ac6b39b7a27b735f3a62be33f38041985" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FOUR_PI<sp/>(1.2732395447351626862)<sp/></highlight><highlight class="comment">/*<sp/>4/pi<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="90" refid="constants_8h_1af1d17d187556a6aa8f125435586d8340" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FOUR_PISQ<sp/>(0.40528473456935108578)<sp/><sp/></highlight><highlight class="comment">/*<sp/>4/pi^2<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="91" refid="constants_8h_1a06830b4bf79e9c1f2506bbf3254919b9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>THREEPI_TWO<sp/>(4.7123889803846898577)<sp/></highlight><highlight class="comment">/*<sp/>3pi/2<sp/>*/</highlight><highlight class="preprocessor"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92" refid="constants_8h_1a774aa867ffa37c901bcf3db2bc378cc3" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CST<sp/>1.88774862536<sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>2^{11/12}<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
-<codeline lineno="93" refid="config_8h_1a6ab7e0600ce055b99f7f13342bace0c8" refkind="member"><highlight class="preprocessor">#define<sp/>KFAC<sp/><sp/><sp/><sp/>(9*M_PI*ME*CL/EE)<sp/></highlight><highlight class="comment">/*Used<sp/>for<sp/>synchrotron<sp/>emissivity<sp/>calculation*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="66" refid="constants_8h_1ab8ac455682cd80dfc10e0f872d9fcc39" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLX<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.70)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="constants_8h_1a3edac172dc0f8d84c78d99b7b3a9d7d2" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLY<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.28)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="constants_8h_1af960fe026864af1f8a3857067c03bac1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SOLZ<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.02)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="constants_8h_1ac6b39b7a27b735f3a62be33f38041985" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FOUR_PI<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1.2732395447351626862)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="constants_8h_1af1d17d187556a6aa8f125435586d8340" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FOUR_PISQ<sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0.40528473456935108578)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="constants_8h_1a06830b4bf79e9c1f2506bbf3254919b9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>THREEPI_TWO<sp/><sp/><sp/><sp/><sp/>(4.7123889803846898577)<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="constants_8h_1a774aa867ffa37c901bcf3db2bc378cc3" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CST<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1.88774862536<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="config_8h_1a6ab7e0600ce055b99f7f13342bace0c8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>KFAC<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(9*M_PI*ME*CL/EE)</highlight></codeline>
     </programlisting>
     <location file="src/constants.h"/>
   </compounddef>

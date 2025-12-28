@@ -67,3 +67,6 @@ html_static_path = ['_static']
 html_css_files = [
     'custom.css',
 ]
+
+# Force Breathe to show the #define values
+breathe_show_define_initializer = True
