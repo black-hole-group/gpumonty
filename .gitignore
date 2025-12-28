@@ -17,7 +17,6 @@ xml/
 
 output/
 !output/example.spec
-!python/expected_spectrum.png
 !Doxyfile
 
 python/*
@@ -32,3 +31,4 @@ python/**/.ipynb_checkpoints/
 
 !python/example.ipynb
 !output/example.spec
+!python/expected_spectrum.png
