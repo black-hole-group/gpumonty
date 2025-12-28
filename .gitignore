@@ -9,6 +9,12 @@ build/
 data/*.h5
 gpumonty
 
+# Documentation build artifacts
+html/
+latex/
+_build/
+xml/
+
 output/
 !output/example.spec
 !docs/_static/expected_spectrum.png
