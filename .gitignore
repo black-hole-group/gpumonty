@@ -17,7 +17,7 @@ xml/
 
 output/
 !output/example.spec
-!docs/_static/expected_spectrum.png
+!python/expected_spectrum.png
 !Doxyfile
 
 python/*
