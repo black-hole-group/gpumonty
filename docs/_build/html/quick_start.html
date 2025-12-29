@@ -198,6 +198,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv45dMact"><code class="docutils literal notranslate"><span class="pre">dMact</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv44Ladv"><code class="docutils literal notranslate"><span class="pre">Ladv</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv49bias_norm"><code class="docutils literal notranslate"><span class="pre">bias_norm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv41p"><code class="docutils literal notranslate"><span class="pre">p</span></code></a></li>
@@ -432,6 +433,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide for GPUmonty</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cuda-number-of-blocks-configuration">CUDA Number of Blocks Configuration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
 </ul>
@@ -518,6 +520,21 @@
 <p>In case you want to compile for debugging, use:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">BUILD_TYPE</span><span class="o">=</span>debug
 </pre></div>
+</div>
+</section>
+<section id="cuda-number-of-blocks-configuration">
+<h3>CUDA Number of Blocks Configuration<a class="headerlink" href="#cuda-number-of-blocks-configuration" title="Link to this heading"></a></h3>
+<p>The build system includes an auto-tuning feature that detects the hardware specifications of the GPU on your current machine (specifically Device 0).</p>
+<p>During compilation, the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> triggers a probe (defined in <code class="docutils literal notranslate"><span class="pre">GetGPUBlocks.mk</span></code>) that calculates the optimal number of blocks based on the GPU’s multiprocessor count and blocks-per-multiprocessor limit. This process automatically updates the <code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code> definition located in:</p>
+<p><code class="docutils literal notranslate"><span class="pre">src/config.h</span></code></p>
+<p>By default, this feature is <strong>enabled</strong>. If you wish to manually set <code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code> to a fixed value in the config file, you can disable the auto-tuner by setting the <code class="docutils literal notranslate"><span class="pre">GPU_TUNING</span></code> flag to 0:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">BLOCK_TUNING</span><span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you are running on a High Performance Computing (HPC) cluster, <strong>do not compile on the login/head node</strong>, as these nodes often lack GPUs or possess different hardware than the compute nodes.
+To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the compilation step directly inside your job submission script (e.g., Slurm or PBS script).</p>
 </div>
 </section>
 <section id="multi-core-acceleration-openmp">

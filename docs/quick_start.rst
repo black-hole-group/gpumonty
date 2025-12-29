@@ -37,6 +37,29 @@ In case you want to compile for debugging, use:
 
    make BUILD_TYPE=debug
 
+
+CUDA Number of Blocks Configuration
+-----------------------------------
+
+The build system includes an auto-tuning feature that detects the hardware specifications of the GPU on your current machine (specifically Device 0).
+
+During compilation, the ``Makefile`` triggers a probe (defined in ``GetGPUBlocks.mk``) that calculates the optimal number of blocks based on the GPU's multiprocessor count and blocks-per-multiprocessor limit. This process automatically updates the ``N_BLOCKS`` definition located in:
+
+``src/config.h``
+
+By default, this feature is **enabled**. If you wish to manually set ``N_BLOCKS`` to a fixed value in the config file, you can disable the auto-tuner by setting the ``GPU_TUNING`` flag to 0:
+
+.. code-block:: bash
+
+   make BLOCK_TUNING=0
+
+.. warning::
+
+   If you are running on a High Performance Computing (HPC) cluster, **do not compile on the login/head node**, as these nodes often lack GPUs or possess different hardware than the compute nodes.
+   To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the compilation step directly inside your job submission script (e.g., Slurm or PBS script).
+
+
+
 Multi-Core Acceleration (OpenMP)
 --------------------------------
 
