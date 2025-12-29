@@ -1,16 +1,18 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
 MODEL_DIR = $(SRC_DIR)/iharm_model
 
-CUDA_PATH ?= /usr/local/cuda-12.3
-#CUDA_PATH ?= /usr/local/cuda
 
-#GSL setup
+# NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
+BLOCK_TUNING ?= 1
+
+CUDA_PATH ?= /usr/local/cuda-12.3
+
+# GSL setup
 GSL_PATH ?= /home/pedro/gsl
 
 # HDF5 setup
 HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
-
 
 # Compiler flags
 ARCH = compute_75
@@ -26,14 +28,12 @@ NVCC = $(CUDA_PATH)/bin/nvcc
 CUDA_INCLUDE = -I$(CUDA_PATH)/include
 CUDA_LIB = -L$(CUDA_PATH)/lib64
 
-
-
 # Debug and release flags
 DEBUG_FLAGS = -g -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
-	NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
-			   -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR) $(HDF5_INCLUDE) 
+NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
+               -Xcompiler="-fopenmp -lgomp" -I$(GSL_PATH)/include -I$(MODEL_DIR) $(HDF5_INCLUDE) 
 
 NVCCFLAGS_DEBUG =  $(NVCCFLAGS_COMMON) $(DEBUG_FLAGS)
 NVCCFLAGS_RELEASE = $(NVCCFLAGS_COMMON) $(RELEASE_FLAGS)
@@ -51,7 +51,9 @@ LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas 
 
 # Source and object files
 CUDA_SRC = $(wildcard $(SRC_DIR)/*.cu) $(wildcard $(MODEL_DIR)/*.cu)
-OBJS = $(patsubst $(SRC_DIR)/%.cu,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.cu)) \
+
+# Note: We filter out query_blocks.cu so it doesn't get compiled into the main project
+OBJS = $(patsubst $(SRC_DIR)/%.cu,$(BUILD_DIR)/%.o,$(filter-out $(SRC_DIR)/query_blocks.cu, $(wildcard $(SRC_DIR)/*.cu))) \
        $(patsubst $(MODEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(wildcard $(MODEL_DIR)/*.cu))
 
 # Include files
@@ -60,10 +62,20 @@ INCS = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(MODEL_DIR)/*.h)
 # Executable
 EXECUTABLE = gpumonty
 
+### ADDED: Include the configuration logic ###
+include GetGPUBlocks.mk
+##############################################
+
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 	@echo "Linking libraries and building $(EXECUTABLE) executable..."
 	@$(NVCC)  -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
+
+
+### ADDED: Dependency on configuration ###
+# Before compiling any .o file, run the configure_gpu_blocks target
+$(OBJS): configure_gpu_blocks
+##########################################
 
 
 # Compile rule for CUDA files in both folders
@@ -85,4 +97,4 @@ clean:
 	rm -rf $(BUILD_DIR) $(EXECUTABLE)
 
 # Phony targets
-.PHONY: clean
+.PHONY: clean configure_gpu_blocks

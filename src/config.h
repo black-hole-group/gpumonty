@@ -21,7 +21,7 @@
  * The number of thread blocks dispatched per kernel call. 
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  */
-#define N_BLOCKS 3456
+#define N_BLOCKS 352
 
 /**
  * The number of threads per block. 
