@@ -82,7 +82,7 @@ double Thetae_unit;
 /**
  * Global host variable for the maximum optical depth found so far, used generally to calculate the biasing factor.
  */
-double max_tau_scatt, 
+double max_tau_scatt;
 
 /**
  * Global host variable calculating the total amount of mass falling into the black hole per unit time.

@@ -93,6 +93,13 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	int max_block_number = setMaxBlocks();
 
+	if (max_block_number != N_BLOCKS) {
+		printf("\033[1;31mERROR: Please set N_BLOCKS in config.h as %d to run on this GPU\033[0m\n", max_block_number);
+		printf("\033[1;31mCurrent N_BLOCKS value is %d\033[0m\n", N_BLOCKS);
+		printf("If you wanna proceed anyway comment out this check in main.cu\n");
+		exit(665);
+	}
+
 	unsigned long long gen_superph = 0;
 	unsigned long long * generated_photons_arr;
 	gpuErrchk(cudaMalloc(&generated_photons_arr, N1 * N2 * N3 * sizeof(unsigned long long)));
