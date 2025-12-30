@@ -282,6 +282,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		gcon[2][2] = 1./gcov[2][2];
 		gcon[3][3] = 1./gcov[3][3];
 		#else
+		
 			double irho2;
 			double r, th;
 			double hfac;
@@ -292,8 +293,10 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 
 		#ifdef __CUDA_ARCH__
 		double thetaslope = d_hslope;
+		double local_bhspin = d_bhspin;
 		#else
 		double thetaslope = hslope;
+		double local_bhspin = bhspin;
 		#endif
 
 			sth = sin(th);
@@ -301,7 +304,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 
 			sth = fabs(sth) + SMALL;
 
-			irho2 = 1. / (r * r + BHSPIN *BHSPIN * cth * cth);
+			irho2 = 1. / (r * r + local_bhspin * local_bhspin * cth * cth);
 
 			//transformation for Kerr-Schild -> modified Kerr-Schild 
 			hfac = M_PI + (1. - thetaslope) * M_PI * cos(2. * M_PI * X[2]);
@@ -310,8 +313,8 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			gcon[0][1] = 2. * irho2;
 
 			gcon[1][0] = gcon[0][1];
-			gcon[1][1] = irho2 * (r * (r - 2.) + BHSPIN * BHSPIN) / (r * r);
-			gcon[1][3] = BHSPIN * irho2 / r;
+			gcon[1][1] = irho2 * (r * (r - 2.) + local_bhspin * local_bhspin) / (r * r);
+			gcon[1][3] = local_bhspin * irho2 / r;
 
 			gcon[2][2] = irho2 / (hfac * hfac);
 
@@ -334,6 +337,8 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			a4cth4;
 		/* required by broken math.h */
 		//void sincos(double th, double *sth, double *cth);
+
+		
 
 		r1 = exp(X[1]);
 		r2 = r1 * r1;
@@ -369,11 +374,11 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		s2th = 2. * sth * cth;
 		c2th = 2 * cth2 - 1.;
 
-		a2 = BHSPIN * BHSPIN;
+		a2 = d_bhspin * d_bhspin;
 		a2sth2 = a2 * sth2;
 		a2cth2 = a2 * cth2;
-		a3 = a2 * BHSPIN;
-		a4 = a3 * BHSPIN;
+		a3 = a2 * d_bhspin;
+		a4 = a3 * d_bhspin;
 		a4cth4 = a4 * cth4;
 
 		rho2 = r2 + a2cth2;                
@@ -393,12 +398,12 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
 		lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
 
-		lconn[0][0][3] = -2. * BHSPIN * r1sth2 * fac1_rho23;
+		lconn[0][0][3] = -2. * d_bhspin * r1sth2 * fac1_rho23;
 
 		lconn[0][1][1] = 2. * r2 * (r4 + r1 * fac1 - a4cth4) * irho23;
 		lconn[0][1][2] = -a2 * r2 * s2th * dthdx2 * irho22;
 		lconn[0][1][3] =
-			BHSPIN * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
+			d_bhspin * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
 
 		lconn[0][2][2] = -2. * r2 * dthdx22 * irho2;
 		lconn[0][2][3] = a3 * r1sth2 * s2th * dthdx2 * irho22;
@@ -408,7 +413,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		lconn[1][0][0] = fac3 * fac1 / (r1 * rho23);
 		lconn[1][0][1] = fac1 * (-2. * r1 + a2sth2) * irho23;
 		lconn[1][0][2] = 0.;
-		lconn[1][0][3] = -BHSPIN * sth2 * fac3 * fac1 / (r1 * rho23);
+		lconn[1][0][3] = -d_bhspin * sth2 * fac3 * fac1 / (r1 * rho23);
 
 		lconn[1][1][1] =
 			(r4 * (-2. + r1) * (1. + r1) +
@@ -417,7 +422,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 							a2sth2))) * irho23;
 		lconn[1][1][2] = -a2 * dthdx2 * s2th / fac2;
 		lconn[1][1][3] =
-			BHSPIN * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
+			d_bhspin * sth2 * (a4 * r1 * cth4 + r2 * (2 * r1 + r3 - a2sth2) +
 				a2cth2 * (2. * r1 * (-1. + r2) + a2sth2)) * irho23;
 
 		lconn[1][2][2] = -fac3 * dthdx22 * irho2;
@@ -429,12 +434,12 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		lconn[2][0][0] = -a2 * r1 * s2th * irho23_dthdx2;
 		lconn[2][0][1] = r1 * lconn[2][0][0];
 		lconn[2][0][2] = 0.;
-		lconn[2][0][3] = BHSPIN * r1 * (a2 + r2) * s2th * irho23_dthdx2;
+		lconn[2][0][3] = d_bhspin * r1 * (a2 + r2) * s2th * irho23_dthdx2;
 
 		lconn[2][1][1] = r2 * lconn[2][0][0];
 		lconn[2][1][2] = r2 * irho2;
 		lconn[2][1][3] =
-			(BHSPIN * r1 * cth * sth *
+			(d_bhspin * r1 * cth * sth *
 			(r3 * (2. + r1) +
 			a2 * (2. * r1 * (1. + r1) * cth2 + a2 * cth4 +
 				2 * r1sth2))) * irho23_dthdx2;
@@ -449,22 +454,22 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 				a2sth2 * rho2 * (r1 * (4. + r1) + a2cth2) +
 				2. * r1 * a4 * sth4) * irho23_dthdx2;
 
-		lconn[3][0][0] = BHSPIN * fac1_rho23;
+		lconn[3][0][0] = d_bhspin * fac1_rho23;
 		lconn[3][0][1] = r1 * lconn[3][0][0];
-		lconn[3][0][2] = -2. * BHSPIN * r1 * cth * dthdx2 / (sth * rho22);
+		lconn[3][0][2] = -2. * d_bhspin * r1 * cth * dthdx2 / (sth * rho22);
 		lconn[3][0][3] = -a2sth2 * fac1_rho23;
 
-		lconn[3][1][1] = BHSPIN * r2 * fac1_rho23;
+		lconn[3][1][1] = d_bhspin * r2 * fac1_rho23;
 		lconn[3][1][2] =
-			-2 * BHSPIN * r1 * (a2 + 2 * r1 * (2. + r1) +
+			-2 * d_bhspin * r1 * (a2 + 2 * r1 * (2. + r1) +
 				a2 * c2th) * cth * dthdx2 / (sth * fac2 * fac2);
 		lconn[3][1][3] = r1 * (r1 * rho22 - a2sth2 * fac1) * irho23;
 
-		lconn[3][2][2] = -BHSPIN * r1 * dthdx22 * irho2;
+		lconn[3][2][2] = -d_bhspin * r1 * dthdx22 * irho2;
 		lconn[3][2][3] =
 			dthdx2 * (0.25 * fac2 * fac2 * cth / sth +
 				a2 * r1 * s2th) * irho22;
-		lconn[3][3][3] = (-BHSPIN * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
+		lconn[3][3][3] = (-d_bhspin * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
 
 	}
 #else

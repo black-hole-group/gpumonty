@@ -139,6 +139,7 @@ struct of_spectrum {
 	extern __device__ int d_N1, d_N2, d_N3;
 	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
 	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
+	extern __device__ double d_bhspin;
 
 #endif
 
@@ -149,6 +150,7 @@ struct of_spectrum {
 	extern double nint[NINT + 1];
 	extern double dndlnu_max[NINT + 1];
 	extern double K2[N_ESAMP + 1];
+	extern double bhspin;
 	/*Global Variable Section*/
 	/* defining declarations for global variables */
 	extern struct of_spectrum spect[N_THBINS][N_EBINS];

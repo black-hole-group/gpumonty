@@ -69,8 +69,16 @@ include GetGPUBlocks.mk
 # Main build rule
 $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 	@echo "Linking libraries and building $(EXECUTABLE) executable..."
-	@$(NVCC)  -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) $(if $(filter release,$(BUILD_TYPE)),-dlto) -o $@ $(OBJS) $(LDFLAGS)
-
+	@# We redirect stderr to stdout (2>&1) so grep can catch the info messages, for some architectures, info message spam was showing up from CURAND.
+	@# grep -v hides the "no reference" spam. 
+	@# The "|| true" ensures that if no spam is found, grep doesn't crash the build.
+	@$(NVCC) -arch=$(ARCH) -gencode arch=$(ARCH),code=$(CODE) \
+		$(if $(filter release,$(BUILD_TYPE)),-dlto) \
+		-o $@ $(OBJS) $(LDFLAGS) 2>&1 | grep -v "no reference to variable" || true
+	@echo "------------------------------------------------"
+	@echo "Compilation done! Model: $(notdir $(MODEL_DIR))."
+	@echo "Build type: $(BUILD_TYPE)."
+	@echo "------------------------------------------------"
 
 ### ADDED: Dependency on configuration ###
 # Before compiling any .o file, run the configure_gpu_blocks target

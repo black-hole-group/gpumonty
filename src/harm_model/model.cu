@@ -68,12 +68,7 @@ __host__ void init_data()
 
     /*Original HARM does not support 3D runs*/
     N3 = 1;
-    if (a != BHSPIN){
-        fprintf(stderr, "BH spin does not match the simulation data BH spin\n");
-        fprintf(stderr, "Code BH spin: %lf, Simulation BH spin: %lf\n", BHSPIN, a);
-        fprintf(stderr, "Change macros in model.h file");
-        exit(1);
-    }
+
     fprintf(stderr, "Resolution: %d, %d, %d\n", N1, N2, N3);
     fprintf(stderr, "hslope = %le\n", hslope);
 
@@ -313,6 +308,12 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 	/* required by broken math.h */
 	//void sincos(double th, double *sth, double *cth);
 
+    #ifdef __CUDA_ARCH__
+        double local_bhspin = d_bhspin;
+    #else
+        double local_bhspin = bhspin;
+    #endif
+
 	DLOOP gcov[k][l] = 0.;
 	bl_coord(X, &r, &th);
 	#ifdef __CUDA_ARCH__
@@ -327,7 +328,7 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
-	rho2 = r * r + BHSPIN * BHSPIN * cth * cth;
+	rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
 
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
@@ -337,18 +338,18 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 
 	gcov[0][0] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[0][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[0][3] = (-2. * BHSPIN * r * s2 / rho2) * tfac * pfac;
+	gcov[0][3] = (-2. * local_bhspin * r * s2 / rho2) * tfac * pfac;
 
 	gcov[1][0] = gcov[0][1];
 	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-BHSPIN * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
 
 	gcov[2][2] = rho2 * hfac * hfac;
 
 	gcov[3][0] = gcov[0][3];
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
-	    s2 * (rho2 + BHSPIN*BHSPIN * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+	    s2 * (rho2 + local_bhspin*local_bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 
 __host__ double dOmega_func(double x2i, double x2f)

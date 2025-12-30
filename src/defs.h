@@ -415,6 +415,16 @@ __device__ double d_B_unit;
  */
 __device__ double d_Ne_unit;
 
+/**
+ * Global host variable for the black hole spin parameter (\f$a_*\f$).
+ */
+double bhspin;
+
+/**
+ * Global device variable for the black hole spin parameter (\f$a_*\f$).
+ * It's the same as the host variable bhspin but accessible on the GPU.
+ */
+__device__ double d_bhspin;
 
 /** data structures **/
 

@@ -19,6 +19,7 @@ organized by module.
    api/main
    api/memory
    api/metrics
+   api/model_iharm
    api/par
    api/radiation
    api/tetrads

@@ -3,7 +3,7 @@
 #include "../utils.h"
 #include "../metrics.h"
 #include "../hdf5_utils.h"
-
+#include "../main.h"
 static int with_electrons;
 
 // static hdf5_blob fluid_header = { 0 };
@@ -131,16 +131,15 @@ void init_data()
   hdf5_read_single_val(&dx[3], "dx3", H5T_IEEE_F64LE);
 
   hdf5_set_directory("/header/geom/mks/");
-  double a;
-  hdf5_read_single_val(&a, "a", H5T_IEEE_F64LE);
+  hdf5_read_single_val(&bhspin, "a", H5T_IEEE_F64LE);
   hdf5_read_single_val(&hslope, "hslope", H5T_IEEE_F64LE);
 
-  if (a != BHSPIN){
-      fprintf(stderr, "BH spin does not match the simulation data BH spin\n");
-      fprintf(stderr, "Code BH spin: %lf, Simulation BH spin: %lf\n", BHSPIN, a);
-      fprintf(stderr, "Change macros in model.h file");
-      exit(-2);
-  }
+  // if (a != BHSPIN){
+  //     fprintf(stderr, "BH spin does not match the simulation data BH spin\n");
+  //     fprintf(stderr, "Code BH spin: %lf, Simulation BH spin: %lf\n", BHSPIN, a);
+  //     fprintf(stderr, "Change macros in model.h file");
+  //     exit(-2);
+  // }
   hdf5_read_single_val(&Rin, "r_in", H5T_IEEE_F64LE);
   hdf5_read_single_val(&Rout, "r_out", H5T_IEEE_F64LE);
 //   if ( METRIC_MKS3 ) {
@@ -182,7 +181,7 @@ void init_data()
   max_tau_scatt = 0.0001; // TODO look at this in the future and figure out a smarter general value
 
   // Horizon and "max R for geodesic tracking" in KS coordinates
-  Rh = 1. + sqrt(1. - a * a);
+  Rh = 1. + sqrt(1. - bhspin * bhspin);
 
   // Allocate storage and set geometry
   init_storage();
@@ -244,13 +243,11 @@ if (with_electrons == 1) {
 }
 
 
-/*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
 __device__ int GPU_record_criterion(double X1)
 {
 	const double X1max = log(1.1 * RMAX);
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-	//printf("X[1] coord = %le, X1max = %le\n", ph->X[1], X1max);
 	if (X1 > X1max)
 		return (1);
 
@@ -282,7 +279,6 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 
 
 
-/*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
 __device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
 {
 	double wmin, X1min, X1max;
@@ -384,6 +380,12 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 	double sth, cth, s2, rho2;
 	double r, th;
 	double tfac, rfac, hfac, pfac;
+
+  #ifdef __CUDA_ARCH__
+    double local_bhspin = d_bhspin;
+  #else
+    double local_bhspin = bhspin;
+  #endif
 	/* required by broken math.h */
 	//void sincos(double th, double *sth, double *cth);
 
@@ -401,7 +403,7 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 	cth = cos(th);
 	sth = fabs(sth) + SMALL;
 	s2 = sth * sth;
-	rho2 = r * r + BHSPIN * BHSPIN * cth * cth;
+	rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
 
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
 	tfac = 1.;
@@ -411,18 +413,17 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 
 	gcov[0][0] = (-1. + 2. * r / rho2) * tfac * tfac;
 	gcov[0][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[0][3] = (-2. * BHSPIN * r * s2 / rho2) * tfac * pfac;
+	gcov[0][3] = (-2. * local_bhspin * r * s2 / rho2) * tfac * pfac;
 
 	gcov[1][0] = gcov[0][1];
 	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-BHSPIN * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
-
+	gcov[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
 	gcov[2][2] = rho2 * hfac * hfac;
 
 	gcov[3][0] = gcov[0][3];
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
-	    s2 * (rho2 + BHSPIN*BHSPIN * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+	    s2 * (rho2 + local_bhspin*local_bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -521,7 +522,6 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     printf( "Ucon: %lf, %lf, %lf, %lf\n Ucov: %lf, %lf, %lf %lf\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3], Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
     }
 }
-
 
 
 

@@ -15,9 +15,6 @@
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 #define NPRIM	8
 
-#define BHSPIN 0.9375
-
-
 
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
