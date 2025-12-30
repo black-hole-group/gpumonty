@@ -208,7 +208,6 @@ __host__ __device__ double K2_eval(const double Thetae
 	#endif
 }
 
-#define KFAC	(9*M_PI*ME*CL/EE)
 __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu)
 {
 	double K, x;
