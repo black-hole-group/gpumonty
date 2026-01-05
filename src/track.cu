@@ -150,7 +150,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 				double x1 = -log(curand_uniform_double(localState));
 				double weight_scat = ph.w[photon_index] / bias;
 
-				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
+				if (bias * dtau_scatt * 0 > x1 && weight_scat > WEIGHT_MIN) {
 					/* Scattering event occurs */
 					if (isnan(weight_scat) || isinf(weight_scat)) {
 						printf("w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",

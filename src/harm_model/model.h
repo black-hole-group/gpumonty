@@ -15,6 +15,26 @@
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 #define NPRIM	8
 
+/**
+ * Size of the energy bin in logarithmic scale for the spectral output binning.
+ */
+#define	dlE (0.01) //Size of the energy bin
+
+/**
+ * Minimum energy of the energy bin in logarithmic scale.
+ */
+#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+
+/**
+ * Number of energy samples for the emissivity and weight tables.
+ */
+#define N_ESAMP 2500
+
+/**
+ * Number of energy bins for the spectral output.
+ */
+#define N_EBINS 2500
+
 
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS

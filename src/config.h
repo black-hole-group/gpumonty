@@ -32,25 +32,6 @@
 #define N_THREADS 256
 
 
-/**
- * Size of the energy bin in logarithmic scale for the spectral output binning.
- */
-#define	dlE (0.12) //Size of the energy bin
-
-/**
- * Minimum energy of the energy bin in logarithmic scale.
- */
-#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
-
-/**
- * Number of energy samples for the emissivity and weight tables.
- */
-#define N_ESAMP 800
-
-/**
- * Number of energy bins for the spectral output.
- */
-#define N_EBINS 800
 
 
 /**

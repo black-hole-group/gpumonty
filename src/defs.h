@@ -1,4 +1,5 @@
 #include "config.h"
+#include "model.h"
 
 /**
  * @brief Global host data that holds the metric components for the simulation grid \f$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \f$ .

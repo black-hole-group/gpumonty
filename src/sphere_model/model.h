@@ -3,7 +3,7 @@
 #define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e15
+#define NUMAX 1.e16
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -13,7 +13,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0)
+#define WEIGHT_MIN	(1.e-6)
 
 /*for stop criterium*/
 #define RMAX	(10000.) //Define the maximum radius up to track the photon
@@ -24,10 +24,30 @@
 
 #define BHSPIN 0
 
-#define NE_VALUE (1.e18)
+#define NE_VALUE (1.e13)
 #define B_VALUE (1.)
-#define THETAE_VALUE (3.)
+#define THETAE_VALUE (100.)
 #define SPHERE_RADIUS (1.)
+
+/**
+ * Size of the energy bin in logarithmic scale for the spectral output binning.
+ */
+#define	dlE (0.01) //Size of the energy bin
+
+/**
+ * Minimum energy of the energy bin in logarithmic scale.
+ */
+#define lE0	(log(1.e-12)) //Minimum energy of the energy bin
+
+/**
+ * Number of energy samples for the emissivity and weight tables.
+ */
+#define N_ESAMP 2500
+
+/**
+ * Number of energy bins for the spectral output.
+ */
+#define N_EBINS 2500
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 
