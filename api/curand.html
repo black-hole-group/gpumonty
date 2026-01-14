@@ -585,7 +585,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv410chi_squareiP11curandState">
 <span id="_CPPv310chi_squareiP11curandState"></span><span id="_CPPv210chi_squareiP11curandState"></span><span id="chi_square__i.curandStateP"></span><span class="target" id="curand_8h_1afb8b0c03e481e93523bc9caa7f44d619"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chi_square</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">df</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410chi_squareiP11curandState" title="Link to this definition"></a><br /></dt>
-<dd><p>Samples a Chi-square distributed random variable for a given degree of freedom. Uses the transformation property where a Chi-square distribution with $k$ degrees of freedom is equivalent to a Gamma distribution scaled by 2: $\chi^2(k) \sim 2\Gamma(k/2, 1)$. χ </p>
+<dd><p>Samples a Chi-square distributed random variable for a given degree of freedom. Uses the transformation property where a Chi-square distribution with <span class="math notranslate nohighlight">\(k\)</span> degrees of freedom is equivalent to a Gamma distribution scaled by 2: <span class="math notranslate nohighlight">\(\chi^2(k) \sim 2\Gamma(k/2, 1)\)</span>. χ </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Chi-squared_distribution#Relation_to_other_distributions">Wikipedia article about χ-Γ relation</a></p>
@@ -594,12 +594,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> – Degrees of freedom ($k$). </p></li>
+<li><p><strong>df</strong> – Degrees of freedom ( <span class="math notranslate nohighlight">\(k\)</span>). </p></li>
 <li><p><strong>localState</strong> – Pointer to the thread-local cuRAND state.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A random value sampled from the $\chi^2$ distribution. </p>
+<dd class="field-even"><p>A random value sampled from the <span class="math notranslate nohighlight">\(\chi^2\)</span> distribution. </p>
 </dd>
 </dl>
 </dd></dl>
@@ -607,7 +607,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv427legacy_standard_exponentialP11curandState">
 <span id="_CPPv327legacy_standard_exponentialP11curandState"></span><span id="_CPPv227legacy_standard_exponentialP11curandState"></span><span id="legacy_standard_exponential__curandStateP"></span><span class="target" id="curand_8h_1ad9c2dd446dfab91259100793af28fa28"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">legacy_standard_exponential</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427legacy_standard_exponentialP11curandState" title="Link to this definition"></a><br /></dt>
-<dd><p>Samples a random variable from the standard exponential distribution ($\lambda = 1$). Implements the Inverse Transform Sampling method by transforming a uniform $(0,1]$ random variable into an exponential distribution. </p>
+<dd><p>Samples a random variable from the standard exponential distribution ( <span class="math notranslate nohighlight">\(\lambda = 1\)</span>). Implements the Inverse Transform Sampling method by transforming a uniform <span class="math notranslate nohighlight">\((0,1]\)</span> random variable into an exponential distribution. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Inverse_transform_sampling#Examples">Check wikipedia article example</a></p>
@@ -626,7 +626,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv412legacy_gaussPdPdP11curandState">
 <span id="_CPPv312legacy_gaussPdPdP11curandState"></span><span id="_CPPv212legacy_gaussPdPdP11curandState"></span><span id="legacy_gauss__doubleP.doubleP.curandStateP"></span><span class="target" id="curand_8h_1a5c742f9247534502f6c5e0df8182193d"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">legacy_gauss</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out1</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out2</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412legacy_gaussPdPdP11curandState" title="Link to this definition"></a><br /></dt>
-<dd><p>Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle. </p>
+<dd><p>Generates two independent standard normal variables ( <span class="math notranslate nohighlight">\(\mu=0, \sigma=1\)</span>) using the Marsaglia polar method. This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions by sampling coordinates within a unit circle. </p>
 <p><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Marsaglia_polar_method">Marsaglia_polar_method</a></p>
@@ -645,11 +645,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv421legacy_standard_gammadP11curandState">
 <span id="_CPPv321legacy_standard_gammadP11curandState"></span><span id="_CPPv221legacy_standard_gammadP11curandState"></span><span id="legacy_standard_gamma__double.curandStateP"></span><span class="target" id="curand_8h_1a933acc3f6fe6da53c8ae10278078860e"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">legacy_standard_gamma</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421legacy_standard_gammadP11curandState" title="Link to this definition"></a><br /></dt>
-<dd><p>Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for <span class="math notranslate nohighlight">\( \alpha \geq 1 \)</span>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <span class="math notranslate nohighlight">\( \alpha &lt; 1 \)</span>). </p>
+<dd><p>Samples a standard Gamma distribution ( <span class="math notranslate nohighlight">\(\Gamma(\alpha, 1)\)</span>) using Marsaglia-Tsang (for <span class="math notranslate nohighlight">\( \alpha \geq 1 \)</span>) and an acceptance–rejection transformation to reduce the problem to the shape ≥ 1 case (for <span class="math notranslate nohighlight">\( \alpha &lt; 1 \)</span>). </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> – Shape parameter ($\alpha$) of the distribution. </p></li>
+<li><p><strong>shape</strong> – Shape parameter ( <span class="math notranslate nohighlight">\(\alpha\)</span>) of the distribution. </p></li>
 <li><p><strong>localState</strong> – Pointer to the thread-local cuRAND state. </p></li>
 </ul>
 </dd>

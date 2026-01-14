@@ -549,7 +549,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv417init_weight_tablev">
 <span id="_CPPv317init_weight_tablev"></span><span id="_CPPv217init_weight_tablev"></span><span id="init_weight_table"></span><span class="target" id="weights_8h_1a83b30654a46ef58fd5aceecb93513d29"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_weight_table</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417init_weight_tablev" title="Link to this definition"></a><br /></dt>
-<dd><p>Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function $j_\nu$ across the entire simulation grid to determine the weight $\omega_\nu$ for each frequency bin. </p>
+<dd><p>Precomputes the superphoton weight table based on the total integrated emissivity of the fluid. This function evaluates the volume integral of the emissivity function <span class="math notranslate nohighlight">\(j_\nu\)</span> across the entire simulation grid to determine the weight <span class="math notranslate nohighlight">\(\omega_\nu\)</span> for each frequency bin. </p>
 <p><ul class="simple">
 <li><p>Implements: <span class="math notranslate nohighlight">\( \omega_{\nu}(\nu) = \frac{\Delta t \Delta \ln \nu}{h N_s} \int \sqrt{-g} \, d^3x \int j_{\nu} d\Omega \)</span></p></li>
 </ul>
@@ -563,13 +563,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv415init_nint_tablev">
 <span id="_CPPv315init_nint_tablev"></span><span id="_CPPv215init_nint_tablev"></span><span id="init_nint_table__void"></span><span class="target" id="weights_8h_1ac06de333fa374fbdae412978d3ac94de"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_nint_table</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415init_nint_tablev" title="Link to this definition"></a><br /></dt>
-<dd><p>Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity $j_\nu$ to the precomputed superphoton weights $\omega_\nu$ across all frequency bins for a range of magnetic field strengths. </p>
+<dd><p>Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes. This function integrates the ratio of local emissivity <span class="math notranslate nohighlight">\(j_\nu\)</span> to the precomputed superphoton weights <span class="math notranslate nohighlight">\(\omega_\nu\)</span> across all frequency bins for a range of magnetic field strengths. </p>
 <p><ul>
 <li><p>Implements the integrated photon density:</p>
 <p><span class="math notranslate nohighlight">\( N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega \)</span></p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nint[i]</span></code>: Stores globally the log of the total number of superphotons to be generated per unit volume.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dndlnu_max[i]</span></code>: Stores globally the log of the maximum value of $dn/d\ln\nu$, used as the proposal distribution envelope for frequency sampling. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dndlnu_max[i]</span></code>: Stores globally the log of the maximum value of <span class="math notranslate nohighlight">\(dn/d\ln\nu\)</span>, used as the proposal distribution envelope for frequency sampling. </p></li>
 </ul>
 </p>
 </dd></dl>

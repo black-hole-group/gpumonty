@@ -600,16 +600,16 @@
 <p>This function calculates the value of a specific fluid variable at an arbitrary position within a 3D grid cell. It uses eight precomputed weights (coefficients) and the values at the eight surrounding grid nodes.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The function assumes periodicity in the third dimension ($k$). If the index $k$ is at the grid boundary ($d_N3 - 1$), it wraps around to index 0. </p>
+<p>The function assumes periodicity in the third dimension ( <span class="math notranslate nohighlight">\(k\)</span>). If the index <span class="math notranslate nohighlight">\(k\)</span> is at the grid boundary ( <span class="math notranslate nohighlight">\(d\_N3 - 1\)</span>), it wraps around to index 0. </p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>var</strong> – Pointer to the flattened 3D array containing the fluid data. </p></li>
 <li><p><strong>mmenemonics</strong> – The index (mnemonic) of the specific scalar variable to interpolate. </p></li>
-<li><p><strong>i</strong> – Base index in the first dimension ($N_1$). </p></li>
-<li><p><strong>j</strong> – Base index in the second dimension ($N_2$). </p></li>
-<li><p><strong>k</strong> – Base index in the third dimension ($N_3$). </p></li>
+<li><p><strong>i</strong> – Base index in the first dimension ( <span class="math notranslate nohighlight">\(N_1\)</span>). </p></li>
+<li><p><strong>j</strong> – Base index in the second dimension ( <span class="math notranslate nohighlight">\(N_2\)</span>). </p></li>
+<li><p><strong>k</strong> – Base index in the third dimension ( <span class="math notranslate nohighlight">\(N_3\)</span>). </p></li>
 <li><p><strong>coeff</strong> – An array of 8 weights representing the volumetric contribution of each corner.</p></li>
 </ul>
 </dd>
@@ -627,9 +627,9 @@
 <li><p>This macro implements a “Variable-Major” or “Structure of Arrays” (SoA) layout.</p></li>
 </ul>
 </p>
-<p><strong>Memory Layout Order</strong>: [Variable $v$][Dimension $i$][Dimension $j$][Dimension $k$]<ul>
-<li><p>$k$ is the fastest-varying index (unit stride).</p></li>
-<li><p>$v$ is the slowest-varying index.</p>
+<p><strong>Memory Layout Order</strong>: [Variable <span class="math notranslate nohighlight">\(v\)</span>][Dimension <span class="math notranslate nohighlight">\(i\)</span>][Dimension <span class="math notranslate nohighlight">\(j\)</span>][Dimension <span class="math notranslate nohighlight">\(k\)</span>]<ul>
+<li><p><span class="math notranslate nohighlight">\(k\)</span> is the fastest-varying index (unit stride).</p></li>
+<li><p><span class="math notranslate nohighlight">\(v\)</span> is the slowest-varying index.</p>
 <p><span class="math notranslate nohighlight">\( \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k \)</span></p>
 </li>
 </ul>
@@ -652,7 +652,7 @@
 <span id="_CPPv315SPATIAL_INDEX2Dii"></span><span id="_CPPv215SPATIAL_INDEX2Dii"></span><span id="SPATIAL_INDEX2D__i.i"></span><span class="target" id="utils_8h_1add18509b0bd387ef5fe530218328c53d"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SPATIAL_INDEX2D</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SPATIAL_INDEX2Dii" title="Link to this definition"></a><br /></dt>
 <dd><p>Maps 2D spatial coordinates (i, j) to a 1D linear memory offset. </p>
 <p>This function performs a standard row-major (or height-major) flattening for 2D grids.</p>
-<p><strong>Memory Layout Order</strong>: [Dimension $i$][Dimension $j$]</p>
+<p><strong>Memory Layout Order</strong>: [Dimension <span class="math notranslate nohighlight">\(i\)</span>][Dimension <span class="math notranslate nohighlight">\(j\)</span>]</p>
 <p><span class="math notranslate nohighlight">\( \text{Index} = j + (N_2 \times i) \)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -672,7 +672,7 @@
 <span id="_CPPv315SPATIAL_INDEX3Diii"></span><span id="_CPPv215SPATIAL_INDEX3Diii"></span><span id="SPATIAL_INDEX3D__i.i.i"></span><span class="target" id="utils_8h_1a3e8f26df1c7ecb2476971258ad8077ea"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SPATIAL_INDEX3D</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SPATIAL_INDEX3Diii" title="Link to this definition"></a><br /></dt>
 <dd><p>Maps 3D spatial coordinates (i, j, k) to a 1D linear memory offset. </p>
 <p>This function flattens a 3D volume into a 1D array.</p>
-<p><strong>Memory Layout Order</strong>: [Dimension $i$][Dimension $j$][Dimension $k$]</p>
+<p><strong>Memory Layout Order</strong>: [Dimension <span class="math notranslate nohighlight">\(i\)</span>][Dimension <span class="math notranslate nohighlight">\(j\)</span>][Dimension <span class="math notranslate nohighlight">\(k\)</span>]</p>
 <p><span class="math notranslate nohighlight">\( \text{Index} = k + N_3 \times (j + N_2 \times i) \)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

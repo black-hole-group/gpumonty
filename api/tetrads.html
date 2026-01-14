@@ -550,7 +550,7 @@
 <dt class="sig sig-object cpp" id="_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d">
 <span id="_CPPv311make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d"></span><span id="_CPPv211make_tetradANDIM_dANDIM_dANDIM_ANDIM_KdANDIM_ANDIM_dANDIM_ANDIM_d"></span><span id="make_tetrad__doubleA.doubleA.doubleCAA.doubleAA.doubleAA"></span><span class="target" id="tetrads_8h_1a0bae8c2062f9112d6f837c1072c42853"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make_tetrad</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ucon</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trial</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Gcov</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Econ</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ecov</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d" title="Link to this definition"></a><br /></dt>
 <dd><p>Constructs an orthonormal tetrad (local laboratory frame) for a moving observer. </p>
-<p>A tetrad represents a local Minkowski frame $(e_{(0)}, e_{(1)}, e_{(2)}, e_{(3)})$ at a point in curved spacetime.</p>
+<p>A tetrad represents a local Minkowski frame <span class="math notranslate nohighlight">\((e_{(0)}, e_{(1)}, e_{(2)}, e_{(3)})\)</span> at a point in curved spacetime.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This function uses the <strong>Gram-Schmidt process</strong> to orthogonalize a set of coordinate basis vectors against the fluid’s 4-velocity.</p>
@@ -558,11 +558,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>Ucon</strong> – The contravariant 4-velocity of the fluid/observer ($u^\mu$). </p></li>
+<li><p><strong>Ucon</strong> – The contravariant 4-velocity of the fluid/observer ( <span class="math notranslate nohighlight">\(u^\mu\)</span>). </p></li>
 <li><p><strong>trial</strong> – A trial vector used to define the first spatial direction (usually radial). </p></li>
-<li><p><strong>Gcov</strong> – The covariant metric tensor ($g_{\mu\nu}$). </p></li>
-<li><p><strong>Econ</strong> – [Output] Contravariant tetrad $e^\mu_{(a)}$. First index (k) is the tetrad label, second (l) is the coordinate index. </p></li>
-<li><p><strong>Ecov</strong> – [Output] Covariant tetrad $e_{(a)\mu}$.</p></li>
+<li><p><strong>Gcov</strong> – The covariant metric tensor ( <span class="math notranslate nohighlight">\(g_{\mu\nu}\)</span>). </p></li>
+<li><p><strong>Econ</strong> – [Output] Contravariant tetrad <span class="math notranslate nohighlight">\(e^\mu_{(a)}\)</span>. First index (k) is the tetrad label, second (l) is the coordinate index. </p></li>
+<li><p><strong>Ecov</strong> – [Output] Covariant tetrad <span class="math notranslate nohighlight">\(e_{(a)\mu}\)</span>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

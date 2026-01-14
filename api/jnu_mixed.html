@@ -549,16 +549,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv49jnu_synchKdKdKdKdKd">
 <span id="_CPPv39jnu_synchKdKdKdKdKd"></span><span id="_CPPv29jnu_synchKdKdKdKdKd"></span><span id="jnu_synch__doubleC.doubleC.doubleC.doubleC.doubleC"></span><span class="target" id="jnu__mixed_8h_1a115f2e03b41ee872a89e0e3770d93322"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jnu_synch</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theta</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49jnu_synchKdKdKdKdKd" title="Link to this definition"></a><br /></dt>
-<dd><p>Calculates the thermal synchrotron emissivity $j_\nu(\nu, \theta)$ following <a class="reference external" href="https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf">Leung et al.(2011)</a>. </p>
+<dd><p>Calculates the thermal synchrotron emissivity <span class="math notranslate nohighlight">\(j_\nu(\nu, \theta)\)</span> following <a class="reference external" href="https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf">Leung et al.(2011)</a>. </p>
 <p>This function implements the analytical fit for the emissivity of a thermal distribution of electrons: <span class="math notranslate nohighlight">\( j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) \)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nu</strong> – Photon frequency in the plasma frame. </p></li>
-<li><p><strong>Ne</strong> – Electron number density ($n_e$). </p></li>
-<li><p><strong>Thetae</strong> – Dimensionless electron temperature ($\Theta_e$). </p></li>
+<li><p><strong>Ne</strong> – Electron number density ( <span class="math notranslate nohighlight">\(n_{\rm e}\)</span>). </p></li>
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature ( <span class="math notranslate nohighlight">\(\Theta_{\rm e}\)</span>). </p></li>
 <li><p><strong>B</strong> – Magnetic field strength. </p></li>
-<li><p><strong>theta</strong> – Angle between the magnetic field and the wave vector ($\theta$). </p></li>
+<li><p><strong>theta</strong> – Angle between the magnetic field and the wave vector ( <span class="math notranslate nohighlight">\(\theta\)</span>). </p></li>
 <li><p><strong>besselTexObj</strong> – (CUDA only) Texture object for Bessel function look-up tables. </p></li>
 </ul>
 </dd>
