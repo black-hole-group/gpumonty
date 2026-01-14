@@ -23,5 +23,6 @@ organized by module.
    api/par
    api/radiation
    api/tetrads
+   api/track
    api/utils
    api/weight
