@@ -1,0 +1,18 @@
+/* Hides the redundant 'Functions' or 'Defines' titles from Breathe */
+.breathe-sectiondef-title {
+    display: none !important;
+}
+
+/* Target only Macros, not Functions */
+.macro .sig-name.descname + .sig-paren, 
+.macro .sig-name.descname + span,
+.macro .sig-name.descname + em {
+    margin-left: 15px !important;
+    display: inline-block;
+}
+
+/* If you are using the C++ domain specifically, you can be even more precise: */
+.cpp.macro .sig-name.descname + .sig-paren,
+.cpp.macro .sig-name.descname + span {
+    margin-left: 15px !important;
+}

@@ -1,0 +1,1081 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>defs.h &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="hdf5_utils.cu" href="hdf5_utils.html" />
+    <link rel="prev" title="curand.cu" href="curand.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compton.html">compton.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compton.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv423sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_scattered_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv45boostAL4E_dAL4E_dAL4E_d"><code class="docutils literal notranslate"><span class="pre">boost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv414sample_thomsonP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_thomson()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv420sample_klein_nishinadP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv413klein_nishinaKdKd"><code class="docutils literal notranslate"><span class="pre">klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv423sample_electron_distr_pAL4E_dAL4E_ddP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_electron_distr_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv417sample_beta_distrdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_beta_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv414sample_y_distrKdP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_y_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv415sample_mu_distrKdd"><code class="docutils literal notranslate"><span class="pre">sample_mu_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv420scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey"><code class="docutils literal notranslate"><span class="pre">scatter_super_photon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINT"><code class="docutils literal notranslate"><span class="pre">MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXT"><code class="docutils literal notranslate"><span class="pre">MAXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NW"><code class="docutils literal notranslate"><span class="pre">NW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NT"><code class="docutils literal notranslate"><span class="pre">NT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.HOTCROSS"><code class="docutils literal notranslate"><span class="pre">HOTCROSS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXGAMMA"><code class="docutils literal notranslate"><span class="pre">MAXGAMMA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DMUE"><code class="docutils literal notranslate"><span class="pre">DMUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DGAMMAE"><code class="docutils literal notranslate"><span class="pre">DGAMMAE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MMW"><code class="docutils literal notranslate"><span class="pre">MMW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NDIM"><code class="docutils literal notranslate"><span class="pre">NDIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KRHO"><code class="docutils literal notranslate"><span class="pre">KRHO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.UU"><code class="docutils literal notranslate"><span class="pre">UU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U1"><code class="docutils literal notranslate"><span class="pre">U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U2"><code class="docutils literal notranslate"><span class="pre">U2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U3"><code class="docutils literal notranslate"><span class="pre">U3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B2"><code class="docutils literal notranslate"><span class="pre">B2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B3"><code class="docutils literal notranslate"><span class="pre">B3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KEL"><code class="docutils literal notranslate"><span class="pre">KEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KTOT"><code class="docutils literal notranslate"><span class="pre">KTOT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL"><code class="docutils literal notranslate"><span class="pre">SMALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NPRIM_INDEX"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SLOOP_DEVICE"><code class="docutils literal notranslate"><span class="pre">SLOOP_DEVICE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DLOOP"><code class="docutils literal notranslate"><span class="pre">DLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX"><code class="docutils literal notranslate"><span class="pre">MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lmint"><code class="docutils literal notranslate"><span class="pre">d_lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lminw"><code class="docutils literal notranslate"><span class="pre">d_lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lT_min"><code class="docutils literal notranslate"><span class="pre">d_lT_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlw"><code class="docutils literal notranslate"><span class="pre">d_dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT1"><code class="docutils literal notranslate"><span class="pre">d_dlT1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT2"><code class="docutils literal notranslate"><span class="pre">d_dlT2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMAX"><code class="docutils literal notranslate"><span class="pre">KMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMIN"><code class="docutils literal notranslate"><span class="pre">KMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL_VECTOR"><code class="docutils literal notranslate"><span class="pre">SMALL_VECTOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSABS"><code class="docutils literal notranslate"><span class="pre">EPSABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSREL"><code class="docutils literal notranslate"><span class="pre">EPSREL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMIN"><code class="docutils literal notranslate"><span class="pre">TMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMAX"><code class="docutils literal notranslate"><span class="pre">TMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SCATTERINGS_PER_PHOTON"><code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NINT"><code class="docutils literal notranslate"><span class="pre">NINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMIN"><code class="docutils literal notranslate"><span class="pre">BTHSQMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMAX"><code class="docutils literal notranslate"><span class="pre">BTHSQMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_LAYER_SCA"><code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPS"><code class="docutils literal notranslate"><span class="pre">EPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.FAST_CPY"><code class="docutils literal notranslate"><span class="pre">FAST_CPY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constant.html">constants.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="constant.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EE"><code class="docutils literal notranslate"><span class="pre">EE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CL"><code class="docutils literal notranslate"><span class="pre">CL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.ME"><code class="docutils literal notranslate"><span class="pre">ME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MP"><code class="docutils literal notranslate"><span class="pre">MP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MN"><code class="docutils literal notranslate"><span class="pre">MN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AMU"><code class="docutils literal notranslate"><span class="pre">AMU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HPL"><code class="docutils literal notranslate"><span class="pre">HPL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HBAR"><code class="docutils literal notranslate"><span class="pre">HBAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KBOL"><code class="docutils literal notranslate"><span class="pre">KBOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.GNEWT"><code class="docutils literal notranslate"><span class="pre">GNEWT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIG"><code class="docutils literal notranslate"><span class="pre">SIG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RGAS"><code class="docutils literal notranslate"><span class="pre">RGAS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EV"><code class="docutils literal notranslate"><span class="pre">EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIGMA_THOMSON"><code class="docutils literal notranslate"><span class="pre">SIGMA_THOMSON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.JY"><code class="docutils literal notranslate"><span class="pre">JY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.PC"><code class="docutils literal notranslate"><span class="pre">PC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AU"><code class="docutils literal notranslate"><span class="pre">AU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.YEAR"><code class="docutils literal notranslate"><span class="pre">YEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DAY"><code class="docutils literal notranslate"><span class="pre">DAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HOUR"><code class="docutils literal notranslate"><span class="pre">HOUR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MSUN"><code class="docutils literal notranslate"><span class="pre">MSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RSUN"><code class="docutils literal notranslate"><span class="pre">RSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.LSUN"><code class="docutils literal notranslate"><span class="pre">LSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TSUN"><code class="docutils literal notranslate"><span class="pre">TSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MEARTH"><code class="docutils literal notranslate"><span class="pre">MEARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.REARTH"><code class="docutils literal notranslate"><span class="pre">REARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DSGRA"><code class="docutils literal notranslate"><span class="pre">DSGRA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TCBR"><code class="docutils literal notranslate"><span class="pre">TCBR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLX"><code class="docutils literal notranslate"><span class="pre">SOLX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLY"><code class="docutils literal notranslate"><span class="pre">SOLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLZ"><code class="docutils literal notranslate"><span class="pre">SOLZ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PI"><code class="docutils literal notranslate"><span class="pre">FOUR_PI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PISQ"><code class="docutils literal notranslate"><span class="pre">FOUR_PISQ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.THREEPI_TWO"><code class="docutils literal notranslate"><span class="pre">THREEPI_TWO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CST"><code class="docutils literal notranslate"><span class="pre">CST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv415init_monty_randi"><code class="docutils literal notranslate"><span class="pre">init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">defs.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#global-variables">Global Variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44geom"><code class="docutils literal notranslate"><span class="pre">geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv41w"><code class="docutils literal notranslate"><span class="pre">w</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv41F"><code class="docutils literal notranslate"><span class="pre">F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43wgt"><code class="docutils literal notranslate"><span class="pre">wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv47N_scatt"><code class="docutils literal notranslate"><span class="pre">N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv418N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43Rin"><code class="docutils literal notranslate"><span class="pre">Rin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44Rout"><code class="docutils literal notranslate"><span class="pre">Rout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42Rh"><code class="docutils literal notranslate"><span class="pre">Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42R0"><code class="docutils literal notranslate"><span class="pre">R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46hslope"><code class="docutils literal notranslate"><span class="pre">hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46startx"><code class="docutils literal notranslate"><span class="pre">startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45stopx"><code class="docutils literal notranslate"><span class="pre">stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45dMact"><code class="docutils literal notranslate"><span class="pre">dMact</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44Ladv"><code class="docutils literal notranslate"><span class="pre">Ladv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49bias_norm"><code class="docutils literal notranslate"><span class="pre">bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv41p"><code class="docutils literal notranslate"><span class="pre">p</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42N1"><code class="docutils literal notranslate"><span class="pre">N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42N2"><code class="docutils literal notranslate"><span class="pre">N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42N3"><code class="docutils literal notranslate"><span class="pre">N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46L_unit"><code class="docutils literal notranslate"><span class="pre">L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46B_unit"><code class="docutils literal notranslate"><span class="pre">B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv47Ne_unit"><code class="docutils literal notranslate"><span class="pre">Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48Rho_unit"><code class="docutils literal notranslate"><span class="pre">Rho_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46U_unit"><code class="docutils literal notranslate"><span class="pre">U_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46M_unit"><code class="docutils literal notranslate"><span class="pre">M_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46T_unit"><code class="docutils literal notranslate"><span class="pre">T_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45table"><code class="docutils literal notranslate"><span class="pre">table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43dlw"><code class="docutils literal notranslate"><span class="pre">dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43dlT"><code class="docutils literal notranslate"><span class="pre">dlT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45lminw"><code class="docutils literal notranslate"><span class="pre">lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45lmint"><code class="docutils literal notranslate"><span class="pre">lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44nint"><code class="docutils literal notranslate"><span class="pre">nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv42K2"><code class="docutils literal notranslate"><span class="pre">K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv410dndlnu_max"><code class="docutils literal notranslate"><span class="pre">dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415my_curand_state"><code class="docutils literal notranslate"><span class="pre">my_curand_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv47d_table"><code class="docutils literal notranslate"><span class="pre">d_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412photon_count"><code class="docutils literal notranslate"><span class="pre">photon_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv420d_N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">d_N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_Ns"><code class="docutils literal notranslate"><span class="pre">d_Ns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49d_N_scatt"><code class="docutils literal notranslate"><span class="pre">d_N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv413d_thetae_unit"><code class="docutils literal notranslate"><span class="pre">d_thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48d_startx"><code class="docutils literal notranslate"><span class="pre">d_startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_dx"><code class="docutils literal notranslate"><span class="pre">d_dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45d_wgt"><code class="docutils literal notranslate"><span class="pre">d_wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv43d_F"><code class="docutils literal notranslate"><span class="pre">d_F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_K2"><code class="docutils literal notranslate"><span class="pre">d_K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv411d_bias_norm"><code class="docutils literal notranslate"><span class="pre">d_bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv47d_stopx"><code class="docutils literal notranslate"><span class="pre">d_stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_Rh"><code class="docutils literal notranslate"><span class="pre">d_Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415d_max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">d_max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv418scattering_counter"><code class="docutils literal notranslate"><span class="pre">scattering_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv414d_num_scat_phs"><code class="docutils literal notranslate"><span class="pre">d_num_scat_phs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv416tracking_counter"><code class="docutils literal notranslate"><span class="pre">tracking_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46d_nint"><code class="docutils literal notranslate"><span class="pre">d_nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412d_dndlnu_max"><code class="docutils literal notranslate"><span class="pre">d_dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48d_hslope"><code class="docutils literal notranslate"><span class="pre">d_hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_R0"><code class="docutils literal notranslate"><span class="pre">d_R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv425tracking_counter_sampling"><code class="docutils literal notranslate"><span class="pre">tracking_counter_sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_N1"><code class="docutils literal notranslate"><span class="pre">d_N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_N2"><code class="docutils literal notranslate"><span class="pre">d_N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv44d_N3"><code class="docutils literal notranslate"><span class="pre">d_N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412d_trat_small"><code class="docutils literal notranslate"><span class="pre">d_trat_small</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412d_trat_large"><code class="docutils literal notranslate"><span class="pre">d_trat_large</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv411d_beta_crit"><code class="docutils literal notranslate"><span class="pre">d_beta_crit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49d_Ne_unit"><code class="docutils literal notranslate"><span class="pre">d_Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46bhspin"><code class="docutils literal notranslate"><span class="pre">bhspin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48d_bhspin"><code class="docutils literal notranslate"><span class="pre">d_bhspin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46params"><code class="docutils literal notranslate"><span class="pre">params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv47of_geom"><code class="docutils literal notranslate"><span class="pre">of_geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv411of_spectrum"><code class="docutils literal notranslate"><span class="pre">of_spectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv48params_t"><code class="docutils literal notranslate"><span class="pre">params_t</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hdf5_utils.html">hdf5_utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hdf5_utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv413hdf5_get_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_get_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_write_blob9hdf5_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_write_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_close_blob9hdf5_blob"><code class="docutils literal notranslate"><span class="pre">hdf5_close_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv411hdf5_createPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv49hdf5_openPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_open()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv410hdf5_closev"><code class="docutils literal notranslate"><span class="pre">hdf5_close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_make_directoryPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_make_directory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="kernels.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv46record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="main.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv44mainiA_Pc"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MAX"><code class="docutils literal notranslate"><span class="pre">THETAE_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WEIGHT_MIN"><code class="docutils literal notranslate"><span class="pre">WEIGHT_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.RMAX"><code class="docutils literal notranslate"><span class="pre">RMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAME"><code class="docutils literal notranslate"><span class="pre">GAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAMP"><code class="docutils literal notranslate"><span class="pre">GAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAM"><code class="docutils literal notranslate"><span class="pre">GAM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv412init_storagev"><code class="docutils literal notranslate"><span class="pre">init_storage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49init_datav"><code class="docutils literal notranslate"><span class="pre">init_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416record_criteriond"><code class="docutils literal notranslate"><span class="pre">record_criterion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414stop_criteriondPdP11curandState"><code class="docutils literal notranslate"><span class="pre">stop_criterion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">Xtoijk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv45coordKiKiKiPd"><code class="docutils literal notranslate"><span class="pre">coord()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49gcov_funcPKdA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411dOmega_funcdd"><code class="docutils literal notranslate"><span class="pre">dOmega_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48bl_coordPKdPdPd"><code class="docutils literal notranslate"><span class="pre">bl_coord()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"><code class="docutils literal notranslate"><span class="pre">get_fluid_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dA4NDIM_A4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="radiation.html">radiation.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="radiation.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv47jnu_invKdKdKdKdKd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">jnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv47Bnu_invKdKd"><code class="docutils literal notranslate"><span class="pre">Bnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv48kappa_esKdKdPKd"><code class="docutils literal notranslate"><span class="pre">kappa_es()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">get_fluid_nu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv415alpha_inv_scattKdKdKdPKd"><code class="docutils literal notranslate"><span class="pre">alpha_inv_scatt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv413alpha_inv_absKdKdKdKdd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">alpha_inv_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd"><code class="docutils literal notranslate"><span class="pre">get_bk_angle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tetrads.html">tetrads.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tetrads.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">make_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv420tetrad_to_coordinateA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">tetrad_to_coordinate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv420coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">coordinate_to_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv45deltaii"><code class="docutils literal notranslate"><span class="pre">delta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv49normalizePdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">normalize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv411project_outPdPdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">project_out()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413interp_scalar19cudaTextureObject_tKiKiKiKiAL4E_Kd"><code class="docutils literal notranslate"><span class="pre">interp_scalar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415findPhotonIndexPKyiy"><code class="docutils literal notranslate"><span class="pre">findPhotonIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv421interp_scalar_pointerPKdKiKiKiKiAL8E_Kd"><code class="docutils literal notranslate"><span class="pre">interp_scalar_pointer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413NPRIM_INDEX3Diiii"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX2Dii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX3Diii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX3D()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv420linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#cuda-number-of-blocks-configuration">CUDA Number of Blocks Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docs_guidelines.html">Documentation Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#guidelines">Guidelines:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#update-workflow-and-repository-structure">Update Workflow and Repository Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#documentation-directories-organization">Documentation Directories Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#website-navigation-and-tabs">Website Navigation and Tabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#local-testing-and-building">Local Testing and Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">defs.h</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/defs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="defs-h">
+<h1>defs.h<a class="headerlink" href="#defs-h" title="Link to this heading"></a></h1>
+<p>Documentation for the global host and device definitions used across GPUmonty .</p>
+<section id="global-variables">
+<h2>Global Variables<a class="headerlink" href="#global-variables" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44geom">
+<span id="_CPPv34geom"></span><span id="_CPPv24geom"></span><span id="geom__of_geomP"></span><span class="target" id="defs_8h_1ae323db0d410f2ea234b9484acfd333d4"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">geom</span></span></span><a class="headerlink" href="#_CPPv44geom" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host data that holds the metric components for the simulation grid <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \)</span> . </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv41w">
+<span id="_CPPv31w"></span><span id="_CPPv21w"></span><span id="w__gsl_integration_workspaceP"></span><span class="target" id="defs_8h_1ac34b583787faac6c02ad0438df077b59"></span><span class="n"><span class="pre">gsl_integration_workspace</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">w</span></span></span><a class="headerlink" href="#_CPPv41w" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host reusable workspace for tracking sub-intervals and error estimates during adaptive numerical integration used by GSL. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv41F">
+<span id="_CPPv31F"></span><span id="_CPPv21F"></span><span id="F__doubleA"></span><span class="target" id="defs_8h_1a9ffffa61db90b62819349ec183c95971"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv41F" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host data array of precomputed emissivity values binned by frequency. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43wgt">
+<span id="_CPPv33wgt"></span><span id="_CPPv23wgt"></span><span id="wgt__doubleA"></span><span class="target" id="defs_8h_1ab9694097c5454a2ef1276844d22694a1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wgt</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv43wgt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host data array containing precomputed superphotons weights binned by frequency. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv47N_scatt">
+<span id="_CPPv37N_scatt"></span><span id="_CPPv27N_scatt"></span><span id="N_scatt__unsigned-l-l"></span><span class="target" id="defs_8h_1a665f40c3f8f3a36509e8c74668d398ab"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N_scatt</span></span></span><a class="headerlink" href="#_CPPv47N_scatt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host data counter to keep track of the number of scattered superphotons per scattering layer. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418N_superph_recorded">
+<span id="_CPPv318N_superph_recorded"></span><span id="_CPPv218N_superph_recorded"></span><span id="N_superph_recorded__unsigned-l-l"></span><span class="target" id="defs_8h_1a68dd8132a9835dbc463907ffd59958c1"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N_superph_recorded</span></span></span><a class="headerlink" href="#_CPPv418N_superph_recorded" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host data that holds the number of superphotons recorded into the spectrum. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43Rin">
+<span id="_CPPv33Rin"></span><span id="_CPPv23Rin"></span><span id="Rin__double"></span><span class="target" id="defs_8h_1a5f200d81ca494457b004628aa958bcec"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rin</span></span></span><a class="headerlink" href="#_CPPv43Rin" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable representing the physical inner boundary of the simulation grid, e.g, the starting point of the physical domain. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44Rout">
+<span id="_CPPv34Rout"></span><span id="_CPPv24Rout"></span><span id="Rout__double"></span><span class="target" id="defs_8h_1ae38887db77c101efeb7db711a9e856db"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rout</span></span></span><a class="headerlink" href="#_CPPv44Rout" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable representing the physical outer boundary of the simulation grid. It defines the edge of the grid for the simulation. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42Rh">
+<span id="_CPPv32Rh"></span><span id="_CPPv22Rh"></span><span id="Rh__double"></span><span class="target" id="defs_8h_1aa08ac2c5196daf0cda610def0b1b81fc"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rh</span></span></span><a class="headerlink" href="#_CPPv42Rh" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable representing the event horizon of the black hole in Kerr-Schild coordinates </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42R0">
+<span id="_CPPv32R0"></span><span id="_CPPv22R0"></span><span id="R0__double"></span><span class="target" id="defs_8h_1a37800d14d893b7a8126f821b7a34e1d1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R0</span></span></span><a class="headerlink" href="#_CPPv42R0" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable representing a shift in the logarithmic radial coordinate. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46hslope">
+<span id="_CPPv36hslope"></span><span id="_CPPv26hslope"></span><span id="hslope__double"></span><span class="target" id="defs_8h_1aec158415808eb5ddb908cdeb7bf9c343"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hslope</span></span></span><a class="headerlink" href="#_CPPv46hslope" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the latitude slope for Modified Kerr-Schild (MKS) coordinates </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46startx">
+<span id="_CPPv36startx"></span><span id="_CPPv26startx"></span><span id="startx__doubleA"></span><span class="target" id="defs_8h_1a1af6c2233e7accdc7fc859ceb6d4101d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv46startx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array defining the start coordinate of the simulation grid in each dimension in native coordinates. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45stopx">
+<span id="_CPPv35stopx"></span><span id="_CPPv25stopx"></span><span id="stopx__doubleA"></span><span class="target" id="defs_8h_1a1d062115a0a9faa81b98868d62bab991"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stopx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv45stopx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array defining the stop coordinate of the simulation grid in each dimension in native coordinates. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42dx">
+<span id="_CPPv32dx"></span><span id="_CPPv22dx"></span><span id="dx__doubleA"></span><span class="target" id="defs_8h_1a907315012a2980e923e1c120d0935b61"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv42dx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array defining the grid spacing in each dimension in native coordinates. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43gam">
+<span id="_CPPv33gam"></span><span id="_CPPv23gam"></span><span id="gam__double"></span><span class="target" id="defs_8h_1a45d60151fb0572200ad00231c304aaf0"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gam</span></span></span><a class="headerlink" href="#_CPPv43gam" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the gas adiabatic index <span class="math notranslate nohighlight">\( \Gamma \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411Thetae_unit">
+<span id="_CPPv311Thetae_unit"></span><span id="_CPPv211Thetae_unit"></span><span id="Thetae_unit__double"></span><span class="target" id="defs_8h_1a6ca83d5930b6e96acc8cc98ae89e0740"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Thetae_unit</span></span></span><a class="headerlink" href="#_CPPv411Thetae_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the electron temperature unit to translate from cgs to code units. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413max_tau_scatt">
+<span id="_CPPv313max_tau_scatt"></span><span id="_CPPv213max_tau_scatt"></span><span id="max_tau_scatt__double"></span><span class="target" id="defs_8h_1a1a12d1761d2fcb9a5ba79ae0724b4caa"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_tau_scatt</span></span></span><a class="headerlink" href="#_CPPv413max_tau_scatt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the maximum optical depth found so far, used generally to calculate the biasing factor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45dMact">
+<span id="_CPPv35dMact"></span><span id="_CPPv25dMact"></span><span id="dMact__double"></span><span class="target" id="defs_8h_1ac95deac65effbea484bf30e539c1b62b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dMact</span></span></span><a class="headerlink" href="#_CPPv45dMact" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable calculating the total amount of mass falling into the black hole per unit time. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44Ladv">
+<span id="_CPPv34Ladv"></span><span id="_CPPv24Ladv"></span><span id="Ladv__double"></span><span class="target" id="defs_8h_1af3e2dd1b08fb33fd5973be4a0260a1ec"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ladv</span></span></span><a class="headerlink" href="#_CPPv44Ladv" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the advection luminosity in CGS units. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49bias_norm">
+<span id="_CPPv39bias_norm"></span><span id="_CPPv29bias_norm"></span><span id="bias_norm__double"></span><span class="target" id="defs_8h_1a35b2d6b30ef375b6b18f546dc98357b2"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bias_norm</span></span></span><a class="headerlink" href="#_CPPv49bias_norm" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the bias normalization factor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv41p">
+<span id="_CPPv31p"></span><span id="_CPPv21p"></span><span id="p__doubleP"></span><span class="target" id="defs_8h_1a581f9e6b0ae1bb5b0a323185403461cf"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">p</span></span></span><a class="headerlink" href="#_CPPv41p" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host pointer for accessing plasma properties. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42N1">
+<span id="_CPPv32N1"></span><span id="_CPPv22N1"></span><span id="N1__i"></span><span class="target" id="defs_8h_1a5a6a26e0827f9640d2eb7201017f19d7"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N1</span></span></span><a class="headerlink" href="#_CPPv42N1" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the number of grid cells in the radial direction. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42N2">
+<span id="_CPPv32N2"></span><span id="_CPPv22N2"></span><span id="N2__i"></span><span class="target" id="defs_8h_1adeea8075a0038c985c63d45161804d60"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N2</span></span></span><a class="headerlink" href="#_CPPv42N2" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the number of grid cells in the poloidal direction. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42N3">
+<span id="_CPPv32N3"></span><span id="_CPPv22N3"></span><span id="N3__i"></span><span class="target" id="defs_8h_1a4e8e9c2bf9e06ae07ef364c05a073302"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N3</span></span></span><a class="headerlink" href="#_CPPv42N3" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the number of grid cells in the azimuthal direction. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46L_unit">
+<span id="_CPPv36L_unit"></span><span id="_CPPv26L_unit"></span><span id="L_unit__double"></span><span class="target" id="defs_8h_1a82fb14569b04b06cb437b3c9391ed3a1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L_unit</span></span></span><a class="headerlink" href="#_CPPv46L_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the length unit conversion factor. Scales code units to centimeters (cm). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46B_unit">
+<span id="_CPPv36B_unit"></span><span id="_CPPv26B_unit"></span><span id="B_unit__double"></span><span class="target" id="defs_8h_1aa55bd2f4828da46e2cd051edf8f1635e"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">B_unit</span></span></span><a class="headerlink" href="#_CPPv46B_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the magnetic field unit conversion factor. Scales code units to Gauss (G). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv47Ne_unit">
+<span id="_CPPv37Ne_unit"></span><span id="_CPPv27Ne_unit"></span><span id="Ne_unit__double"></span><span class="target" id="defs_8h_1a8cd0401d02c76917b31197c083fc4103"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ne_unit</span></span></span><a class="headerlink" href="#_CPPv47Ne_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the electron number density unit conversion factor. Scales code units to <span class="math notranslate nohighlight">\( \rm{cm}^-3\)</span>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48Rho_unit">
+<span id="_CPPv38Rho_unit"></span><span id="_CPPv28Rho_unit"></span><span id="Rho_unit__double"></span><span class="target" id="defs_8h_1a8d570719a5e6ac69fc38e8e0d05f7973"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rho_unit</span></span></span><a class="headerlink" href="#_CPPv48Rho_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the mass density unit conversion factor. Scales code units to <span class="math notranslate nohighlight">\(\rm{g/cm}^3\)</span>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46U_unit">
+<span id="_CPPv36U_unit"></span><span id="_CPPv26U_unit"></span><span id="U_unit__double"></span><span class="target" id="defs_8h_1afbb8cc3c69f9362ac770bae25cc29c28"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U_unit</span></span></span><a class="headerlink" href="#_CPPv46U_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the internal energy density unit conversion factor. Scales code units to <span class="math notranslate nohighlight">\(\rm{erg/cm}^3\)</span>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46M_unit">
+<span id="_CPPv36M_unit"></span><span id="_CPPv26M_unit"></span><span id="M_unit__double"></span><span class="target" id="defs_8h_1a3072f08245495d12fd322f1c4f467765"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M_unit</span></span></span><a class="headerlink" href="#_CPPv46M_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the mass unit conversion factor. Scales code units to grams (g). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46T_unit">
+<span id="_CPPv36T_unit"></span><span id="_CPPv26T_unit"></span><span id="T_unit__double"></span><span class="target" id="defs_8h_1aafaa1bab5b6fbd4b1a32f5db78aaf569"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T_unit</span></span></span><a class="headerlink" href="#_CPPv46T_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the time unit conversion factor. Scales code units to seconds (s). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45table">
+<span id="_CPPv35table"></span><span id="_CPPv25table"></span><span id="table__doubleAA"></span><span class="target" id="defs_8h_1a7055762a2f045edd348adf0251fd54d0"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">table</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NW</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv45table" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array for the precomputed hot cross section lookup table. It stores values indexed by photon energy ( <span class="math notranslate nohighlight">\(\rm{N}_{\omega}\)</span>) and electron temperature ( <span class="math notranslate nohighlight">\(\rm{N}_\rm{T}\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43dlw">
+<span id="_CPPv33dlw"></span><span id="_CPPv23dlw"></span><span id="dlw__double"></span><span class="target" id="defs_8h_1afc84f8980bb448e4accd61e55ba71d78"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dlw</span></span></span><a class="headerlink" href="#_CPPv43dlw" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the logarithmic step size in photon frequency ( <span class="math notranslate nohighlight">\(\Delta \ln \omega\)</span>). It determines the resolution of the frequency axis in hotcross section precomputed lookup table. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43dlT">
+<span id="_CPPv33dlT"></span><span id="_CPPv23dlT"></span><span id="dlT__double"></span><span class="target" id="defs_8h_1a35d39cb335cfdcf911ef2bcedaf40342"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dlT</span></span></span><a class="headerlink" href="#_CPPv43dlT" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the logarithmic step size in electron temperature ( <span class="math notranslate nohighlight">\(\Delta \ln \Theta_\rm{e}\)</span>). It determines the resolution of the temperature axis in hotcross section precomputed lookup table. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45lminw">
+<span id="_CPPv35lminw"></span><span id="_CPPv25lminw"></span><span id="lminw__double"></span><span class="target" id="defs_8h_1a44398a98f987d7af5296425e8dd8413a"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lminw</span></span></span><a class="headerlink" href="#_CPPv45lminw" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the minimum logarithmic photon frequency ( <span class="math notranslate nohighlight">\(\ln \omega_{min}\)</span>). Defines the lower boundary of the frequency grid for cross-section calculations. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45lmint">
+<span id="_CPPv35lmint"></span><span id="_CPPv25lmint"></span><span id="lmint__double"></span><span class="target" id="defs_8h_1a0b99ff70dfc3b1835de852cf00dad7d4"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lmint</span></span></span><a class="headerlink" href="#_CPPv45lmint" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the minimum logarithmic electron temperature ( <span class="math notranslate nohighlight">\(\ln \Theta_{e,min}\)</span>). Defines the lower boundary of the temperature grid for cross-section calculations. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44nint">
+<span id="_CPPv34nint"></span><span id="_CPPv24nint"></span><span id="nint__doubleA"></span><span class="target" id="defs_8h_1a2f3d0d438577635140783541568339fe"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nint</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NINT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv44nint" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array for the superphoton density distribution function. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv42K2">
+<span id="_CPPv32K2"></span><span id="_CPPv22K2"></span><span id="K2__doubleA"></span><span class="target" id="defs_8h_1adbeb6461125f4b1f5605e48d0013a35d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">K2</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv42K2" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array for the precomputed values of the modified Bessel function of the second kind ( <span class="math notranslate nohighlight">\(K_2\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv410dndlnu_max">
+<span id="_CPPv310dndlnu_max"></span><span id="_CPPv210dndlnu_max"></span><span id="dndlnu_max__doubleA"></span><span class="target" id="defs_8h_1ab730c3c176e1935139f79d8881137f34"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dndlnu_max</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NINT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv410dndlnu_max" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host array for the maximum values of the differential photon number distribution ( <span class="math notranslate nohighlight">\(\frac{dN}{d\ln \nu}\)</span>). Used for normalization and sampling in the scattering process. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415my_curand_state">
+<span id="_CPPv315my_curand_state"></span><span id="_CPPv215my_curand_state"></span><span id="my_curand_state__curandStateA"></span><span class="target" id="defs_8h_1a3c4b6997b6599853757d218ac7315829"></span><span class="pre">__device__</span><span class="w"> </span><span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">my_curand_state</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_BLOCKS</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><span class="n"><span class="pre">N_THREADS</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv415my_curand_state" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array of curandState structures for random number generation on the GPU. It’s sized to accommodate all threads across all blocks. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv47d_table">
+<span id="_CPPv37d_table"></span><span id="_CPPv27d_table"></span><span id="d_table__doubleAA"></span><span class="target" id="defs_8h_1a95ef596741a95d1d63302e7253aba118"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_table</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NW</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv47d_table" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array for the precomputed hot cross section lookup table. It stores values indexed by photon energy ( <span class="math notranslate nohighlight">\(\rm{N}_{\omega}\)</span>) and electron temperature ( <span class="math notranslate nohighlight">\(\rm{N}_\rm{T}\)</span>). It’s the same as the host array table but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412photon_count">
+<span id="_CPPv312photon_count"></span><span id="_CPPv212photon_count"></span><span id="photon_count__unsigned-l-l"></span><span class="target" id="defs_8h_1a11fcc0b80c83537a7a8efaa238550bc0"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">photon_count</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv412photon_count" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable counter to keep track of the total number of superphotons generated from the grid during the simulation. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv420d_N_superph_recorded">
+<span id="_CPPv320d_N_superph_recorded"></span><span id="_CPPv220d_N_superph_recorded"></span><span id="d_N_superph_recorded__unsigned-l-l"></span><span class="target" id="defs_8h_1a2aae4f3496ca7ff7c2430bdb6d7547f9"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_N_superph_recorded</span></span></span><a class="headerlink" href="#_CPPv420d_N_superph_recorded" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable to keep track of the number of superphotons recorded into the spectrum. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_Ns">
+<span id="_CPPv34d_Ns"></span><span id="_CPPv24d_Ns"></span><span id="d_Ns__i"></span><span class="target" id="defs_8h_1acd922d47a6e92f8de1b201eac7e9f0b4"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_Ns</span></span></span><a class="headerlink" href="#_CPPv44d_Ns" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the target input number of superphotons to be generated in the simulation. It’s the same as the host variable Ns but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49d_N_scatt">
+<span id="_CPPv39d_N_scatt"></span><span id="_CPPv29d_N_scatt"></span><span id="d_N_scatt__unsigned-l-l"></span><span class="target" id="defs_8h_1aed8971ac92cef3856c889bf508614ff0"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_N_scatt</span></span></span><a class="headerlink" href="#_CPPv49d_N_scatt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable counter to keep track of the total number of scatterings that have occurred during the simulation. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv413d_thetae_unit">
+<span id="_CPPv313d_thetae_unit"></span><span id="_CPPv213d_thetae_unit"></span><span id="d_thetae_unit__double"></span><span class="target" id="defs_8h_1a7929fa904845ee6867b2ae7d814b66c1"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_thetae_unit</span></span></span><a class="headerlink" href="#_CPPv413d_thetae_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the electron temperature unit to translate from cgs to code units. It’s the same as the host variable Thetae_unit but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48d_startx">
+<span id="_CPPv38d_startx"></span><span id="_CPPv28d_startx"></span><span id="d_startx__doubleA"></span><span class="target" id="defs_8h_1afb0bb80689693ef035db918b7f086e97"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_startx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv48d_startx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array defining the start coordinate of the simulation grid in each dimension in native coordinates. It’s the same as the host array startx but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_dx">
+<span id="_CPPv34d_dx"></span><span id="_CPPv24d_dx"></span><span id="d_dx__doubleA"></span><span class="target" id="defs_8h_1a806b19125f64305b649724dc510925b6"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_dx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv44d_dx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array defining the grid spacing in each dimension in native coordinates. It’s the same as the host array dx but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45d_wgt">
+<span id="_CPPv35d_wgt"></span><span id="_CPPv25d_wgt"></span><span id="d_wgt__doubleA"></span><span class="target" id="defs_8h_1a2f6b6a134b32ab683f420fc0ae510d4c"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_wgt</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv45d_wgt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array containing precomputed superphotons weights binned by frequency. It’s the same as the host array wgt but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv43d_F">
+<span id="_CPPv33d_F"></span><span id="_CPPv23d_F"></span><span id="d_F__doubleA"></span><span class="target" id="defs_8h_1a9beebcea8262a3456a0b7d0d794aae79"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_F</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv43d_F" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array of precomputed emissivity values binned by frequency. It’s the same as the host array F but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_K2">
+<span id="_CPPv34d_K2"></span><span id="_CPPv24d_K2"></span><span id="d_K2__doubleA"></span><span class="target" id="defs_8h_1a8bcadfe9b0014cb019542231f47e30fa"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_K2</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">N_ESAMP</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv44d_K2" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array for the precomputed modified Bessel function values binned by frequency. It’s the same as the host array K2 but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411d_bias_norm">
+<span id="_CPPv311d_bias_norm"></span><span id="_CPPv211d_bias_norm"></span><span id="d_bias_norm__double"></span><span class="target" id="defs_8h_1a88ccdcc4882ecbc64fb360c5f80e5c35"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_bias_norm</span></span></span><a class="headerlink" href="#_CPPv411d_bias_norm" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the bias normalization factor. It’s the same as the host variable bias_norm but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv47d_stopx">
+<span id="_CPPv37d_stopx"></span><span id="_CPPv27d_stopx"></span><span id="d_stopx__doubleA"></span><span class="target" id="defs_8h_1adf863d5efaf64762a7abd61751e04c9c"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_stopx</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv47d_stopx" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array defining the stop coordinate of the simulation grid in each dimension in native coordinates. It’s the same as the host array stopx but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_Rh">
+<span id="_CPPv34d_Rh"></span><span id="_CPPv24d_Rh"></span><span id="d_Rh__double"></span><span class="target" id="defs_8h_1a742ef4db884976e1496d9dcd0cf7bb49"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_Rh</span></span></span><a class="headerlink" href="#_CPPv44d_Rh" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable representing the event horizon of the black hole in Kerr-Schild coordinates. It’s the same as the host variable Rh but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415d_max_tau_scatt">
+<span id="_CPPv315d_max_tau_scatt"></span><span id="_CPPv215d_max_tau_scatt"></span><span id="d_max_tau_scatt__double"></span><span class="target" id="defs_8h_1af9b8ee4984379bf47ea136962fee273e"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_max_tau_scatt</span></span></span><a class="headerlink" href="#_CPPv415d_max_tau_scatt" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the maximum optical depth found so far, used generally to calculate the biasing factor. It’s the same as the host variable max_tau_scatt but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418scattering_counter">
+<span id="_CPPv318scattering_counter"></span><span id="_CPPv218scattering_counter"></span><span id="scattering_counter__unsigned-l-l"></span><span class="target" id="defs_8h_1a78c64dac8bec176d822a7a3fa3839005"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scattering_counter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv418scattering_counter" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable counter to keep track of the number of scattered superphotons in the current scattering layer. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is different than d_N_scatt which counts the total number of scattering events in the simulation. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv414d_num_scat_phs">
+<span id="_CPPv314d_num_scat_phs"></span><span id="_CPPv214d_num_scat_phs"></span><span id="d_num_scat_phs__unsigned-l-lA"></span><span class="target" id="defs_8h_1abe0616d6431e19c68647b1aade2f8ec1"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_num_scat_phs</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">MAX_LAYER_SCA</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv414d_num_scat_phs" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array to keep track of the number of scattered superphotons per scattering layer. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is scattering_counter because scattered photons are stored layer by layer. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416tracking_counter">
+<span id="_CPPv316tracking_counter"></span><span id="_CPPv216tracking_counter"></span><span id="tracking_counter__unsigned-l-l"></span><span class="target" id="defs_8h_1a68ccb3c564f43896d2410ddd61d21f90"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tracking_counter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv416tracking_counter" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable counter to keep track of the number of photons being tracked in the current scattering batch. Used to dynamically allocate threads for photon tracking. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46d_nint">
+<span id="_CPPv36d_nint"></span><span id="_CPPv26d_nint"></span><span id="d_nint__doubleA"></span><span class="target" id="defs_8h_1a64ecd046ffd88a595206662710ef3576"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_nint</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NINT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv46d_nint" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array for the superphoton density distribution function. It mirrors the host array nint but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412d_dndlnu_max">
+<span id="_CPPv312d_dndlnu_max"></span><span id="_CPPv212d_dndlnu_max"></span><span id="d_dndlnu_max__doubleA"></span><span class="target" id="defs_8h_1a72b4989106eb6ea19a8d1c21ad568eef"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_dndlnu_max</span></span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NINT</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv412d_dndlnu_max" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device array for the maximum values of the differential photon number distribution ( <span class="math notranslate nohighlight">\(\frac{dN}{d\ln \nu}\)</span>). It mirrors the host array dndlnu_max but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48d_hslope">
+<span id="_CPPv38d_hslope"></span><span id="_CPPv28d_hslope"></span><span id="d_hslope__double"></span><span class="target" id="defs_8h_1ae4a4d415e471cb2b79c3028e6cf3b3da"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_hslope</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv48d_hslope" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the latitude slope for Modified Kerr-Schild (MKS) coordinates It mirrors the host variable hslope but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_R0">
+<span id="_CPPv34d_R0"></span><span id="_CPPv24d_R0"></span><span id="d_R0__double"></span><span class="target" id="defs_8h_1a2b92264ec3008463a5529a4535f369e4"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_R0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv44d_R0" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable representing a shift in the logarithmic radial coordinate. It mirrors the host variable Rin but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv425tracking_counter_sampling">
+<span id="_CPPv325tracking_counter_sampling"></span><span id="_CPPv225tracking_counter_sampling"></span><span id="tracking_counter_sampling__unsigned-l-l"></span><span class="target" id="defs_8h_1aa8328a2d08bffccbcfb60d960343b21c"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tracking_counter_sampling</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv425tracking_counter_sampling" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable counter to keep track of the number of photons being sampled in the current tracking batch. Used to dynamically allocate threads for photon sampling. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_N1">
+<span id="_CPPv34d_N1"></span><span id="_CPPv24d_N1"></span><span id="d_N1__i"></span><span class="target" id="defs_8h_1a6b10273d9bb77b624a016098ab2e1151"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_N1</span></span></span><a class="headerlink" href="#_CPPv44d_N1" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the number of grid cells in the radial direction. It mirrors the host variable N1 but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_N2">
+<span id="_CPPv34d_N2"></span><span id="_CPPv24d_N2"></span><span id="d_N2__i"></span><span class="target" id="defs_8h_1a73a5bacc85e3dd0cdbe6275b2dea8636"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_N2</span></span></span><a class="headerlink" href="#_CPPv44d_N2" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the number of grid cells in the poloidal direction. It mirrors the host variable N2 but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv44d_N3">
+<span id="_CPPv34d_N3"></span><span id="_CPPv24d_N3"></span><span id="d_N3__i"></span><span class="target" id="defs_8h_1ad0ce8bdf3833a533b4345eedfe8224fd"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_N3</span></span></span><a class="headerlink" href="#_CPPv44d_N3" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the number of grid cells in the azimuthal direction. It mirrors the host variable N3 but is accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412d_trat_small">
+<span id="_CPPv312d_trat_small"></span><span id="_CPPv212d_trat_small"></span><span id="d_trat_small__double"></span><span class="target" id="defs_8h_1a40a4a3aa2d0eaf8420ab59fd074a51fd"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_trat_small</span></span></span><a class="headerlink" href="#_CPPv412d_trat_small" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the ion-to-electron temperature ratio in the low-beta limit ( <span class="math notranslate nohighlight">\(R_{low}\)</span>). This defines the temperature ratio in highly magnetized regions (where <span class="math notranslate nohighlight">\(\beta \ll \beta_{\rm crit}\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412d_trat_large">
+<span id="_CPPv312d_trat_large"></span><span id="_CPPv212d_trat_large"></span><span id="d_trat_large__double"></span><span class="target" id="defs_8h_1a6473b9c41ac13c339daecf5f7521bb99"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_trat_large</span></span></span><a class="headerlink" href="#_CPPv412d_trat_large" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the ion-to-electron temperature ratio in the high-beta limit ( <span class="math notranslate nohighlight">\(R_{high}\)</span>). This defines the temperature ratio in weakly magnetized regions (where <span class="math notranslate nohighlight">\(\beta \gg \beta_{\rm crit}\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411d_beta_crit">
+<span id="_CPPv311d_beta_crit"></span><span id="_CPPv211d_beta_crit"></span><span id="d_beta_crit__double"></span><span class="target" id="defs_8h_1a8a27186bc9fd223c9427acf61a78fda6"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_beta_crit</span></span></span><a class="headerlink" href="#_CPPv411d_beta_crit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the critical plasma beta value ( <span class="math notranslate nohighlight">\(\beta_{\rm crit}\)</span>) that delineates the transition between low-beta and high-beta temperature ratios. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412d_thetae_max">
+<span id="_CPPv312d_thetae_max"></span><span id="_CPPv212d_thetae_max"></span><span id="d_thetae_max__double"></span><span class="target" id="defs_8h_1a2536dffcc4e5773ab21b546a6ab92c45"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_thetae_max</span></span></span><a class="headerlink" href="#_CPPv412d_thetae_max" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the maximum allowed dimensionless electron temperature ( <span class="math notranslate nohighlight">\(\Theta_{e, max}\)</span>). This sets an upper limit on the electron temperature to prevent unphysical values during the simulation. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv412d_tp_over_te">
+<span id="_CPPv312d_tp_over_te"></span><span id="_CPPv212d_tp_over_te"></span><span id="d_tp_over_te__double"></span><span class="target" id="defs_8h_1ab654fe0b60b7baf8dde19e2ae081623c"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_tp_over_te</span></span></span><a class="headerlink" href="#_CPPv412d_tp_over_te" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the ion-to-electron temperature ratio ( <span class="math notranslate nohighlight">\(T_p/T_e\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv45d_MBH">
+<span id="_CPPv35d_MBH"></span><span id="_CPPv25d_MBH"></span><span id="d_MBH__double"></span><span class="target" id="defs_8h_1a7c8f846e91603646020cec12c0d92338"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_MBH</span></span></span><a class="headerlink" href="#_CPPv45d_MBH" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the black hole mass in grams (g). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48d_L_unit">
+<span id="_CPPv38d_L_unit"></span><span id="_CPPv28d_L_unit"></span><span id="d_L_unit__double"></span><span class="target" id="defs_8h_1a7a450efe14c37256eeb7be121aed1eff"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_L_unit</span></span></span><a class="headerlink" href="#_CPPv48d_L_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the length unit conversion factor. Scales code units to centimeters (cm). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48d_B_unit">
+<span id="_CPPv38d_B_unit"></span><span id="_CPPv28d_B_unit"></span><span id="d_B_unit__double"></span><span class="target" id="defs_8h_1a7a1a5fbfa7dc341e9889a58c7cbf723c"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_B_unit</span></span></span><a class="headerlink" href="#_CPPv48d_B_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the magnetic field unit conversion factor. Scales code units to Gauss (G). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv49d_Ne_unit">
+<span id="_CPPv39d_Ne_unit"></span><span id="_CPPv29d_Ne_unit"></span><span id="d_Ne_unit__double"></span><span class="target" id="defs_8h_1a31cc8358ceeceb4c8a3a2ab3ac9bfc7b"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_Ne_unit</span></span></span><a class="headerlink" href="#_CPPv49d_Ne_unit" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the electron number density unit conversion factor. Scales code units to <span class="math notranslate nohighlight">\( \rm{cm}^-3\)</span>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46bhspin">
+<span id="_CPPv36bhspin"></span><span id="_CPPv26bhspin"></span><span id="bhspin__double"></span><span class="target" id="defs_8h_1a432f97f7fcb450740aba25b6001d5f28"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bhspin</span></span></span><a class="headerlink" href="#_CPPv46bhspin" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable for the black hole spin parameter ( <span class="math notranslate nohighlight">\(a_*\)</span>). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv48d_bhspin">
+<span id="_CPPv38d_bhspin"></span><span id="_CPPv28d_bhspin"></span><span id="d_bhspin__double"></span><span class="target" id="defs_8h_1a31bc411f4529706cd5f29165b94fe7b3"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">d_bhspin</span></span></span><a class="headerlink" href="#_CPPv48d_bhspin" title="Link to this definition"></a><br /></dt>
+<dd><p>Global device variable for the black hole spin parameter ( <span class="math notranslate nohighlight">\(a_*\)</span>). It’s the same as the host variable bhspin but accessible on the GPU. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv46params">
+<span id="_CPPv36params"></span><span id="_CPPv26params"></span><span id="params__Params"></span><span class="target" id="defs_8h_1a02eb7524df3cdfd7ab32de5b40516106"></span><span class="n"><span class="pre">Params</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">params</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv46params" title="Link to this definition"></a><br /></dt>
+<dd><p>Global host variable to hold simulation parameters parsed by the parameter file. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv47of_geom">
+<span id="_CPPv37of_geom"></span><span id="_CPPv27of_geom"></span><span id="of_geom"></span><span class="target" id="structof__geom"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">of_geom</span></span></span><a class="headerlink" href="#_CPPv47of_geom" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;decs.h&gt;</em></div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv411of_spectrum">
+<span id="_CPPv311of_spectrum"></span><span id="_CPPv211of_spectrum"></span><span id="of_spectrum"></span><span class="target" id="structof__spectrum"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">of_spectrum</span></span></span><a class="headerlink" href="#_CPPv411of_spectrum" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;decs.h&gt;</em></div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv48params_t">
+<span id="_CPPv38params_t"></span><span id="_CPPv28params_t"></span><span id="params_t"></span><span class="target" id="structparams__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">params_t</span></span></span><a class="headerlink" href="#_CPPv48params_t" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;decs.h&gt;</em></div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="curand.html" class="btn btn-neutral float-left" title="curand.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hdf5_utils.html" class="btn btn-neutral float-right" title="hdf5_utils.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

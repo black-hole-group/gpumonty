@@ -1,0 +1,854 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kernels.cu &mdash; GPUmonty 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="main.cu" href="main.html" />
+    <link rel="prev" title="jnu_mixed.cu" href="jnu_mixed.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GPUmonty
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compton.html">compton.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compton.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv423sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_scattered_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv45boostAL4E_dAL4E_dAL4E_d"><code class="docutils literal notranslate"><span class="pre">boost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv414sample_thomsonP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_thomson()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv420sample_klein_nishinadP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv413klein_nishinaKdKd"><code class="docutils literal notranslate"><span class="pre">klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv423sample_electron_distr_pAL4E_dAL4E_ddP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_electron_distr_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv417sample_beta_distrdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_beta_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv414sample_y_distrKdP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_y_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv415sample_mu_distrKdd"><code class="docutils literal notranslate"><span class="pre">sample_mu_distr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="compton.html#_CPPv420scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey"><code class="docutils literal notranslate"><span class="pre">scatter_super_photon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MINT"><code class="docutils literal notranslate"><span class="pre">MINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXT"><code class="docutils literal notranslate"><span class="pre">MAXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NW"><code class="docutils literal notranslate"><span class="pre">NW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NT"><code class="docutils literal notranslate"><span class="pre">NT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.HOTCROSS"><code class="docutils literal notranslate"><span class="pre">HOTCROSS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXGAMMA"><code class="docutils literal notranslate"><span class="pre">MAXGAMMA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DMUE"><code class="docutils literal notranslate"><span class="pre">DMUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DGAMMAE"><code class="docutils literal notranslate"><span class="pre">DGAMMAE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MMW"><code class="docutils literal notranslate"><span class="pre">MMW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NDIM"><code class="docutils literal notranslate"><span class="pre">NDIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KRHO"><code class="docutils literal notranslate"><span class="pre">KRHO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.UU"><code class="docutils literal notranslate"><span class="pre">UU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U1"><code class="docutils literal notranslate"><span class="pre">U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U2"><code class="docutils literal notranslate"><span class="pre">U2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.U3"><code class="docutils literal notranslate"><span class="pre">U3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B2"><code class="docutils literal notranslate"><span class="pre">B2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.B3"><code class="docutils literal notranslate"><span class="pre">B3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KEL"><code class="docutils literal notranslate"><span class="pre">KEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KTOT"><code class="docutils literal notranslate"><span class="pre">KTOT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL"><code class="docutils literal notranslate"><span class="pre">SMALL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NPRIM_INDEX"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SLOOP_DEVICE"><code class="docutils literal notranslate"><span class="pre">SLOOP_DEVICE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.DLOOP"><code class="docutils literal notranslate"><span class="pre">DLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX"><code class="docutils literal notranslate"><span class="pre">MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lmint"><code class="docutils literal notranslate"><span class="pre">d_lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lminw"><code class="docutils literal notranslate"><span class="pre">d_lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_lT_min"><code class="docutils literal notranslate"><span class="pre">d_lT_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlw"><code class="docutils literal notranslate"><span class="pre">d_dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT1"><code class="docutils literal notranslate"><span class="pre">d_dlT1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.d_dlT2"><code class="docutils literal notranslate"><span class="pre">d_dlT2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMAX"><code class="docutils literal notranslate"><span class="pre">KMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.KMIN"><code class="docutils literal notranslate"><span class="pre">KMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SMALL_VECTOR"><code class="docutils literal notranslate"><span class="pre">SMALL_VECTOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSABS"><code class="docutils literal notranslate"><span class="pre">EPSABS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPSREL"><code class="docutils literal notranslate"><span class="pre">EPSREL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMIN"><code class="docutils literal notranslate"><span class="pre">TMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.TMAX"><code class="docutils literal notranslate"><span class="pre">TMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.SCATTERINGS_PER_PHOTON"><code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.NINT"><code class="docutils literal notranslate"><span class="pre">NINT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMIN"><code class="docutils literal notranslate"><span class="pre">BTHSQMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.BTHSQMAX"><code class="docutils literal notranslate"><span class="pre">BTHSQMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_LAYER_SCA"><code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.EPS"><code class="docutils literal notranslate"><span class="pre">EPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.FAST_CPY"><code class="docutils literal notranslate"><span class="pre">FAST_CPY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constant.html">constants.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="constant.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EE"><code class="docutils literal notranslate"><span class="pre">EE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CL"><code class="docutils literal notranslate"><span class="pre">CL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.ME"><code class="docutils literal notranslate"><span class="pre">ME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MP"><code class="docutils literal notranslate"><span class="pre">MP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MN"><code class="docutils literal notranslate"><span class="pre">MN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AMU"><code class="docutils literal notranslate"><span class="pre">AMU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HPL"><code class="docutils literal notranslate"><span class="pre">HPL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HBAR"><code class="docutils literal notranslate"><span class="pre">HBAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KBOL"><code class="docutils literal notranslate"><span class="pre">KBOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.GNEWT"><code class="docutils literal notranslate"><span class="pre">GNEWT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIG"><code class="docutils literal notranslate"><span class="pre">SIG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RGAS"><code class="docutils literal notranslate"><span class="pre">RGAS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.EV"><code class="docutils literal notranslate"><span class="pre">EV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SIGMA_THOMSON"><code class="docutils literal notranslate"><span class="pre">SIGMA_THOMSON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.JY"><code class="docutils literal notranslate"><span class="pre">JY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.PC"><code class="docutils literal notranslate"><span class="pre">PC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.AU"><code class="docutils literal notranslate"><span class="pre">AU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.YEAR"><code class="docutils literal notranslate"><span class="pre">YEAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DAY"><code class="docutils literal notranslate"><span class="pre">DAY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.HOUR"><code class="docutils literal notranslate"><span class="pre">HOUR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MSUN"><code class="docutils literal notranslate"><span class="pre">MSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.RSUN"><code class="docutils literal notranslate"><span class="pre">RSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.LSUN"><code class="docutils literal notranslate"><span class="pre">LSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TSUN"><code class="docutils literal notranslate"><span class="pre">TSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.MEARTH"><code class="docutils literal notranslate"><span class="pre">MEARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.REARTH"><code class="docutils literal notranslate"><span class="pre">REARTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.DSGRA"><code class="docutils literal notranslate"><span class="pre">DSGRA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.TCBR"><code class="docutils literal notranslate"><span class="pre">TCBR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLX"><code class="docutils literal notranslate"><span class="pre">SOLX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLY"><code class="docutils literal notranslate"><span class="pre">SOLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.SOLZ"><code class="docutils literal notranslate"><span class="pre">SOLZ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PI"><code class="docutils literal notranslate"><span class="pre">FOUR_PI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.FOUR_PISQ"><code class="docutils literal notranslate"><span class="pre">FOUR_PISQ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.THREEPI_TWO"><code class="docutils literal notranslate"><span class="pre">THREEPI_TWO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.CST"><code class="docutils literal notranslate"><span class="pre">CST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="constant.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="curand.html">curand.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="curand.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv415init_monty_randi"><code class="docutils literal notranslate"><span class="pre">init_monty_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv425generate_random_directionPdPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">generate_random_direction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv410chi_squareiP11curandState"><code class="docutils literal notranslate"><span class="pre">chi_square()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv427legacy_standard_exponentialP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv412legacy_gaussPdPdP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_gauss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="curand.html#_CPPv421legacy_standard_gammadP11curandState"><code class="docutils literal notranslate"><span class="pre">legacy_standard_gamma()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="defs.html">defs.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="defs.html#global-variables">Global Variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44geom"><code class="docutils literal notranslate"><span class="pre">geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41w"><code class="docutils literal notranslate"><span class="pre">w</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41F"><code class="docutils literal notranslate"><span class="pre">F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43wgt"><code class="docutils literal notranslate"><span class="pre">wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47N_scatt"><code class="docutils literal notranslate"><span class="pre">N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv418N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43Rin"><code class="docutils literal notranslate"><span class="pre">Rin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44Rout"><code class="docutils literal notranslate"><span class="pre">Rout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42Rh"><code class="docutils literal notranslate"><span class="pre">Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42R0"><code class="docutils literal notranslate"><span class="pre">R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46hslope"><code class="docutils literal notranslate"><span class="pre">hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46startx"><code class="docutils literal notranslate"><span class="pre">startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45stopx"><code class="docutils literal notranslate"><span class="pre">stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45dMact"><code class="docutils literal notranslate"><span class="pre">dMact</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44Ladv"><code class="docutils literal notranslate"><span class="pre">Ladv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49bias_norm"><code class="docutils literal notranslate"><span class="pre">bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv41p"><code class="docutils literal notranslate"><span class="pre">p</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N1"><code class="docutils literal notranslate"><span class="pre">N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N2"><code class="docutils literal notranslate"><span class="pre">N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42N3"><code class="docutils literal notranslate"><span class="pre">N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46L_unit"><code class="docutils literal notranslate"><span class="pre">L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46B_unit"><code class="docutils literal notranslate"><span class="pre">B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47Ne_unit"><code class="docutils literal notranslate"><span class="pre">Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48Rho_unit"><code class="docutils literal notranslate"><span class="pre">Rho_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46U_unit"><code class="docutils literal notranslate"><span class="pre">U_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46M_unit"><code class="docutils literal notranslate"><span class="pre">M_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46T_unit"><code class="docutils literal notranslate"><span class="pre">T_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45table"><code class="docutils literal notranslate"><span class="pre">table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43dlw"><code class="docutils literal notranslate"><span class="pre">dlw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43dlT"><code class="docutils literal notranslate"><span class="pre">dlT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45lminw"><code class="docutils literal notranslate"><span class="pre">lminw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45lmint"><code class="docutils literal notranslate"><span class="pre">lmint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44nint"><code class="docutils literal notranslate"><span class="pre">nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42K2"><code class="docutils literal notranslate"><span class="pre">K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv410dndlnu_max"><code class="docutils literal notranslate"><span class="pre">dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv415my_curand_state"><code class="docutils literal notranslate"><span class="pre">my_curand_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47d_table"><code class="docutils literal notranslate"><span class="pre">d_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412photon_count"><code class="docutils literal notranslate"><span class="pre">photon_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv420d_N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">d_N_superph_recorded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Ns"><code class="docutils literal notranslate"><span class="pre">d_Ns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_N_scatt"><code class="docutils literal notranslate"><span class="pre">d_N_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413d_thetae_unit"><code class="docutils literal notranslate"><span class="pre">d_thetae_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_startx"><code class="docutils literal notranslate"><span class="pre">d_startx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_dx"><code class="docutils literal notranslate"><span class="pre">d_dx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_wgt"><code class="docutils literal notranslate"><span class="pre">d_wgt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43d_F"><code class="docutils literal notranslate"><span class="pre">d_F</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_K2"><code class="docutils literal notranslate"><span class="pre">d_K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411d_bias_norm"><code class="docutils literal notranslate"><span class="pre">d_bias_norm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47d_stopx"><code class="docutils literal notranslate"><span class="pre">d_stopx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Rh"><code class="docutils literal notranslate"><span class="pre">d_Rh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv415d_max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">d_max_tau_scatt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv418scattering_counter"><code class="docutils literal notranslate"><span class="pre">scattering_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv414d_num_scat_phs"><code class="docutils literal notranslate"><span class="pre">d_num_scat_phs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv416tracking_counter"><code class="docutils literal notranslate"><span class="pre">tracking_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46d_nint"><code class="docutils literal notranslate"><span class="pre">d_nint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_dndlnu_max"><code class="docutils literal notranslate"><span class="pre">d_dndlnu_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_hslope"><code class="docutils literal notranslate"><span class="pre">d_hslope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_R0"><code class="docutils literal notranslate"><span class="pre">d_R0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv425tracking_counter_sampling"><code class="docutils literal notranslate"><span class="pre">tracking_counter_sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N1"><code class="docutils literal notranslate"><span class="pre">d_N1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N2"><code class="docutils literal notranslate"><span class="pre">d_N2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_N3"><code class="docutils literal notranslate"><span class="pre">d_N3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_trat_small"><code class="docutils literal notranslate"><span class="pre">d_trat_small</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_trat_large"><code class="docutils literal notranslate"><span class="pre">d_trat_large</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411d_beta_crit"><code class="docutils literal notranslate"><span class="pre">d_beta_crit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_Ne_unit"><code class="docutils literal notranslate"><span class="pre">d_Ne_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46bhspin"><code class="docutils literal notranslate"><span class="pre">bhspin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_bhspin"><code class="docutils literal notranslate"><span class="pre">d_bhspin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46params"><code class="docutils literal notranslate"><span class="pre">params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv47of_geom"><code class="docutils literal notranslate"><span class="pre">of_geom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411of_spectrum"><code class="docutils literal notranslate"><span class="pre">of_spectrum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48params_t"><code class="docutils literal notranslate"><span class="pre">params_t</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hdf5_utils.html">hdf5_utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hdf5_utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv413hdf5_get_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_get_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_write_blob9hdf5_blobPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_write_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_close_blob9hdf5_blob"><code class="docutils literal notranslate"><span class="pre">hdf5_close_blob()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv411hdf5_createPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv49hdf5_openPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_open()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv410hdf5_closev"><code class="docutils literal notranslate"><span class="pre">hdf5_close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_make_directoryPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_make_directory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hotcross.html">hotcross.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hotcross.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv413init_hotcrossv"><code class="docutils literal notranslate"><span class="pre">init_hotcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv424total_compton_cross_lkupddPKd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_lkup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv423total_compton_cross_numdd"><code class="docutils literal notranslate"><span class="pre">total_compton_cross_num()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv49dNdgammaedd"><code class="docutils literal notranslate"><span class="pre">dNdgammae()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv410boostcrossddd"><code class="docutils literal notranslate"><span class="pre">boostcross()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv416hc_klein_nishinad"><code class="docutils literal notranslate"><span class="pre">hc_klein_nishina()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi0d"><code class="docutils literal notranslate"><span class="pre">bessi0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessi1d"><code class="docutils literal notranslate"><span class="pre">bessi1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk0d"><code class="docutils literal notranslate"><span class="pre">bessk0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk1d"><code class="docutils literal notranslate"><span class="pre">bessk1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hotcross.html#_CPPv46bessk2d"><code class="docutils literal notranslate"><span class="pre">bessk2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jnu_mixed.html">jnu_mixed.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jnu_mixed.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">kernels.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv46record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">record_scattering()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="main.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv44mainiA_Pc"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">memory.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memory.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">metrics.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#c.FIND_GCON_MATRIX_INV"><code class="docutils literal notranslate"><span class="pre">FIND_GCON_MATRIX_INV</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metrics.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gdet_funcA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gdet_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_decompose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MAX"><code class="docutils literal notranslate"><span class="pre">THETAE_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WEIGHT_MIN"><code class="docutils literal notranslate"><span class="pre">WEIGHT_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.RMAX"><code class="docutils literal notranslate"><span class="pre">RMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAME"><code class="docutils literal notranslate"><span class="pre">GAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAMP"><code class="docutils literal notranslate"><span class="pre">GAMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAM"><code class="docutils literal notranslate"><span class="pre">GAM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv412init_storagev"><code class="docutils literal notranslate"><span class="pre">init_storage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49init_datav"><code class="docutils literal notranslate"><span class="pre">init_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416record_criteriond"><code class="docutils literal notranslate"><span class="pre">record_criterion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414stop_criteriondPdP11curandState"><code class="docutils literal notranslate"><span class="pre">stop_criterion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">Xtoijk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv45coordKiKiKiPd"><code class="docutils literal notranslate"><span class="pre">coord()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49gcov_funcPKdA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411dOmega_funcdd"><code class="docutils literal notranslate"><span class="pre">dOmega_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48bl_coordPKdPdPd"><code class="docutils literal notranslate"><span class="pre">bl_coord()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"><code class="docutils literal notranslate"><span class="pre">get_fluid_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dA4NDIM_A4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="par.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_INT"><code class="docutils literal notranslate"><span class="pre">TYPE_INT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_DBL"><code class="docutils literal notranslate"><span class="pre">TYPE_DBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#c.TYPE_STR"><code class="docutils literal notranslate"><span class="pre">TYPE_STR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="par.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv418load_par_from_argviA_PcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par_from_argv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv48load_parPKcP6Params"><code class="docutils literal notranslate"><span class="pre">load_par()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="par.html#_CPPv410read_paramPKcPKcPvi"><code class="docutils literal notranslate"><span class="pre">read_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="radiation.html">radiation.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="radiation.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv47jnu_invKdKdKdKdKd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">jnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv47Bnu_invKdKd"><code class="docutils literal notranslate"><span class="pre">Bnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv48kappa_esKdKdPKd"><code class="docutils literal notranslate"><span class="pre">kappa_es()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">get_fluid_nu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv415alpha_inv_scattKdKdKdPKd"><code class="docutils literal notranslate"><span class="pre">alpha_inv_scatt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv413alpha_inv_absKdKdKdKdd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">alpha_inv_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="radiation.html#_CPPv412get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd"><code class="docutils literal notranslate"><span class="pre">get_bk_angle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tetrads.html">tetrads.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tetrads.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">make_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv420tetrad_to_coordinateA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">tetrad_to_coordinate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv420coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">coordinate_to_tetrad()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv45deltaii"><code class="docutils literal notranslate"><span class="pre">delta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv49normalizePdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">normalize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="tetrads.html#_CPPv411project_outPdPdA4NDIM_A4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">project_out()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413interp_scalar19cudaTextureObject_tKiKiKiKiAL4E_Kd"><code class="docutils literal notranslate"><span class="pre">interp_scalar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415findPhotonIndexPKyiy"><code class="docutils literal notranslate"><span class="pre">findPhotonIndex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv421interp_scalar_pointerPKdKiKiKiKiAL8E_Kd"><code class="docutils literal notranslate"><span class="pre">interp_scalar_pointer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv413NPRIM_INDEX3Diiii"><code class="docutils literal notranslate"><span class="pre">NPRIM_INDEX3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX2Dii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils.html#_CPPv415SPATIAL_INDEX3Diii"><code class="docutils literal notranslate"><span class="pre">SPATIAL_INDEX3D()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weight.html">weights.cu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="weight.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv417init_weight_tablev"><code class="docutils literal notranslate"><span class="pre">init_weight_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv415init_nint_tablev"><code class="docutils literal notranslate"><span class="pre">init_nint_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="weight.html#_CPPv420linear_interp_weightKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_weight()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide for GPUmonty</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#environment-configuration">Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#cuda-number-of-blocks-configuration">CUDA Number of Blocks Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#multi-core-acceleration-openmp">Multi-Core Acceleration (OpenMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#analyzing-the-output">Analyzing the Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html#spectral-data-structure">Spectral Data Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#grmhd-data-file-for-testing">GRMHD Data File for Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html#license">LICENSE</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docs_guidelines.html">Documentation Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#function-documentation">Function Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#guidelines">Guidelines:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#update-workflow-and-repository-structure">Update Workflow and Repository Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#documentation-directories-organization">Documentation Directories Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#website-navigation-and-tabs">Website Navigation and Tabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#how-it-works">How it Works</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../docs_guidelines.html#local-testing-and-building">Local Testing and Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GPUmonty</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../documentation.html">Documentation</a></li>
+      <li class="breadcrumb-item active">kernels.cu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/kernels.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="kernels-cu">
+<h1>kernels.cu<a class="headerlink" href="#kernels-cu" title="Link to this heading"></a></h1>
+<p>This page documents the functions defined in kernels.cu. kernels.cu contains the CUDA kernels used in the simulation and some extra functions.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t">
+<span id="_CPPv316generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"></span><span id="_CPPv216generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"></span><span id="generate_photons__of_geomCP.doubleCP.time_tC.unsigned-l-lP.doubleP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a5c8cf5010ba43f9cb63f7c36c7c17784"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate_photons</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">time_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generated_photons_arr</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax_arr</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Kernel that will divide the work of generating superphotons among the GPU threads. </p>
+<p><ul class="simple">
+<li><p>Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.</p></li>
+<li><p>Calls init_zone to initialize the photon generation for each zone in the simulation grid.</p></li>
+<li><p>The loop follows a <strong>grid-stride pattern</strong> to ensure all zones are covered. Each thread <span class="math notranslate nohighlight">\( n \)</span> processes a sequence of zones defined by: <div class="math notranslate nohighlight">
+\[ {\rm i_n} = n + k \cdot N_{\text{total}}\]</div>
+ where <span class="math notranslate nohighlight">\( {\rm i_n}\)</span> is the current zone <span class="math notranslate nohighlight">\( \rm i \)</span> that thread <span class="math notranslate nohighlight">\( \rm n \)</span> is analyzing, <span class="math notranslate nohighlight">\( n \)</span> is the global thread ID, <span class="math notranslate nohighlight">\( N_{\text{total}} \)</span> is the total number of threads in the grid, and <span class="math notranslate nohighlight">\( k \in \{0, 1, 2, \dots\} \)</span>.</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device array containing the plasma parameters of the simulation. </p></li>
+<li><p><strong>time</strong> – Current time used to seed the random number generator for photon generation. </p></li>
+<li><p><strong>generated_photons_arr</strong> – Pointer to the device array that will store the number of photons generated per zone. </p></li>
+<li><p><strong>dnmax_arr</strong> – Pointer to the device array that will store the maximum value of <span class="math notranslate nohighlight">\( \frac{dN}{d\ln\nu} \)</span> per zone. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for Bessel function lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t">
+<span id="_CPPv39init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"></span><span id="_CPPv29init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"></span><span id="init_zone__iC.iC.iC.unsigned-l-lP.doubleP.of_geomCP.doubleCP.iC.curandStateP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a532d03668835faf1ad6836c5bd4908a8"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_zone</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">n2gen</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_Ns_par</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Initializes the photon generation parameters for a specific grid zone. </p>
+<p><ul class="simple">
+<li><p>This function retrieves local fluid properties (density, temperature, and magnetic field) for the zone <span class="math notranslate nohighlight">\((i, j, k)\)</span> and calculates the expected number of superphotons to be generated based on the local thermal synchrotron emissivity.</p></li>
+</ul>
+</p>
+<p>The expected number of superphotons <span class="math notranslate nohighlight">\( N_{s,i} \)</span> in zone <span class="math notranslate nohighlight">\( i \)</span> is governed by:  <div class="math notranslate nohighlight">
+\[
+N_{s,i} = \Delta t \Delta^3 x \sqrt{-g} \int \int d\nu d\Omega \frac{1}{\omega} \frac{j_\nu}{h\nu}
+\]</div>
+ where <span class="math notranslate nohighlight">\( \sqrt{-g} \)</span> is the metric determinant, <span class="math notranslate nohighlight">\( j_\nu \)</span> is the emissivity, and <span class="math notranslate nohighlight">\( \omega \)</span> is the superphoton weight.</p>
+<p>The final number of superphotons <span class="math notranslate nohighlight">\( n_{2gen} \)</span> is determined stochastically to handle the fractional part of the expected count <span class="math notranslate nohighlight">\( n_z \)</span>:  <div class="math notranslate nohighlight">
+\[\begin{split}
+n_{2gen} = 
+\begin{cases} 
+\lfloor n_z \rfloor + 1 &amp; \text{if } \text{rand} &lt; (n_z \pmod 1) \\
+\lfloor n_z \rfloor     &amp; \text{otherwise}
+\end{cases}
+\end{split}\]</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – Radial grid index. </p></li>
+<li><p><strong>j</strong> – Poloidal grid index. </p></li>
+<li><p><strong>k</strong> – Azimuthal grid index. </p></li>
+<li><p><strong>n2gen</strong> – Pointer to store the integer number of superphotons to be generated. </p></li>
+<li><p><strong>dnmax</strong> – Pointer to store the maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span>, required for subsequent rejection sampling. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device simulation plasma properties. </p></li>
+<li><p><strong>d_Ns_par</strong> – Target superphoton count parameter. </p></li>
+<li><p><strong>localState</strong> – Pointer to the curandState for the current thread. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t">
+<span id="_CPPv320sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"></span><span id="_CPPv220sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"></span><span id="sample_photons_batch__of_photonSOA.of_geomCP.doubleCP.unsigned-l-lCP.doubleCP.iC.unsigned-l-lC.unsigned-l-lCP.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a34d064ed82f890668bc313f0cfb4e112"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sample_photons_batch</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph_init</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">generated_photons_arr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dnmax_arr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">photons_processed_sofar</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">index_to_ijk</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Samples superphoton properties for the current batch using dynamic workload allocation. </p>
+<p><ul class="simple">
+<li><p>This kernel performs the rejection sampling and initial coordinate assignment for superphotons. Unlike a standard grid-stride pattern where thread work is predetermined by ID, this kernel utilizes a <strong>dynamic workload allocation</strong> strategy since some zones may generate significantly more superphotons than others, leading to extreme load imbalance. To mitigate this, threads fetch work dynamically using an atomic counter. This ensures that as soon as a thread finishes sampling a photon, it immediately pulls the next available index, keeping GPU execution units saturated regardless of the variation in workload per zone.</p></li>
+<li><p>The kernel maps the superphoton to the grid zone that generated it <span class="math notranslate nohighlight">\( (i, j, k) \)</span> by performing a binary search on the cumulative distribution array <code class="docutils literal notranslate"><span class="pre">index_to_ijk</span></code>. Once the <code class="docutils literal notranslate"><span class="pre">zone_index</span></code> is retrieved, it is decomposed into 3D grid coordinates:</p></li>
+</ul>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph_init</strong> – The Structure of Arrays (SoA) where sampled photon data is stored. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to the device simulation plasma properties. </p></li>
+<li><p><strong>generated_photons_arr</strong> – Array containing the number of photons to be generated per zone. </p></li>
+<li><p><strong>dnmax_arr</strong> – The maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span> for each zone, used for rejection sampling. </p></li>
+<li><p><strong>max_partition_ph</strong> – The maximum number of photons assigned to this batch. </p></li>
+<li><p><strong>photons_processed_sofar</strong> – Offset for the current batch relative to the total simulation count. </p></li>
+<li><p><strong>index_to_ijk</strong> – Cumulative sum array mapping global photon indices to zone indices. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t">
+<span id="_CPPv318sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"></span><span id="_CPPv218sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPANDIM_dPANDIM_dP11curandState19cudaTextureObject_t"></span><span class="target" id="kernels_8h_1ade1f63cd20520823b3996c82598f86a8"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sample_zone_photon</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dnmax</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">zone_flag</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph_arr_index</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Econ</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Ecov</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Samples the physical properties of a single superphoton within a zone. </p>
+<p>It uses a series of rejection sampling loops to determine the frequency and angular distribution of emission, then transforms the resulting momentum vector from the local fluid tetrad into the global coordinate frame.</p>
+<p><strong>Frequency Sampling</strong>: The photon frequency <span class="math notranslate nohighlight">\( \nu \)</span> is sampled using rejection sampling over the range <span class="math notranslate nohighlight">\( [\nu_{min}, \nu_{max}] \)</span>. The selection is weighted by the local distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span>:</p>
+<p><strong>Angular Distribution</strong>: The polar angle <span class="math notranslate nohighlight">\( \theta \)</span> (relative to the local magnetic field) is sampled based on the angular dependence of the synchrotron emissivity <span class="math notranslate nohighlight">\( j_\nu(\theta) \)</span>. A second rejection sampling loop ensures that:  <div class="math notranslate nohighlight">
+\[
+\text{rand} &lt; \frac{j_\nu(\theta)}{j_{\nu, max}}
+\]</div>
+ where <span class="math notranslate nohighlight">\( j_{\nu, max} \)</span> is the emissivity at <span class="math notranslate nohighlight">\( \theta = \pi/2 \)</span>.</p>
+<p><strong>Tetrad Transformation</strong>: The momentum vector <span class="math notranslate nohighlight">\( K \)</span> is initially constructed in a local orthonormal tetrad frame aligned with the fluid four-velocity <span class="math notranslate nohighlight">\( u^\mu \)</span> and the magnetic field <span class="math notranslate nohighlight">\( b^\mu \)</span>. It is then transformed to the coordinate frame using:  <div class="math notranslate nohighlight">
+\[
+k^\mu = e^\mu_{(\alpha)} k^{(\alpha)}
+\]</div>
+ where <span class="math notranslate nohighlight">\( e^\mu_{(\alpha)} \)</span> is the tetrad basis built by <code class="docutils literal notranslate"><span class="pre">make_tetrad</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – Radial grid index. </p></li>
+<li><p><strong>j</strong> – Poloidal grid index. </p></li>
+<li><p><strong>k</strong> – Azimuthal grid index. </p></li>
+<li><p><strong>dnmax</strong> – The maximum of the distribution <span class="math notranslate nohighlight">\( dN_s/d\ln\nu \)</span> for this zone. </p></li>
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) used for photon storage. </p></li>
+<li><p><strong>d_geom</strong> – Pointer to the device geometry structure that carries the metric information <span class="math notranslate nohighlight">\( g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \)</span> . </p></li>
+<li><p><strong>d_p</strong> – Pointer to plasma properties array. </p></li>
+<li><p><strong>zone_flag</strong> – Boolean flag; if true, this is the first photon in this zone for this particular thread and a tetrad must be constructed, otherwise reuse the existing tetrad. </p></li>
+<li><p><strong>ph_arr_index</strong> – The specific index in the SoA to store this photon. </p></li>
+<li><p><strong>Econ</strong> – Tetrad basis (coordinate to orthonormal). </p></li>
+<li><p><strong>Ecov</strong> – Dual tetrad basis (orthonormal to coordinate). </p></li>
+<li><p><strong>localState</strong> – Pointer to the curandState for the current thread. </p></li>
+<li><p><strong>besselTexObj</strong> – Texture object for $K_2$ Bessel function lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t">
+<span id="_CPPv35track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"></span><span id="_CPPv25track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"></span><span id="track__of_photonSOA.cudaTextureObject_t.doubleCP.of_photonSOA.unsigned-l-lC.cudaTextureObject_t"></span><span class="target" id="kernels_8h_1a59df32701fd836406908950a60aa5511"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">track</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_table_ptr</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scat_ofphoton</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <span class="math notranslate nohighlight">\( n \)</span> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Progress Monitoring</strong>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the informations of the superphotons. </p></li>
+<li><p><strong>d_p</strong> – Pointer or Texture Object to the device plasma parameters, depending on the <code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code> flag. </p></li>
+<li><p><strong>d_table_ptr</strong> – Pointer to the scattering probability and cross-section lookup tables. </p></li>
+<li><p><strong>scat_ofphoton</strong> – A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </p></li>
+<li><p><strong>max_partition_ph</strong> – Total number of superphotons assigned to this specific tracking batch. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy">
+<span id="_CPPv310track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"></span><span id="_CPPv210track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"></span><span id="track_scat__of_photonSOA.cudaTextureObject_t.doubleCP.of_photonSOA.iC.cudaTextureObject_t.unsigned-l-l.unsigned-l-l"></span><span class="target" id="kernels_8h_1a52a5a324a8a4e40603f88c2ce1d76123"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">track_scat</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d_p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_table_ptr</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scat_ofphoton</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">cudaTextureObject_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">besselTexObj</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">round_num_scat_init</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">round_num_scat_end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy" title="Link to this definition"></a><br /></dt>
+<dd><p>Assign each scattered superphoton to a thread through dynamic load balancing to be evolved through the geodesic. </p>
+<p>To handle the variable computational cost of different geodesics (where some photons escape quickly and others undergo multiple scatterings), this kernel uses dynamic load balancing Threads fetch a global photon index <span class="math notranslate nohighlight">\( n \)</span> dynamically, ensuring that as soon as a thread finishes processing a photon, it immediately pulls the next available index. This keeps all GPU execution units busy regardless of the variation in workload per photon.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Progress Monitoring</strong>: Thread with global index 0 acts as a monitor, calculating and printing the simulation progress to the console every 5% completion.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the informations of the superphotons. </p></li>
+<li><p><strong>d_p</strong> – Pointer or Texture Object to the device plasma parameters, depending on the <code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code> flag. </p></li>
+<li><p><strong>d_table_ptr</strong> – Pointer to the scattering probability and cross-section lookup tables. </p></li>
+<li><p><strong>scat_ofphoton</strong> – A secondary SoA used to store the relevant local and instantaneous information of the scattered photon to be processed later. </p></li>
+<li><p><strong>n</strong> – Current scattering layer index. </p></li>
+<li><p><strong>besselTexObj</strong> – CUDA texture object for accelerated Modified Bessel function <span class="math notranslate nohighlight">\( K_2 \)</span> lookups. </p></li>
+<li><p><strong>round_num_scat_init</strong> – The starting global photon index for this scattering batch. </p></li>
+<li><p><strong>round_num_scat_end</strong> – The ending global photon index for this scattering batch. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv46record12of_photonSOAP11of_spectrumKyKi">
+<span id="_CPPv36record12of_photonSOAP11of_spectrumKyKi"></span><span id="_CPPv26record12of_photonSOAP11of_spectrumKyKi"></span><span id="record__of_photonSOA.of_spectrumP.unsigned-l-lC.iC"></span><span class="target" id="kernels_8h_1a340dd8038468cb8bd03825b2176228a3"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">record</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nblocks</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46record12of_photonSOAP11of_spectrumKyKi" title="Link to this definition"></a><br /></dt>
+<dd><p>Final processing kernel to record escaped superphotons into the observed spectrum by dynamically allocating each superphoton to each thread. </p>
+<p>This kernel iterates through the processed full evolved batch of photons and identifies those that have satisfied the “escape” criteria. For each successful photon, it updates the global spectrum object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the final state of the photons. </p></li>
+<li><p><strong>d_spect</strong> – Pointer to the device spectrum structure where intensity is accumulated. </p></li>
+<li><p><strong>max_partition_ph</strong> – The total number of photons to be checked in this batch. </p></li>
+<li><p><strong>nblocks</strong> – The number of CUDA blocks used in the grid. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi">
+<span id="_CPPv317record_scattering12of_photonSOAP11of_spectrumKyKiKi"></span><span id="_CPPv217record_scattering12of_photonSOAP11of_spectrumKyKiKi"></span><span id="record_scattering__of_photonSOA.of_spectrumP.unsigned-l-lC.iC.iC"></span><span class="target" id="kernels_8h_1a6d4965bff580fa982f3d153832c6b8be"></span><span class="pre">__global__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">record_scattering</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_partition_ph</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nblocks</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi" title="Link to this definition"></a><br /></dt>
+<dd><p>Recording kernel for photons that have been created due to scattering events by dynamically allocating each superphoton to each thread. </p>
+<p>This kernel iterates through the processed full evolved batch of photons and identifies those that have satisfied the “escape” criteria. For each successful photon, it updates the global spectrum object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the primary record kernel, this function must calculate the correct memory offsets into the scattering SoA, as photons from different scattering orders are stored sequentially.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ph</strong> – The Structure of Arrays (SoA) containing the scattered superphotons. </p></li>
+<li><p><strong>d_spect</strong> – Pointer to the device spectrum object for intensity accumulation. </p></li>
+<li><p><strong>max_partition_ph</strong> – Maximum photon capacity (included for signature consistency). </p></li>
+<li><p><strong>nblocks</strong> – Number of CUDA blocks in the grid. </p></li>
+<li><p><strong>n</strong> – The current scattering order (round) being processed. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mainFlowControl6time_tPd">
+<span id="_CPPv315mainFlowControl6time_tPd"></span><span id="_CPPv215mainFlowControl6time_tPd"></span><span id="mainFlowControl__time_t.doubleP"></span><span class="target" id="kernels_8h_1a726cbb34f438abac82f3977b0ab170dd"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mainFlowControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">time_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mainFlowControl6time_tPd" title="Link to this definition"></a><br /></dt>
+<dd><p>The main host-side controller for the GPU-accelerated Monte Carlo simulation. </p>
+<p>This function manages the high-level execution flow, coordinating memory management, data transfers, and kernel launches. It implements a multi-pass approach to handle large photon populations through batching and manages iterative scattering rounds.</p>
+<p><strong>Execution Workflow</strong>:</p>
+<p>a) <strong>Initialization</strong>: Allocates device memory for plasma properties, geometry, scattering tables, and the final spectrum.</p>
+<p>b) <strong>Generation Phase</strong>: Determines the total number of grid superphotons to be emitted based on local fluid conditions.</p>
+<p>c) <strong>Batch Processing Loop</strong>: Divides the total photon count into manageable partitions to prevent GPU memory overflow. For each batch:</p>
+<p><ul class="simple">
+<li><p><strong>Sampling</strong>: Initializes photon positions and momenta.</p></li>
+<li><p><strong>Tracking</strong>: Integrates geodesics in the curved spacetime.</p></li>
+<li><p><strong>Recording</strong>: Bins escaped “primary” photons into the spectrum.</p></li>
+</ul>
+</p>
+<p>d) <strong>Scattering Iterations</strong>: Enters a secondary loop to process Inverse Compton scattering. It tracks and records photons through multiple scattering “rounds” until the population of scattered photons is depleted or the <code class="docutils literal notranslate"><span class="pre">MAX_LAYER_SCA</span></code> limit is reached.</p>
+<p>e) <strong>Finalization</strong>: Transfers the accumulated spectrum back to the host and prints I/O output diagnostics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – Current epoch time used for seeding the random number generators. </p></li>
+<li><p><strong>p</strong> – Pointer to the host-side array of primitive fluid variables. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jnu_mixed.html" class="btn btn-neutral float-left" title="jnu_mixed.cu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main.cu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pedro Naethe Motta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
