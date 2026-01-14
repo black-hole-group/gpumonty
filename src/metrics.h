@@ -113,7 +113,7 @@ __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], doubl
  * 
  * @return void
  */
-__device__ void GPU_get_connection(const double X[4], double lconn[4][4][4]);
+__device__ void get_connection(const double X[4], double lconn[4][4][4]);
 
 /**
  * @brief Lowers the index of a contravariant 4-vector to its covariant form.

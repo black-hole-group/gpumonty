@@ -39,5 +39,5 @@ __host__ void init_nint_table(void);
  * @param nu The frequency at which to compute the interpolated weight (\omega).
  * @return The computed linearly interpolated superphoton weight.
  */
-__device__ double GPU_linear_interp_weight(const double nu);
+__device__ double linear_interp_weight(const double nu);
 #endif

@@ -166,7 +166,7 @@ __host__ void init_data()
 
 
 #define MIN(A,B) (A<B?A:B)
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
+__device__ double stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
@@ -199,7 +199,7 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 
 
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
-__device__ int GPU_record_criterion(double X1)
+__device__ int record_criterion(double X1)
 {
 	const double X1max = log(RMAX);
 	/* this is coordinate and simulation
@@ -213,7 +213,7 @@ __device__ int GPU_record_criterion(double X1)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
+__device__ int stop_criterion(double X1, double * w, curandState * localState)
 {
 	double wmin, X1min, X1max;
 
@@ -250,7 +250,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 }
 
 /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+__device__ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 
 	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000.) - 1000;
@@ -448,7 +448,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 }
 
 
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
     double Bcov[NDIM], cudaTextureObject_t d_p)
@@ -470,7 +470,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
     // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
     //Xtoij(X, &i, &j, del);
-    GPU_Xtoijk(X, &i, &j, &k, del);
+    Xtoijk(X, &i, &j, &k, del);
     //Xtoijk(X, &i, &j, &k, del);
 
     //Calculate the coeficient of displacement
@@ -487,18 +487,18 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 
     //interpolate based on the displacement
-    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
-    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
+    rho = interp_scalar(d_p, KRHO, i, j, k, del);
+    uu = interp_scalar(d_p, UU, i, j, k, del);
     *Ne = rho * d_Ne_unit;
     *Thetae = uu / rho * d_thetae_unit;
 
-    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
-    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
-    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
+    Bp[1] = interp_scalar(d_p, B1, i, j, k, del);
+    Bp[2] = interp_scalar(d_p, B2, i, j, k, del);
+    Bp[3] = interp_scalar(d_p, B3, i, j, k, del);
 
-    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
-    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
-    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
+    Vcon[1] = interp_scalar(d_p, U1, i, j, k, del);
+    Vcon[2] = interp_scalar(d_p, U2, i, j, k, del);
+    Vcon[3] = interp_scalar(d_p, U3, i, j, k, del);
 
     gcon_func(X, gcov, gcon);
 
@@ -530,7 +530,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 }
 
 
-__device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params_simplified(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, cudaTextureObject_t d_p)
 {
     int i, j, k;
@@ -551,7 +551,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
 
     // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
     //Xtoij(X, &i, &j, del);
-    GPU_Xtoijk(X, &i, &j, &k, del);
+    Xtoijk(X, &i, &j, &k, del);
     //Xtoijk(X, &i, &j, &k, del);
 
     //Calculate the coeficient of displacement
@@ -568,18 +568,18 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
 
 
     //interpolate based on the displacement
-    rho = GPU_interp_scalar(d_p, KRHO, i, j, k, del);
-    uu = GPU_interp_scalar(d_p, UU, i, j, k, del);
+    rho = interp_scalar(d_p, KRHO, i, j, k, del);
+    uu = interp_scalar(d_p, UU, i, j, k, del);
     *Ne = rho * d_Ne_unit;
     *Thetae = uu / rho * d_thetae_unit;
 
-    Bp[1] = GPU_interp_scalar(d_p, B1, i, j, k, del);
-    Bp[2] = GPU_interp_scalar(d_p, B2, i, j, k, del);
-    Bp[3] = GPU_interp_scalar(d_p, B3, i, j, k, del);
+    Bp[1] = interp_scalar(d_p, B1, i, j, k, del);
+    Bp[2] = interp_scalar(d_p, B2, i, j, k, del);
+    Bp[3] = interp_scalar(d_p, B3, i, j, k, del);
 
-    Vcon[1] = GPU_interp_scalar(d_p, U1, i, j, k, del);
-    Vcon[2] = GPU_interp_scalar(d_p, U2, i, j, k, del);
-    Vcon[3] = GPU_interp_scalar(d_p, U3, i, j, k, del);
+    Vcon[1] = interp_scalar(d_p, U1, i, j, k, del);
+    Vcon[2] = interp_scalar(d_p, U2, i, j, k, del);
+    Vcon[3] = interp_scalar(d_p, U3, i, j, k, del);
 
     gcon_func(X, gcov, gcon);
 
@@ -611,7 +611,7 @@ __device__ void GPU_get_fluid_params_simplified(double X[NDIM], double gcov[NDIM
 }
 
 
-__device__ double GPU_bias_func(double Te, double w, int round_scatt)
+__device__ double bias_func(double Te, double w, int round_scatt)
 {
     double bias, max, avg_num_scatt;
     #if(0)
@@ -664,7 +664,7 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 
 
 
-__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
     double lE, dx2;
     int iE, ix2, index;
 

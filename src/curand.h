@@ -10,7 +10,7 @@ Declarations of the functions in curand.cu file
  * 
  * @return void
  */
-__device__ void GPU_init_monty_rand(int seed);
+__device__ void init_monty_rand(int seed);
 
 /**
  * @brief Generates a random 3D unit vector uniformly distributed on the sphere.

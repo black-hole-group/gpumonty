@@ -2,14 +2,14 @@
 #include "tetrads.h"
 #include "metrics.h"
 
-__device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM],
+__device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM],
     const double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM],
     double Ecov[NDIM][NDIM])
 {
 int k, l;
 double norm;
-__device__ void GPU_normalize(double *vcon, const double Gcov[4][4]);
-__device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[4][4]);
+__device__ void normalize(double *vcon, const double Gcov[4][4]);
+__device__ void project_out(double *vcona, double *vconb, const double Gcov[4][4]);
 
 /* econ/ecov index explanation:
   Econ[k][l]
@@ -28,7 +28,7 @@ __device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[
 for (k = 0; k < 4; k++){
    Econ[0][k] = Ucon[k];
 }
-GPU_normalize(Econ[0], Gcov);
+normalize(Econ[0], Gcov);
 
 /*** done w/ basis vector 0 ***/
 
@@ -40,39 +40,39 @@ for (k = 0; k < 4; k++)
        norm += trial[k] * trial[l] * Gcov[k][l];
 if (norm <= SMALL_VECTOR) {	/* bad trial vector; default to radial direction */
    for (k = 0; k < 4; k++)	/* trial vector */
-       trial[k] = GPU_delta(k, 1);
+       trial[k] = delta(k, 1);
 }
 
 for (k = 0; k < 4; k++)	/* trial vector */
    Econ[1][k] = trial[k];
 
 /* project out econ0 */
-GPU_project_out(Econ[1], Econ[0], Gcov);
-GPU_normalize(Econ[1], Gcov);
+project_out(Econ[1], Econ[0], Gcov);
+normalize(Econ[1], Gcov);
 
 /*** done w/ basis vector 1 ***/
 
 /* repeat for x2 unit basis vector */
 for (k = 0; k < 4; k++)	/* trial vector */
-   Econ[2][k] = GPU_delta(k, 2);
+   Econ[2][k] = delta(k, 2);
 /* project out econ[0-1] */
-GPU_project_out(Econ[2], Econ[0], Gcov);
-GPU_project_out(Econ[2], Econ[1], Gcov);
-GPU_normalize(Econ[2], Gcov);
+project_out(Econ[2], Econ[0], Gcov);
+project_out(Econ[2], Econ[1], Gcov);
+normalize(Econ[2], Gcov);
 
 /*** done w/ basis vector 2 ***/
 
 /* and repeat for x3 unit basis vector */
 for (k = 0; k < 4; k++)	/* trial vector */
-   Econ[3][k] = GPU_delta(k, 3);
+   Econ[3][k] = delta(k, 3);
 /* project out econ[0-2] */
-GPU_project_out(Econ[3], Econ[0], Gcov);
+project_out(Econ[3], Econ[0], Gcov);
 
-GPU_project_out(Econ[3], Econ[1], Gcov);
+project_out(Econ[3], Econ[1], Gcov);
 
-GPU_project_out(Econ[3], Econ[2], Gcov);
+project_out(Econ[3], Econ[2], Gcov);
 
-GPU_normalize(Econ[3], Gcov);
+normalize(Econ[3], Gcov);
 
 
 /*** done w/ basis vector 3 ***/
@@ -97,7 +97,7 @@ for (l = 0; l < 4; l++) {
 }
 
 
-__device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM],
+__device__ void tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM],
          double K[NDIM])
 {
 for (int l = 0; l < 4; l++) {
@@ -109,7 +109,7 @@ for (int l = 0; l < 4; l++) {
 return;
 }
 /* input and vectors are contravariant (index up) */
-__device__ void GPU_coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM])
+__device__ void coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM])
 {
 	int k;
 
@@ -118,14 +118,14 @@ __device__ void GPU_coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const do
 	}
 }
 
-__device__ double GPU_delta(int i, int j)
+__device__ double delta(int i, int j)
 {
 if (i == j)
    return (1.);
 else
    return (0.);
 }
-__device__ void GPU_normalize(double *vcon, const double Gcov[NDIM][NDIM])
+__device__ void normalize(double *vcon, const double Gcov[NDIM][NDIM])
 {
 int k, l;
 double norm;
@@ -141,7 +141,7 @@ for (k = 0; k < 4; k++)
 
 return;
 }
-__device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[NDIM][NDIM])
+__device__ void project_out(double *vcona, double *vconb, const double Gcov[NDIM][NDIM])
 {
 
 double adotb, vconb_sq;

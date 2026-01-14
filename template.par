@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e8
+Ns 1e6
 
 #path to the GRMHD data file
 
@@ -9,7 +9,7 @@ dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
 #Use this path when testing harm_model
 #dump ./data/dump019
 
-spectrum sphere_thin_1e8.spec
+spectrum sane_ben.spec
 
 tp_over_te 3.
 

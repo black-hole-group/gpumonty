@@ -1,11 +1,12 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+MODEL_DIR = $(SRC_DIR)/iharm_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?= /usr/local/cuda-12.3
+CUDA_PATH ?=/usr/local/cuda-12.4/
+
 
 # GSL setup
 GSL_PATH ?= /home/pedro/gsl
@@ -15,9 +16,9 @@ HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # Compiler flags
-ARCH = compute_75
-CODE = sm_75
-CODE_LTO = lto_75
+ARCH = compute_60
+CODE = sm_60
+CODE_LTO = lto_60
 
 # Directories
 SRC_DIR = src

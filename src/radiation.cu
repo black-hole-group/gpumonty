@@ -4,7 +4,7 @@
 #include "hotcross.h"
 
 
-__device__ double GPU_Bnu_inv(const double nu, const double Thetae)
+__device__ double Bnu_inv(const double nu, const double Thetae)
 {
 
 	double x;
@@ -21,7 +21,7 @@ __device__ double GPU_Bnu_inv(const double nu, const double Thetae)
 }
 
 
-__device__ double GPU_jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj)
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj)
 {
 	double j;
 
@@ -34,17 +34,17 @@ __device__ double GPU_jnu_inv(const double nu, const double Thetae, const double
 }
 
 /* return Lorentz invariant scattering opacity */
-__device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr)
+__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr)
 {
-	return (nu * GPU_kappa_es(nu, Thetae, d_table_ptr) * Ne * MP);
+	return (nu * kappa_es(nu, Thetae, d_table_ptr) * Ne * MP);
 }
 /* return Lorentz invariant absorption opacity */
-__device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
 		    double theta, cudaTextureObject_t besselTexObj)
 {
 	double j, bnu;
-	j = GPU_jnu_inv(nu, Thetae, Ne, B, theta, besselTexObj);
-	bnu = GPU_Bnu_inv(nu, Thetae);
+	j = jnu_inv(nu, Thetae, Ne, B, theta, besselTexObj);
+	bnu = Bnu_inv(nu, Thetae);
 	if (j > 0){
 		return (j / (bnu + 1.e-100));
 	}
@@ -53,7 +53,7 @@ __device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const 
 
 
 /* return electron scattering opacity, in cgs */
-__device__ double GPU_kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr)
+__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr)
 {
 	double Eg;
 
@@ -62,13 +62,13 @@ __device__ double GPU_kappa_es(const double nu, const double Thetae, const doubl
 	Eg = HPL * nu / (ME * CL * CL);
 	double result = (total_compton_cross_lkup(Eg, Thetae, d_table_ptr) / MP);
 	if (isnan(result)){
-		printf("GPU_kappa_es is nan: %le, %le", nu, Thetae);
+		printf("kappa_es is nan: %le, %le", nu, Thetae);
 	}
 	return result;
 }
 
 /* get frequency in fluid frame, in Hz */
-__device__ double GPU_get_fluid_nu(const double X[NDIM]  , const double K[NDIM]  , const double Ucov[NDIM]  )
+__device__ double get_fluid_nu(const double X[NDIM]  , const double K[NDIM]  , const double Ucov[NDIM]  )
 {
 	double ener, nu;
 
@@ -91,7 +91,7 @@ __device__ double GPU_get_fluid_nu(const double X[NDIM]  , const double K[NDIM] 
 	return nu;
 }
 
-__device__ double GPU_get_bk_angle(const double X[NDIM] , const double K[NDIM]  , const double Ucov[NDIM]  ,
+__device__ double get_bk_angle(const double X[NDIM] , const double K[NDIM]  , const double Ucov[NDIM]  ,
 		    const double Bcov[NDIM]  , const double B)
 {
 

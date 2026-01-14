@@ -116,7 +116,7 @@ __host__ void init_data();
  * @param X1 The current internal radial coordinate (\f$X^1\f$) of the photon.
  * @return Returns 1 if the photon is outside the recording radius, 0 otherwise.
  */
-__device__ int GPU_record_criterion(double X1);
+__device__ int record_criterion(double X1);
 
 /**
  * @brief Evaluates whether to terminate the integration of a photon's path.
@@ -130,7 +130,7 @@ __device__ int GPU_record_criterion(double X1);
  * 
  * @return Returns 1 if the photon should be stopped/deleted, 0 if tracking should continue.
  */
-__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
+__device__ int stop_criterion(double X1, double * w, curandState * localState);
 
 
 /**
@@ -146,7 +146,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
  * 
  * @return void
  */
-__device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+__device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 
 
 /**
@@ -257,7 +257,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
  * 
  * @return void
  */
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
+__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
 
 /**
  * @brief Calculates the scattering bias parameter based on local temperature.
@@ -270,7 +270,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
  * 
  * @return The calculated bias factor used to rescale Monte Carlo probabilities.
  */
-__device__ double GPU_bias_func(double Te, double w, int round_scatt);
+__device__ double bias_func(double Te, double w, int round_scatt);
 
 /**
  * @brief Records a photon's final properties into the global spectrum array.
@@ -287,7 +287,7 @@ __device__ double GPU_bias_func(double Te, double w, int round_scatt);
  * 
  * @return void
  */
-__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 
 /**
  * @brief Performs the calculation of the stepsize \f$ d\lambda \f$ for the geodesic integration.
@@ -301,7 +301,7 @@ __device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectr
  * - \f$ \min(X^2, 1-X^2) \f$ is the proximity factor that reduces the step size 
  * as the photon approaches the polar coordinate singularities at 0 or 1.
  */
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM]);
+__device__ double stepsize(const double X[NDIM], const double K[NDIM]);
 
 /**
  * @brief Calculates the dimensionless electron temperature \f$ \Theta_e \f$.

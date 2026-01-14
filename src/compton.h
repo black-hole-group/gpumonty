@@ -34,7 +34,7 @@ Declaration of the functions in compton.cu file
  * 
  * @return void
  */
-__device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState);
+__device__ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState);
 
 /**
  * @brief Performs a general Lorentz boost into the frame of a given 4-velocity.
@@ -49,7 +49,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
  * 
  * @return void
  */
-__device__ void GPU_boost(double v[4], double u[4], double vp[4]);
+__device__ void boost(double v[4], double u[4], double vp[4]);
 
 /**
  * @brief Samples the scattering angle cosine for Thomson scattering.
@@ -62,7 +62,7 @@ __device__ void GPU_boost(double v[4], double u[4], double vp[4]);
  * 
  * @return The sampled cosine of the scattering angle \f$ \mu \f$.
  */
-__device__ double GPU_sample_thomson(curandState * localState);
+__device__ double sample_thomson(curandState * localState);
 
 /**
  * @brief Samples the post-scattering photon energy using the Klein-Nishina differential cross-section.
@@ -78,7 +78,7 @@ __device__ double GPU_sample_thomson(curandState * localState);
  * 
  * @return The sampled dimensionless photon frequency after scattering \f$ k' \f$.
  */
-__device__ double GPU_sample_klein_nishina(double k0, curandState * localState);
+__device__ double sample_klein_nishina(double k0, curandState * localState);
 
 /**
  * @brief Computes the differential Klein-Nishina cross-section for a given frequency shift.
@@ -97,7 +97,7 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState * localState);
  * 
  * @return The value of the differential cross-section (unnormalized).
  */
-__device__ double GPU_klein_nishina(const double a, const double ap);
+__device__ double klein_nishina(const double a, const double ap);
 
 
 /**
@@ -122,7 +122,7 @@ __device__ double GPU_klein_nishina(const double a, const double ap);
  * 
  * @return void
  */
-__device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState);
+__device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState);
 
 /**
  * @brief Samples the electron Lorentz factor and velocity from a thermal distribution.
@@ -142,7 +142,7 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
  * 
  * @return void
  */
-__device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState);
+__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState);
 
 /**
  * @brief Samples the auxiliary energy variable \f$ y \f$ for the Maxwell-Jüttner distribution.
@@ -168,7 +168,7 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
  * 
  * @return The sampled auxiliary variable \f$ y \f$, where \f$ \gamma_e = y^2 \Theta_e + 1 \f$.
  */
-__device__ double GPU_sample_y_distr(const double Thetae, curandState * localState);
+__device__ double sample_y_distr(const double Thetae, curandState * localState);
 
 
 /**
@@ -189,7 +189,7 @@ __device__ double GPU_sample_y_distr(const double Thetae, curandState * localSta
  * 
  * @return The sampled cosine of the relative angle \f$ \mu \f$.
  */
-__device__ double GPU_sample_mu_distr(const double beta_e, double random);
+__device__ double sample_mu_distr(const double beta_e, double random);
 
 /**
  * @brief Manages the Compton scattering process for a superphoton on the GPU.
@@ -219,5 +219,5 @@ __device__ double GPU_sample_mu_distr(const double beta_e, double random);
  * 
  * @return void
  */
-__device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index);
+__device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index);
 #endif

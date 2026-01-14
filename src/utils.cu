@@ -2,7 +2,7 @@
 #include "utils.h"
 
 
-__device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
+__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
     int kp1 = k + 1;
     int ip1 = i + 1;
@@ -19,7 +19,7 @@ __device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, con
 	return interp;
 }
 
-__device__ double GPU_interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]){
+__device__ double interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]){
     if(d_N3 == 1){
         return  tex3D<float>(var, (k) * NPRIM + mmenemonics + 0.5f, (j + del[2]) + 0.5f, (i + del[1]) + 0.5f);
     }

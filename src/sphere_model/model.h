@@ -13,7 +13,7 @@
 #define TP_OVER_TE	(3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(1.e-6)
+#define WEIGHT_MIN	(0.)
 
 /*for stop criterium*/
 #define RMAX	(10000.) //Define the maximum radius up to track the photon
@@ -60,16 +60,16 @@
 #define MODEL_FUNCTIONS
 __host__ void init_storage(void);
 __host__ void init_data();
-__device__ int GPU_record_criterion(double X1);
-__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState);
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+__device__ int record_criterion(double X1);
+__device__ int stop_criterion(double X1, double * w, curandState * localState);
+__device__ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 __host__ __device__ void coord(int i, int j, int k, double *X);
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
-__host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
-__device__ double GPU_bias_func(double Te, double w, int round_scatt);
-__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM]);
+__host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
+__device__ double bias_func(double Te, double w, int round_scatt);
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
+__device__ double stepsize(const double X[NDIM], const double K[NDIM]);
 #endif

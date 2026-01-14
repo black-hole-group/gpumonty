@@ -325,7 +325,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 #endif
 
 #ifndef SPHERE_TEST
-	__device__ void GPU_get_connection(const double X[4], double lconn[4][4][4])
+	__device__ void get_connection(const double X[4], double lconn[4][4][4])
 	{
 
 		double r1, r2, r3, r4;
@@ -474,7 +474,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 	}
 #else
 	#define DEL (1.e-7)
-	__device__ void GPU_get_connection(const double X[NDIM], double lconn[NDIM][NDIM][NDIM])
+	__device__ void get_connection(const double X[NDIM], double lconn[NDIM][NDIM][NDIM])
 	{
 		double gcon[NDIM][NDIM];
 		{

@@ -17,7 +17,7 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
     return __longlong_as_double(ret);
 }
 
-__noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph, 
+__noinline__ __device__ void track_super_photon(struct of_photonSOA ph, 
 	#ifdef DO_NOT_USE_TEXTURE_MEMORY
 	 	double * __restrict__ d_p,
 	#else
@@ -65,21 +65,21 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 		
 		gcov_func(XArray, Gcov);
 		#ifndef SPHERE_TEST
-			GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 		#else
-			GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
 		
-		theta = GPU_get_bk_angle(XArray, KArray, Ucov, Bcov, B);
-		nu = GPU_get_fluid_nu(XArray, KArray, Ucov);
-		alpha_scatti = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-		alpha_absi = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
-		bi = GPU_bias_func(Thetae, ph.w[photon_index], round_scat);
+		theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
+		nu = get_fluid_nu(XArray, KArray, Ucov);
+		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+		bi = bias_func(Thetae, ph.w[photon_index], round_scat);
 	}
 	/* Initialize dK/dlam */
-	GPU_init_dKdlam(XArray, KArray, dKdlamArray);
+	init_dKdlam(XArray, KArray, dKdlamArray);
 
-	while (!GPU_stop_criterion(XArray[1], &(ph.w[photon_index]), localState)) {
+	while (!stop_criterion(XArray[1], &(ph.w[photon_index]), localState)) {
 		/* Save initial state for this step */
 		double Xi[NDIM] = {XArray[0], XArray[1], XArray[2], XArray[3]};
 		double Ki[NDIM] = {KArray[0], KArray[1], KArray[2], KArray[3]};
@@ -87,10 +87,10 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 		double E0 = E0s;
 
 		/* evaluate stepsize and step the geodesic */
-		double dl = GPU_stepsize(XArray, KArray);
-		GPU_push_photon(XArray, KArray, dKdlamArray, dl, &E0s);
+		double dl = stepsize(XArray, KArray);
+		push_photon(XArray, KArray, dKdlamArray, dl, &E0s);
 
-		if (GPU_stop_criterion(XArray[1], &(ph.w[photon_index]), localState)){
+		if (stop_criterion(XArray[1], &(ph.w[photon_index]), localState)){
 			break;
 		}
 
@@ -100,9 +100,9 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 			double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 			gcov_func(XArray, Gcov);
 			#ifndef SPHERE_TEST
-				GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+				get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 			#else
-				GPU_get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+				get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 			#endif
 
 			
@@ -111,8 +111,8 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 			if (alpha_absi > 0. || alpha_scatti > 0. || Ne > 0.) {
 				double theta, nu;
 				if (Ne != 0) {
-					theta = GPU_get_bk_angle(XArray, KArray, Ucov, Bcov, B);
-					nu = GPU_get_fluid_nu(XArray, KArray, Ucov);
+					theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
+					nu = get_fluid_nu(XArray, KArray, Ucov);
 					if (isnan(nu)) {
 						printf("isnan nu: track_super_photon dl,E0 %g %g\n", dl, E0);
 						printf("Xi, %g %g %g %g\n", Xi[0], Xi[1], Xi[2], Xi[3]);
@@ -131,15 +131,15 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 					bi = 0.;
 					
 				} else {
-					double alpha_scattf = GPU_alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+					double alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 					alpha_scatti = alpha_scattf;
 
-					double alpha_absf = GPU_alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
 					dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 					alpha_absi = alpha_absf;
 
-					double bf = GPU_bias_func(Thetae, ph.w[photon_index], round_scat);
+					double bf = bias_func(Thetae, ph.w[photon_index], round_scat);
 					bias = 0.5 * (bi + bf);
 					bi = bf;
 				}
@@ -150,7 +150,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 				double x1 = -log(curand_uniform_double(localState));
 				double weight_scat = ph.w[photon_index] / bias;
 
-				if (bias * dtau_scatt * 0 > x1 && weight_scat > WEIGHT_MIN) {
+				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN) {
 					/* Scattering event occurs */
 					if (isnan(weight_scat) || isinf(weight_scat)) {
 						printf("w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
@@ -177,7 +177,7 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 					}
 
 					/* Interpolate position and wave vector to scattering event */
-					GPU_push_photon(Xi, Ki, dKi, dl * frac, &E0);
+					push_photon(Xi, Ki, dKi, dl * frac, &E0);
 					XArray[0] = Xi[0]; XArray[1] = Xi[1]; XArray[2] = Xi[2]; XArray[3] = Xi[3];
 					KArray[0] = Ki[0]; KArray[1] = Ki[1]; KArray[2] = Ki[2]; KArray[3] = Ki[3];
 					dKdlamArray[0] = dKi[0]; dKdlamArray[1] = dKi[1]; dKdlamArray[2] = dKi[2]; dKdlamArray[3] = dKi[3];
@@ -190,9 +190,9 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 						
 						gcov_func(XArray, Gcov_scat);
 						#ifndef SPHERE_TEST
-							GPU_get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat, d_p);
+							get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat, d_p);
 						#else
-							GPU_get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
+							get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
 						#endif
 						
 						if (Ne_scat > 0.) {
@@ -227,15 +227,15 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 						}
 						
 						/* Update opacities for next step */
-						double theta_scat = GPU_get_bk_angle(XArray, KArray, Ucov_scat, Bcov_scat, B_scat);
-						double nu_scat = GPU_get_fluid_nu(XArray, KArray, Ucov_scat);
+						double theta_scat = get_bk_angle(XArray, KArray, Ucov_scat, Bcov_scat, B_scat);
+						double nu_scat = get_fluid_nu(XArray, KArray, Ucov_scat);
 						if (nu_scat < 0.) {
 							alpha_scatti = alpha_absi = 0.;
 						} else {
-							alpha_scatti = GPU_alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, d_table_ptr);
-							alpha_absi = GPU_alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat, besselTexObj);
+							alpha_scatti = alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, d_table_ptr);
+							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat, besselTexObj);
 						}
-						bi = GPU_bias_func(Thetae_scat, ph.w[photon_index], round_scat);
+						bi = bias_func(Thetae_scat, ph.w[photon_index], round_scat);
 					}
 
 					tau_abs += dtau_abs;
@@ -288,12 +288,13 @@ __noinline__ __device__ void GPU_track_super_photon(struct of_photonSOA ph,
 }
 
 
-__device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
+
+__device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;
 	double lconn[NDIM][NDIM][NDIM];
 	
-	GPU_get_connection(X, lconn);
+	get_connection(X, lconn);
 
 	for (k = 0; k < 4; k++) {
 
@@ -321,8 +322,8 @@ __device__ void GPU_init_dKdlam(double X[], double Kcon[], double dK[])
 
 
 
-// // //This one below is from gpu_monty
-__device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl,
+// // //This one below is from monty
+__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl,
 	double *E0)
 {
         double lconn[NDIM][NDIM][NDIM];
@@ -344,7 +345,7 @@ __device__ void GPU_push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[
         }
 
 
-        GPU_get_connection(X, lconn);
+        get_connection(X, lconn);
 
         /* We're in a coordinate basis so take advantage of symmetry in the connection */
         iter = 0;

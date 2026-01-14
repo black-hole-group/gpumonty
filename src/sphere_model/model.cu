@@ -14,7 +14,7 @@ __host__ void init_storage(void)
 }
 
 #define MIN(A,B) (A<B?A:B)
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
+__device__ double stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
@@ -133,7 +133,7 @@ __host__ void init_data()
 
 
 /*Criterion whether or not to record the photon once it has left the zone of interest (reached stop_criterion)*/
-__device__ int GPU_record_criterion(double X1)
+__device__ int record_criterion(double X1)
 {
 	#if(EXP_COORDS)
 	const double r = exp(X1);
@@ -152,7 +152,7 @@ __device__ int GPU_record_criterion(double X1)
 
 }
 /*Stop the tracking of the photon if it falls in the bh or is far enough to not be affected.*/
-__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
+__device__ int stop_criterion(double X1, double * w, curandState * localState)
 {
 	#if(EXP_COORDS)
 	const double r = exp(X1);
@@ -176,7 +176,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 }
 
 /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
-__device__ void GPU_Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+__device__ void Xtoijk(double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
 
 	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] + 1000) - 1000;
@@ -295,11 +295,12 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     double Ucov[4] = {0.};
     double Bcov[4] = {0.};
 
-    GPU_get_fluid_params(X, gcov, Ne, Thetae, B, Ucon, Ucov, Bcon, Bcov);
+    get_fluid_params(X, gcov, Ne, Thetae, B, Ucon, Ucov, Bcon, Bcov);
 }
 
 
-__host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+
+__host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
     double Bcov[NDIM])
@@ -360,7 +361,7 @@ __host__ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][
 }
 
 
-__device__ double GPU_bias_func(double Te, double w, int round_scatt)
+__device__ double bias_func(double Te, double w, int round_scatt)
 {
     double bias;
     #if(0)
@@ -411,7 +412,7 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 
 
 
-__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
     double lE, dx2;
     int iE, ix2, index;
 

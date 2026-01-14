@@ -23,7 +23,7 @@ Declaration of the functions in radiation.cu file
  *
  * @return The invariant emissivity \f$ j_\nu / \nu^2 \f$.
  */
-__device__ double GPU_jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj);
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj);
 
 /**
  * @brief Calculates the invariant Planck source function for a thermal distribution.
@@ -45,7 +45,7 @@ __device__ double GPU_jnu_inv(const double nu, const double Thetae, const double
  * 
  * @return The invariant Planck function \f$ B_\nu / \nu^3 \f$ in CGS units.
  */
-__device__ double GPU_Bnu_inv(const double nu, const double Thetae);
+__device__ double Bnu_inv(const double nu, const double Thetae);
 
 /**
  * @brief Calculates the electron scattering opacity in CGS units.
@@ -66,7 +66,7 @@ __device__ double GPU_Bnu_inv(const double nu, const double Thetae);
  * 
  * @return The electron scattering opacity in \f$ \text{cm}^2/\text{g} \f$.
  */
-__device__ double GPU_kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr);
+__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr);
 
 /**
  * @brief Computes the photon frequency in the local fluid frame (Hz).
@@ -90,7 +90,7 @@ __device__ double GPU_kappa_es(const double nu, const double Thetae, const doubl
  * @return The physical frequency \f$\nu\f$ in Hz.
  *
  */
-__device__ double GPU_get_fluid_nu(const double X[NDIM] , const double K[NDIM] , const double Ucov[NDIM]);
+__device__ double get_fluid_nu(const double X[NDIM] , const double K[NDIM] , const double Ucov[NDIM]);
 
 /**
  * @brief Calculates the Lorentz invariant scattering coefficient.
@@ -108,7 +108,7 @@ __device__ double GPU_get_fluid_nu(const double X[NDIM] , const double K[NDIM] ,
  * 
  * @return The invariant scattering coefficient \f$\nu \alpha_{s}\f$ [units: Hz \f$ \rm{cm}^{-1} \f$].
  */
-__device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr);
+__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr);
 
 
 /**
@@ -133,7 +133,7 @@ __device__ double GPU_alpha_inv_scatt(const double nu, const double Thetae, cons
  *
  * @note A small epsilon (\f$ 10^{-100} \f$) is added to the denominator to prevent division by zero.
  */
-__device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta, cudaTextureObject_t besselTexObj);
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta, cudaTextureObject_t besselTexObj);
 
 
 /**
@@ -153,5 +153,5 @@ __device__ double GPU_alpha_inv_abs(const double nu, const double Thetae, const 
  * 
  * @return The pitch angle \f$\theta\f$ in radians \f$[0, \pi]\f$.
  */
-__device__ double GPU_get_bk_angle(const double X[NDIM], const double K[NDIM] , const double Ucov[NDIM] , const double Bcov[NDIM], const double B);
+__device__ double get_bk_angle(const double X[NDIM], const double K[NDIM] , const double Ucov[NDIM] , const double Bcov[NDIM], const double B);
 #endif

@@ -243,7 +243,7 @@ if (with_electrons == 1) {
 }
 
 
-__device__ int GPU_record_criterion(double X1)
+__device__ int record_criterion(double X1)
 {
 	const double X1max = log(1.1 * RMAX);
 	/* this is coordinate and simulation
@@ -258,7 +258,7 @@ __device__ int GPU_record_criterion(double X1)
 
 
 #define MIN(A,B) (A<B?A:B)
-__device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
+__device__ double stepsize(const double X[NDIM], const double K[NDIM])
 {
 	double dl, dlx1, dlx2, dlx3;
 	double idlx1, idlx2, idlx3;
@@ -279,7 +279,7 @@ __device__ double GPU_stepsize(const double X[NDIM], const double K[NDIM])
 
 
 
-__device__ int GPU_stop_criterion(double X1, double * w, curandState * localState)
+__device__ int stop_criterion(double X1, double * w, curandState * localState)
 {
 	double wmin, X1min, X1max;
 
@@ -309,7 +309,7 @@ __device__ int GPU_stop_criterion(double X1, double * w, curandState * localStat
 }
 
 /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
-__device__ void GPU_Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+__device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
   double phi;
   double XG[NDIM];
@@ -524,8 +524,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 }
 
 
-
-__device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
     double Bcov[NDIM], double * d_p)
@@ -545,7 +544,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
     }
 
     // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
-    GPU_Xtoijk(X, &i, &j, &k, del);
+    Xtoijk(X, &i, &j, &k, del);
     //Calculate the coeficient of displacement
     coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
     coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
@@ -558,20 +557,20 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 
     //interpolate based on the displacement
-    rho = GPU_interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
-    uu = GPU_interp_scalar_pointer(d_p, UU, i, j, k, coeff);
-    kel = GPU_interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
+    rho = interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
+    uu = interp_scalar_pointer(d_p, UU, i, j, k, coeff);
+    kel = interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
     
 
     *Ne = rho * d_Ne_unit;
 
-    Bp[1] = GPU_interp_scalar_pointer(d_p, B1, i, j, k, coeff);
-    Bp[2] = GPU_interp_scalar_pointer(d_p, B2, i, j, k, coeff);
-    Bp[3] = GPU_interp_scalar_pointer(d_p, B3, i, j, k, coeff);
+    Bp[1] = interp_scalar_pointer(d_p, B1, i, j, k, coeff);
+    Bp[2] = interp_scalar_pointer(d_p, B2, i, j, k, coeff);
+    Bp[3] = interp_scalar_pointer(d_p, B3, i, j, k, coeff);
 
-    Vcon[1] = GPU_interp_scalar_pointer(d_p, U1, i, j, k, coeff);
-    Vcon[2] = GPU_interp_scalar_pointer(d_p, U2, i, j, k, coeff);
-    Vcon[3] = GPU_interp_scalar_pointer(d_p, U3, i, j, k, coeff);
+    Vcon[1] = interp_scalar_pointer(d_p, U1, i, j, k, coeff);
+    Vcon[2] = interp_scalar_pointer(d_p, U2, i, j, k, coeff);
+    Vcon[3] = interp_scalar_pointer(d_p, U3, i, j, k, coeff);
 
     gcon_func(X, gcov, gcon);
 
@@ -610,7 +609,7 @@ __device__ void GPU_get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], do
 
 
 
-__device__ double GPU_bias_func(double Te, double w, int round_scatt)
+__device__ double bias_func(double Te, double w, int round_scatt)
 {
   double bias, max;
   max = 0.5 * w / WEIGHT_MIN;
@@ -637,7 +636,7 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 
 
 
-__device__ void GPU_record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
     double lE, dx2;
     int iE, ix2, index;
 

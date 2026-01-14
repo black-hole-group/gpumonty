@@ -3,7 +3,7 @@
 #include "tetrads.h"
 #include "curand.h"
 
-__device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
+__device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
 	double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], 
 	double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
 {
@@ -43,12 +43,12 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 			Bhatcon[1] = 1.;
 		}
 
-		GPU_make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
+		make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
 	}
 
 	/* transform to tetrad frame */
 	double K_tetrad[NDIM];
-	GPU_coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
+	coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
 
 	/* quality control */
 	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
@@ -76,7 +76,7 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	{
 		/* find the electron that we collided with */
 		double P[NDIM];
-		GPU_sample_electron_distr_p( K_tetrad, P, Thetae, localState);
+		sample_electron_distr_p( K_tetrad, P, Thetae, localState);
 		if(isnan(P[1]) || isnan(P[2]) || isnan(P[3])){
 			#ifndef IHARM
 				printf("sample electron returned nan\n");
@@ -86,11 +86,11 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 		}
 
 		/* given electron momentum P, find the new photon momentum Kp */
-		GPU_sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
+		sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
 	}
 
 	/* transform back to coordinate frame */
-	GPU_tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
+	tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
 
 	/*update K back*/
 	php.K0[photon_index] = KArrayphp[0];
@@ -127,7 +127,7 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 	{
 		K_tetrad_p[0] *= -1.;
 		double tmpK[NDIM];
-		GPU_tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
+		tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
 
 		php.E0[photon_index] = ph.E[photon_index];
 		php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
@@ -141,21 +141,21 @@ __device__ void GPU_scatter_super_photon(struct of_photonSOA ph, struct of_photo
 }
 
 
-__device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState)
+__device__ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState)
 {
 	double ke[4], kpe[4];
 	
 	/* boost into the electron frame
 	   ke == photon momentum in elecron frame */
-	GPU_boost(k, p, ke);
+	boost(k, p, ke);
 	
 	double k0p, cth;
 	if (ke[0] > 1.e-4) {
-		k0p = GPU_sample_klein_nishina(ke[0], localState);
+		k0p = sample_klein_nishina(ke[0], localState);
 		cth = 1. - 1 / k0p + 1. / ke[0];
 	} else {
 		k0p = ke[0];
-		cth = GPU_sample_thomson(localState);
+		cth = sample_thomson(localState);
 	}
 	
 	double sth = sqrt(fabs(1. - cth * cth));
@@ -224,7 +224,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	}
 	
 	/* transform k back to lab frame */
-	GPU_boost(kpe, p, kp);
+	boost(kpe, p, kp);
 
 	/* quality control */
 	if (kp[0] < 0 || isnan(kp[0])) {
@@ -247,7 +247,7 @@ __device__ void GPU_sample_scattered_photon(double k[4], double p[4], double kp[
 	/* done! */
 }
 
-__device__ void GPU_boost(double v[4], double u[4], double vp[4])
+__device__ void boost(double v[4], double u[4], double vp[4])
 {
 	double g = u[0];
 	double gm1 = g - 1.;
@@ -280,7 +280,7 @@ __device__ void GPU_boost(double v[4], double u[4], double vp[4])
 	        (1. + n3 * n3_gm1) * v[3];
 }
 
-__device__ double GPU_sample_thomson(curandState * localState)
+__device__ double sample_thomson(curandState * localState)
 {
 	double x1, x2;
 
@@ -294,7 +294,7 @@ __device__ double GPU_sample_thomson(curandState * localState)
 	return (x1);
 }
 
-__device__ double GPU_sample_klein_nishina(double k0, curandState * localState)
+__device__ double sample_klein_nishina(double k0, curandState * localState)
 {
 	double k0pmin, k0pmax, k0p_tent, x1;
 	int n = 0;
@@ -314,12 +314,12 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState * localState)
 
 		n++;
 
-	} while (x1 >= GPU_klein_nishina(k0, k0p_tent));
+	} while (x1 >= klein_nishina(k0, k0p_tent));
 
 	return (k0p_tent);
 }
 
-// __device__ double GPU_klein_nishina(const double a, const double ap)
+// __device__ double klein_nishina(const double a, const double ap)
 // {
 // 	double ch;
 // 	double kn;
@@ -330,7 +330,7 @@ __device__ double GPU_sample_klein_nishina(double k0, curandState * localState)
 // 	return (kn);
 // }
 
-__device__  double GPU_klein_nishina(const double a, const double ap)
+__device__  double klein_nishina(const double a, const double ap)
 {
     const double inv_a = 1.0 / a;
     const double inv_ap = 1.0 / ap;
@@ -338,7 +338,7 @@ __device__  double GPU_klein_nishina(const double a, const double ap)
     return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
 }
 
-__device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState)
+__device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState)
 {
 	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
 	double K, sth, x1, n0dotv0, v0, v1;
@@ -348,8 +348,8 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 	double v2x, v2y, v2z;
 	int sample_cnt = 0;
 	do {
-		GPU_sample_beta_distr( Thetae, &gamma_e, &beta_e, localState);
-		mu = GPU_sample_mu_distr(beta_e, curand_uniform_double(localState ));
+		sample_beta_distr( Thetae, &gamma_e, &beta_e, localState);
+		mu = sample_mu_distr(beta_e, curand_uniform_double(localState ));
 		/* sometimes |mu| > 1 from roundoff error, fix it */
 		if (mu > 1.)
 			mu = 1.;
@@ -451,12 +451,12 @@ __device__ void GPU_sample_electron_distr_p(double k[4], double p[4], double The
 
 	return;
 }
-__device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState)
+__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState)
 {
 	double y;
 
 	/* checked */
-	y = GPU_sample_y_distr( Thetae, localState);
+	y = sample_y_distr( Thetae, localState);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -468,7 +468,7 @@ __device__ void GPU_sample_beta_distr(double Thetae, double *gamma_e, double *be
 
 #define SQRT_MPI_OVER4 (0.443113462726379) // sqrt(M_PI) / 4
 #define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)
-__device__ double GPU_sample_y_distr(const double Thetae, curandState * localState)
+__device__ double sample_y_distr(const double Thetae, curandState * localState)
 {
 	double S_3, pi_3, pi_4, pi_5, pi_6, prob, y;
 	double sqrt_thetae = sqrt(Thetae);
@@ -513,7 +513,7 @@ __device__ double GPU_sample_y_distr(const double Thetae, curandState * localSta
 #undef INV_SQRT_2
 
 
-__device__ double GPU_sample_mu_distr(const double beta_e, double random)
+__device__ double sample_mu_distr(const double beta_e, double random)
 {
 	double det = 1. + 2. * beta_e + beta_e * beta_e - 4. * beta_e * random;
 	if (det < 0.)

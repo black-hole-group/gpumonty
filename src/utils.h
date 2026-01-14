@@ -9,7 +9,7 @@ Declaration of the functions in the utils.cu file
  * @brief Interpolates a scalar field using hardware-accelerated CUDA Texture Objects.
  *
  * This function retrieves the value of a physical variable at a sub-grid location. 
- * Unlike `GPU_interp_scalar_pointer`, which performs a manual 8-point trilinear 
+ * Unlike `interp_scalar_pointer`, which performs a manual 8-point trilinear 
  * interpolation in software, this version uses the GPU's dedicated texture 
  * mapping units (TMUs) to accelerate the lookups.
  *
@@ -28,7 +28,7 @@ Declaration of the functions in the utils.cu file
  * 
  * @return The interpolated value of the scalar field.
  */
-__device__ double GPU_interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]);
+__device__ double interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]);
 
 /**
  * @brief Maps a global photon ID to a specific grid cell or source index using binary search.
@@ -64,7 +64,7 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
  * @note The function assumes periodicity in the third dimension ($k$). If the 
  * index $k$ is at the grid boundary ($d\_N3 - 1$), it wraps around to index 0.
  */
-__device__ double GPU_interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
+__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
 
 /**
  * @brief Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset.

@@ -21,7 +21,7 @@
  * 
  * @return void
  */
-__device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM], const double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM], double Ecov[NDIM][NDIM]);
+__device__ void make_tetrad(double Ucon[NDIM], double trial[NDIM], const double Gcov[NDIM][NDIM], double Econ[NDIM][NDIM], double Ecov[NDIM][NDIM]);
 
 /**
  * @brief Transforms a vector from the local tetrad (fluid) frame to the global coordinate frame.
@@ -38,11 +38,11 @@ __device__ void GPU_make_tetrad(double Ucon[NDIM], double trial[NDIM], const dou
  * 
  * @return void
  */
-__device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM], double K[NDIM]);
+__device__ void tetrad_to_coordinate(const double Econ[NDIM][NDIM], const double K_tetrad[NDIM], double K[NDIM]);
 
 /**
  * @brief Projects a global coordinate vector into the local orthonormal tetrad (fluid) frame.
- * This is the inverse operation of `GPU_tetrad_to_coordinate`. It is used to "measure" 
+ * This is the inverse operation of `tetrad_to_coordinate`. It is used to "measure" 
  * global quantities from the perspective of a local observer moving with the fluid. 
  *
  * The projection is defined by the inner product of the coordinate vector with the 
@@ -55,7 +55,7 @@ __device__ void GPU_tetrad_to_coordinate(const double Econ[NDIM][NDIM], const do
  * 
  * @return void
  */
-__device__ void GPU_coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM]);
+__device__ void coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const double K[NDIM], double K_tetrad[NDIM]);
 
 /**
  * @brief Implements the Kronecker delta function \f$ \delta_{ij} \f$.
@@ -64,7 +64,7 @@ __device__ void GPU_coordinate_to_tetrad(const double Ecov[NDIM][NDIM], const do
  * @param j Column or reference index.
  * @return 1.0 if i == j, otherwise 0.0.
  */
-__device__ double GPU_delta(int i, int j);
+__device__ double delta(int i, int j);
 
 /**
  * @brief Normalizes a contravariant 4-vector to unit length in curved spacetime.
@@ -79,7 +79,7 @@ __device__ double GPU_delta(int i, int j);
  * 
  * @return void
  */
-__device__ void GPU_normalize(double *vcon, const double Gcov[NDIM][NDIM]);
+__device__ void normalize(double *vcon, const double Gcov[NDIM][NDIM]);
 
 /**
  * @brief Projects one vector out of another to ensure orthogonality in curved spacetime.
@@ -93,5 +93,5 @@ __device__ void GPU_normalize(double *vcon, const double Gcov[NDIM][NDIM]);
  * 
  * @return void
  */
-__device__ void GPU_project_out(double *vcona, double *vconb, const double Gcov[NDIM][NDIM]);
+__device__ void project_out(double *vcona, double *vconb, const double Gcov[NDIM][NDIM]);
 #endif

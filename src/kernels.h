@@ -10,7 +10,7 @@ Declarations of the kernels.cu file functions
  * @brief Kernel that will divide the work of generating superphotons among the GPU threads.
  *
  * * Initialize the curand state for each thread based on a unique seed derived from the current time and thread ID.
- * * Calls GPU_init_zone to initialize the photon generation for each zone in the simulation grid.
+ * * Calls init_zone to initialize the photon generation for each zone in the simulation grid.
  * * The loop follows a **grid-stride pattern** to ensure all zones are covered. Each thread \f$ n \f$ 
  * processes a sequence of zones defined by:
  \f[ {\rm i_n} = n + k \cdot N_{\text{total}}\f]
@@ -26,7 +26,7 @@ Declarations of the kernels.cu file functions
  * @param besselTexObj CUDA texture object for Bessel function lookups.
  * @return void
  */
-__global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr, cudaTextureObject_t besselTexObj);    
+__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr, cudaTextureObject_t besselTexObj);    
 
 
 
@@ -68,7 +68,7 @@ __global__ void GPU_generate_photons(const struct of_geom * __restrict__  d_geom
  * @param besselTexObj Texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__device__ void GPU_init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState  * localState, cudaTextureObject_t besselTexObj);
+__device__ void init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState  * localState, cudaTextureObject_t besselTexObj);
 
 /**
  * @brief Samples superphoton properties for the current batch using dynamic workload allocation.
@@ -96,7 +96,7 @@ __device__ void GPU_init_zone(const int i, const int j, const int k, unsigned lo
  * @param besselTexObj Texture object for Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj);
+__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj);
 
 /**
  * @brief  Samples the physical properties of a single superphoton within a zone.
@@ -122,7 +122,7 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
  * \f[
  * k^\mu = e^\mu_{(\alpha)} k^{(\alpha)}
  * \f]
- * where \f$ e^\mu_{(\alpha)} \f$ is the tetrad basis built by `GPU_make_tetrad`.
+ * where \f$ e^\mu_{(\alpha)} \f$ is the tetrad basis built by `make_tetrad`.
  *
  * @param i Radial grid index.
  * @param j Poloidal grid index.
@@ -139,7 +139,7 @@ __global__ void GPU_sample_photons_batch(struct of_photonSOA ph_init, const stru
  * @param besselTexObj Texture object for $K_2$ Bessel function lookups.
  * @return void
  */
-__device__ void GPU_sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj);
+__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj);
 
 /**
  * @brief Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic.
@@ -165,7 +165,7 @@ __device__ void GPU_sample_zone_photon(const int i, const int j, const int k, co
  * @param besselTexObj CUDA texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__global__ void GPU_track(
+__global__ void track(
     struct of_photonSOA ph, 
     #ifdef DO_NOT_USE_TEXTURE_MEMORY
         double * __restrict__ d_p,
@@ -205,7 +205,7 @@ __global__ void GPU_track(
  * @param round_num_scat_end The ending global photon index for this scattering batch.
  * @return void
  */
-__global__ void GPU_track_scat(struct of_photonSOA ph, 
+__global__ void track_scat(struct of_photonSOA ph, 
     #ifdef DO_NOT_USE_TEXTURE_MEMORY
         double * __restrict__ d_p,
     #else
@@ -227,7 +227,7 @@ __global__ void GPU_track_scat(struct of_photonSOA ph,
  * @param nblocks The number of CUDA blocks used in the grid.
  * @return void
  */
-__global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks);
+__global__ void record(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks);
 
 /**
  * @brief  Recording kernel for photons that have been created due to scattering events by dynamically allocating each superphoton to each thread.
@@ -246,14 +246,14 @@ __global__ void GPU_record(struct of_photonSOA ph, struct of_spectrum * __restri
  * @param n The current scattering order (round) being processed.
  * @return void
  */
-__global__ void GPU_record_scattering(
+__global__ void record_scattering(
     struct of_photonSOA ph, 
     struct of_spectrum * __restrict__ d_spect, 
     const unsigned long long max_partition_ph, 
     const int nblocks, 
     const int n
 );
-__global__ void GPU_record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n);
+__global__ void record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__  d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n);
 
 
 
