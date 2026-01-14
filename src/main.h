@@ -30,8 +30,8 @@ __host__ int main(int argc, char *argv[]);
  * - **Energy Density Unit** (\f$ U_{\rm unit} \f$): Defined as \f$ \rho_{ \rm unit} c^2 \f$.
  * - **Number Density scale** (\f$ N_{e,\rm unit} \f$): Assumes a fully ionized hydrogen plasma (\f$ m_p + m_e \f$).
  * 
- * @param params The simulation parameters containing the Black Hole mass ($M_{BH}$) 
- * and the mass scaling unit ($M_{unit}$).
+ * @param params The simulation parameters containing the Black Hole mass (\f$M_{BH}\f$) 
+ * and the mass scaling unit (\f$M_{\rm unit}\f$).
  * 
  * @return void
  */

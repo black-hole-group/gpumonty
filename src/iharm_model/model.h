@@ -369,11 +369,11 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
  * \f$ \Theta_e \propto \frac{u}{\rho} \f$.
  * - **1: Howes/Kawazura Model** * A kinetic-based prescription that tracks electron heating based on 
  * local plasma turbulence and entropy (\f$ \kappa_{el} \f$).
- * - **2: R-high / R-low Model (Default)** * The standard $\beta$-dependent model for Black Hole imaging. It varies the 
+ * - **2: R-high / R-low Model (Default)** * The standard \f$\beta\f$-dependent model for Black Hole imaging. It varies the 
  * temperature ratio \f$ R = T_p/T_e \f$ based on the local plasma \f$ \beta \f$ 
  * (the ratio of gas to magnetic pressure):
- * - In the **Disk** (high $\beta$): Protons are much hotter than electrons (\f$ R \to R_{high} \f$).
- * - In the **Jet** (low $\beta$): Electrons and protons are closer in temperature (\f$ R \to R_{low} \f$).
+ * - In the **Disk** (high \f$\beta\f$): Protons are much hotter than electrons (\f$ R \to R_{high} \f$).
+ * - In the **Jet** (low \f$\beta\f$): Electrons and protons are closer in temperature (\f$ R \to R_{low} \f$).
  */
 #define WITH_ELECTRONS (2)
 

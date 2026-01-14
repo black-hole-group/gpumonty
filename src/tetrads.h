@@ -7,17 +7,17 @@
 /**
  * @brief Constructs an orthonormal tetrad (local laboratory frame) for a moving observer.
  * 
- * A tetrad represents a local Minkowski frame $(e_{(0)}, e_{(1)}, e_{(2)}, e_{(3)})$ 
+ * A tetrad represents a local Minkowski frame \f$(e_{(0)}, e_{(1)}, e_{(2)}, e_{(3)})\f$ 
  * at a point in curved spacetime. 
  * 
  * @note This function uses the **Gram-Schmidt process** to orthogonalize a set of coordinate basis vectors against the fluid's 4-velocity.
  * 
- * @param Ucon  The contravariant 4-velocity of the fluid/observer ($u^\mu$).
+ * @param Ucon  The contravariant 4-velocity of the fluid/observer (\f$u^\mu\f$).
  * @param trial A trial vector used to define the first spatial direction (usually radial).
- * @param Gcov  The covariant metric tensor ($g_{\mu\nu}$).
- * @param Econ  [Output] Contravariant tetrad $e^\mu_{(a)}$. First index (k) is the tetrad label, 
+ * @param Gcov  The covariant metric tensor (\f$g_{\mu\nu}\f$).
+ * @param Econ  [Output] Contravariant tetrad \f$e^\mu_{(a)}\f$. First index (k) is the tetrad label, 
  * second (l) is the coordinate index.
- * @param Ecov  [Output] Covariant tetrad $e_{(a)\mu}$.
+ * @param Ecov  [Output] Covariant tetrad \f$e_{(a)\mu}\f$.
  * 
  * @return void
  */

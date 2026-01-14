@@ -54,15 +54,15 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
  *
  * @param var Pointer to the flattened 3D array containing the fluid data.
  * @param mmenemonics The index (mnemonic) of the specific scalar variable to interpolate.
- * @param i Base index in the first dimension ($N_1$).
- * @param j Base index in the second dimension ($N_2$).
- * @param k Base index in the third dimension ($N_3$).
+ * @param i Base index in the first dimension (\f$N_1\f$).
+ * @param j Base index in the second dimension (\f$N_2\f$).
+ * @param k Base index in the third dimension (\f$N_3\f$).
  * @param coeff An array of 8 weights representing the volumetric contribution of each corner.
  *
  * @return The interpolated scalar value at the target location.
  *
- * @note The function assumes periodicity in the third dimension ($k$). If the 
- * index $k$ is at the grid boundary ($d\_N3 - 1$), it wraps around to index 0.
+ * @note The function assumes periodicity in the third dimension (\f$k\f$). If the 
+ * index \f$k\f$ is at the grid boundary (\f$d\_N3 - 1\f$), it wraps around to index 0.
  */
 __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
 
@@ -70,9 +70,9 @@ __device__ double interp_scalar_pointer(const double * __restrict__ var, const i
  * @brief Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset.
  * * This macro implements a "Variable-Major" or "Structure of Arrays" (SoA) layout. 
  *
- * **Memory Layout Order**: [Variable $v$][Dimension $i$][Dimension $j$][Dimension $k$]
- * - $k$ is the fastest-varying index (unit stride).
- * - $v$ is the slowest-varying index.
+ * **Memory Layout Order**: [Variable \f$v\f$][Dimension \f$i\f$][Dimension \f$j\f$][Dimension \f$k\f$]
+ * - \f$k\f$ is the fastest-varying index (unit stride).
+ * - \f$v\f$ is the slowest-varying index.
  *
  * \f$ \text{Index} = v \times (N_1 \times N_2 \times N_3) + i \times (N_2 \times N_3) + j \times N_3 + k \f$
  * 
@@ -95,7 +95,7 @@ __host__ __device__ inline int NPRIM_INDEX3D(int v, int i, int j, int k){
  * This function performs a standard row-major (or height-major) flattening for 
  * 2D grids. 
  * 
- * **Memory Layout Order**: [Dimension $i$][Dimension $j$]
+ * **Memory Layout Order**: [Dimension \f$i\f$][Dimension \f$j\f$]
  *
  * \f$ \text{Index} = j + (N_2 \times i) \f$
  * 
@@ -119,7 +119,7 @@ __host__ __device__ inline int SPATIAL_INDEX2D(int i, int j){
  *
  * This function flattens a 3D volume into a 1D array.
  *
- * **Memory Layout Order**: [Dimension $i$][Dimension $j$][Dimension $k$]
+ * **Memory Layout Order**: [Dimension \f$i\f$][Dimension \f$j\f$][Dimension \f$k\f$]
  * 
  * \f$ \text{Index} = k + N_3 \times (j + N_2 \times i) \f$
  *

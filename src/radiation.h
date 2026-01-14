@@ -50,18 +50,18 @@ __device__ double Bnu_inv(const double nu, const double Thetae);
 /**
  * @brief Calculates the electron scattering opacity in CGS units.
  *
- * This function determines the scattering opacity $\kappa_{es}$ by looking up the 
+ * This function determines the scattering opacity \f$\kappa_{\rm es}\f$ by looking up the 
  * total Compton cross-section for a given photon frequency and electron temperature. 
  * It assumes a pure hydrogen composition to convert the cross-section (area) 
  * into opacity (area per unit mass).
  *
  * The opacity is calculated as:
- * \[ \kappa_{es} = \frac{\sigma_{Compton}(E_g, \Theta_e)}{m_p} \]
+ * \[ \kappa_{es} = \frac{\sigma_{Compton}(E_g, \Theta_{\rm e})}{m_p} \]
  * where \f$ E_{\rm g} = \frac{h\nu}{m_{\rm e} c^2} \f$ is the dimensionless photon energy and \f$ m_{\rm p} \f$ 
  * is the proton mass.
  *
  * @param nu Photon frequency in the fluid frame (Hz).
- * @param Thetae Dimensionless electron temperature \f$ \Theta_\rm{e} \f$.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_{\rm e} \f$.
  * @param d_table_ptr Pointer to the GPU memory containing the precomputed cross-section lookup table.
  * 
  * @return The electron scattering opacity in \f$ \text{cm}^2/\text{g} \f$.
@@ -114,7 +114,7 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
 /**
  * @brief Calculates the Lorentz invariant absorption coefficient via Kirchhoff's Law.
  *
- * This function determines the invariant absorption coefficient $\nu \alpha_{a}$ 
+ * This function determines the invariant absorption coefficient \f$\nu \alpha_{\rm a}\f$ 
  * by relating the invariant emissivity to the invariant Planck function (source function).
  *
  * Based on Kirchhoff's Law of Thermal Radiation, the absorption coefficient \f$\alpha_\nu\f$ 

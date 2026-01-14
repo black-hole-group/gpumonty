@@ -32,21 +32,21 @@ __device__ void generate_random_direction(double *x, double *y, double *z, curan
 
 /**
  * @brief Samples a Chi-square distributed random variable for a given degree of freedom.
- * Uses the transformation property where a Chi-square distribution with $k$ degrees of freedom 
- * is equivalent to a Gamma distribution scaled by 2: $\chi^2(k) \sim 2\Gamma(k/2, 1)$.
+ * Uses the transformation property where a Chi-square distribution with \f$k\f$ degrees of freedom 
+ * is equivalent to a Gamma distribution scaled by 2: \f$\chi^2(k) \sim 2\Gamma(k/2, 1)\f$.
  * χ
  * @see [Wikipedia article about χ-Γ relation](https://en.wikipedia.org/wiki/Chi-squared_distribution#Relation_to_other_distributions)
  * 
- * @param df Degrees of freedom ($k$).
+ * @param df Degrees of freedom (\f$k\f$).
  * @param localState Pointer to the thread-local cuRAND state.
  * 
- * @return A random value sampled from the $\chi^2$ distribution.
+ * @return A random value sampled from the \f$\chi^2\f$ distribution.
  */
 __device__ double chi_square(int df, curandState * localState);
 
 /**
- * @brief Samples a random variable from the standard exponential distribution ($\lambda = 1$).
- * Implements the Inverse Transform Sampling method by transforming a uniform $(0,1]$ 
+ * @brief Samples a random variable from the standard exponential distribution (\f$\lambda = 1\f$).
+ * Implements the Inverse Transform Sampling method by transforming a uniform \f$(0,1]\f$ 
  * random variable into an exponential distribution.
  * @see [Check wikipedia article example](https://en.wikipedia.org/wiki/Inverse_transform_sampling#Examples)
  * @param localState Pointer to the thread-local cuRAND state.
@@ -56,7 +56,7 @@ __device__ double legacy_standard_exponential(curandState * localState);
 
 
 /**
- * @brief Generates two independent standard normal variables ($\mu=0, \sigma=1$) using the Marsaglia polar method.
+ * @brief Generates two independent standard normal variables (\f$\mu=0, \sigma=1\f$) using the Marsaglia polar method.
  * This is a rejection-based variant of the Box-Muller transform that avoids trigonometric functions 
  * by sampling coordinates within a unit circle.
  * 
@@ -68,10 +68,10 @@ __device__ double legacy_standard_exponential(curandState * localState);
 __device__ void legacy_gauss(double* out1, double* out2, curandState * localState);
 
 /**
- * @brief Samples a standard Gamma distribution ($\Gamma(\alpha, 1)$) using Marsaglia-Tsang (for \f$ \alpha \geq 1 \f$) and an acceptance–rejection
+ * @brief Samples a standard Gamma distribution (\f$\Gamma(\alpha, 1)\f$) using Marsaglia-Tsang (for \f$ \alpha \geq 1 \f$) and an acceptance–rejection
  * transformation to reduce the problem to the shape ≥ 1 case (for \f$ \alpha < 1 \f$).
  * 
- * @param shape Shape parameter ($\alpha$) of the distribution.
+ * @param shape Shape parameter (\f$\alpha\f$) of the distribution.
  * @param localState Pointer to the thread-local cuRAND state.
  * @return A random value sampled from the Gamma distribution.
  */

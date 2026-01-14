@@ -136,7 +136,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
  * @param Econ Tetrad basis (coordinate to orthonormal).
  * @param Ecov Dual tetrad basis (orthonormal to coordinate).
  * @param localState Pointer to the curandState for the current thread.
- * @param besselTexObj Texture object for $K_2$ Bessel function lookups.
+ * @param besselTexObj Texture object for \f$K_2\f$ Bessel function lookups.
  * @return void
  */
 __device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj);

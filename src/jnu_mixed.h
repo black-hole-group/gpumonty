@@ -6,16 +6,16 @@ Declaration of the functions in the jnu_mixed.cu file
 #define JNU_MIXED_H
 
 /**
- * @brief Calculates the thermal synchrotron emissivity $j_\nu(\nu, \theta)$ following [Leung et al.(2011)](https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf).
+ * @brief Calculates the thermal synchrotron emissivity \f$j_\nu(\nu, \theta)\f$ following [Leung et al.(2011)](https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf).
  * 
  * This function implements the analytical fit for the emissivity of a thermal distribution of electrons:
  * \f$ j_\nu(\nu, \theta) = \frac{\sqrt{2}\pi e^2 n_e \nu_s}{3 c K_2(1/\Theta_e)} (X^{1/2} + 2^{11/12} X^{1/6})^2 \exp(-X^{1/3}) \f$
  * 
  * @param nu Photon frequency in the plasma frame.
- * @param Ne Electron number density ($n_e$).
- * @param Thetae Dimensionless electron temperature ($\Theta_e$).
+ * @param Ne Electron number density (\f$n_{\rm e}\f$).
+ * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
  * @param B Magnetic field strength.
- * @param theta Angle between the magnetic field and the wave vector ($\theta$).
+ * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
  * @param besselTexObj (CUDA only) Texture object for Bessel function look-up tables.
  * @return The local emissivity \f$ j_\nu \f$ in CGS units.
  */

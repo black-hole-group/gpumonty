@@ -261,7 +261,7 @@
 
 /**
  * The maximum allowable relative error (as a fraction). 
- * For example, a value of $10^{-6}$ means you want the result to be accurate to within $0.0001\%$.
+ * For example, a value of \f$10^{-6}\f$ means you want the result to be accurate to within \f$0.0001\%\f$.
  */
 #define EPSREL (1.e-6)
 
