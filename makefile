@@ -5,7 +5,7 @@ MODEL_DIR = $(SRC_DIR)/iharm_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?=/usr/local/cuda-12.4/
+CUDA_PATH ?=/usr/local/cuda/
 
 
 # GSL setup
@@ -16,9 +16,9 @@ HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # Compiler flags
-ARCH = compute_60
-CODE = sm_60
-CODE_LTO = lto_60
+ARCH = compute_86
+CODE = sm_86
+CODE_LTO = lto_86
 
 # Directories
 SRC_DIR = src

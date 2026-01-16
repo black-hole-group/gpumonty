@@ -50,9 +50,9 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 		isnan(KArray[0]) || isnan(KArray[1]) || isnan(KArray[2]) || isnan(KArray[3]) || 
 		ph.w[photon_index] == 0.) {
 		printf("track_super_photon: bad input photon.\n");
-		printf("X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
-			XArray[0], XArray[1], XArray[2], XArray[3], KArray[0],
-			KArray[1], KArray[2], KArray[3], ph.w[photon_index], ph.nscatt[photon_index]);
+		// printf("X0,X1,X2,X3,K0,K1,K2,K3,w,nscatt: %g %g %g %g %g %g %g %g %g %d\n",
+		// 	XArray[0], XArray[1], XArray[2], XArray[3], KArray[0],
+		// 	KArray[1], KArray[2], KArray[3], ph.w[photon_index], ph.nscatt[photon_index]);
 		return;
 	}
 
@@ -115,9 +115,9 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					nu = get_fluid_nu(XArray, KArray, Ucov);
 					if (isnan(nu)) {
 						printf("isnan nu: track_super_photon dl,E0 %g %g\n", dl, E0);
-						printf("Xi, %g %g %g %g\n", Xi[0], Xi[1], Xi[2], Xi[3]);
-						printf("Ki, %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
-						printf("dKi, %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
+						// printf("Xi, %g %g %g %g\n", Xi[0], Xi[1], Xi[2], Xi[3]);
+						// printf("Ki, %g %g %g %g\n", Ki[0], Ki[1], Ki[2], Ki[3]);
+						// printf("dKi, %g %g %g %g\n", dKi[0], dKi[1], dKi[2], dKi[3]);
 					}
 				}
 
@@ -322,7 +322,6 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 
 
 
-// // //This one below is from monty
 __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl,
 	double *E0)
 {

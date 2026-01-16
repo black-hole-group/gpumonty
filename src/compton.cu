@@ -249,6 +249,7 @@ __device__ void sample_scattered_photon(double k[4], double p[4], double kp[4], 
 
 __device__ void boost(double v[4], double u[4], double vp[4])
 {
+	
 	double g = u[0];
 	double gm1 = g - 1.;
 	
@@ -296,23 +297,20 @@ __device__ double sample_thomson(curandState * localState)
 
 __device__ double sample_klein_nishina(double k0, curandState * localState)
 {
-	double k0pmin, k0pmax, k0p_tent, x1;
-	int n = 0;
+	double k0pmin, k0p_tent, x1;
 
 	/* a low efficiency sampling algorithm, particularly for large k0;
 	   limiting efficiency is log(2 k0)/(2 k0) */
 	k0pmin = k0 / (1. + 2. * k0);	/* at theta = Pi */
-	k0pmax = k0;		/* at theta = 0 */
 	do {
 		/* tentative value */
-		k0p_tent = k0pmin + (k0pmax - k0pmin) * curand_uniform_double(localState );
+		/*Here we use k0pmax as k0 at theta = 0*/
+		k0p_tent = k0pmin + (k0 - k0pmin) * curand_uniform_double(localState );
 
 		/* rejection sample in box of height = kn(kmin) */
 		x1 = 2. * (1. + 2. * k0 +
 			   2. * k0 * k0) / (k0 * k0 * (1. + 2. * k0));
 		x1 *= curand_uniform_double(localState );
-
-		n++;
 
 	} while (x1 >= klein_nishina(k0, k0p_tent));
 

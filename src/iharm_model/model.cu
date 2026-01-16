@@ -376,54 +376,61 @@ __host__ __device__ void coord(const int i, const int j, const int k, double *X)
 
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 {
-	int k, l;
-	double sth, cth, s2, rho2;
-	double r, th;
-	double tfac, rfac, hfac, pfac;
+	/* required by broken math.h */
+  {
+    int k, l;
+    DLOOP gcov[k][l] = 0.;
+  }
+
 
   #ifdef __CUDA_ARCH__
     double local_bhspin = d_bhspin;
   #else
     double local_bhspin = bhspin;
   #endif
-	/* required by broken math.h */
-	//void sincos(double th, double *sth, double *cth);
 
-	DLOOP gcov[k][l] = 0.;
-	bl_coord(X, &r, &th);
-	#ifdef __CUDA_ARCH__
-	double radius0 = d_R0;
-	double theta_slope = d_hslope;
-	#else
-	double radius0 = R0;
-	double theta_slope = hslope;
-	#endif
-	//sincos(th, &sth, &cth);
-	sth = sin(th);
-	cth = cos(th);
-	sth = fabs(sth) + SMALL;
-	s2 = sth * sth;
-	rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
-
+  double r, s2, rho2;
+  {
+    double th;
+    bl_coord(X, &r, &th);
+    double sth, cth;
+    sth = sin(th);
+    cth = cos(th);
+    sth = fabs(sth) + SMALL;
+    s2 = sth * sth;
+    rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
+  }
+  
 	/* transformation for Kerr-Schild -> modified Kerr-Schild */
-	tfac = 1.;
-	rfac = r - radius0;
-	hfac = M_PI + (1. - theta_slope) * M_PI * cos(2. * M_PI * X[2]);
-	pfac = 1.;
+  // tfac and pfac are 1 so in order to reduce register pressure, I'm not defining them.
+  double rfac, hfac;
+  {
+    #ifdef __CUDA_ARCH__
+      double radius0 = d_R0;
+      double theta_slope = d_hslope;
+    #else
+    	double theta_slope = hslope;
+      double radius0 = R0;
+    #endif
+    rfac = r - radius0;
+    hfac = M_PI + (1. - theta_slope) * M_PI * cos(2. * M_PI * X[2]);
+  }
 
-	gcov[0][0] = (-1. + 2. * r / rho2) * tfac * tfac;
-	gcov[0][1] = (2. * r / rho2) * tfac * rfac;
-	gcov[0][3] = (-2. * local_bhspin * r * s2 / rho2) * tfac * pfac;
+
+
+	gcov[0][0] = (-1. + 2. * r / rho2);
+	gcov[0][1] = (2. * r / rho2) * rfac;
+	gcov[0][3] = (-2. * local_bhspin * r * s2 / rho2);
 
 	gcov[1][0] = gcov[0][1];
 	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2)) * rfac * pfac;
+	gcov[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2)) * rfac;
 	gcov[2][2] = rho2 * hfac * hfac;
 
 	gcov[3][0] = gcov[0][3];
 	gcov[3][1] = gcov[1][3];
 	gcov[3][3] =
-	    s2 * (rho2 + local_bhspin*local_bhspin * s2 * (1. + 2. * r / rho2)) * pfac * pfac;
+	    s2 * (rho2 + local_bhspin*local_bhspin * s2 * (1. + 2. * r / rho2));
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -453,12 +460,83 @@ __host__ __device__ void bl_coord(const double *X, double *r, double *th)
 }
 
 
+// __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,
+//     double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *  d_geom, const double *  d_p)
+// {
+//     int l, m;
+//     double Ucov[NDIM], Bcov[NDIM];
+//     double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
+
+//     #ifdef __CUDA_ARCH__
+//     double local_B_unit = d_B_unit;
+//     double local_Ne_unit = d_Ne_unit;
+//     #else
+//     double local_B_unit = B_unit;
+//     double local_Ne_unit = Ne_unit;
+//     #endif
+
+//     Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
+//     Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
+//     Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
+
+//     Vcon[1] = d_p[NPRIM_INDEX3D(U1, i, j, k)];
+//     Vcon[2] = d_p[NPRIM_INDEX3D(U2, i, j, k)];
+//     Vcon[3] = d_p[NPRIM_INDEX3D(U3, i, j, k)];
+
+//     /* Get Ucov */
+//     VdotV = 0.;
+//     for (l = 1; l < NDIM; l++)
+//         for (m = 1; m < NDIM; m++)
+//             VdotV += d_geom[SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
+//     Vfac = sqrt(-1. / d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
+//     Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
+//     for (l = 1; l < NDIM; l++){
+//         Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
+//     }
+//     lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
+//     /* Get B and Bcov */
+//     UdotBp = 0.;
+//     for (l = 1; l < NDIM; l++)
+//         UdotBp += Ucov[l] * Bp[l];
+//     Bcon[0] = UdotBp;
+//     for (l = 1; l < NDIM; l++){
+//         Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
+//     }
+//     lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
+//     *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+//     Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * local_B_unit;
+//     *Thetae = thetae_func(d_p[NPRIM_INDEX3D(UU, i, j, k)], d_p[NPRIM_INDEX3D(KRHO, i, j, k)] , (*B)/local_B_unit, d_p[NPRIM_INDEX3D(KEL, i, j, k)]);
+//     *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * local_Ne_unit;
+
+//     if (*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
+
+//     double sig = pow(*B/local_B_unit,2)/(*Ne/local_Ne_unit);
+//     if(sig > 1. || i < 9) {
+//         *Thetae = SMALL;
+//     }
+
+//     if (isnan(*B)){
+//     printf("i = %d, j = %d, k = %d\n", i, j, k);
+//     printf( "VdotV = %le\n", VdotV);
+//     printf( "Vfac = %lf\n", Vfac);
+//     for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
+//     for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcov[a][b]);
+//     printf( "Thetae: %lf\n", *Thetae);
+//     printf( "Ne: %lf\n", *Ne);
+//     printf( "Bp: %lf, %lf, %lf\n", Bp[1], Bp[2], Bp[3]);
+//     printf( "Vcon: %lf, %lf, %lf\n", Vcon[1], Vcon[2], Vcon[3]);
+//     printf( "Bcon: %lf, %lf, %lf, %lf\n Bcov: %lf, %lf, %lf %lf\n", Bcon[0], Bcon[1], Bcon[2], Bcon[3], Bcov[0], Bcov[1], Bcov[2], Bcov[3]);
+//     printf( "Ucon: %lf, %lf, %lf, %lf\n Ucov: %lf, %lf, %lf %lf\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3], Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
+//     }
+// }
+
+
+
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,
     double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *  d_geom, const double *  d_p)
 {
     int l, m;
     double Ucov[NDIM], Bcov[NDIM];
-    double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
 
     #ifdef __CUDA_ARCH__
     double local_B_unit = d_B_unit;
@@ -468,36 +546,45 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     double local_Ne_unit = Ne_unit;
     #endif
 
-    Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
-    Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
-    Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
+    {
+      double Vcon[NDIM], Vfac, VdotV;
 
-    Vcon[1] = d_p[NPRIM_INDEX3D(U1, i, j, k)];
-    Vcon[2] = d_p[NPRIM_INDEX3D(U2, i, j, k)];
-    Vcon[3] = d_p[NPRIM_INDEX3D(U3, i, j, k)];
+      Vcon[1] = d_p[NPRIM_INDEX3D(U1, i, j, k)];
+      Vcon[2] = d_p[NPRIM_INDEX3D(U2, i, j, k)];
+      Vcon[3] = d_p[NPRIM_INDEX3D(U3, i, j, k)];
 
-    /* Get Ucov */
-    VdotV = 0.;
-    for (l = 1; l < NDIM; l++)
-        for (m = 1; m < NDIM; m++)
-            VdotV += d_geom[SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
-    Vfac = sqrt(-1. / d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
-    Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
-    for (l = 1; l < NDIM; l++){
-        Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
+      /* Get Ucov */
+      VdotV = 0.;
+      for (l = 1; l < NDIM; l++)
+          for (m = 1; m < NDIM; m++)
+              VdotV += d_geom[SPATIAL_INDEX2D(i,j)].gcov[l][m] * Vcon[l] * Vcon[m];
+      Vfac = sqrt(-1. / d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0] * (1. + fabs(VdotV)));
+      Ucon[0] = -Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][0];
+      for (l = 1; l < NDIM; l++){
+          Ucon[l] = Vcon[l] - Vfac * d_geom[SPATIAL_INDEX2D(i,j)].gcon[0][l];
+      }
+      lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
     }
-    lower(Ucon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
+
     /* Get B and Bcov */
-    UdotBp = 0.;
-    for (l = 1; l < NDIM; l++)
-        UdotBp += Ucov[l] * Bp[l];
-    Bcon[0] = UdotBp;
-    for (l = 1; l < NDIM; l++){
-        Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
+    {
+      double UdotBp;
+      double Bp[NDIM];
+      Bp[1] = d_p[NPRIM_INDEX3D(B1, i, j, k)];
+      Bp[2] = d_p[NPRIM_INDEX3D(B2, i, j, k)];
+      Bp[3] = d_p[NPRIM_INDEX3D(B3, i, j, k)];
+      UdotBp = 0.;
+      for (l = 1; l < NDIM; l++)
+          UdotBp += Ucov[l] * Bp[l];
+      Bcon[0] = UdotBp;
+      for (l = 1; l < NDIM; l++){
+          Bcon[l] = (Bp[l] + Ucon[l] * UdotBp) / Ucon[0];
+      }
+      lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
+      *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+      Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * local_B_unit;
     }
-    lower(Bcon, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Bcov);
-    *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * local_B_unit;
+
     *Thetae = thetae_func(d_p[NPRIM_INDEX3D(UU, i, j, k)], d_p[NPRIM_INDEX3D(KRHO, i, j, k)] , (*B)/local_B_unit, d_p[NPRIM_INDEX3D(KEL, i, j, k)]);
     *Ne = d_p[NPRIM_INDEX3D(KRHO, i, j, k)] * local_Ne_unit;
 
@@ -509,20 +596,20 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     }
 
     if (isnan(*B)){
-    printf("i = %d, j = %d, k = %d\n", i, j, k);
-    printf( "VdotV = %le\n", VdotV);
-    printf( "Vfac = %lf\n", Vfac);
-    for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
-    for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcov[a][b]);
-    printf( "Thetae: %lf\n", *Thetae);
-    printf( "Ne: %lf\n", *Ne);
-    printf( "Bp: %lf, %lf, %lf\n", Bp[1], Bp[2], Bp[3]);
-    printf( "Vcon: %lf, %lf, %lf\n", Vcon[1], Vcon[2], Vcon[3]);
-    printf( "Bcon: %lf, %lf, %lf, %lf\n Bcov: %lf, %lf, %lf %lf\n", Bcon[0], Bcon[1], Bcon[2], Bcon[3], Bcov[0], Bcov[1], Bcov[2], Bcov[3]);
-    printf( "Ucon: %lf, %lf, %lf, %lf\n Ucov: %lf, %lf, %lf %lf\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3], Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
+    //printf("i = %d, j = %d, k = %d\n", i, j, k);
+    printf("B is nan in function get_fluid_zone\n");
+    // printf( "VdotV = %le\n", VdotV);
+    // printf( "Vfac = %lf\n", Vfac);
+    // for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcon[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcon[a][b]);
+    // for(int a = 0; a < NDIM; a++) for(int b=0;b<NDIM;b++)printf( "gcov[%d][%d]: %lf\n", a, b, d_geom[SPATIAL_INDEX2D(i,j)].gcov[a][b]);
+    // printf( "Thetae: %lf\n", *Thetae);
+    // printf( "Ne: %lf\n", *Ne);
+    // printf( "Bp: %lf, %lf, %lf\n", Bp[1], Bp[2], Bp[3]);
+    // printf( "Vcon: %lf, %lf, %lf\n", Vcon[1], Vcon[2], Vcon[3]);
+    // printf( "Bcon: %lf, %lf, %lf, %lf\n Bcov: %lf, %lf, %lf %lf\n", Bcon[0], Bcon[1], Bcon[2], Bcon[3], Bcov[0], Bcov[1], Bcov[2], Bcov[3]);
+    // printf( "Ucon: %lf, %lf, %lf, %lf\n Ucov: %lf, %lf, %lf %lf\n", Ucon[0], Ucon[1], Ucon[2], Ucon[3], Ucov[0], Ucov[1], Ucov[2], Ucov[3]);
     }
 }
-
 
 __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
@@ -530,10 +617,6 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double
     double Bcov[NDIM], double * d_p)
 {
     int i, j, k;
-    double del[NDIM];
-    double rho, uu, kel;
-    double Bp[NDIM], Vcon[NDIM], Vfac, VdotV, UdotBp;
-    double gcon[NDIM][NDIM], coeff[8];
 
     //checks if it's within the grid
     if (X[1] < d_startx[1] ||
@@ -543,35 +626,30 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double
     return;
     }
 
-    // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
-    Xtoijk(X, &i, &j, &k, del);
-    //Calculate the coeficient of displacement
-    coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
-    coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
-    coeff[2] = (1. - del[1]) * del[2] * del[3];
-    coeff[3] = del[1] * del[2] * del[3];
-    coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
-    coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
-    coeff[6] = del[1] * (1. - del[2]) * del[3];
-    coeff[7] = del[1] * del[2] * (1. - del[3]);
 
+    double coeff[8];
+    {
+      // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
+      double del[NDIM];
+      Xtoijk(X, &i, &j, &k, del);
+      //Calculate the coeficient of displacement
+      coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
+      coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
+      coeff[2] = (1. - del[1]) * del[2] * del[3];
+      coeff[3] = del[1] * del[2] * del[3];
+      coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
+      coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
+      coeff[6] = del[1] * (1. - del[2]) * del[3];
+      coeff[7] = del[1] * del[2] * (1. - del[3]);
+    }
 
-    //interpolate based on the displacement
-    rho = interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
-    uu = interp_scalar_pointer(d_p, UU, i, j, k, coeff);
-    kel = interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
-    
-
-    *Ne = rho * d_Ne_unit;
-
-    Bp[1] = interp_scalar_pointer(d_p, B1, i, j, k, coeff);
-    Bp[2] = interp_scalar_pointer(d_p, B2, i, j, k, coeff);
-    Bp[3] = interp_scalar_pointer(d_p, B3, i, j, k, coeff);
-
+    {
+    double Vcon[NDIM], Vfac, VdotV;
     Vcon[1] = interp_scalar_pointer(d_p, U1, i, j, k, coeff);
     Vcon[2] = interp_scalar_pointer(d_p, U2, i, j, k, coeff);
     Vcon[3] = interp_scalar_pointer(d_p, U3, i, j, k, coeff);
 
+    double gcon[NDIM][NDIM];
     gcon_func(X, gcov, gcon);
 
     /* Get Ucov */
@@ -580,30 +658,45 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double
       for (int j = 1; j < NDIM; j++)
         VdotV += gcov[i][j] * Vcon[i] * Vcon[j];
 
-    //printf("gcov = %.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n%.15e, %.15e, %.15e, %.15e\n", gcov[0][0], gcov[0][1], gcov[0][2], gcov[0][3], gcov[1][0], gcov[1][1], gcov[1][2], gcov[1][3], gcov[2][0], gcov[2][1], gcov[2][2], gcov[2][3], gcov[3][0], gcov[3][1], gcov[3][2], gcov[3][3]);
     Vfac = sqrt(-1. / gcon[0][0] * (1. + fabs(VdotV)));
     Ucon[0] = -Vfac * gcon[0][0];
     for (int i = 1; i < NDIM; i++){
     Ucon[i] = Vcon[i] - Vfac * gcon[0][i];
     }
     lower(Ucon, gcov, Ucov);
+    }
 
-    /* Get B and Bcov */
-    UdotBp = 0.;
-    for (int i = 1; i < NDIM; i++)
-    UdotBp += Ucov[i] * Bp[i];
-    Bcon[0] = UdotBp;
-    for (int i = 1; i < NDIM; i++)
-    Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
-    lower(Bcon, gcov, Bcov);
+    {
+      double Bp[NDIM];
+      double UdotBp;
+      Bp[1] = interp_scalar_pointer(d_p, B1, i, j, k, coeff);
+      Bp[2] = interp_scalar_pointer(d_p, B2, i, j, k, coeff);
+      Bp[3] = interp_scalar_pointer(d_p, B3, i, j, k, coeff);
+      /* Get B and Bcov */
+      UdotBp = 0.;
+      for (int i = 1; i < NDIM; i++)
+      UdotBp += Ucov[i] * Bp[i];
+      Bcon[0] = UdotBp;
+      for (int i = 1; i < NDIM; i++)
+      Bcon[i] = (Bp[i] + Ucon[i] * UdotBp) / Ucon[0];
+      lower(Bcon, gcov, Bcov);
 
-    *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
-    Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
+      *B = sqrt(Bcon[0] * Bcov[0] + Bcon[1] * Bcov[1] +
+      Bcon[2] * Bcov[2] + Bcon[3] * Bcov[3]) * d_B_unit;
+    }
+
+    //interpolate based on the displacement
+    double rho = interp_scalar_pointer(d_p, KRHO, i, j, k, coeff);
+    double uu = interp_scalar_pointer(d_p, UU, i, j, k, coeff);
+    double kel = interp_scalar_pointer(d_p, KEL, i,j,k, coeff);
+    
+
+    *Ne = rho * d_Ne_unit;
 
     *Thetae = thetae_func(uu, rho, (*B)/d_B_unit, kel);
     if(*Thetae > THETAE_MAX) *Thetae = THETAE_MAX;
 
-    double sig = pow(*B/d_B_unit, 2.)/(*Ne/d_Ne_unit);
+    double sig = (*B/d_B_unit) * (*B/d_B_unit)/(*Ne/d_Ne_unit);
     if(sig > 1.) *Thetae = SMALL;
 }
 

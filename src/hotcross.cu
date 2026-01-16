@@ -129,9 +129,6 @@ __host__ void init_hotcross(void)
 
 __device__ double total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr)
 {
-	int i, j;
-	double lw, lT, lcross;
-	double di, dj;
 	/* cold/low-energy: just use thomson cross section */
 	if (w * thetae < 1.e-6){
 		return (SIGMA_THOMSON);
@@ -145,28 +142,25 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
 
 	/* in-bounds for table */
 	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
-
-		lw = log10(w);
-		lT = log10(thetae);
-		i = (int) ((lw - d_lminw) / d_dlw);
-		j = (int) ((lT - d_lmint) / d_dlT2);
-		di = (lw - d_lminw) / d_dlw - i;
-		dj = (lT - d_lmint) / d_dlT2 - j;
-		lcross =
+		
+		double lw = log10(w);
+		double lT = log10(thetae);
+		int i = (int) ((lw - d_lminw) / d_dlw);
+		int j = (int) ((lT - d_lmint) / d_dlT2);
+		double di = (lw - d_lminw) / d_dlw - i;
+		double dj = (lT - d_lmint) / d_dlT2 - j;
+		double lcross =
 		    (1. - di) * (1. - dj) * d_table_ptr[j + (NT+1) * i] + di * (1. -
 								dj) *
 		    d_table_ptr[j + (NT+1) * (i+1)] + (1. - di) * dj * d_table_ptr[(j+1) + (NT+1) * i] +
 		    di * dj * d_table_ptr[(j+1) + (NT+1) * (i+1)];
 
-		// printf("table[i][j] = %.15e\n, table[i][j+1] = %.15e\n table[i+1][j] = %.15e\n table[i+1][j+1] = %.15e\n lcross = %.15e\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)], lcross);
-		// printf("lcross = %.15e\n", lcross);
-
 		//lcross = tex2D<float>(tableTexObj, i, j);
 		if (isnan(lcross)) {
 			printf("Problem in total_compton_cross_lkup, lcross is nan!\n");	
-			printf("lw = %g. lT =  %g, i =  %d, j =  %d, di =  %g, dj =  %g\n", lw, lT, i,
-				j, di, dj);
-			printf("table[i][j] = %le, table[i][j + 1] = %le, table[i +1][j] = %le, table[i+1][j+1] = %le\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)]);
+			// printf("lw = %g. lT =  %g, i =  %d, j =  %d, di =  %g, dj =  %g\n", lw, lT, i,
+			// 	j, di, dj);
+			// printf("table[i][j] = %le, table[i][j + 1] = %le, table[i +1][j] = %le, table[i+1][j+1] = %le\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)]);
 		}
 		return (pow(10., lcross));
 	}
@@ -179,8 +173,6 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
 
 __host__ __device__ double total_compton_cross_num(double w, double thetae)
 {
-	double dmue, dgammae, mue, gammae, f, cross;
-
 
 	if (isnan(w)) {
 		printf("compton cross isnan: %g %g\n", w, thetae);
@@ -193,28 +185,27 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae)
 	if (thetae < MINT)
 		return (hc_klein_nishina(w) * SIGMA_THOMSON);
 
-	dmue = DMUE;
-	dgammae = thetae * DGAMMAE;
+	double dgammae = thetae * DGAMMAE;
 
 	/* integrate over mu_e, gamma_e, where mu_e is the cosine of the
 	   angle between k and u_e, and the angle k is assumed to lie,
 	   wlog, along the z axis */
-	cross = 0.;
-	for (mue = -1. + 0.5 * dmue; mue < 1.; mue += dmue)
-		for (gammae = 1. + 0.5 * dgammae;
-		     gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
+	double cross = 0.;
+	for (double mue = -1. + 0.5 * DMUE; mue < 1.; mue += DMUE)
+		for (double gammae = 1. + 0.5 * dgammae;
+		    gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
 
-			f = 0.5 * dNdgammae(thetae, gammae);
+			double f = 0.5 * dNdgammae(thetae, gammae);
 
 			cross +=
-			    dmue * dgammae * boostcross(w, mue,
+			    DMUE * dgammae * boostcross(w, mue,
 							gammae) * f;
 			if (isnan(cross)) {
 				printf("Problem in hc_klein_nishina, cross is nan\n");
-				printf("%g %g %g %g %g %g\n", w,
-					thetae, mue, gammae,
-					dNdgammae(thetae, gammae),
-					boostcross(w, mue, gammae));
+				// printf("%g %g %g %g %g %g\n", w,
+				// 	thetae, mue, gammae,
+				// 	dNdgammae(thetae, gammae),
+				// 	boostcross(w, mue, gammae));
 			}
 		}
 
