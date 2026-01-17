@@ -3,142 +3,270 @@
 #include "tetrads.h"
 #include "curand.h"
 
-__device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
-	double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], 
-	double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
+__device__ void scatter_super_photon(
+    struct of_photonSOA ph,
+    struct of_photonSOA php,
+    double Ne,
+    double Thetae,
+    double B,
+    double Ucon[NDIM],
+    double Bcon[NDIM],
+    double Gcov[NDIM][NDIM],
+    curandState *s,
+    unsigned long long photon_index)
 {
-	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], 
-		ph.K2[photon_index], ph.K3[photon_index]};
-	double KArrayphp[NDIM];
+    /* ===============================
+       1. Load photon 4-momentum
+       =============================== */
 
-	if (isnan(KArrayph[1])) {
-		printf("scatter: bad input photon, the program should exit itself\n");
-		//exit(0);
-	}
+    double Kcoord[NDIM];
+    Kcoord[0] = ph.K0[photon_index];
+    Kcoord[1] = ph.K1[photon_index];
+    Kcoord[2] = ph.K2[photon_index];
+    Kcoord[3] = ph.K3[photon_index];
 
-	/* quality control */
-	if (KArrayph[0] > 1.e5 || KArrayph[0] < 0. || isnan(KArrayph[1])
-		|| isnan(KArrayph[0]) || isnan(KArrayph[3])) {
-		printf(
-			"normalization problem, killing superphoton: %g \n",
-			KArrayph[0]);
-		KArrayph[0] = fabs(KArrayph[0]);
-		printf("X1,X2: %g %g\n", ph.X1[photon_index], ph.X2[photon_index]);
-		ph.w[photon_index] = 0.;
-		return;
-	}
+#ifndef NDEBUG
+    if (isnan(Kcoord[1])) {
+        printf("scatter: bad input photon\n");
+    }
+#endif
 
-	/* make local tetrad */
-	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
-	{
-		/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
-		/* note that B is in cgs but Bcon is in code units */
-		double Bhatcon[NDIM];
-		if (B > 0.) {
-			for (int k = 0; k < NDIM; k++)
-				Bhatcon[k] = Bcon[k] / (B / d_B_unit);
-		} else {
-			for (int k = 0; k < NDIM; k++)
-				Bhatcon[k] = 0.;
-			Bhatcon[1] = 1.;
-		}
+    if (Kcoord[0] > 1.e5 || Kcoord[0] < 0. ||
+        isnan(Kcoord[0]) || isnan(Kcoord[1]) || isnan(Kcoord[3])) {
+        ph.w[photon_index] = 0.0;
+        return;
+    }
 
-		make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
-	}
+    /* ===============================
+       2. Build tetrad
+       =============================== */
 
-	/* transform to tetrad frame */
-	double K_tetrad[NDIM];
-	coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
+    double Econ[NDIM][NDIM];
+    double Ecov[NDIM][NDIM];
 
-	/* quality control */
-	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
-		printf(
-			"conversion to tetrad frame problem: %g %g\n",
-			KArrayph[0], K_tetrad[0]);
-		printf("%g %g %g\n", KArrayph[1], KArrayph[2], KArrayph[3]);
-		printf("%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
-		printf("%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
-		printf("%g %g %g %g\n", Gcov[0][0], Gcov[0][1], Gcov[0][2], Gcov[0][3]) ;
-		printf("%g %g %g %g\n", Gcov[1][0], Gcov[1][1], Gcov[1][2], Gcov[1][3]) ;
-		printf("%g %g %g %g\n", Gcov[2][0], Gcov[2][1], Gcov[2][2], Gcov[2][3]) ;
-		printf("%g %g %g %g\n", Gcov[3][0], Gcov[3][1], Gcov[3][2], Gcov[3][3]) ;
-		printf("%g %g %g %g\n", Ecov[0][0], Ecov[0][1], Ecov[0][2], Ecov[0][3]) ;
-		printf("%g %g %g %g\n", Ecov[1][0], Ecov[1][1], Ecov[1][2], Ecov[1][3]) ;
-		printf("%g %g %g %g\n", Ecov[2][0], Ecov[2][1], Ecov[2][2], Ecov[2][3]) ;
-		printf("%g %g %g %g\n", Ecov[3][0], Ecov[3][1], Ecov[3][2], Ecov[3][3]) ;
-		printf("X1,X2: %g %g\n",ph.X1[photon_index],ph.X2[photon_index]) ;
-		ph.w[photon_index] = 0.;
-		return;
-	}
+    {
+        double Bhat[NDIM];
 
-	/* sample electron and scatter photon */
-	double K_tetrad_p[NDIM];
-	{
-		/* find the electron that we collided with */
-		double P[NDIM];
-		sample_electron_distr_p( K_tetrad, P, Thetae, localState);
-		if(isnan(P[1]) || isnan(P[2]) || isnan(P[3])){
-			#ifndef IHARM
-				printf("sample electron returned nan\n");
-			#endif
-			ph.w[photon_index] = 0.;
-			return;
-		}
+        if (B > 0.0) {
+#pragma unroll
+            for (int k = 0; k < NDIM; ++k)
+                Bhat[k] = Bcon[k] / (B / d_B_unit);
+        } else {
+            Bhat[0] = 0.0;
+            Bhat[1] = 1.0;
+            Bhat[2] = 0.0;
+            Bhat[3] = 0.0;
+        }
 
-		/* given electron momentum P, find the new photon momentum Kp */
-		sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
-	}
+        make_tetrad(Ucon, Bhat, Gcov, Econ, Ecov);
+    }
 
-	/* transform back to coordinate frame */
-	tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
+    /* ===============================
+       3. Transform photon → tetrad
+       =============================== */
 
-	/*update K back*/
-	php.K0[photon_index] = KArrayphp[0];
-	php.K1[photon_index] = KArrayphp[1];
-	php.K2[photon_index] = KArrayphp[2];
-	php.K3[photon_index] = KArrayphp[3];
+    double Ktet[NDIM];
+    coordinate_to_tetrad(Ecov, Kcoord, Ktet);
 
-	/* quality control */
-	if (isnan(KArrayphp[1])) {
-		printf(
-			"problem with conversion to coordinate frame\n");
-		printf("%g %g %g %g\n", Econ[0][0], Econ[0][1],
-			Econ[0][2], Econ[0][3]);
-		printf("%g %g %g %g\n", Econ[1][0], Econ[1][1],
-			Econ[1][2], Econ[1][3]);
-		printf("%g %g %g %g\n", Econ[2][0], Econ[2][1],
-			Econ[2][2], Econ[2][3]);
-		printf("%g %g %g %g\n", Econ[3][0], Econ[3][1],
-			Econ[3][2], Econ[3][3]);
-		printf("%g %g %g %g\n", K_tetrad_p[0],
-			K_tetrad_p[1], K_tetrad_p[2], K_tetrad_p[3]);
-		php.w[photon_index] = 0;
-		return;
-	}
+    if (Ktet[0] > 1.e5 || Ktet[0] < 0.0 || isnan(Ktet[1])) {
+        ph.w[photon_index] = 0.0;
+        return;
+    }
 
-	if (KArrayphp[0] < 0) {
-		printf("K0, K0p, Kp, P[0]: %g %g %g\n",
-			K_tetrad[0], K_tetrad_p[0], KArrayphp[0]);
-		php.w[photon_index] = 0.;
-		return;
-	}
+    /* ===============================
+       4. Electron sampling + scatter
+       =============================== */
 
-	/* bookkeeping */
-	{
-		K_tetrad_p[0] *= -1.;
-		double tmpK[NDIM];
-		tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
+    double Ktet_p[NDIM];
+    {
+        double P[NDIM];
 
-		php.E0[photon_index] = ph.E[photon_index];
-		php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
-		php.tau_abs[photon_index] = 0.;
-		php.tau_scatt[photon_index] = 0.;
-		php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
-	}
+        sample_electron_distr_p(Ktet, P, Thetae, s);
 
+        if (isnan(P[1]) || isnan(P[2]) || isnan(P[3])) {
+            ph.w[photon_index] = 0.0;
+            return;
+        }
 
-	return;
+        sample_scattered_photon(Ktet, P, Ktet_p, s);
+    }
+
+    /* ===============================
+       5. Back to coordinates
+       =============================== */
+
+    double Kout[NDIM];
+    tetrad_to_coordinate(Econ, Ktet_p, Kout);
+
+    if (isnan(Kout[1]) || Kout[0] < 0.0) {
+        php.w[photon_index] = 0.0;
+        return;
+    }
+
+    php.K0[photon_index] = Kout[0];
+    php.K1[photon_index] = Kout[1];
+    php.K2[photon_index] = Kout[2];
+    php.K3[photon_index] = Kout[3];
+
+    /* ===============================
+       6. Bookkeeping (tight scope)
+       =============================== */
+
+    {
+        /* flip sign for absorption bookkeeping */
+        Ktet_p[0] = -Ktet_p[0];
+
+        double tmpK[NDIM];
+        tetrad_to_coordinate(Ecov, Ktet_p, tmpK);
+
+        php.E0[photon_index] = ph.E[photon_index];
+        php.E[photon_index] =
+            php.E0s[photon_index] = -tmpK[0];
+
+        php.tau_abs[photon_index]   = 0.0;
+        php.tau_scatt[photon_index] = 0.0;
+        php.nscatt[photon_index]    = ph.nscatt[photon_index] + 1;
+    }
 }
+
+
+
+// __device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,
+// 	double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], 
+// 	double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index)
+// {
+// 	double KArrayph[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], 
+// 		ph.K2[photon_index], ph.K3[photon_index]};
+// 	double KArrayphp[NDIM];
+
+// 	if (isnan(KArrayph[1])) {
+// 		printf("scatter: bad input photon, the program should exit itself\n");
+// 		//exit(0);
+// 	}
+
+// 	/* quality control */
+// 	if (KArrayph[0] > 1.e5 || KArrayph[0] < 0. || isnan(KArrayph[1])
+// 		|| isnan(KArrayph[0]) || isnan(KArrayph[3])) {
+// 		printf(
+// 			"normalization problem, killing superphoton: %g \n",
+// 			KArrayph[0]);
+// 		KArrayph[0] = fabs(KArrayph[0]);
+// 		//printf("X1,X2: %g %g\n", ph.X1[photon_index], ph.X2[photon_index]);
+// 		ph.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* make local tetrad */
+// 	double Econ[NDIM][NDIM], Ecov[NDIM][NDIM];
+// 	{
+// 		/* make trial vector for Gram-Schmidt orthogonalization in make_tetrad */
+// 		/* note that B is in cgs but Bcon is in code units */
+// 		double Bhatcon[NDIM];
+// 		if (B > 0.) {
+// 			for (int k = 0; k < NDIM; k++)
+// 				Bhatcon[k] = Bcon[k] / (B / d_B_unit);
+// 		} else {
+// 			for (int k = 0; k < NDIM; k++)
+// 				Bhatcon[k] = 0.;
+// 			Bhatcon[1] = 1.;
+// 		}
+
+// 		make_tetrad(Ucon, Bhatcon, Gcov, Econ, Ecov);
+// 	}
+
+// 	/* transform to tetrad frame */
+// 	double K_tetrad[NDIM];
+// 	coordinate_to_tetrad(Ecov, KArrayph, K_tetrad);
+
+// 	/* quality control */
+// 	if (K_tetrad[0] > 1.e5 || K_tetrad[0] < 0. || isnan(K_tetrad[1])) {
+// 		printf(
+// 			"conversion to tetrad frame problem: %g %g\n",
+// 			KArrayph[0], K_tetrad[0]);
+// 		// printf("%g %g %g\n", KArrayph[1], KArrayph[2], KArrayph[3]);
+// 		// printf("%g %g %g\n",K_tetrad[1], K_tetrad[2], K_tetrad[3]);
+// 		// printf("%g %g %g %g\n",Ucon[0], Ucon[1], Ucon[2], Ucon[3]);
+// 		// printf("%g %g %g %g\n", Gcov[0][0], Gcov[0][1], Gcov[0][2], Gcov[0][3]) ;
+// 		// printf("%g %g %g %g\n", Gcov[1][0], Gcov[1][1], Gcov[1][2], Gcov[1][3]) ;
+// 		// printf("%g %g %g %g\n", Gcov[2][0], Gcov[2][1], Gcov[2][2], Gcov[2][3]) ;
+// 		// printf("%g %g %g %g\n", Gcov[3][0], Gcov[3][1], Gcov[3][2], Gcov[3][3]) ;
+// 		// printf("%g %g %g %g\n", Ecov[0][0], Ecov[0][1], Ecov[0][2], Ecov[0][3]) ;
+// 		// printf("%g %g %g %g\n", Ecov[1][0], Ecov[1][1], Ecov[1][2], Ecov[1][3]) ;
+// 		// printf("%g %g %g %g\n", Ecov[2][0], Ecov[2][1], Ecov[2][2], Ecov[2][3]) ;
+// 		// printf("%g %g %g %g\n", Ecov[3][0], Ecov[3][1], Ecov[3][2], Ecov[3][3]) ;
+// 		// printf("X1,X2: %g %g\n",ph.X1[photon_index],ph.X2[photon_index]) ;
+// 		ph.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* sample electron and scatter photon */
+// 	double K_tetrad_p[NDIM];
+// 	{
+// 		/* find the electron that we collided with */
+// 		double P[NDIM];
+// 		sample_electron_distr_p( K_tetrad, P, Thetae, localState);
+// 		if(isnan(P[1]) || isnan(P[2]) || isnan(P[3])){
+// 			#ifndef IHARM
+// 				printf("sample electron returned nan\n");
+// 			#endif
+// 			ph.w[photon_index] = 0.;
+// 			return;
+// 		}
+
+// 		/* given electron momentum P, find the new photon momentum Kp */
+// 		sample_scattered_photon( K_tetrad, P, K_tetrad_p, localState);
+// 	}
+
+// 	/* transform back to coordinate frame */
+// 	tetrad_to_coordinate(Econ, K_tetrad_p, KArrayphp);
+
+// 	/*update K back*/
+// 	php.K0[photon_index] = KArrayphp[0];
+// 	php.K1[photon_index] = KArrayphp[1];
+// 	php.K2[photon_index] = KArrayphp[2];
+// 	php.K3[photon_index] = KArrayphp[3];
+
+// 	/* quality control */
+// 	if (isnan(KArrayphp[1])) {
+// 		printf(
+// 			"problem with conversion to coordinate frame\n");
+// 		// printf("%g %g %g %g\n", Econ[0][0], Econ[0][1],
+// 		// 	Econ[0][2], Econ[0][3]);
+// 		// printf("%g %g %g %g\n", Econ[1][0], Econ[1][1],
+// 		// 	Econ[1][2], Econ[1][3]);
+// 		// printf("%g %g %g %g\n", Econ[2][0], Econ[2][1],
+// 		// 	Econ[2][2], Econ[2][3]);
+// 		// printf("%g %g %g %g\n", Econ[3][0], Econ[3][1],
+// 		// 	Econ[3][2], Econ[3][3]);
+// 		// printf("%g %g %g %g\n", K_tetrad_p[0],
+// 		// 	K_tetrad_p[1], K_tetrad_p[2], K_tetrad_p[3]);
+// 		php.w[photon_index] = 0;
+// 		return;
+// 	}
+
+// 	if (KArrayphp[0] < 0) {
+// 		printf("K0, K0p, Kp, P[0]: %g %g %g\n",
+// 			K_tetrad[0], K_tetrad_p[0], KArrayphp[0]);
+// 		php.w[photon_index] = 0.;
+// 		return;
+// 	}
+
+// 	/* bookkeeping */
+// 	{
+// 		K_tetrad_p[0] *= -1.;
+// 		double tmpK[NDIM];
+// 		tetrad_to_coordinate(Ecov, K_tetrad_p, tmpK);
+
+// 		php.E0[photon_index] = ph.E[photon_index];
+// 		php.E[photon_index] = php.E0s[photon_index] = -tmpK[0];
+// 		php.tau_abs[photon_index] = 0.;
+// 		php.tau_scatt[photon_index] = 0.;
+// 		php.nscatt[photon_index] = ph.nscatt[photon_index] + 1;
+// 	}
+
+
+// 	return;
+// }
 
 
 __device__ void sample_scattered_photon(double k[4], double p[4], double kp[4], curandState * localState)
@@ -210,8 +338,8 @@ __device__ void sample_scattered_photon(double k[4], double p[4], double kp[4], 
 
 		/* find phi for new photon */
 		double phi = 2. * M_PI * curand_uniform_double(localState);
-		double sphi = sin(phi);
-		double cphi = cos(phi);
+		double sphi, cphi;
+		sincos(phi, &sphi, &cphi);
 		
 		double dir1 = cth * v0x + sth * (cphi * v1x + sphi * v2x);
 		double dir2 = cth * v0y + sth * (cphi * v1y + sphi * v2y);
@@ -317,16 +445,7 @@ __device__ double sample_klein_nishina(double k0, curandState * localState)
 	return (k0p_tent);
 }
 
-// __device__ double klein_nishina(const double a, const double ap)
-// {
-// 	double ch;
-// 	double kn;
 
-// 	ch = 1. + 1. / a - 1. / ap;
-// 	kn = (a / ap + ap / a - 1. + ch * ch) / (a * a);
-
-// 	return (kn);
-// }
 
 __device__  double klein_nishina(const double a, const double ap)
 {
@@ -336,125 +455,135 @@ __device__  double klein_nishina(const double a, const double ap)
     return (a * inv_ap + ap * inv_a - 1.0 + ch * ch) / (a * a);
 }
 
-__device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState)
+
+__device__ void sample_electron_distr_p(
+    const double k[4],
+    double p[4],
+    double Thetae,
+    curandState *s)
 {
-	double beta_e, mu, phi, cphi, sphi, gamma_e, sigma_KN;
-	double K, sth, x1, n0dotv0, v0, v1;
-	double n0x, n0y, n0z;
-	double v0x, v0y, v0z;
-	double v1x, v1y, v1z;
-	double v2x, v2y, v2z;
-	int sample_cnt = 0;
-	do {
-		sample_beta_distr( Thetae, &gamma_e, &beta_e, localState);
-		mu = sample_mu_distr(beta_e, curand_uniform_double(localState ));
-		/* sometimes |mu| > 1 from roundoff error, fix it */
-		if (mu > 1.)
-			mu = 1.;
-		else if (mu < -1.)
-			mu = -1;
+    /* ===============================
+       1. Sample electron velocity
+       =============================== */
 
-		/* frequency in electron rest frame */
-		K = gamma_e * (1. - beta_e * mu) * k[0];
+    double beta_e, gamma_e, mu;
 
-		/* Avoid problems at small K */
-		if (K < 1.e-3) {
-			sigma_KN = 1. - 2. * K;
-		} else {
+    {
+        int sample_cnt = 0;
 
-			/* Klein-Nishina cross-section / Thomson */
-			sigma_KN =
-			    (3. / (4. * K * K)) * (2. +
-						   K * K * (1. +
-							    K) / ((1. +
-								   2. *
-								   K) *
-								  (1. +
-								   2. *
-								   K)) +
-						   (K * K - 2. * K -
-						    2.) / (2. * K) *
-						   log(1. + 2. * K));
-		}
+        while (true) {
 
-		x1 = curand_uniform_double(localState );
-		
-		sample_cnt++;
+            sample_beta_distr(Thetae, &gamma_e, &beta_e, s);
 
-		if (sample_cnt > 10000000) {
-			printf(
-				"in sample_electron mu, gamma_e, K, sigma_KN, x1: %g %g %g %g %g %g\n",
-				Thetae, mu, gamma_e, K, sigma_KN, x1);
-			/* This is a kluge to prevent stalling for large values of \Theta_e */
-			Thetae *= 0.5;
-			sample_cnt = 0;
-		}
+            /* sample mu safely */
+            {
+                double mu_loc =
+                    sample_mu_distr(beta_e, curand_uniform_double(s));
+                mu = fmin(1.0, fmax(-1.0, mu_loc));
+            }
 
-	} while (x1 >= sigma_KN);
+            /* acceptance probability */
+            double accept;
+            {
+                const double K =
+                    gamma_e * (1.0 - beta_e * mu) * k[0];
 
-	/* first unit vector for coordinate system */
-	v0x = k[1];
-	v0y = k[2];
-	v0z = k[3];
-	v0 = sqrt(v0x * v0x + v0y * v0y + v0z * v0z);
-	v0x /= v0;
-	v0y /= v0;
-	v0z /= v0;
+                if (K < 1.e-3) {
+                    accept = 1.0 - 2.0 * K;
+                } else {
+                    const double invK = 1.0 / K;
+                    const double t = 1.0 + 2.0 * K;
 
-	/* pick zero-angle for coordinate system */
-	//gsl_ran_dir_3d(r, &n0x, &n0y, &n0z);
-	generate_random_direction( &n0x, &n0y, &n0z, localState);
-	n0dotv0 = v0x * n0x + v0y * n0y + v0z * n0z;
+                    accept =
+                        (3.0 * invK * invK * 0.25) *
+                        (2.0 +
+                         K * K * (1.0 + K) / (t * t) +
+                         (K * K - 2.0 * K - 2.0) *
+                         0.5 * invK * log(t));
+                }
+            }
 
-	/* second unit vector */
-	v1x = n0x - (n0dotv0) * v0x;
-	v1y = n0y - (n0dotv0) * v0y;
-	v1z = n0z - (n0dotv0) * v0z;
+            if (curand_uniform_double(s) < accept)
+                break;
 
-	/* normalize */
-	v1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
-	v1x /= v1;
-	v1y /= v1;
-	v1z /= v1;
+            if (++sample_cnt > 10000000) {
+                Thetae *= 0.5;
+                sample_cnt = 0;
+            }
+        }
+    }
 
-	/* find one more unit vector using cross product;
-	   this guy is automatically normalized */
-	v2x = v0y * v1z - v0z * v1y;
-	v2y = v0z * v1x - v0x * v1z;
-	v2z = v0x * v1y - v0y * v1x;
+    /* ===============================
+       2. Construct orthonormal basis
+       =============================== */
 
-	/* now resolve new momentum vector along unit vectors 
-	   and create a four-vector $p$ */
-	phi = curand_uniform_double(localState ) * 2. * M_PI;	/* orient uniformly */  
-	sphi = sin(phi);
-	cphi = cos(phi);
-	//mu is the cosine
-	sth = sqrt(1. - mu * mu);
+    /* v0: direction of photon */
+    double v0x = k[1], v0y = k[2], v0z = k[3];
+    {
+        const double invv0 =
+            rsqrt(v0x * v0x + v0y * v0y + v0z * v0z);
+        v0x *= invv0;
+        v0y *= invv0;
+        v0z *= invv0;
+    }
 
-	p[0] = gamma_e;
-	p[1] =
-	    gamma_e * beta_e * (mu * v0x +
-				sth * (cphi * v1x + sphi * v2x));
-	p[2] =
-	    gamma_e * beta_e * (mu * v0y +
-				sth * (cphi * v1y + sphi * v2y));
-	p[3] =
-	    gamma_e * beta_e * (mu * v0z +
-				sth * (cphi * v1z + sphi * v2z));
+    /* v1: perpendicular direction */
+    double v1x, v1y, v1z;
+    {
+        double n0x, n0y, n0z;
+        generate_random_direction(&n0x, &n0y, &n0z, s);
 
-	if (beta_e < 0) {
-		printf("betae error: %g %g %g %g\n",
-			p[0], p[1], p[2], p[3]);
-	}
+        const double n0dotv0 =
+            v0x * n0x + v0y * n0y + v0z * n0z;
 
-	return;
+        v1x = n0x - n0dotv0 * v0x;
+        v1y = n0y - n0dotv0 * v0y;
+        v1z = n0z - n0dotv0 * v0z;
+
+        const double invv1 =
+            rsqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+        v1x *= invv1;
+        v1y *= invv1;
+        v1z *= invv1;
+    }
+
+    /* ===============================
+       3. Momentum direction
+       =============================== */
+
+    double sphi, cphi;
+    {
+        const double phi =
+            curand_uniform_double(s) * 2.0 * M_PI;
+        sincos(phi, &sphi, &cphi);
+    }
+
+    const double sth = sqrt(1.0 - mu * mu);
+    const double gb  = gamma_e * beta_e;
+
+    /* v2 = v0 x v1 (computed inline) */
+    const double v2x = v0y * v1z - v0z * v1y;
+    const double v2y = v0z * v1x - v0x * v1z;
+    const double v2z = v0x * v1y - v0y * v1x;
+
+    /* ===============================
+       4. Output four-momentum
+       =============================== */
+
+    p[0] = gamma_e;
+    p[1] = gb * (mu * v0x + sth * (cphi * v1x + sphi * v2x));
+    p[2] = gb * (mu * v0y + sth * (cphi * v1y + sphi * v2y));
+    p[3] = gb * (mu * v0z + sth * (cphi * v1z + sphi * v2z));
 }
+
+
+
+
+
 __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState)
 {
-	double y;
-
 	/* checked */
-	y = sample_y_distr( Thetae, localState);
+	const double y = sample_y_distr( Thetae, localState);
 
 	/* checked */
 	*gamma_e = y * y * Thetae + 1.;
@@ -468,39 +597,42 @@ __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e
 #define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)
 __device__ double sample_y_distr(const double Thetae, curandState * localState)
 {
-	double S_3, pi_3, pi_4, pi_5, pi_6, prob, y;
-	double sqrt_thetae = sqrt(Thetae);
+	double pi_3, pi_4, pi_5;
+	const double sqrt_thetae = sqrt(Thetae);
 
 	pi_3 =  SQRT_MPI_OVER4;
 	pi_4 = INV_SQRT_2 * sqrt_thetae / 2.;
 	pi_5 = 3. * SQRT_MPI_OVER4 * Thetae / 2.;
-	pi_6 = Thetae * INV_SQRT_2* sqrt_thetae;
 
-	S_3 = pi_3 + pi_4 + pi_5 + pi_6;
+	{
+		const double pi_6 = Thetae * INV_SQRT_2 * sqrt_thetae;
+		const double S_3 = pi_3 + pi_4 + pi_5 + pi_6;
 
-	pi_3 /= S_3;
-	pi_4 /= S_3;
-	pi_5 /= S_3;
-	pi_6 /= S_3;
+		pi_3 /= S_3;
+		pi_4 /= S_3;
+		pi_5 /= S_3;
+	}
+
+	const double inv_sqrt2_sqrt_thetae = INV_SQRT_2 * sqrt(Thetae);
+
+	double y, prob;
 	do {
-		double x;
-		double x1 = curand_uniform_double(localState );
+		const double x1 = curand_uniform_double(localState );
 		
 		if (x1 < pi_3) {
-			x = chi_square(3, localState);
+			y = sqrt(chi_square(3, localState)/2.);
 		} else if (x1 < pi_3 + pi_4) {
-			x = chi_square(4, localState);
+			y = sqrt(chi_square(4, localState)/2.);
 		} else if (x1 < pi_3 + pi_4 + pi_5) {
-			x = chi_square(5, localState);
+			y = sqrt(chi_square(5, localState)/2.);
 		} else {
-			x = chi_square(6, localState);
+			y = sqrt(chi_square(6, localState)/2.);
 		}
 
 		/* this translates between defn of distr in
 		   Canfield et al. and standard chisq distr */
-		y = sqrt(x / 2.);
-		double num = sqrt(1. + 0.5 * Thetae * y * y);
-		double den = (1. + y * INV_SQRT_2 *sqrt_thetae);
+		const double num = sqrt(1. + 0.5 * Thetae * y * y);
+		const double den = (1. + y * inv_sqrt2_sqrt_thetae);
 
 		prob = num / den;
 

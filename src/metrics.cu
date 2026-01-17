@@ -299,9 +299,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		double local_bhspin = bhspin;
 		#endif
 
-			sth = sin(th);
-			cth = cos(th);
-
+			sincos(th, &sth, &cth);
 			sth = fabs(sth) + SMALL;
 
 			irho2 = 1. / (r * r + local_bhspin * local_bhspin * cth * cth);
@@ -363,9 +361,8 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		#endif
 		dthdx22 = dthdx2 * dthdx2;
 
-		//sincos(th, &sth, &cth);
-		sth = sin(th);
-		cth = cos(th);
+		sincos(th, &sth, &cth);
+
 		sth2 = sth * sth;
 		r1sth2 = r1 * sth2;
 		sth4 = sth2 * sth2;

@@ -394,8 +394,7 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
     double th;
     bl_coord(X, &r, &th);
     double sth, cth;
-    sth = sin(th);
-    cth = cos(th);
+    sincos(th, &sth, &cth);
     sth = fabs(sth) + SMALL;
     s2 = sth * sth;
     rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
