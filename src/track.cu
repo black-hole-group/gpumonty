@@ -287,8 +287,6 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	return;
 }
 
-
-
 __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;

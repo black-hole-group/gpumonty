@@ -457,7 +457,7 @@ __device__  double klein_nishina(const double a, const double ap)
 
 
 __device__ void sample_electron_distr_p(
-    const double k[4],
+    double k[4],
     double p[4],
     double Thetae,
     curandState *s)
