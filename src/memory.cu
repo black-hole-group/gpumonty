@@ -94,7 +94,9 @@ __host__ void transferParams() {
 	cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
 	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
 
+
 	/*iharm variables*/
+	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
 	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));

@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
 	// load parameters from command line
   	load_par_from_argv(argc, argv, &params);
 
-
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
@@ -48,7 +47,6 @@ __host__ void set_units(Params params)
 	L_unit = GNEWT * params.MBH_par * MSUN / (CL * CL);
 	M_unit = params.M_unit;
 	Rho_unit = M_unit / (L_unit * L_unit * L_unit);
-
 	/*Derived units*/
 	T_unit = L_unit/CL; /*UNIT of time*/
 	U_unit = Rho_unit * CL * CL; /*UNITy of energy density*/
@@ -67,7 +65,6 @@ __host__ void init_model(char *args[])
 	/* This will tell the units defined in decs.h. 
 	There used to be a function here for this, but it's extremely 
 	unecessary as well as taking M_UNIT as an argument*/
-
 	set_units(params);
 	fprintf(stderr, "\nUNITS\n");
 	fprintf(stderr, "L,T,M: %g %g %g\n", L_unit, T_unit, M_unit);

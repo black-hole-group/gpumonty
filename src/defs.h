@@ -395,6 +395,10 @@ __device__ double d_thetae_max;
  */
 __device__ double d_tp_over_te;
 
+/**
+ * Global device variable that controls whether scattering is enabled (1) or disabled (0) in the simulation.
+ */
+__device__ int d_scattering;
 
 /**
  * Global device variable for the black hole mass in grams (g).
@@ -467,6 +471,7 @@ typedef struct params_t {
   char spectrum[256];
 
   // bias
+  int scattering;
   double biasTuning;
   int    fitBias;
   double fitBiasNs;

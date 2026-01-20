@@ -19,4 +19,6 @@ M_unit 1.e16
 trat_small 1.
 trat_large 10.
 beta_crit 1.
-Thetae_max = 1.e100
+Thetae_max 1.e100
+
+scattering 0

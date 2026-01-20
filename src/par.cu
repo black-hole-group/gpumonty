@@ -7,6 +7,7 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 
   params->seed        = -1;
 
+  params->scattering   = 1;
   params->biasTuning  = 1.;
   params->fitBias     = 1.;
   params->fitBiasNs   = 10000.;
@@ -54,7 +55,7 @@ __host__ void load_par (const char *fname, Params *params) {
 
     // Tracker for all variables - prefixed with 'found_' to avoid macro issues
     struct {
-        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio;
+        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio, scattering;
         int tp_te, beta, trat_s, trat_l, theta_m;
     } f = {0}; 
 
@@ -75,6 +76,7 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "dump"))     { read_param(line, "dump", (void *)(params->dump), 3); f.dump = 1; }
         if (strstr(line, "spectrum")) { read_param(line, "spectrum", (void *)(params->spectrum), 3); f.spectrum = 1; }
 
+        if (strstr(line, "scattering")) { read_param(line, "scattering", &(params->scattering), 1); f.scattering = 1; }
         if (strstr(line, "bias"))        { read_param(line, "bias", &(params->biasTuning), 2); f.bias = 1; }
         if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }
         if (strstr(line, "fit_bias_ns")) { read_param(line, "fit_bias_ns", &(params->fitBiasNs), 2); f.fit_bias_ns = 1; }
@@ -127,11 +129,13 @@ __host__ void load_par (const char *fname, Params *params) {
     print_status_s("spectrum", f.spectrum, params->spectrum);
 
     #if (0)
+      print_status_i("scattering", f.scattering, params->scattering);
       print_status("bias", f.bias, params->biasTuning);
       print_status_i("fit_bias", f.fit_bias, params->fitBias);
       print_status("fit_bias_ns", f.fit_bias_ns, params->fitBiasNs);
       print_status("ratio", f.ratio, params->targetRatio);
     #else
+      print_status_i("scattering", f.scattering, params->scattering);
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "bias");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "fit_bias");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (tuning bias not implemented)\n", "fit_bias_ns");
