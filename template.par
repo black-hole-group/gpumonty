@@ -9,16 +9,22 @@ dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
 #Use this path when testing harm_model
 #dump ./data/dump019
 
-spectrum sane_ben.spec
+#Name of the spectrum file generated
+spectrum sane_iharm.spec
 
+# T_p/T_e
 tp_over_te 3.
 
+#Black hole mass and mass unit to translate accretion rate to physical units
 MBH 4.14e6
 M_unit 1.e16
 
+
+#IHARM Rhigh and Rlow model parameters
 trat_small 1.
 trat_large 10.
 beta_crit 1.
 Thetae_max 1.e100
 
-scattering 0
+# Whether or not to have scattering activated
+scattering 1

@@ -124,90 +124,90 @@ __host__ void init_geometry()
 
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename)
 {
-	int i, j;
-	double dx2, dOmega, nuLnu, tau_scatt, L;
-	FILE *fp;
-    char filepath[256]; // Adjust the size as needed
+    int i, j;
+    double dx2, dOmega, nuLnu, tau_scatt, L;
+    FILE *fp;
+    char filepath[256]; 
 
     // Construct the file path
     snprintf(filepath, sizeof(filepath), "./output/%s", filename);
-	fp = fopen(filepath, "w");
-	if (fp == NULL) {
-		fprintf(stderr, "trouble opening spectrum file\n");
-		exit(0);
-	}
+    fp = fopen(filepath, "w");
+    if (fp == NULL) {
+        fprintf(stderr, "trouble opening spectrum file\n");
+        exit(0);
+    }
 
-	/* output */
-	max_tau_scatt = 0.;
-	L = 0.;
-	//Running through all energy bins. The frequency interval will correspond to:
-	//i * dlE + lE0 but this is in natural logarithm to go to log10 divide by ln(10)
-	for (i = 0; i < N_EBINS; i++) {
+    /* --- NEW: Print dOmega values to file header --- */
+    // We calculate dx2 here to use for the dOmega loop
+    dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+    
+    fprintf(fp, "# dOmega:"); // Header tag
+    for (j = 0; j < N_THBINS; j++) {
+        // Calculate dOmega for this theta bin
+        dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+        fprintf(fp, " %.15e", dOmega);
+    }
+    fprintf(fp, "\n"); // End header line
+    /* ----------------------------------------------- */
 
-		/* output log_10(photon energy/(me c^2))*/
-		fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
+    /* output */
+    max_tau_scatt = 0.;
+    L = 0.;
 
-		for (j = 0; j < N_THBINS; j++) {
+    // Running through all energy bins
+    for (i = 0; i < N_EBINS; i++) {
 
-			/* convert accumulated photon number in each bin 
-			   to \nu L_\nu, in units of Lsun */
-			dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+        /* output log_10(photon energy/(me c^2))*/
+        fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
 
-			/* factor of 2 accounts for folding around equator */
-			dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+        for (j = 0; j < N_THBINS; j++) {
 
-			nuLnu =
-			    (ME * CL * CL) * (4. * M_PI / dOmega) * (1. /
-								     dlE);
+            /* convert accumulated photon number in each bin 
+               to \nu L_\nu, in units of Lsun */
+            // dx2 is already calculated above, but valid here too
+            dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
 
-			nuLnu *= spect[j][i].dEdlE;
-			nuLnu /= LSUN;
-			tau_scatt =
-			    spect[j][i].tau_scatt / (spect[j][i].dNdlE +
-						     SMALL);
+            nuLnu = (ME * CL * CL) * (4. * M_PI / dOmega) * (1. / dlE);
 
-			fprintf(fp,
-				"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
-				nuLnu,
-				spect[j][i].tau_abs / (spect[j][i].dNdlE +
-						       SMALL), tau_scatt,
-				spect[j][i].X1iav / (spect[j][i].dNdlE +
-						     SMALL),
-				sqrt(fabs
-				     (spect[j][i].X2isq /
-				      (spect[j][i].dNdlE + SMALL))),
-				sqrt(fabs
-				     (spect[j][i].X3fsq /
-				      (spect[j][i].dNdlE + SMALL)))
-			    );
+            nuLnu *= spect[j][i].dEdlE;
+            nuLnu /= LSUN;
+            
+            tau_scatt = spect[j][i].tau_scatt / (spect[j][i].dNdlE + SMALL);
 
-			if (tau_scatt > max_tau_scatt){
-				max_tau_scatt = tau_scatt;
-			}
-			L += nuLnu * dOmega * dlE/(4.*M_PI);
-		}
-		fprintf(fp, "\n");
-	}
-	fprintf(stderr,
-		"luminosity %g erg/s, dMact %g, efficiency %g, L/Ladv %g, max_tau_scatt %g\n",
-		L * LSUN, dMact * M_unit / T_unit / (MSUN / YEAR),
-		L * LSUN / (dMact * M_unit * CL * CL / T_unit),
-		L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
-		max_tau_scatt);
-	for (j = 0; j < N_THBINS; j++) {
-	/* convert accumulated photon number in each bin 
-			to \nu L_\nu, in units of Lsun */
-		dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
+            fprintf(fp,
+                "%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
+                nuLnu,
+                spect[j][i].tau_abs / (spect[j][i].dNdlE + SMALL), 
+                tau_scatt,
+                spect[j][i].X1iav / (spect[j][i].dNdlE + SMALL),
+                sqrt(fabs(spect[j][i].X2isq / (spect[j][i].dNdlE + SMALL))),
+                sqrt(fabs(spect[j][i].X3fsq / (spect[j][i].dNdlE + SMALL)))
+                );
 
-		/* factor of 2 accounts for folding around equator */
-		dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
-		fprintf(stderr, "dOmega for thetabin (%d) = %le\n",j,dOmega);
-	}
-	fprintf(stderr, "\n");
-	fprintf(stderr, "Number of superphotons made: %llu\n", N_superph_made);
-	fprintf(stderr, "Number of superphotons scattered: %llu\n", N_scatt);
-	fprintf(stderr, "Number of superphotons recorded: %llu\n", N_superph_recorded);
-	fprintf(stderr, "Data saved in %s\n", filepath);
-	fclose(fp);
+            if (tau_scatt > max_tau_scatt){
+                max_tau_scatt = tau_scatt;
+            }
+            L += nuLnu * dOmega * dlE/(4.*M_PI);
+        }
+        fprintf(fp, "\n");
+    }
+
+    // Standard logging to stderr
+    printf("\n\033[1m==================== OUTPUT ====================\033[0m\n");
+    fprintf(stderr,
+        "luminosity %g erg/s\ndMact %g\nefficiency %g\nL/Ladv %g\nmax_tau_scatt %g\n",
+        L * LSUN, dMact * M_unit / T_unit / (MSUN / YEAR),
+        L * LSUN / (dMact * M_unit * CL * CL / T_unit),
+        L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
+        max_tau_scatt);
+	
+	printf("\n");
+    // Cleaning up the stderr loop since we now write to file
+    fprintf(stderr, "Number of superphotons made: %llu\n", N_superph_made);
+    fprintf(stderr, "Number of superphotons scattered: %llu\n", N_scatt);
+    fprintf(stderr, "Number of superphotons recorded: %llu\n", N_superph_recorded);
+    fprintf(stderr, "Data saved in %s\n", filepath);
+    fclose(fp);
+	printf("\n\033[1m================================================\033[0m\n");
 
 }

@@ -229,14 +229,19 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-		printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
-		printf("\nSolving the scattered photons...\n");
-		printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
+		if(params.scattering){
+			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+			printf("\nSolving the scattered photons...\n");
+			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
+		}
 		int n = 1;
 		bool quit_flag_sca = false;
 		unsigned long long scatterings_performed = 0;
 
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
+			if(!params.scattering){
+				break;
+			}
 			printf("\nStarting round %d\n", n);
 			ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
 			unsigned long long round_num_scat_init = 0;
@@ -287,10 +292,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 			}
 			
 			cudaMemcpyFromSymbol(&scatterings_performed, scattering_counter, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-			// if(scatterings_performed != num_scat_phs[n - 1]){
-			// 	//printf("Not all the photons created in scatterings have been evaluated (%llu, %llu)\n", scatterings_performed, num_scat_phs[n - 1]);
-			// 	//exit(1);
-			// }
 			cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA* sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 			if(num_scat_phs[n] == 0){
 				printf("Quit flag reached in round %d!\n", n);
