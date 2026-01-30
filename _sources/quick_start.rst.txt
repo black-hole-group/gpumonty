@@ -25,6 +25,14 @@ Locate the installation paths for these libraries on your system and update the 
    HDF5_INCLUDE   = /usr/include/hdf5/serial
    HDF5_LIB       = /usr/lib/x86_64-linux-gnu/hdf5/serial
 
+
+.. note::
+   The makefile is set to automatically find the **compute capability** of your GPU.
+
+   Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
+   
+   In case you want to do it yourself, set ```AUTO_CC ?= 0``` and look for the compute capability on `Nvidia's website <https://developer.nvidia.com/cuda/gpus>`_. 
+   
 After you have changed these settings, compile by typing:
 
 .. code-block:: bash

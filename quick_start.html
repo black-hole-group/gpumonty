@@ -568,6 +568,12 @@
 <span class="nv">HDF5_LIB</span><span class="w">       </span><span class="o">=</span><span class="w"> </span>/usr/lib/x86_64-linux-gnu/hdf5/serial
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The makefile is set to automatically find the <strong>compute capability</strong> of your GPU.</p>
+<p>Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.</p>
+<p>In case you want to do it yourself, set <code class="docutils literal notranslate"><span class="pre">`AUTO_CC</span> <span class="pre">?=</span> <span class="pre">0`</span></code> and look for the compute capability on <a class="reference external" href="https://developer.nvidia.com/cuda/gpus">Nvidia’s website</a>.</p>
+</div>
 <p>After you have changed these settings, compile by typing:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">15</span>
 </pre></div>
