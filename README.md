@@ -23,7 +23,9 @@ Before proceeding, make sure you have a NVIDIA GPU with the required drivers and
 
 You should now have a spectrum data file in `output/sane_iharm.spec`.
 
-(4) Visualize 
+(4) Visualize the spectrum. You will need python with numpy, matplotlib and astropy libraries:
+
+    python python/example.py
 
 
 ## 1. Prerequisites
