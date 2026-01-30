@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide for GPUmonty &mdash; GPUmonty 0.1 documentation</title>
+  <title>Quick Start Guide for GPUmonty &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0ef53e4c" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -248,6 +248,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv411d_beta_crit"><code class="docutils literal notranslate"><span class="pre">d_beta_crit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_scattering"><code class="docutils literal notranslate"><span class="pre">d_scattering</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
@@ -565,6 +566,12 @@
 <span class="nv">HDF5_INCLUDE</span><span class="w">   </span><span class="o">=</span><span class="w"> </span>/usr/include/hdf5/serial
 <span class="nv">HDF5_LIB</span><span class="w">       </span><span class="o">=</span><span class="w"> </span>/usr/lib/x86_64-linux-gnu/hdf5/serial
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The makefile is set to automatically find the <strong>compute capability</strong> of your GPU.</p>
+<p>Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.</p>
+<p>In case you want to do it yourself, set <code class="docutils literal notranslate"><span class="pre">`AUTO_CC</span> <span class="pre">?=</span> <span class="pre">0`</span></code> and look for the compute capability on <a class="reference external" href="https://developer.nvidia.com/cuda/gpus">Nvidia’s website</a>.</p>
 </div>
 <p>After you have changed these settings, compile by typing:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">15</span>
