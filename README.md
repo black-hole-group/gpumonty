@@ -27,6 +27,9 @@ You should now have a spectrum data file in `output/sane_iharm.spec`.
 
     python python/example.py
 
+If all goes well, you should now have a image in `output/example.png` with the spectrum from a hot SANE RIAF.
+
+TBC==============
 
 ## 1. Prerequisites
 Before compiling, ensure your system has the following libraries installed and accessible:
