@@ -110,6 +110,8 @@ To run a simulation with your custom parameters:
      - **Proton-to-Electron Temperature Ratio**: Constant ratio (:math:`T_p/T_e`) used if a dynamic heating model is not active.
    * - ``Thetae_max``
      - **Temperature Ceiling**: Numerical cap for the dimensionless electron temperature (:math:`\Theta_e = k_B T_e / m_e c^2`).
+   * - ``scattering``
+     - **Boolean for Scattering**: Enable or disable scattering processes in the simulation.
 
 Analyzing the Output
 ====================

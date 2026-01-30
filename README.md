@@ -98,7 +98,7 @@ The following runtime parameters are supported:
 | `M_unit` | **Mass Unit Scale**: The normalization factor (in grams) used to scale dimensionless GRMHD density to physical CGS units. |
 | `tp_over_te` | **Proton-to-Electron Temperature Ratio**: A constant ratio ($T_p/T_e$) used if a dynamic heating model is not active. |
 | `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
-
+| `scattering` | **Scattering boolean**: Enable or disable scattering processes in the simulation.|
 
 ## 2. Analyzing the Output
 

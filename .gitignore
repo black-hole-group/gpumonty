@@ -15,7 +15,7 @@ latex/
 _build/
 xml/
 
-output/
+!output/
 !output/example.spec
 !Doxyfile
 

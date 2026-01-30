@@ -16,7 +16,7 @@ configure_gpu_blocks:
 	@echo " [CONFIG] Checking GPU specifications..."
 	
 	@# 1. Compile the probe
-	@$(NVCC) $(SRC_DIR)/query_blocks.cu -o $(PROBE_EXE) -w
+	@$(NVCC)  -Wno-deprecated-gpu-targets $(SRC_DIR)/query_blocks.cu -o $(PROBE_EXE) -w 
 	
 	@# 2. Run logic strictly inside the shell
 	@DETECTED_BLOCKS=$$($(PROBE_EXE)); \
