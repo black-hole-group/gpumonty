@@ -4,6 +4,27 @@ GPUmonty is a high-performance, [CUDA](https://docs.nvidia.com/cuda/cuda-c-progr
 
 Please refer to the [documentation webpage](https://black-hole-group.github.io/gpumonty/) for more details on the functions.
 
+## Quickstart
+
+Before proceeding, make sure you have a NVIDIA GPU with the required drivers and CUDA toolkit installed. 
+
+(1) Compile (replace the number below with the number of CPU cores available): 
+
+    cd gpumonty
+    make -j 24
+
+(2) Download the [test data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF) from a GRMHD simulation:
+
+    curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
+
+(3) Run gpumonty
+
+    ./gpumonty -par template.par
+
+(4) 
+
+
+
 ## 1. Prerequisites
 Before compiling, ensure your system has the following libraries installed and accessible:
 
