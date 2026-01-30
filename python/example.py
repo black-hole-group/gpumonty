@@ -66,8 +66,10 @@ nu, nuLnu, tauabs, domega_array = grmonty('./output/example.spec')
 # print("Read dOmega:", domega_array)
 
 
-
-nuLnu_all = (nuLnu * domega_array[:, None] / (4 * np.pi)).sum(axis=0)
+if domega_array is None:
+    nuLnu_all = (nuLnu / (4 * np.pi)).sum(axis=0)
+else:
+    nuLnu_all = (nuLnu * domega_array[:, None] / (4 * np.pi)).sum(axis=0)
 
 plt.figure(figsize=(7.5, 5.5))
 
@@ -112,7 +114,7 @@ plt.tick_params(
 
 plt.tight_layout()
 plt.savefig(
-    "./output/test_figure.png",
+    "./output/example.png",
     dpi=300,
     bbox_inches="tight"
 )
