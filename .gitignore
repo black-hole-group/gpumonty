@@ -1,4 +1,4 @@
-.vscode/
+].vscode/
 
 # Ignore all object files
 *.o
@@ -32,3 +32,4 @@ python/**/.ipynb_checkpoints/
 !python/example.ipynb
 !output/example.spec
 !python/expected_spectrum.png
+!python/example.py

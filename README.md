@@ -17,12 +17,13 @@ Before proceeding, make sure you have a NVIDIA GPU with the required drivers and
 
     curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
 
-(3) Run gpumonty
+(3) Run gpumonty:
 
     ./gpumonty -par template.par
 
-(4) 
+You should now have a spectrum data file in `output/sane_iharm.spec`.
 
+(4) Visualize 
 
 
 ## 1. Prerequisites
