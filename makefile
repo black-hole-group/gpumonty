@@ -5,7 +5,7 @@ MODEL_DIR = $(SRC_DIR)/iharm_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?=/usr/local/cuda-12.3/
+CUDA_PATH ?=/usr/local/cuda/
 
 
 # GSL setup
@@ -15,10 +15,29 @@ GSL_PATH ?= /home/pedro/gsl
 HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
-# Compiler flags
-ARCH = compute_75
-CODE = sm_75
-CODE_LTO = lto_75
+
+
+# Auto detect GPU compute capability
+AUTO_CC ?= 1
+NVIDIA_SMI ?= nvidia-smi
+
+GPU_CC := $(shell \
+	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
+
+GPU_CC_NODOT := $(subst .,,$(GPU_CC))
+
+$(info Detected GPU compute capability: $(GPU_CC))
+
+ifeq ($(AUTO_CC),1)
+    ARCH := compute_$(GPU_CC_NODOT)
+    CODE := sm_$(GPU_CC_NODOT)
+    CODE_LTO := lto_$(GPU_CC_NODOT)
+else
+    ARCH := compute_86
+    CODE := sm_86
+    CODE_LTO := lto_86
+endif
+
 
 # Directories
 SRC_DIR = src
