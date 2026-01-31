@@ -6,7 +6,7 @@ Please refer to the [documentation webpage](https://black-hole-group.github.io/g
 
 ## Quickstart
 
-Before proceeding, make sure you have a NVIDIA GPU with the required drivers and CUDA toolkit installed. 
+Before proceeding, make sure you have a NVIDIA GPU with the required drivers, CUDA toolkit, HDF5 library and GSL installed. 
 
 (1) Compile (replace the number below with the number of CPU cores available): 
 
@@ -29,9 +29,11 @@ You should now have a spectrum data file in `output/sane_iharm.spec`.
 
 If all goes well, you should now have a image in `output/example.png` with the spectrum from a hot SANE RIAF.
 
-TBC==============
 
-## 1. Prerequisites
+## Installation instructions
+
+###  Prerequisites
+
 Before compiling, ensure your system has the following libraries installed and accessible:
 
 * **[CUDA Toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/):** Required for the `nvcc` compiler and GPU kernels.
@@ -39,7 +41,8 @@ Before compiling, ensure your system has the following libraries installed and a
 * **[Hierarchical Data Format v5 (HDF5)](https://www.hdfgroup.org/solutions/hdf5/):** Required for reading GRMHD simulation snapshots.
 
 ### Environment Configuration
-Locate the installation paths for these libraries on your system and update the corresponding variables in the `Makefile`:
+
+Locate the install paths for these libraries on your system and update the corresponding variables in the `Makefile`:
 
 ```makefile
 CUDA_PATH     = /usr/local/cuda
@@ -48,8 +51,7 @@ HDF5_INCLUDE  = /usr/include/hdf5/serial
 HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
 ```
 
-> [!NOTE]
-> The makefile is set to automatically find the **compute capability** of your GPU.
+The makefile is set to automatically find the **compute capability** of your GPU.
 > 
 > Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
 > 
