@@ -4,7 +4,7 @@ GPUmonty is a high-performance, [CUDA](https://docs.nvidia.com/cuda/cuda-c-progr
 
 Please refer to the [documentation webpage](https://black-hole-group.github.io/gpumonty/) for more details on the functions.
 
-## Quickstart
+## QUICKSTART
 
 Before proceeding, make sure you have a NVIDIA GPU with the required drivers, CUDA toolkit, HDF5 library and GSL installed. 
 
@@ -27,7 +27,7 @@ You should now have a spectrum data file in `output/sane_iharm.spec`.
 
     python python/example.py
 
-If all goes well, you should now have a image in `output/example.png` with the spectrum from a hot SANE RIAF.
+If all goes well, you should now have a image in `output/example.png` with the spectrum from a hot SANE RIAF. If not, keep reading.
 
 
 ## Installation instructions
@@ -40,7 +40,7 @@ Before compiling, ensure your system has the following libraries installed and a
 * **[GNU scientific library (GSL)](https://www.gnu.org/software/gsl/):** Required for various mathematical and statistical routines.
 * **[Hierarchical Data Format v5 (HDF5)](https://www.hdfgroup.org/solutions/hdf5/):** Required for reading GRMHD simulation snapshots.
 
-### Environment Configuration
+### Path to libraries
 
 Locate the install paths for these libraries on your system and update the corresponding variables in the `Makefile`:
 
@@ -51,50 +51,57 @@ HDF5_INCLUDE  = /usr/include/hdf5/serial
 HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
 ```
 
-The makefile is set to automatically find the **compute capability** of your GPU.
-> 
-> Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
-> 
-> In case you want to do it yourself, set ```AUTO_CC ?= 0``` and look for the compute capability on Nvidia's [website](https://developer.nvidia.com/cuda/gpus).
+### Compute capability
 
-After you have changed all these things, compile with by typing ```make -j 15```. In case you want to compile it for debug, compile by typing ```make BUILD_TYPE=debug```.
+The makefile is set to automatically find the compute capability of your GPU. Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
+
+In case you want to do it yourself, set ```AUTO_CC ?= 0``` and look for your GPU’s compute capability on [NVIDIA’s website](https://developer.nvidia.com/cuda/gpus).
 
 ### Multi-Core Acceleration (OpenMP)
-GPUmonty benefits from **OpenMP** for CPU-bound tasks such as data pre-processing and grid initialization. To enable multi-threaded CPU execution:
 
-```export OMP_NUM_THREADS=XX```
+GPUmonty benefits from OpenMP for CPU-bound tasks such as data pre-processing and grid initialization. To enable multi-threaded CPU execution, add the following line to your `.bashrc` file:
 
-Replace ```XX``` with the desired number of threads. It is recommended to set this value equal to the number of physical cores on your CPU.
+    export OMP_NUM_THREADS=XX
 
+Replace `XX` with the desired number of threads. It is recommended to set this value equal to the number of physical cores on your CPU.
+
+### Compile
+
+After you have configured the things above, compile with 
+
+    make -j 15
+
+where the number refers to the desired number of CPU cores to use. In case you want to compile it for debug: 
+
+    make BUILD_TYPE=debug
 
 ### CUDA Number of Blocks Configuration
 
-The build system includes an auto-tuning feature that detects the hardware specifications of the GPU on your current machine (specifically Device 0).
+The build system includes an auto-tuning feature that detects the hardware specifications of your GPU (specifically Device 0).
 
-During compilation, the `Makefile` triggers a probe (defined in `GetGPUBlocks.mk`) that calculates the optimal number of blocks based on the GPU's multiprocessor count and blocks-per-multiprocessor limit. This process automatically updates the `N_BLOCKS` definition located in:
-
-`src/config.h`
-
-By default, this feature is **enabled**. If you wish to manually set `N_BLOCKS` to a fixed value in the config file, you can disable the auto-tuner by setting the `GPU_TUNING` flag to 0:
+During compilation, the `Makefile` triggers a probe (defined in `GetGPUBlocks.mk`) that calculates the optimal number of blocks based on the GPU's multiprocessor count and blocks-per-multiprocessor limit. This process automatically updates the `N_BLOCKS` definition located in `src/config.h`. By default, this feature is enabled. If you wish to manually set `N_BLOCKS` to a fixed value in the config file, you can disable the auto-tuner by setting the `GPU_TUNING` flag to 0:
 
 ```bash
 make GPU_TUNING=0
 ```
-> [!WARNING]
-> If you are running on a High Performance Computing (HPC) cluster, **do not compile on the login/head node**,  
-> as these nodes often lack GPUs or possess different hardware than the compute nodes.
->
-> To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the
-> compilation step directly inside your job submission script (e.g., Slurm or PBS script).
 
-### Configuration Parameters
+---
+**WARNING**  
+If you are running on a HPC cluster, **do not compile on the login/head node**, as these nodes often lack GPUs or possess different hardware than the compute nodes. To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the compilation step directly inside your job submission script (e.g., Slurm or PBS script).
 
-Simulation parameters are passed to the executable via a `.par` file. You can find a baseline configuration in `/gpumonty/template.par`. 
+---
 
-To run a simulation with your custom parameters:
+
+### SIMULATION SETUP
+
+Simulation parameters are passed via a `.par` file. You can find a baseline configuration in `template.par`. 
+
+To run a simulation with custom parameters:
+
 ```
-./gpumonty -par path/to/your_file.par
+./gpumonty -par path/to/your_parameter_file.par
 ```
+
 The following runtime parameters are supported:
 
 | Parameter | Description |
@@ -108,26 +115,23 @@ The following runtime parameters are supported:
 | `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
 | `scattering` | **Scattering boolean**: Enable or disable scattering processes in the simulation.|
 
-## 2. Analyzing the Output
+## ANALYSIS
 
-To facilitate data post-processing and visualization, an example Jupyter Notebook is provided in the repository.
+To facilitate data post-processing and visualization, [an example Jupyter Notebook is provided in the repository at `python/example.ipynb`](./python/example.ipynb). It contains a tutorial of how to process output files, extract spectra and generating plots.
 
-* **Notebook Location:** `python/example.ipynb`
-* **Workflow:** This tutorial guides you through the process of opening output files, extracting spectral arrays, and generating plots.
+When analyzing the raw results in Python, please note the relationship between luminosity and the observer's viewing angle: The luminosity array `nuLnu` is multi-dimensional; each index in the array corresponds directly to one of the `theta_bins` defined in your simulation.
 
-### Spectral Data Structure
-When analyzing the raw results in Python, please note the relationship between luminosity and the observer's viewing angle:
-* **Indexing:** The luminosity array (`nuLnu`) is multi-dimensional; each index in the array corresponds directly to one of the `theta_bins` defined in your simulation.
+## GRMHD DUMP FILE FOR TESTING
 
-## 3. GRMHD data file for testing
+To reproduce the tests using the same GRMHD data used in our paper, download this [dump file] (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF). This can be done with the command:
 
-To reproduce the tests using the same GRMHD input employed in the **GPUmonty paper**, download the GRMHD dataset from [Prather et al. (2023)](https://iopscience.iop.org/article/10.3847/1538-4357/acc586) via the Harvard Dataverse:
+    curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
 
-- Dataset: [Harvard Dataverse (DOI: 10.7910/DVN/XZECPF)](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF)
+This dump file corresponds to a snapshot from a SANE RIAF simulation around a black hole with $a_*=0.94$. After downloading the dump file, place it in `data/` directory (the command above already does this for you) and run 
 
-After downloading, place the GRMHD data file in the `data/` directory and run the ./gpumonty -par template.par
+    ./gpumonty -par template.par
 
-# LICENSE
+## LICENSE
 
 `gpumonty` is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either **version 2** of the License, or (at your option) any later version.
 
