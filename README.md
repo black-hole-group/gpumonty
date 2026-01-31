@@ -1,8 +1,28 @@
 # GPUmonty: A GPU-Accelerated Relativistic Monte Carlo Code
 
-GPUmonty is a high-performance, [CUDA](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)-accelerated Monte Carlo radiative transfer (MCRT) code designed for the spectral modeling of accreting black holes based on [igrmonty](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387).
+GPUmonty is a GPU-accelerated Monte Carlo radiative transfer code for simulating spectra from accreting black holes based on NVIDIA CUDA. It traces photon packets ("superphotons") through accretion flows around black holes and models: (i) synchrotron emission from hot electrons, (ii) photon propagation along geodesics in curved spacetime (Kerr metric), (iii) Compton scattering (Thomson and Klein-Nishina regimes), (iv) spectral synthesis at different viewing angles.
 
-Please refer to the [documentation webpage](https://black-hole-group.github.io/gpumonty/) for more details on the functions.
+**Key features:**
+
+  - Over 10x faster than igrmonty
+  - Auto-tuning for optimal GPU performance
+  - Interfaces with multiple GRMHD codes (iHARM, HARM, H-AMR)
+  - HDF5 input/output for simulation data
+
+  **Use cases:**
+
+  - Simulating spectra from AGN and X-ray binaries
+  - Inferring black hole properties from electromagnetic observations
+  - Testing accretion models against multi-wavelength data
+
+**Technology stack:**
+
+  - CUDA C++ for GPU-accelerated parallel photon tracking
+  - C / OpenMP for host-side computation
+  - Python for post-processing and visualization
+  - Dependencies: CUDA Toolkit, GSL, HDF5, OpenMP, 
+
+GPUmonty is based on [igrmonty](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387). Please refer to the [documentation webpage](https://black-hole-group.github.io/gpumonty/) for more details.
 
 ## QUICKSTART
 
@@ -27,10 +47,10 @@ You should now have a spectrum data file in `output/sane_iharm.spec`.
 
     python python/example.py
 
-If all goes well, you should now have a image in `output/example.png` with the spectrum from a hot SANE RIAF. If not, keep reading.
+If all goes well, you should now have a image in `output/example.png` with the spectrum emitted by a hot SANE RIAF. If not, keep reading.
 
 
-## Installation instructions
+## INSTALLATION INSTRUCTIONS
 
 ###  Prerequisites
 
@@ -92,7 +112,7 @@ If you are running on a HPC cluster, **do not compile on the login/head node**, 
 ---
 
 
-### SIMULATION SETUP
+### Simulation Setup
 
 Simulation parameters are passed via a `.par` file. You can find a baseline configuration in `template.par`. 
 
