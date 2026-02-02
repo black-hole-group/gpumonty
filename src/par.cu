@@ -125,7 +125,13 @@ __host__ void load_par (const char *fname, Params *params) {
     print_status("Ns", f.Ns, params->Ns);
     print_status("MBH", f.MBH_par, params->MBH_par);
     print_status("M_unit", f.M_unit, params->M_unit);
-    print_status_s("dump", f.dump, params->dump);
+
+    #ifdef SPHERE_TEST
+      printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not GRMHD model)\n", "dump");
+    #else
+      print_status_s("dump", f.dump, params->dump);
+    #endif
+    
     print_status_s("spectrum", f.spectrum, params->spectrum);
 
     #if (0)

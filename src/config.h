@@ -22,7 +22,7 @@
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  * This is set through automatic GPU tuning in the Makefile unless ``BLOCK_TUNING`` is set to 0 in the Makefile.
  */
-#define N_BLOCKS 1344
+#define N_BLOCKS 256
 
 /**
  * The number of threads per block. 
