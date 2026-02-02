@@ -6,7 +6,7 @@ GPUmonty is a GPU-accelerated Monte Carlo radiative transfer code for simulating
 
   - Over 10x faster than CPU-based igrmonty
   - Interfaces with multiple GRMHD codes (iharm3D, harm)
-  - iharm HDF5 input for simulation data
+  - iharm3D HDF5 input for simulation data
 
   **Use cases:**
 
