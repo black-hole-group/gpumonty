@@ -5,9 +5,8 @@ GPUmonty is a GPU-accelerated Monte Carlo radiative transfer code for simulating
 **Key features:**
 
   - Over 10x faster than CPU-based igrmonty
-  - Auto-tuning for optimal GPU performance
-  - Interfaces with multiple GRMHD codes (iHARM, HARM, H-AMR)
-  - HDF5 input/output for simulation data
+  - Interfaces with multiple GRMHD codes (iharm3D, harm)
+  - iharm HDF5 input for simulation data
 
   **Use cases:**
 
@@ -24,33 +23,33 @@ GPUmonty is a GPU-accelerated Monte Carlo radiative transfer code for simulating
 
 GPUmonty is based on [igrmonty](https://iopscience.iop.org/article/10.1088/0067-0049/184/2/387). Please refer to the [documentation webpage](https://black-hole-group.github.io/gpumonty/) for more details.
 
-## QUICKSTART
+## QUICKSTART - Personal Computer
 
 Before proceeding, make sure you have a NVIDIA GPU with the required drivers, CUDA toolkit, HDF5 library and GSL installed. 
 
-(1) Compile (replace the number below with the number of CPU cores available): 
-
-    cd gpumonty
-    make -j 24
-
-(2) Download the [test data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF) from a GRMHD simulation:
-
-    curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
-
-(3) Run gpumonty:
-
-    ./gpumonty -par template.par
-
+1. Compile (replace the number below with the number of CPU cores available):
+```
+cd gpumonty
+make -j 24
+```
+2. Download the [test data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF) from a GRMHD simulation:
+```
+curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
+```
+3. Run gpumonty:
+```
+./gpumonty -par template.par
+```
 You should now have a spectrum data file in `output/sane_iharm.spec`.
 
-(4) Visualize the spectrum. You will need python with numpy, matplotlib and astropy libraries:
-
-    python python/example.py
-
+4. Visualize the spectrum. You will need python with numpy, matplotlib and astropy libraries:
+```
+python python/example.py
+```
 If all goes well, you should now have a image in `output/example.png` with the spectrum emitted by a hot SANE RIAF. If not, keep reading.
 
 
-## INSTALLATION INSTRUCTIONS
+## Installation Instructions
 
 ###  Prerequisites
 
@@ -71,11 +70,13 @@ HDF5_INCLUDE  = /usr/include/hdf5/serial
 HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial
 ```
 
-### Compute capability
+> [!NOTE]
+> The makefile is set to automatically find the **compute capability** of your GPU.
+> 
+> Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
+> 
+> In case you want to do it yourself, set ```AUTO_CC ?= 0``` and look for the compute capability on Nvidia's [website](https://developer.nvidia.com/cuda/gpus).
 
-The makefile is set to automatically find the compute capability of your GPU. Compute capability refers to the CUDA architecture version of your GPU (e.g., sm_86 for Ampere), which determines which GPU instructions and optimizations are used during compilation.
-
-In case you want to do it yourself, set ```AUTO_CC ?= 0``` and look for your GPU’s compute capability on [NVIDIA’s website](https://developer.nvidia.com/cuda/gpus).
 
 ### Multi-Core Acceleration (OpenMP)
 
@@ -105,11 +106,12 @@ During compilation, the `Makefile` triggers a probe (defined in `GetGPUBlocks.mk
 make GPU_TUNING=0
 ```
 
----
-**WARNING**  
-If you are running on a HPC cluster, **do not compile on the login/head node**, as these nodes often lack GPUs or possess different hardware than the compute nodes. To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the compilation step directly inside your job submission script (e.g., Slurm or PBS script).
-
----
+> [!WARNING]
+> If you are running on a High Performance Computing (HPC) cluster, **do not compile on the login/head node**,  
+> as these nodes often lack GPUs or possess different hardware than the compute nodes.
+>
+> To ensure the auto-tuner detects the correct GPU architecture for your run, we recommend adding the
+> compilation step directly inside your job submission script (e.g., Slurm or PBS script).
 
 
 ### Simulation Setup
@@ -135,25 +137,25 @@ The following runtime parameters are supported:
 | `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
 | `scattering` | **Scattering boolean**: Enable or disable scattering processes in the simulation.|
 
-## ANALYSIS
+## Data Analysis
 
 To facilitate data post-processing and visualization, [an example Jupyter Notebook is provided in the repository at `python/example.ipynb`](./python/example.ipynb). It contains a tutorial of how to process output files, extract spectra and generating plots.
 
 When analyzing the raw results in Python, please note the relationship between luminosity and the observer's viewing angle: The luminosity array `nuLnu` is multi-dimensional; each index in the array corresponds directly to one of the `theta_bins` defined in your simulation.
 
-## GRMHD DUMP FILE FOR TESTING
+## GRMHD dump file for testing
 
-To reproduce the tests using the same GRMHD data used in our paper, download this [dump file] (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF). This can be done with the command:
+To reproduce the tests using the same GRMHD data used in our paper, download this [dump file](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF) from [Prather et al. (2023)](https://iopscience.iop.org/article/10.3847/1538-4357/acc586). This can be done through terminal
 
     curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
 
-This dump file corresponds to a snapshot from a SANE RIAF simulation around a black hole with $a_*=0.94$. After downloading the dump file, place it in `data/` directory (the command above already does this for you) and run 
+or manual downloading on the website. This dump file corresponds to a snapshot from a SANE RIAF simulation around a black hole with $a_*=0.9375$. After downloading the dump file, place it in `data/` directory (the command above already does this for you) and run 
 
     ./gpumonty -par template.par
 
 ## LICENSE
 
-`gpumonty` is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either **version 2** of the License, or (at your option) any later version.
+`GPUmonty` is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either **version 2** of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the `LICENSE` file or the [GNU General Public License](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) for more details.
 
