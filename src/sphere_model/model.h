@@ -16,7 +16,7 @@
 #define WEIGHT_MIN	(0.)
 
 /*for stop criterium*/
-#define RMAX	(10000.) //Define the maximum radius up to track the photon
+#define RMAX	(3100.) //Define the maximum radius up to track the photon
 #define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
 #define R_RECORD (3000.)
 //RMIN for sphere model only

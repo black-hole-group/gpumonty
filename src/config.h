@@ -22,7 +22,7 @@
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  * This is set through automatic GPU tuning in the Makefile unless ``BLOCK_TUNING`` is set to 0 in the Makefile.
  */
-#define N_BLOCKS 256
+#define N_BLOCKS 1792
 
 /**
  * The number of threads per block. 
@@ -304,7 +304,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (3)
+#define MAX_LAYER_SCA (1)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.

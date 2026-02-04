@@ -167,14 +167,14 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 						return;	/* This photon has been absorbed before scattering */
 					}
 					dtau_scatt *= frac;
-					double dtau = dtau_abs + dtau_scatt;
+					//double dtau = dtau_abs + dtau_scatt;
 
 					/* Update photon weight */
-					if (dtau_abs < 1.e-3) {
-						ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-					} else {
-						ph.w[photon_index] *= exp(-dtau); 
-					}
+					// if (dtau_abs < 1.e-3) {
+					// 	ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					// } else {
+					// 	ph.w[photon_index] *= exp(-dtau); 
+					// }
 
 					/* Interpolate position and wave vector to scattering event */
 					push_photon(Xi, Ki, dKi, dl * frac, &E0);
@@ -248,13 +248,13 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					}
 					tau_abs += dtau_abs;
 					tau_scatt += dtau_scatt;
-					double dtau = dtau_abs + dtau_scatt;
+					//double dtau = dtau_abs + dtau_scatt;
 					
-					if (dtau < 1.e-3) {
-						ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-					} else {
-						ph.w[photon_index] *= exp(-dtau); 
-					}
+					// if (dtau < 1.e-3) {
+					// 	ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					// } else {
+					// 	ph.w[photon_index] *= exp(-dtau); 
+					// }
 				}
 			}
 		}

@@ -18,24 +18,29 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
 # Auto detect GPU compute capability
-AUTO_CC ?= 1
+AUTO_CC ?= 0
 NVIDIA_SMI ?= nvidia-smi
 
+ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(AUTO_CC),1)
 GPU_CC := $(shell \
 	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
 
 GPU_CC_NODOT := $(subst .,,$(GPU_CC))
 
 $(info Detected GPU compute capability: $(GPU_CC))
-
-ifeq ($(AUTO_CC),1)
-    ARCH := compute_$(GPU_CC_NODOT)
-    CODE := sm_$(GPU_CC_NODOT)
-    CODE_LTO := lto_$(GPU_CC_NODOT)
+ARCH := compute_$(GPU_CC_NODOT)
+CODE := sm_$(GPU_CC_NODOT)
+CODE_LTO := lto_$(GPU_CC_NODOT)
 else
-    ARCH := compute_86
-    CODE := sm_86
-    CODE_LTO := lto_86
+# Manually set GPU compute capability here. Change GPU_CC to your GPU's compute capability.
+GPU_CC := 6.0
+GPU_CC_NODOT := $(subst .,,$(GPU_CC))
+ARCH := compute_$(GPU_CC_NODOT)
+CODE := sm_$(GPU_CC_NODOT)
+CODE_LTO := lto_$(GPU_CC_NODOT)
+$(info GPU compute capability manually selected to: $(GPU_CC))
+endif
 endif
 
 
