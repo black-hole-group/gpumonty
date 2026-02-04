@@ -1,5 +1,5 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/iharm_model
+MODEL_DIR = $(SRC_DIR)/sphere_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
@@ -21,23 +21,29 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 AUTO_CC ?= 1
 NVIDIA_SMI ?= nvidia-smi
 
+ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(AUTO_CC),1)
 GPU_CC := $(shell \
 	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
 
 GPU_CC_NODOT := $(subst .,,$(GPU_CC))
 
 $(info Detected GPU compute capability: $(GPU_CC))
-
-ifeq ($(AUTO_CC),1)
-    ARCH := compute_$(GPU_CC_NODOT)
-    CODE := sm_$(GPU_CC_NODOT)
-    CODE_LTO := lto_$(GPU_CC_NODOT)
+ARCH := compute_$(GPU_CC_NODOT)
+CODE := sm_$(GPU_CC_NODOT)
+CODE_LTO := lto_$(GPU_CC_NODOT)
 else
-    ARCH := compute_86
-    CODE := sm_86
-    CODE_LTO := lto_86
+# Manually set GPU compute capability here. Change GPU_CC to your GPU's compute capability.
+GPU_CC := 6.0
+GPU_CC_NODOT := $(subst .,,$(GPU_CC))
+ARCH := compute_$(GPU_CC_NODOT)
+CODE := sm_$(GPU_CC_NODOT)
+CODE_LTO := lto_$(GPU_CC_NODOT)
+RED_BOLD := $(shell printf "\033[1;31m")
+RESET    := $(shell printf "\033[0m")
+$(info $(RED_BOLD)GPU compute capability manually selected to: $(GPU_CC)$(RESET))
 endif
-
+endif
 
 # Directories
 SRC_DIR = src

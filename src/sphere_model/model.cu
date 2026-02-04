@@ -41,20 +41,13 @@ __host__ void init_data()
 	double th_in = 0.;
 	double th_out = M_PI;
 	double two_temp_gam;
-	double r, h;
-	double x[4];
 	double sphere_radius = SPHERE_RADIUS/L_unit;
-	double B_value, thetae_value;
-	int i,j,k;
 
-	/*sphere parameters*/
 	gam = 13./9.;
-	B_value = B_VALUE/B_unit; /*in G*/
-    //TODO: change how thetae is set
-	thetae_value = 4;//THETAE_VALUE;
 
 	/*Setting the resolution*/
-    N1 = 8192;
+    // R resolution is high here to properly deal with the sphere edge. The higher it is, the higher the anti-aliasing quality.
+    N1 = 30000; 
 	N2 = 128;
 	N3 = 1;
 	/*grid parameters*/
@@ -94,40 +87,9 @@ __host__ void init_data()
 	dMact = 0.;
 	Ladv = 0.;
 
-    double tau = 1e-4;
-	for (k = 0; k < N1 * N2 * N3; k++) {
-		// z = 0;
-		j = k % N2;
-		i = (k - j) / N2;
-		x[1] = startx[1] + (i + 0.5) * dx[1];
-        
-		x[2] = startx[2] + (j + 0.5) * dx[2];
-		bl_coord(x, &r, &h);
-        
-
-		if(r < sphere_radius){
-			//p[NPRIM_INDEX(KRHO,k)] = Ne_value;
-            //TODO: change how ne is set
-            p[NPRIM_INDEX(KRHO,k)] = tau/(sphere_radius * L_unit * SIGMA_THOMSON);
-			p[NPRIM_INDEX(UU,k)] = 1/Thetae_unit* thetae_value * p[NPRIM_INDEX(KRHO,k)];
-			#if(EXP_COORDS)
-				p[NPRIM_INDEX(B1,k)] = B_value * cos(h)/r ;
-			#else
-				p[NPRIM_INDEX(B1,k)] = B_value * cos(h);
-			#endif
-			p[NPRIM_INDEX(B2,k)] = - B_value * sin(h)/r;
-		}else{
-			p[NPRIM_INDEX(KRHO,k)] = 0.;
-			p[NPRIM_INDEX(UU,k)] = 0.;
-			p[NPRIM_INDEX(B1,k)] = 0.;
-			p[NPRIM_INDEX(B2,k)] = 0.;
-
-		}
-		p[NPRIM_INDEX(B3,k)] = 0.;
-		p[NPRIM_INDEX(U1,k)] = 0.;
-		p[NPRIM_INDEX(U2,k)] = 0.;
-		p[NPRIM_INDEX(U3,k)] = 0.;
-	}
+    // Here we don't set up the plasma variables pointer. The values are set up directly in the functions
+    // get_fluid_zone and get_fluid_params.
+    return;
 }
 
 
@@ -299,47 +261,83 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 }
 
 
-
 __host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
-    double *Thetae, double *B, double Ucon[NDIM],
-    double Ucov[NDIM], double Bcon[NDIM],
-    double Bcov[NDIM])
-{
+                                          double *Thetae, double *B, double Ucon[NDIM],
+                                          double Ucov[NDIM], double Bcon[NDIM],
+                                          double Bcov[NDIM]) {
+    
+    double local_dx[4] = {0.};
 
     #ifdef __CUDA_ARCH__
-    if (X[1] < d_startx[1] || X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
-        *Ne = 0;
-        *B = 0;
-        *Thetae = 0;
-        return;
-    }
+        // Device Globals
+        local_dx[1] = d_dx[1];
+        local_dx[2] = d_dx[2];
+        local_dx[3] = d_dx[3];
 
-    double local_L_unit = d_L_unit;
-    double local_B_unit = d_B_unit;
+        if (X[1] < d_startx[1] || X[1] > d_stopx[1] || X[2] < d_startx[2] || X[2] > d_stopx[2]) {
+            *Ne = 0; *B = 0; *Thetae = 0; return;
+        }
+        double local_L_unit = d_L_unit;
+        double local_B_unit = d_B_unit;
     #else
-    if (X[1] < startx[1] || X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
-        *Ne = 0;
-        *B = 0;
-        *Thetae = 0;
-        return;
-    }
-    double local_L_unit = L_unit;
-    double local_B_unit = B_unit;
+        // Host Globals
+        local_dx[1] = dx[1];
+        local_dx[2] = dx[2];
+        local_dx[3] = dx[3];
+
+        if (X[1] < startx[1] || X[1] > stopx[1] || X[2] < startx[2] || X[2] > stopx[2]) {
+            *Ne = 0; *B = 0; *Thetae = 0; return;
+        }
+        double local_L_unit = L_unit;
+        double local_B_unit = B_unit;
     #endif
 
-    double r,th;
-    bl_coord(X, &r, &th);
+    // Sub-sampling for Anti-Aliasing
+    int n_sub = 5; 
+    int inside_count = 0;
+    double X_sub[4] = {0.};
+    double r_sub, th_sub;
+    
+    // Calculate target radius once
+    double target_radius = SPHERE_RADIUS / local_L_unit;
 
-    if(r > SPHERE_RADIUS/local_L_unit){
+    // Loop over sub-grid in X1 (radial) and X2 (theta)
+    for (int s1 = 0; s1 < n_sub; s1++) {
+        for (int s2 = 0; s2 < n_sub; s2++) {
+            
+            // Calculate sub-point coordinate using local_dx
+            // Centered logic: (Center - Half Cell) + (Step Index + 0.5) * Step Size
+            X_sub[1] = (X[1] - 0.5 * local_dx[1]) + (s1 + 0.5) * (local_dx[1] / n_sub);
+            X_sub[2] = (X[2] - 0.5 * local_dx[2]) + (s2 + 0.5) * (local_dx[2] / n_sub);
+            X_sub[3] = X[3]; 
+
+            // Convert to physical radius
+            bl_coord(X_sub, &r_sub, &th_sub);
+
+            if (r_sub <= target_radius) {
+                inside_count++;
+            }
+        }
+    }
+
+    double vol_frac = (double)inside_count / (double)(n_sub * n_sub);
+
+    // 3. If completely outside, return 0 (Early Exit)
+    if (vol_frac <= 0.0) {
         *Ne = 0.;
         *Thetae = 0.;
         *B = 0.;
         return;
     }
 
-    *Ne = NE_VALUE;
-    *B = B_VALUE;
-    *Thetae = THETAE_VALUE;
+    // 4. Calculate Physics at Cell Center
+    double r, th;
+    bl_coord(X, &r, &th);
+
+    // Apply Volume Fraction Scaling
+    *Ne = NE_VALUE * vol_frac;       
+    *B  = B_VALUE * vol_frac;        
+    *Thetae = THETAE_VALUE * vol_frac;          
 
     Ucon[0] = 1.;
     Ucon[1] = 0.;
@@ -347,8 +345,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM
     Ucon[3] = 0.;
 
     Bcon[0] = 0.;
-    Bcon[1] = B_VALUE * cos(th)/local_B_unit;
-    Bcon[2] = -B_VALUE * sin(th)/(r + 1.e-8) / local_B_unit;
+    Bcon[1] = (*B) * cos(th) / local_B_unit; 
+    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8) / local_B_unit;
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)
@@ -357,9 +355,7 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM
 
     lower(Ucon, gcov, Ucov);
     lower(Bcon, gcov, Bcov);
-    return;
 }
-
 
 __device__ double bias_func(double Te, double w, int round_scatt)
 {
