@@ -36,7 +36,7 @@ __device__ double stepsize(const double X[NDIM], const double K[NDIM])
 __host__ void init_data()
 {
 	double Rin = RMIN/L_unit;
-	double Rout = RMAX/L_unit;
+	double Rout = SPHERE_RADIUS/L_unit;
 
 	double th_in = 0.;
 	double th_out = M_PI;

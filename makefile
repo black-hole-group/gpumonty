@@ -7,14 +7,12 @@ BLOCK_TUNING ?= 1
 
 CUDA_PATH ?=/usr/local/cuda/
 
-
-# GSL setup
-GSL_PATH ?= /home/pedro/gsl
+#GSL setup
+GSL_PATH ?= $(GSL_HOME)
 
 # HDF5 setup
 HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
-
 
 
 # Auto detect GPU compute capability
@@ -33,9 +31,9 @@ ifeq ($(AUTO_CC),1)
     CODE := sm_$(GPU_CC_NODOT)
     CODE_LTO := lto_$(GPU_CC_NODOT)
 else
-    ARCH := compute_86
-    CODE := sm_86
-    CODE_LTO := lto_86
+    ARCH := compute_80
+    CODE := sm_80
+    CODE_LTO := lto_80
 endif
 
 

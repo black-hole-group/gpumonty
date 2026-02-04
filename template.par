@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e6
+Ns 1e8
 
 #path to the GRMHD data file
 
@@ -16,7 +16,7 @@ spectrum sphere_thin.spec
 tp_over_te 3.
 
 #Black hole mass and mass unit to translate accretion rate to physical units
-MBH 4.14e6
+MBH 6.74663e-6
 M_unit 1.e16
 
 

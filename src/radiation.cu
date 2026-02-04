@@ -42,6 +42,7 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
 __device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
 		    double theta, cudaTextureObject_t besselTexObj)
 {
+  return 0;
 	double j, bnu;
 	j = jnu_inv(nu, Thetae, Ne, B, theta, besselTexObj);
 	bnu = Bnu_inv(nu, Thetae);
