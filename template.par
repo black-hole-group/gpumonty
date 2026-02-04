@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e8
+Ns 1e3
 
 #path to the GRMHD data file
 
@@ -10,7 +10,7 @@ dump ./data/dump_SANE.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum sphere_thin_1e8.spec
+spectrum sphere_thin_1e3.spec
 
 # T_p/T_e
 tp_over_te 3.
