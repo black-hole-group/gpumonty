@@ -1,5 +1,5 @@
-# Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+# Model name ( harm_model, sphere_model, iharm_model)
+MODEL_DIR = $(SRC_DIR)/iharm_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
