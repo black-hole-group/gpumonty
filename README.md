@@ -48,6 +48,19 @@ python python/example.py
 ```
 If all goes well, you should now have a image in `output/example.png` with the spectrum emitted by a hot SANE RIAF. If not, keep reading.
 
+## This Branch
+
+This branch is specifically designed to reproduce the plots showcased in the paper for the optically thin sphere test.
+
+> Note: 
+> Currently, this branch does not set the GPU Compute Capability (CC) automatically. You must manually configure the `GPU_CC` variable in the `Makefile` to match your hardware before compiling.
+
+### Sphere Model Tuning: Anti-Aliased Boundaries
+
+To ensure accurate boundary conditions, the `get_fluid_params` function has been tuned to handle the sphere's edge more physically.
+
+Instead of a binary "inside/outside" check at the cell center (which causes jagged, aliased edges), the model implements volumetric sub-sampling to smooth the sphere's boundary. For every cell near the boundary, the code checks a 5x5 sub-grid of coordinates ($N_{sub}=25$) within the cell volume to determine how many fall within the `target_radius`. A `vol_frac` (0.0 to 1.0) is calculated based on the ratio of sub-samples inside the sphere. The fluid parameters are scaled by this fraction to create a "soft" edge rather than a hard cutoff.
+
 
 ## Installation Instructions
 
