@@ -54,8 +54,8 @@ __host__ void init_data()
 	thetae_value = 4;//THETAE_VALUE;
 
 	/*Setting the resolution*/
-    N1 = 8192;
-	N2 = 128;
+    N1 = 8192*4;
+	N2 = 32;
 	N3 = 1;
 	/*grid parameters*/
 	dx[1] = (Rout - Rin)/N1;
