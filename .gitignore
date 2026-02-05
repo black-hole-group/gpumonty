@@ -32,6 +32,7 @@ python/**/.ipynb_checkpoints/
 !python/example.ipynb
 !output/example.spec
 !output/sphere_scattering*
+!output/spectrum_scattering_igrmonty_1e8.h5
 !python/expected_spectrum.png
 !python/example.py
 !python/sphere_example.ipynb
