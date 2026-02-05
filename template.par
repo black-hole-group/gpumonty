@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e3
+Ns 1e8
 
 #path to the GRMHD data file
 
@@ -10,7 +10,7 @@ dump ./data/dump_SANE.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum sphere_thin_1e3.spec
+spectrum sphere_scattering_1e8.spec
 
 # T_p/T_e
 tp_over_te 3.
@@ -27,4 +27,4 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 0
+scattering 1

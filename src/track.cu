@@ -149,15 +149,15 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 				/* Test for scattering event */
 				double x1 = -log(curand_uniform_double(localState));
 				double weight_scat = ph.w[photon_index] / bias;
-
-				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN && d_scattering) {
+				double boost = pow((round_scat + 1), 2);
+				if (bias * dtau_scatt * boost > x1 && weight_scat > WEIGHT_MIN && d_scattering) {
 					/* Scattering event occurs */
 					if (isnan(weight_scat) || isinf(weight_scat)) {
 						printf("w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
 							Ne, bias, ph.w[photon_index], weight_scat);
 					}
 
-					double frac = x1 / (bias * dtau_scatt);
+					double frac = x1 / (bias * dtau_scatt * boost);
 					
 					/* Apply absorption until scattering event */
 					dtau_abs *= frac;	
@@ -167,14 +167,14 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 						return;	/* This photon has been absorbed before scattering */
 					}
 					dtau_scatt *= frac;
-					//double dtau = dtau_abs + dtau_scatt;
+					double dtau = dtau_abs + dtau_scatt;
 
 					/* Update photon weight */
-					// if (dtau_abs < 1.e-3) {
-					// 	ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-					// } else {
-					// 	ph.w[photon_index] *= exp(-dtau); 
-					// }
+					if (dtau_abs < 1.e-3) {
+						ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					} else {
+						ph.w[photon_index] *= exp(-dtau); 
+					}
 
 					/* Interpolate position and wave vector to scattering event */
 					push_photon(Xi, Ki, dKi, dl * frac, &E0);
@@ -248,13 +248,13 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					}
 					tau_abs += dtau_abs;
 					tau_scatt += dtau_scatt;
-					//double dtau = dtau_abs + dtau_scatt;
+					double dtau = dtau_abs + dtau_scatt;
 					
-					// if (dtau < 1.e-3) {
-					// 	ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
-					// } else {
-					// 	ph.w[photon_index] *= exp(-dtau); 
-					// }
+					if (dtau < 1.e-3) {
+						ph.w[photon_index] *= (1. - dtau / 24. * (24. - dtau * (12. - dtau * (4. - dtau))));
+					} else {
+						ph.w[photon_index] *= exp(-dtau); 
+					}
 				}
 			}
 		}

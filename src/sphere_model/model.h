@@ -24,9 +24,9 @@
 
 #define BHSPIN 0
 
-#define NE_VALUE (1.e13)
+#define NE_VALUE (1.e18)
 #define B_VALUE (1.)
-#define THETAE_VALUE (100.)
+#define THETAE_VALUE (3.)
 #define SPHERE_RADIUS (1.)
 
 /**
@@ -42,12 +42,12 @@
 /**
  * Number of energy samples for the emissivity and weight tables.
  */
-#define N_ESAMP 2500
+#define N_ESAMP 5000
 
 /**
  * Number of energy bins for the spectral output.
  */
-#define N_EBINS 2500
+#define N_EBINS 5000
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 

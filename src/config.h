@@ -281,7 +281,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (1) 
+#define SCATTERINGS_PER_PHOTON (5) 
 
 /*Making of Nint table*/
 
@@ -304,7 +304,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (1)
+#define MAX_LAYER_SCA (5)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.
