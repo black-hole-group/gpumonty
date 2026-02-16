@@ -153,6 +153,12 @@ or manual downloading on the website. This dump file corresponds to a snapshot f
 
     ./gpumonty -par template.par
 
+## Citation
+
+Numerical methods and profiling results are described in details in this paper:  
+[GPUmonty: GPU-accelerated relativistic Monte Carlo radiative transfer code. arXiv: 2602.13198.](https://arxiv.org/abs/2602.13198) Submitted to ApJ. 
+
+
 ## LICENSE
 
 `GPUmonty` is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either **version 2** of the License, or (at your option) any later version.
