@@ -10,7 +10,7 @@ Theoretical Details
 
 For a comprehensive discussion of the governing equations, relativistic physics, and validation benchmarks, please refer to the GPUmonty paper:
 
-* **Motta, P. N., Nemmen, R., & Joshi, A. V. (2025).** `GPUmonty: A public GPU accelerated relativistic Monte Carlo radiative transfer code. <https://www.google.com>`_
+* **Motta, P. N., Nemmen, R., & Joshi, A. V. (2025).** `GPUmonty: A public GPU accelerated relativistic Monte Carlo radiative transfer code. <https://arxiv.org/abs/2602.13198>`_
 
 Public Availability
 -------------------
