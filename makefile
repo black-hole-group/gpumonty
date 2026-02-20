@@ -18,7 +18,7 @@ HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
 # Auto detect GPU compute capability
-AUTO_CC ?= 0
+AUTO_CC ?= 1
 NVIDIA_SMI ?= nvidia-smi
 
 ifneq ($(MAKECMDGOALS),clean)
