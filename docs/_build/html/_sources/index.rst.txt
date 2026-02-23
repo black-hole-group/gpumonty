@@ -10,14 +10,14 @@ Theoretical Details
 
 For a comprehensive discussion of the governing equations, relativistic physics, and validation benchmarks, please refer to the GPUmonty paper:
 
-* **Motta, P. N., Nemmen, R., & Joshi, A. V. (2025).** `GPUmonty: A public GPU accelerated relativistic Monte Carlo radiative transfer code. <https://www.google.com>`_
+* **Motta, P. N., Nemmen, R., & Joshi, A. V. (2025).** `GPUmonty: A public GPU accelerated relativistic Monte Carlo radiative transfer code. <https://arxiv.org/abs/2602.13198>`_
 
 Public Availability
 -------------------
 
 The source code is open-source and available under the GNU General Public License v2 at:
 
-* **GitHub Repository:** `https://github.com/pedronaethe/gpumonty <https://github.com/pedronaethe/gpumonty>`_
+* **GitHub Repository:** `https://github.com/black-hole-group/gpumonty <https://github.com/black-hole-group/gpumonty>`_
 
 Getting Started
 ---------------
