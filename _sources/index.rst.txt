@@ -17,7 +17,7 @@ Public Availability
 
 The source code is open-source and available under the GNU General Public License v2 at:
 
-* **GitHub Repository:** `https://github.com/pedronaethe/gpumonty <https://github.com/pedronaethe/gpumonty>`_
+* **GitHub Repository:** `https://github.com/black-hole-group/gpumonty <https://github.com/black-hole-group/gpumonty>`_
 
 Getting Started
 ---------------
