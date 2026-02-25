@@ -49,7 +49,7 @@ python python/example.py
 If all goes well, you should now have a image in `output/example.png` with the spectrum emitted by a hot SANE RIAF. If not, keep reading.
 
 ---
-**NOTE ABOUT THIS BRANCH**  
+**NOTE ABOUT THIS BRANCH:**  
 This branch is specifically designed to reproduce the Compton-thick sphere test. Run the test with:
 
     ./run_test.sh
