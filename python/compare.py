@@ -18,7 +18,7 @@ y_smoothed = pd.Series(yl_sim).rolling(window=window_size, center=True).mean()
 
 # New data
 nu_new, nuLnu_new, tauabs_new, domega_array_new = helper.load_spectrum('../output/sphere_scattering_test.spec')
-y_new = (nuLnu_new.sum(0) * dOmega_new / (4 * np.pi)).sum(1)
+y_new = (nuLnu_new * domega_array_new[:, None] / (4 * np.pi)).sum(0)
 xl_new = np.log10(nu_new)
 yl_new = np.log10(y_new)
 
