@@ -1,6 +1,4 @@
 import numpy as np
-from astropy.io import ascii
-import h5py
 
 """
     Constants
@@ -41,6 +39,8 @@ This setup provides a minimal, reproducible example for inspecting GRMONTY outpu
         tauabs: Absorption optical depth
         domega: Array of solid angles for each theta bin
     """
+    from astropy.io import ascii
+
     domega_arr = None
     with open(file, 'r') as f:
         for line in f:
@@ -88,6 +88,8 @@ def load_igrmonty(file_path):
     Returns
     -------
     """
+    import h5py
+
     with h5py.File(file_path, "r") as f:
         output_group = f["output"]
 
