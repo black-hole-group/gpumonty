@@ -13,7 +13,7 @@ if ! command -v python &>/dev/null; then
 fi
 
 MISSING_LIBS=()
-for lib in numpy pandas matplotlib scipy; do
+for lib in numpy pandas matplotlib scipy astropy; do
     python -c "import ${lib}" &>/dev/null || MISSING_LIBS+=("${lib}")
 done
 

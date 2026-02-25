@@ -123,7 +123,7 @@ x_common, cum_percent_diff, log_diff, report = cumulative_log_difference(
     x_upper=UPPER_BOUND
 )
 
-print("\nreport =", report)
+#print("\nreport =", report)
 
 # --- Plot ---
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8), sharex=False)
@@ -150,6 +150,7 @@ ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
 
+# Saves figure
 OUT = '../output/sphere_scattering_comparison.png'
 plt.savefig(OUT, dpi=300, bbox_inches='tight')
 plt.close()
