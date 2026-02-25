@@ -1,0 +1,30 @@
+#input super photons parameter
+Ns 1e6
+
+#path to the GRMHD data file
+
+#Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
+dump ./data/dump_SANE.h5
+
+#Use this path when testing harm_model
+#dump ./data/dump019
+
+#Name of the spectrum file generated
+spectrum sphere_scattering_test.spec
+
+# T_p/T_e
+tp_over_te 3.
+
+#Black hole mass and mass unit to translate accretion rate to physical units
+MBH 4.14e6
+M_unit 1.e16
+
+
+#IHARM Rhigh and Rlow model parameters
+trat_small 1.
+trat_large 10.
+beta_crit 1.
+Thetae_max 1.e100
+
+# Whether or not to have scattering activated
+scattering 1
