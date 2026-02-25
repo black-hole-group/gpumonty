@@ -1,6 +1,8 @@
 import numpy as np
 import warnings
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.integrate import cumulative_trapezoid
 import helper
@@ -147,4 +149,8 @@ ax2.legend()
 ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.show()
+
+OUT = '../output/sphere_scattering_comparison.png'
+plt.savefig(OUT, dpi=300, bbox_inches='tight')
+plt.close()
+print(f"Plot saved to {OUT}")
