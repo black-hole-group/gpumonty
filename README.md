@@ -48,12 +48,14 @@ python python/example.py
 ```
 If all goes well, you should now have a image in `output/example.png` with the spectrum emitted by a hot SANE RIAF. If not, keep reading.
 
-## This Branch
+---
+**NOTE ABOUT THIS BRANCH**  
+This branch is specifically designed to reproduce the Compton-thick sphere test. Run the test with:
 
-This branch is specifically designed to reproduce the plots showcased in the paper for the optically thin sphere test.
+    ./run_test.sh
 
-> Note: 
-> Currently, this branch does not set the GPU Compute Capability (CC) automatically. You must manually configure the `GPU_CC` variable in the `Makefile` to match your hardware before compiling.
+---
+
 
 ### Sphere Model Tuning: Anti-Aliased Boundaries
 
