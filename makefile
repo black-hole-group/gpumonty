@@ -1,24 +1,5 @@
-# /*
-#  * GPUmonty - makefile
-#  * Copyright (C) 2026 Pedro Naethe Motta
-#  *
-#  * This program is free software: you can redistribute it and/or modify
-#  * it under the terms of the GNU General Public License as published by
-#  * the Free Software Foundation, either version 2 of the License, or
-#  * (at your option) any later version.
-#  *
-#  * This program is distributed in the hope that it will be useful,
-#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  * GNU General Public License for more details.
-#  *
-#  * You should have received a copy of the GNU General Public License
-#  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
-#  */
-
-
-# Model name ( harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/iharm_model
+# Model name (hamr_model, harm_model, sphere_model, iharm_model)
+MODEL_DIR = $(SRC_DIR)/sphere_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
@@ -26,43 +7,35 @@ BLOCK_TUNING ?= 1
 
 CUDA_PATH ?=/usr/local/cuda/
 
-
-# GSL setup
-GSL_PATH ?= /home/pedro/gsl
+#GSL setup
+GSL_PATH ?= $(GSL_HOME)
 
 # HDF5 setup
 HDF5_INCLUDE = -I/usr/include/hdf5/serial
 HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 
-
 # Auto detect GPU compute capability
 AUTO_CC ?= 1
 NVIDIA_SMI ?= nvidia-smi
 
-ifneq ($(MAKECMDGOALS),clean)
-ifeq ($(AUTO_CC),1)
 GPU_CC := $(shell \
 	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
 
 GPU_CC_NODOT := $(subst .,,$(GPU_CC))
 
 $(info Detected GPU compute capability: $(GPU_CC))
-ARCH := compute_$(GPU_CC_NODOT)
-CODE := sm_$(GPU_CC_NODOT)
-CODE_LTO := lto_$(GPU_CC_NODOT)
+
+ifeq ($(AUTO_CC),1)
+    ARCH := compute_$(GPU_CC_NODOT)
+    CODE := sm_$(GPU_CC_NODOT)
+    CODE_LTO := lto_$(GPU_CC_NODOT)
 else
-# Manually set GPU compute capability here. Change GPU_CC to your GPU's compute capability.
-GPU_CC := 6.0
-GPU_CC_NODOT := $(subst .,,$(GPU_CC))
-ARCH := compute_$(GPU_CC_NODOT)
-CODE := sm_$(GPU_CC_NODOT)
-CODE_LTO := lto_$(GPU_CC_NODOT)
-RED_BOLD := $(shell printf "\033[1;31m")
-RESET    := $(shell printf "\033[0m")
-$(info $(RED_BOLD)GPU compute capability manually selected to: $(GPU_CC)$(RESET))
+    ARCH := compute_80
+    CODE := sm_80
+    CODE_LTO := lto_80
 endif
-endif
+
 
 # Directories
 SRC_DIR = src
