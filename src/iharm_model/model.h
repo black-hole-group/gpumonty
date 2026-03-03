@@ -45,7 +45,7 @@
  * 
  * This is used to characterize the lower bound for superphoton generation.
  */
-#define THETAE_MIN	0.3
+#define THETAE_MIN	1e-3
 
 /**
  * Maximum dimensionless electron temperature (\f$\Theta_{e, max}\f$) for physical validity.
@@ -334,6 +334,15 @@ __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
  */
 __host__ __device__ double thetae_func(double uu, double rho, double B, double kel);
 
+
+/**
+ * @brief Function to output in hdf5 format matching iharm3d. Contains the groups fluid_header, params and output.
+ * 
+ * @param N_superph_made Total number of superphotons generated during the run.
+ * @param spect 2D array containing the accumulated spectral data (Energy/Theta bins).
+ * @param filename Name of the output file (saved in the `./output/` directory).
+ */
+__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
 
 #endif
 
