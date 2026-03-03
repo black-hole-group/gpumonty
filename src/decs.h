@@ -171,7 +171,7 @@ struct of_spectrum {
 	extern double bhspin;
 	/*Global Variable Section*/
 	/* defining declarations for global variables */
-	extern struct of_spectrum spect[N_THBINS][N_EBINS];
+	extern struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS];
 
 	extern struct of_geom *geom;
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];

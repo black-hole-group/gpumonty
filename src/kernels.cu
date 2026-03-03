@@ -80,10 +80,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 	cudaError_t cudaStatus;
 	cudaStatus = cudaGetLastError();
 	transferParams();
-
-	struct of_spectrum spect[N_THBINS][N_EBINS] = { };
+	
+	struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
-    gpuErrchk(cudaMalloc((void**)&d_spect, N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
+    gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
 	double * d_p; 
     gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
     cudaMemcpyErrorCheck(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice);
@@ -337,7 +337,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	}
 
-    cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
+    cudaMemcpyErrorCheck(spect, d_spect, N_TYPEBINS * N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	report_spectrum(gen_superph, spect, params.spectrum);

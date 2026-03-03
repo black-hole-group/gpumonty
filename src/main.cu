@@ -140,9 +140,9 @@ __host__ void init_geometry()
 	}
 }
 
-__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename)
+__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS], const char * filename)
 {
-    int i, j;
+    int i, j, k;
     double dx2, dOmega, nuLnu, tau_scatt, L;
     FILE *fp;
     char filepath[256]; 
@@ -172,43 +172,45 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
     max_tau_scatt = 0.;
     L = 0.;
 
-    // Running through all energy bins
-    for (i = 0; i < N_EBINS; i++) {
-
-        /* output log_10(photon energy/(me c^2))*/
-        fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
-
-        for (j = 0; j < N_THBINS; j++) {
-
-            /* convert accumulated photon number in each bin 
-               to \nu L_\nu, in units of Lsun */
-            // dx2 is already calculated above, but valid here too
-            dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
-
-            nuLnu = (ME * CL * CL) * (4. * M_PI / dOmega) * (1. / dlE);
-
-            nuLnu *= spect[j][i].dEdlE;
-            nuLnu /= LSUN;
-            
-            tau_scatt = spect[j][i].tau_scatt / (spect[j][i].dNdlE + SMALL);
-
-            fprintf(fp,
-                "%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
-                nuLnu,
-                spect[j][i].tau_abs / (spect[j][i].dNdlE + SMALL), 
-                tau_scatt,
-                spect[j][i].X1iav / (spect[j][i].dNdlE + SMALL),
-                sqrt(fabs(spect[j][i].X2isq / (spect[j][i].dNdlE + SMALL))),
-                sqrt(fabs(spect[j][i].X3fsq / (spect[j][i].dNdlE + SMALL)))
-                );
-
-            if (tau_scatt > max_tau_scatt){
-                max_tau_scatt = tau_scatt;
-            }
-            L += nuLnu * dOmega * dlE/(4.*M_PI);
-        }
-        fprintf(fp, "\n");
-    }
+	for (k=0; k < N_TYPEBINS; k++){
+		// Running through all energy bins
+		for (i = 0; i < N_EBINS; i++) {
+	
+			/* output log_10(photon energy/(me c^2))*/
+			fprintf(fp, "%10.5g ", (i * dlE + lE0) / M_LN10);
+	
+			for (j = 0; j < N_THBINS; j++) {
+	
+				/* convert accumulated photon number in each bin 
+				   to \nu L_\nu, in units of Lsun */
+				// dx2 is already calculated above, but valid here too
+				dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+	
+				nuLnu = (ME * CL * CL) * (4. * M_PI / dOmega) * (1. / dlE);
+	
+				nuLnu *= spect[k][j][i].dEdlE;
+				nuLnu /= LSUN;
+				
+				tau_scatt = spect[k][j][i].tau_scatt / (spect[k][j][i].dNdlE + SMALL);
+	
+				fprintf(fp,
+					"%10.5g %10.5g %10.5g %10.5g %10.5g %10.5g ",
+					nuLnu,
+					spect[k][j][i].tau_abs / (spect[k][j][i].dNdlE + SMALL), 
+					tau_scatt,
+					spect[k][j][i].X1iav / (spect[k][j][i].dNdlE + SMALL),
+					sqrt(fabs(spect[k][j][i].X2isq / (spect[k][j][i].dNdlE + SMALL))),
+					sqrt(fabs(spect[k][j][i].X3fsq / (spect[k][j][i].dNdlE + SMALL)))
+					);
+	
+				if (tau_scatt > max_tau_scatt){
+					max_tau_scatt = tau_scatt;
+				}
+				L += nuLnu * dOmega * dlE/(4.*M_PI);
+			}
+			fprintf(fp, "\n");
+		}
+	}
 
     // Standard logging to stderr
     printf("\n\033[1m==================== OUTPUT ====================\033[0m\n");

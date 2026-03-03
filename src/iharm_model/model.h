@@ -336,13 +336,18 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
 
 
 /**
- * @brief Function to output in hdf5 format matching iharm3d. Contains the groups fluid_header, params and output.
+ * @brief Processes energy and angled binned simulation data to generate and save the final spectrum in hdf5 format.
+ * 
+ * This function converts the raw energy and photon counts accumulated in the 
+ * spectral grid into physical units. It calculates the SED across different inclination angles, determines 
+ * the average optical depths, and computes global simulation diagnostics such 
+ * as total luminosity and accretion efficiency. Contains the fluid_header, params and output groups.
  * 
  * @param N_superph_made Total number of superphotons generated during the run.
- * @param spect 2D array containing the accumulated spectral data (Energy/Theta bins).
+ * @param spect 3D array containing the accumulated spectral data (Photon physical origin,Energy,Theta bins).
  * @param filename Name of the output file (saved in the `./output/` directory).
  */
-__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
+__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS], const char * filename);
 
 #endif
 

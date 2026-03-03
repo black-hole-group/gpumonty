@@ -676,7 +676,7 @@ __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
 
 __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
     double lE, dx2;
-    int iE, ix2, index;
+    int itype, iE, ix2, index;
 
     if (isnan(ph.w[photon_index]) || isnan(ph.E[photon_index])) {
         printf("record isnan: %g %g\n", ph.w[photon_index], ph.E[photon_index]);
@@ -698,8 +698,13 @@ __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* 
     lE = log(ph.E[photon_index]);
     iE = (int)((lE - lE0) / dlE + 2.5) - 2;
     if (iE < 0 || iE >= N_EBINS) return;
+
+    // Calculate the compton bin index
+    itype = ph.nscatt;
+    if (ph.nscatt>=N_COMPTBINS) itype = N_COMPTBINS;
+
     // Calculate the index once
-    index = ix2 * N_EBINS + iE;
+    index = itype * (N_THBINS * N_EBINS) + ix2 * N_EBINS + iE;
 
     atomicAdd(&d_N_superph_recorded, 1);
     //atomicAdd(&d_N_scatt, ph.nscatt[photon_index]);
@@ -751,7 +756,7 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     return 1./(1./thetae + 1./thetae_local_max);
 }
 
-__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename)
+__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS], const char * filename)
 {
   hid_t fid = -1;
 
