@@ -882,16 +882,16 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
 
   h5io_add_group(fid, "/output");
 
-  h5io_add_data_dbl_1d(fid, "/output/lnu", N_EBINS, lnu_buf);
-  h5io_add_data_dbl_1d(fid, "/output/dOmega", N_THBINS, dOmega_buf);
-  h5io_add_data_dbl_3d(fid, "/output/nuLnu", N_TYPEBINS, N_EBINS, N_THBINS, nuLnu_buf);
-  h5io_add_data_dbl_3d(fid, "/output/tau_abs", N_TYPEBINS, N_EBINS, N_THBINS, tau_abs_buf);
-  h5io_add_data_dbl_3d(fid, "/output/tau_scatt", N_TYPEBINS, N_EBINS, N_THBINS, tau_scatt_buf);
-  h5io_add_data_dbl_3d(fid, "/output/x1av", N_TYPEBINS, N_EBINS, N_THBINS, x1av_buf);
-  h5io_add_data_dbl_3d(fid, "/output/x2av", N_TYPEBINS, N_EBINS, N_THBINS, x2av_buf);
-  h5io_add_data_dbl_3d(fid, "/output/x3av", N_TYPEBINS, N_EBINS, N_THBINS, x3av_buf);
-  h5io_add_data_dbl_3d(fid, "/output/nscatt", N_TYPEBINS, N_EBINS, N_THBINS, nscatt_buf);
-  h5io_add_data_dbl_1d(fid, "/output/Lcomponent", N_TYPEBINS, Lcomponent_buf);
+  h5io_add_data_dbl_1d(fid, "/output/lnu", N_EBINS, &lnu_buf[0]);
+  h5io_add_data_dbl_1d(fid, "/output/dOmega", N_THBINS, &dOmega_buf[0]);
+  h5io_add_data_dbl_3d(fid, "/output/nuLnu", N_TYPEBINS, N_EBINS, N_THBINS, &nuLnu_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/tau_abs", N_TYPEBINS, N_EBINS, N_THBINS, &tau_abs_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/tau_scatt", N_TYPEBINS, N_EBINS, N_THBINS, &tau_scatt_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/x1av", N_TYPEBINS, N_EBINS, N_THBINS, &x1av_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/x2av", N_TYPEBINS, N_EBINS, N_THBINS, &x2av_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/x3av", N_TYPEBINS, N_EBINS, N_THBINS, &x3av_buf[0][0][0]);
+  h5io_add_data_dbl_3d(fid, "/output/nscatt", N_TYPEBINS, N_EBINS, N_THBINS, &nscatt_buf[0][0][0]);
+  h5io_add_data_dbl_1d(fid, "/output/Lcomponent", N_TYPEBINS, &Lcomponent_buf[0]);
 
   h5io_add_data_int(fid, "/output/Nrecorded", N_superph_recorded);
   h5io_add_data_int(fid, "/output/Nmade", N_superph_made);

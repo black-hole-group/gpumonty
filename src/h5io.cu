@@ -81,7 +81,7 @@ void h5io_add_data_str(hid_t fid, const char *path, const char *data)
   H5Tclose(dtype_id);
 }
 
-void h5io_add_data_dbl_1d(hid_t fid, const char *path, hsize_t n1, double data[n1])
+void h5io_add_data_dbl_1d(hid_t fid, const char *path, hsize_t n1, const double *data)
 {
   hsize_t dims[1] = { n1 };
   hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
@@ -91,7 +91,7 @@ void h5io_add_data_dbl_1d(hid_t fid, const char *path, hsize_t n1, double data[n
   H5Sclose(dataspace_id);
 }
 
-void h5io_add_data_dbl_2d(hid_t fid, const char *path, hsize_t n1, hsize_t n2, double data[n1][n2])
+void h5io_add_data_dbl_2d(hid_t fid, const char *path, hsize_t n1, hsize_t n2, const double *data)
 {
   hsize_t dims[2] = { n1, n2 };
   hid_t dataspace_id = H5Screate_simple(2, dims, NULL);
@@ -101,7 +101,7 @@ void h5io_add_data_dbl_2d(hid_t fid, const char *path, hsize_t n1, hsize_t n2, d
   H5Sclose(dataspace_id); 
 }
 
-void h5io_add_data_dbl_3d(hid_t fid, const char *path, hsize_t n1, hsize_t n2, hsize_t n3, double data[n1][n2][n3])
+void h5io_add_data_dbl_3d(hid_t fid, const char *path, hsize_t n1, hsize_t n2, hsize_t n3, const double *data)
 {
   hsize_t dims[3] = { n1, n2, n3 };
   hid_t dataspace_id = H5Screate_simple(3, dims, NULL);
