@@ -30,6 +30,7 @@ __host__ void init_model(char *args[]);
 __host__ void init_geometry();
 int main(int argc, char *argv[])
 {
+	fprintf(stderr, "GPUmonty. githash: %s\n", xstr(VERSION));
 	time_t starttime = time(NULL);
 	time_t time_seeding;
 	
