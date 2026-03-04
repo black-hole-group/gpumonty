@@ -1,5 +1,6 @@
 # Model name (hamr_model, harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/sphere_model
+MODEL = iharm
+MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
@@ -98,7 +99,7 @@ $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 		$(if $(filter release,$(BUILD_TYPE)),-dlto) \
 		-o $@ $(OBJS) $(LDFLAGS) 2>&1 | grep -v "no reference to variable" || true
 	@echo "------------------------------------------------"
-	@echo "Compilation done! Model: $(notdir $(MODEL_DIR))."
+	@echo "Compilation done! Model: $(MODEL)."
 	@echo "Build type: $(BUILD_TYPE)."
 	@echo "------------------------------------------------"
 
@@ -111,11 +112,11 @@ $(OBJS): configure_gpu_blocks
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)
 	@echo "Compiling $< ..."
-	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -c -o $@ $<
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -DMODEL=$(MODEL) -c -o $@ $<
 
 $(BUILD_DIR)/%.o: $(MODEL_DIR)/%.cu $(INCS) | $(BUILD_DIR)
 	@echo "Compiling $< ..."
-	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -c -o $@ $<
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -DMODEL=$(MODEL) -c -o $@ $<
 
 
 # Create build directory

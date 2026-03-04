@@ -4,13 +4,13 @@ Ns 1e4
 #path to the GRMHD data file
 
 #Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
-dump ./data/dump_SANE.h5
+dump ./data/sample_dump_SANE_a+0.94_MKS_0900.h5
 
 #Use this path when testing harm_model
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum sane_iharm.spec
+spectrum spectrum.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -24,7 +24,7 @@ M_unit 1.e16
 trat_small 1.
 trat_large 10.
 beta_crit 1.
-Thetae_max 1.e100
+Thetae_max 1.e3
 
 # Whether or not to have scattering activated
 scattering 1

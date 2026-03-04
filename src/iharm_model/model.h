@@ -15,6 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
+
+/**
+ * Radiation flags 
+ * TODO: implement said flags (currently used for io purposes). maybe use runtime parameters?
+ * TODO: implement Bremss
+ */
+#define SYNCHROTRON (1)
+#define BREMSSTRAHLUNG (0)
+#define COMPTON (1)
+
 /* Range of superphoton frequencies */
 
 /**
@@ -28,6 +38,31 @@
  * @note Superphotons with frequencies above NUMAX can be generated through scattering events. 
  */
 #define NUMAX 1.e16
+
+/**
+ * @brief Natural logarithm of the lower sampling bound.
+ *
+ * Derived from `NUMIN` as `log(NUMIN)`, this value represents the
+ * log-space minimum used for energy/frequency grid construction.
+ */
+#define LNUMIN log(NUMIN)
+
+/**
+ * @brief Natural logarithm of the upper sampling bound.
+ *
+ * Derived from `NUMAX` as `log(NUMAX)`, this value represents the
+ * log-space maximum used for energy/frequency grid construction.
+ */
+#define LNUMAX log(NUMAX)
+
+/**
+ * @brief Log-space step size between samples.
+ *
+ * Computed from the log-range `[LNUMIN, LNUMAX]` divided by `N_ESAMP`,
+ * giving the increment used to traverse the sampling domain uniformly
+ * in natural-log space.
+ */
+#define DLNU ((LNUMAX-LNUMIN)/N_ESAMP)
 
 /**
  * @brief Macro to identify the iharm GRMHD model.
