@@ -944,7 +944,7 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
 
   printf("\n");
   fprintf(stderr, "Number of superphotons made: %llu\n", N_superph_made);
-  fprintf(stderr, "Number of superphotons scattered: %llu\n", N_scatt);
+  fprintf(stderr, "Number of superphotons scattered: %d\n", N_scatt);
   fprintf(stderr, "Number of superphotons recorded: %llu\n", N_superph_recorded);
   fprintf(stderr, "Data saved in %s\n", filename);
 	printf("\n\033[1m================================================\033[0m\n");
