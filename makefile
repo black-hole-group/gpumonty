@@ -18,7 +18,8 @@
 
 
 # Model name ( harm_model, sphere_model, iharm_model)
-MODEL_DIR = $(SRC_DIR)/iharm_model
+MODEL = iharm
+MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
@@ -26,9 +27,8 @@ BLOCK_TUNING ?= 1
 
 CUDA_PATH ?=/usr/local/cuda/
 
-
-# GSL setup
-GSL_PATH ?= /home/pedro/gsl
+#GSL setup
+GSL_PATH ?= $(GSL_HOME)
 
 # HDF5 setup
 HDF5_INCLUDE = -I/usr/include/hdf5/serial
@@ -91,6 +91,10 @@ else
     NVCCFLAGS = $(NVCCFLAGS_RELEASE)
 endif
 
+## VERSION PRESERVATION ##
+MAKEFILE_PATH := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+GIT_VERSION := $(shell cd $(MAKEFILE_PATH); git describe --dirty --always --tags)
+
 # Linker flags
 LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++ $(HDF5_LIB) -lhdf5_hl -lhdf5
 
@@ -121,7 +125,7 @@ $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 		$(if $(filter release,$(BUILD_TYPE)),-dlto) \
 		-o $@ $(OBJS) $(LDFLAGS) 2>&1 | grep -v "no reference to variable" || true
 	@echo "------------------------------------------------"
-	@echo "Compilation done! Model: $(notdir $(MODEL_DIR))."
+	@echo "Compilation done! Model: $(MODEL)."
 	@echo "Build type: $(BUILD_TYPE)."
 	@echo "------------------------------------------------"
 
@@ -134,11 +138,11 @@ $(OBJS): configure_gpu_blocks
 # Compile rule for CUDA files in both folders
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCS) | $(BUILD_DIR)
 	@echo "Compiling $< ..."
-	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -DMODEL=$(MODEL) -c -o $@ $<
 
 $(BUILD_DIR)/%.o: $(MODEL_DIR)/%.cu $(INCS) | $(BUILD_DIR)
 	@echo "Compiling $< ..."
-	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -c -o $@ $<
+	@$(NVCC) $(NVCCFLAGS) $(CUDA_INCLUDE) -DVERSION=$(GIT_VERSION) -DMODEL=$(MODEL) -c -o $@ $<
 
 
 # Create build directory

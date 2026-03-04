@@ -47,7 +47,7 @@ __host__ void init_data()
 
 	/*Setting the resolution*/
     // R resolution is high here to properly deal with the sphere edge. The higher it is, the higher the anti-aliasing quality.
-    N1 = 30000; 
+    N1 = 8192; 
 	N2 = 128;
 	N3 = 1;
 	/*grid parameters*/
