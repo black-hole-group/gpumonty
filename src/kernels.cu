@@ -341,7 +341,8 @@ __host__ void mainFlowControl(time_t time, double * p){
     //cudaMemcpyErrorCheck(spect, d_spect, N_TYPEBINS * N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-	report_spectrum(gen_superph, spect, params.spectrum);
+	// report_spectrum(gen_superph, spect, params.spectrum);
+	report_spectrum_h5(gen_superph, spect, params.spectrum);
 	cudaFree(d_spect);
 	cudaFree(generated_photons_arr); 
 	cudaFree(dnmax_arr);

@@ -33,3 +33,4 @@ python/**/.ipynb_checkpoints/
 !output/example.spec
 !python/expected_spectrum.png
 !python/example.py
+!python/plspec.py

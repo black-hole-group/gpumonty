@@ -930,25 +930,23 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   h5io_add_attribute_str(fid, "/output/Mdot", "units", "g/s");
   h5io_add_attribute_str(fid, "/output/MdotEdd", "units", "g/s");
 
-  // diagnostic output to screen
-  fprintf(stderr, "\n");
-
+  // Standard logging to stderr
+  printf("\n\033[1m==================== OUTPUT ====================\033[0m\n");
   fprintf(stderr, "MBH = %g Msun\n", params.MBH_par);
   fprintf(stderr, "a = %g\n", bhspin);
-
-  fprintf(stderr, "dL = %g\n", dL);
-  fprintf(stderr, "dMact = %g\n", dMact * M_unit / T_unit / (MSUN / YEAR));
-  fprintf(stderr, "efficiency = %g\n", L * LSUN / (dMact * M_unit * CL * CL / T_unit));
-  fprintf(stderr, "L/Ladv = %g\n", L * LSUN / (Ladv * M_unit * CL * CL / T_unit));
-  fprintf(stderr, "max_tau_scatt = %g\n", max_tau_scatt);
+  fprintf(stderr,
+    "luminosity %g erg/s\ndL %g\ndMact %g\nefficiency %g\nL/Ladv %g\nmax_tau_scatt %g\n",
+      L * LSUN, dL, dMact * M_unit / T_unit / (MSUN / YEAR),
+      L * LSUN / (dMact * M_unit * CL * CL / T_unit),
+      L * LSUN / (Ladv * M_unit * CL * CL / T_unit),
+      max_tau_scatt);
   fprintf(stderr, "Mdot = %g g/s, MdotEdd = %g g/s, mdot = %g MdotEdd\n", Mdot, MdotEdd, mdot);
-  fprintf(stderr, "L = %g erg/s, LEdd = %g erg/s, lum = %g LEdd\n", Lum, LEdd, lum);
 
-  fprintf(stderr, "\n");
-
-  fprintf(stderr, "N_superph_made = %d\n", N_superph_made);
-  fprintf(stderr, "N_superph_scattered = %llu\n", N_scatt);
-  fprintf(stderr, "N_superph_recorded = %d\n", N_superph_recorded);
-
+  printf("\n");
+  fprintf(stderr, "Number of superphotons made: %llu\n", N_superph_made);
+  fprintf(stderr, "Number of superphotons scattered: %llu\n", N_scatt);
+  fprintf(stderr, "Number of superphotons recorded: %llu\n", N_superph_recorded);
+  fprintf(stderr, "Data saved in %s\n", filename);
+	printf("\n\033[1m================================================\033[0m\n");
   H5Fclose(fid);
 }
