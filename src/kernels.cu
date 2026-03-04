@@ -29,7 +29,7 @@
 #include "curand.h"
 #include "track.h"
 #include "main.h"
-
+#include "scattering.h"
 
 __host__ void mainFlowControl(time_t time, double * p){
 	/*
@@ -142,7 +142,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 	unsigned long long num_scat_phs[MAX_LAYER_SCA];
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
-	unsigned long long reset = 0;
 	int ideal_nblocks;
 	int batch_divisions = 1;
 	instant_photon_number = photonsPerBatch(gen_superph, &batch_divisions);
@@ -194,6 +193,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 			exit(1);
 		}
 
+		unsigned long long reset = 0;
 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 		fprintf(stderr, "Photon sampling process completed!\n");
 
@@ -252,89 +252,11 @@ __host__ void mainFlowControl(time_t time, double * p){
 			printf("\nSolving the scattered photons...\n");
 			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
 		}
-		int n = 1;
-		bool quit_flag_sca = false;
-		unsigned long long scatterings_performed = 0;
 
-		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
-			if(!params.scattering){
-				break;
-			}
-			printf("\nStarting round %d\n", n);
-			ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
-			unsigned long long round_num_scat_init = 0;
 
-			for (int cum_sum = 0; cum_sum < n -1; cum_sum++){
-				round_num_scat_init += num_scat_phs[cum_sum]; 
-			}
-			unsigned long long round_num_scat_end = round_num_scat_init + num_scat_phs[n-1];
-			
-			cudaEventRecord(start, 0);
-			if(ideal_nblocks > max_block_number){
-				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, besselTexObj, round_num_scat_init, round_num_scat_end);
-				#else
-					track_scat<<<max_block_number,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, besselTexObj, round_num_scat_init, round_num_scat_end);
-				#endif
-			}else{
-				if (ideal_nblocks == 0)
-					ideal_nblocks = 1;
-				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_p, d_table_ptr, scat_ofphoton, n, besselTexObj, round_num_scat_init, round_num_scat_end);
-				#else
-					track_scat<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, dPTableTexObj, d_table_ptr, scat_ofphoton, n, besselTexObj, round_num_scat_init, round_num_scat_end);
-				#endif
-			}
-			cudaDeviceSynchronize();
-			cudaEventRecord(stop);
-			cudaEventSynchronize(stop); 
-			cudaEventElapsedTime(&milliseconds, start, stop);
-			printf("Scattering kernel, round %d, execution time: %f s\n", n,milliseconds/1000.);
-			cudaStatus = cudaGetLastError();
-			if (cudaStatus != cudaSuccess) {
-				fprintf(stderr, "in track_scat %s\n", cudaGetErrorString(cudaStatus));
-				exit(1);
-			}
-
-			if(ideal_nblocks > max_block_number){
-				record_scattering<<<max_block_number,N_THREADS>>>(scat_ofphoton, d_spect, instant_photon_number, max_block_number, n);
-			}else{
-				if (ideal_nblocks == 0)
-				ideal_nblocks = 1;
-				record_scattering<<<ideal_nblocks,N_THREADS>>>(scat_ofphoton, d_spect, instant_photon_number, ideal_nblocks, n);
-			}			
-			cudaStatus = cudaGetLastError();
-			if (cudaStatus != cudaSuccess) {
-				fprintf(stderr, "in record_scattering %s\n", cudaGetErrorString(cudaStatus));
-				exit(1);
-			}
-			
-			cudaMemcpyFromSymbol(&scatterings_performed, scattering_counter, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-			cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA* sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-			if(num_scat_phs[n] == 0){
-				printf("Quit flag reached in round %d!\n", n);
-				quit_flag_sca = true;
-			}
-			cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long));
-			printf("number of scattered photons generated = %llu in round %d\n", num_scat_phs[n], n);
-			n++;
-		}
-		if(n >= MAX_LAYER_SCA && num_scat_phs[n] > 0){
-			printf("WARNING: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
-		}
-
-		cudaStatus = cudaGetLastError();
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in scattering kernerls %s\n", cudaGetErrorString(cudaStatus));
-			exit(1);
-		}
-
-		freePhotonData(&scat_ofphoton);
+		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, besselTexObj, d_table_ptr, d_p);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
-		memset(num_scat_phs, 0, sizeof(num_scat_phs));
-		cudaMemcpyToSymbol(d_num_scat_phs, &num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-
 	}
 
     cudaMemcpyErrorCheck(spect, d_spect, N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
