@@ -88,10 +88,6 @@ double stopx[NDIM];
  */
 double dx[NDIM];
 
-/**
- * Global host variable for the gas adiabatic index \f$ \Gamma \f$.
- */
-double gam;
 
 /**
  * Global host variable for the electron temperature unit to translate from cgs to code units.

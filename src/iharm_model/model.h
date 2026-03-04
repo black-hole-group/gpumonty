@@ -92,7 +92,7 @@
 /** 
  * Number of primitive variables in the iharm model. This should match the value read from the HDF5 file.
 */
-#define NPRIM	8
+#define NPRIM	10
 
 #ifndef MODEL_FUNCTIONS
 #define MODEL_FUNCTIONS
@@ -339,21 +339,6 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
 
 
 //Parameters that probably should be read from file or job submission
-
-/**
- * Adiabatic index for electrons.
- */
-#define GAME (4./3.)
-
-/**
- * Adiabatic index for the protons.
- */
-#define GAMP (5./3.)
-
-/**
- * Adiabatic index for the total fluid.
- */
-#define GAM (1.4444440)
 
 /**
  * @brief Activates the constant temperature ratio model.

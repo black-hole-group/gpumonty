@@ -186,7 +186,6 @@ struct of_spectrum {
 	extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 
 	//extern double dlE, lE0;
-	extern double gam;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
