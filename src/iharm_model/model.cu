@@ -764,7 +764,7 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
   if (bias > max) bias = max;
 
-  return bias * 30. * 1./2.;
+  return bias * 30. * 1./2. * d_biastuning;
 }
 
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val)

@@ -84,7 +84,6 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			}
 			
 			cudaMemcpyFromSymbol(&scatterings_performed, scattering_counter, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-			//cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA* sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 			cudaMemcpyFromSymbol(num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA* sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
             if(num_scat_phs[n] == 0){
 				printf("Quit flag reached in round %d!\n", n);

@@ -127,4 +127,15 @@ __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cuda
  */
 __host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cudaArray_t * cudaArray);
 
+
+/**
+ * @brief Function to transfer of_photonSoA structures between two different device structures.
+ * 
+ * @param from Pointer from where the memory is being transferred from.
+ * @param to Pointer to where the memory is being transferred to.
+ * @param size size of the arrays of the SoA
+ */
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size);
+
+
 #endif

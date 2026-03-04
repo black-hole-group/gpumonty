@@ -298,7 +298,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (1) 
+#define SCATTERINGS_PER_PHOTON (5) 
 
 /*Making of Nint table*/
 
@@ -349,3 +349,8 @@
  * Maximum number of integration steps for photon geodesic integration.
  */
 #define MAXNSTEP (1280000)
+
+/**
+ * Maximum number of iterations until bias tuning give up on finding the optimal scalling to get the target ratio
+ */
+#define MAXITER_BIASTUNING 5

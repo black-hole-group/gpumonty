@@ -114,6 +114,8 @@ __host__ void transferParams() {
 
 	/*iharm variables*/
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
+	cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double));
+
 	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
@@ -229,6 +231,34 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->E0s), size * sizeof(double)));
     
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
+}
+
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size){
+	cudaMemcpyErrorCheck((from.X0), (to.X0), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.X1), (to.X1), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.X2), (to.X2), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.X3), (to.X3), size * sizeof(double), cudaMemcpyDeviceToDevice);
+
+	cudaMemcpyErrorCheck((from.K0), (to.K0), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.K1), (to.K1), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.K2), (to.K2), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.K3), (to.K3), size * sizeof(double), cudaMemcpyDeviceToDevice);
+
+	cudaMemcpyErrorCheck((from.dKdlam0), (to.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.dKdlam1), (to.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.dKdlam2), (to.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.dKdlam3), (to.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice);
+
+	cudaMemcpyErrorCheck((from.w), (to.w), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.E), (to.E), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.X1i), (to.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.X2i), (to.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.tau_abs), (to.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.tau_scatt), (to.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice);
+
+	cudaMemcpyErrorCheck((from.E0), (to.E0), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.E0s), (to.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice);
+	cudaMemcpyErrorCheck((from.nscatt), (to.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice);
 }
 
 __host__ void freePhotonData(struct of_photonSOA * ph){

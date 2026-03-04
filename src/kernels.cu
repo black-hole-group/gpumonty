@@ -31,6 +31,11 @@
 #include "main.h"
 #include "scattering.h"
 
+// __global__ void check(struct of_photonSOA ph_old, struct of_photonSOA ph_new){
+// 	unsigned long long test = 39283;
+// 	printf("ph_old.K1[photon_index], ph_new.K1[photon_index] = %le, %le\n", ph_old.K1[test], ph_new.K1[test]);
+// }
+
 __host__ void mainFlowControl(time_t time, double * p){
 	/*
 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
@@ -167,9 +172,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 		allocatePhotonData(&initial_photon_states, instant_photon_number);
 		allocatePhotonData(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON *instant_photon_number);
 
-		//gpuErrchk(cudaMalloc(&initial_photon_states, instant_photon_number* sizeof(struct of_photon)));
-		//gpuErrchk(cudaMalloc(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * instant_photon_number* sizeof(struct of_photon))); 
-
 		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
@@ -198,39 +200,79 @@ __host__ void mainFlowControl(time_t time, double * p){
 		fprintf(stderr, "Photon sampling process completed!\n");
 
 
+	
 		fprintf(stderr, "\nTracking photons along the geodesics\n");
-		cudaEventRecord(start, 0);
-		if(ideal_nblocks > max_block_number){
-			#ifdef DO_NOT_USE_TEXTURE_MEMORY
-				track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
-			#else
-				track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
-			#endif
-		}else{
-			if (ideal_nblocks == 0)
-			ideal_nblocks = 1;
-			#ifdef DO_NOT_USE_TEXTURE_MEMORY
-				track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
-			#else
-				track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
-			#endif
-		}		
 
-		cudaDeviceSynchronize();
-		cudaEventRecord(stop);
-		cudaEventSynchronize(stop); 
-		cudaEventElapsedTime(&milliseconds, start, stop);
-		printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
-
-		cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-
-		cudaStatus = cudaGetLastError();
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in track %s\n", cudaGetErrorString(cudaStatus));
-			fprintf(stderr, "number of scattered photons: %llu out of %llu\n", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
-			exit(1);
+		// Checkpoint array to save photon states before evolving. Since we are going to do bias tuning, we might want to retrack
+		// the same photons with a different bias parameter.
+		struct of_photonSOA PhotonStateCheckPoint;
+		if(params.fitBias){
+			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
+			transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
 		}
-		
+
+		int RedoTuning = 1;
+		double InferiorAcceptance = 0.8 * params.targetRatio;
+		double SuperiorAcceptance = 1.2 * params.targetRatio;
+		int BiasTuning_index = 0;
+		do{
+			cudaEventRecord(start, 0);
+			if(ideal_nblocks > max_block_number){
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+				#else
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+				#endif
+			}else{
+				if (ideal_nblocks == 0)
+				ideal_nblocks = 1;
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+				#else
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+				#endif
+			}		
+
+			cudaDeviceSynchronize();
+			cudaEventRecord(stop);
+			cudaEventSynchronize(stop); 
+			cudaEventElapsedTime(&milliseconds, start, stop);
+			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
+
+			cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
+
+			cudaStatus = cudaGetLastError();
+			if (cudaStatus != cudaSuccess) {
+				fprintf(stderr, "in track %s\n", cudaGetErrorString(cudaStatus));
+				fprintf(stderr, "number of scattered photons: %llu out of %llu\n", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
+				exit(1);
+			}
+
+			if(params.fitBias){
+				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
+				BiasTuning_index++;
+				if(Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance && BiasTuning_index < MAXITER_BIASTUNING){
+					params.biasTuning *= params.targetRatio/Ratio;
+					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
+					printf("\033[1;31mTrying new BiasTuning parameter %.3e\n", params.biasTuning);
+					cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double));
+
+					//Resetting all the arrays and global variables that keep track of progress
+					transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
+					unsigned long long reset = 0;
+					cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long));
+					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
+					cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+					cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+				}else{
+					printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+					RedoTuning = 0;
+				}
+
+			}
+		}while(params.fitBias && RedoTuning && BiasTuning_index < MAXITER_BIASTUNING);
+
+
 		if(ideal_nblocks > max_block_number){
 			record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
 		}else{
@@ -244,6 +286,8 @@ __host__ void mainFlowControl(time_t time, double * p){
 			exit(1);
 		}
 	 	freePhotonData(&initial_photon_states);
+		if(params.fitBias)
+		freePhotonData(&PhotonStateCheckPoint);
 
 
 		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
@@ -277,7 +321,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 	cudaFreeArray(dPTableCuArray);
 
 }
-
 
 __launch_bounds__(N_THREADS)
 __global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr, cudaTextureObject_t besselTexObj){

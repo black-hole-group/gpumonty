@@ -26,7 +26,7 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
 
   params->scattering   = 1;
   params->biasTuning  = 1.;
-  params->fitBias     = 1.;
+  params->fitBias     = 0.;
   params->fitBiasNs   = 10000.;
   params->targetRatio = M_SQRT2;
 
@@ -72,7 +72,7 @@ __host__ void load_par (const char *fname, Params *params) {
 
     // Tracker for all variables - prefixed with 'found_' to avoid macro issues
     struct {
-        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio, scattering;
+        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias_tuning, fit_bias, fit_bias_ns, ratio, scattering;
         int tp_te, beta, trat_s, trat_l, theta_m;
     } f = {0}; 
 
@@ -94,7 +94,7 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "spectrum")) { read_param(line, "spectrum", (void *)(params->spectrum), 3); f.spectrum = 1; }
 
         if (strstr(line, "scattering")) { read_param(line, "scattering", &(params->scattering), 1); f.scattering = 1; }
-        if (strstr(line, "bias"))        { read_param(line, "bias", &(params->biasTuning), 2); f.bias = 1; }
+        if (strstr(line, "bias_tuning"))        { read_param(line, "bias_tuning", &(params->biasTuning), 2); f.bias_tuning = 1; }
         if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }
         if (strstr(line, "fit_bias_ns")) { read_param(line, "fit_bias_ns", &(params->fitBiasNs), 2); f.fit_bias_ns = 1; }
         if (strstr(line, "ratio"))       { read_param(line, "ratio", &(params->targetRatio), 2); f.ratio = 1; }
@@ -106,6 +106,14 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "Thetae_max")) { read_param(line, "Thetae_max", &(params->Thetae_max), 2); f.theta_m = 1; }
     }
     fclose(fp);
+
+    // Emit error for using fitbias but not having scattering on
+    if(params->fitBias){
+      if(!params->scattering){
+          printf("\033[1;31m Cannot run fitBias without scattering! Change .par file! Exiting... \033[0m\n");
+          exit(-1);
+      }
+    }
 
     // --- FINAL REPORT ---
     printf("\n\033[1m=== PARAMETER LOADING REPORT ===\033[0m\n");
@@ -145,9 +153,9 @@ __host__ void load_par (const char *fname, Params *params) {
     print_status_s("dump", f.dump, params->dump);
     print_status_s("spectrum", f.spectrum, params->spectrum);
 
-    #if (0)
+    #if (1)
       print_status_i("scattering", f.scattering, params->scattering);
-      print_status("bias", f.bias, params->biasTuning);
+      print_status("bias_tuning", f.bias_tuning, params->biasTuning);
       print_status_i("fit_bias", f.fit_bias, params->fitBias);
       print_status("fit_bias_ns", f.fit_bias_ns, params->fitBiasNs);
       print_status("ratio", f.ratio, params->targetRatio);

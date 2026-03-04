@@ -414,6 +414,12 @@ __device__ double d_tp_over_te;
  */
 __device__ int d_scattering;
 
+
+/**
+ * Global device variable that scales bias to match desired ratio.
+ */
+__device__ double d_biastuning;
+
 /**
  * Global device variable for the black hole mass in grams (g).
  */
