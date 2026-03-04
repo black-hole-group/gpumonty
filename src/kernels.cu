@@ -38,7 +38,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 	Parameters:
 	@time: This is the usual C function that returns the number of seconds since the epoch. It is used to seed the random number generator
 	@p: Array of the primitive variables at each grid cell
-	@params: Struct containing various parameters for the simulation
 
 	Variables:
 	@start: Start event to measure the time of the kernel
@@ -81,7 +80,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 	cudaStatus = cudaGetLastError();
 	transferParams();
 	
-	struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS] = { };
     struct of_spectrum* d_spect;
     gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
 	double * d_p; 
@@ -337,7 +335,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	}
 
-    cudaMemcpyErrorCheck(spect, d_spect, N_TYPEBINS * N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
+	struct of_spectrum ***spect = Malloc3D_Contiguous(N_TYPEBINS, N_THBINS, N_EBINS);	
+
+	cudaMemcpyErrorCheck(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost);
+    //cudaMemcpyErrorCheck(spect, d_spect, N_TYPEBINS * N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
 	report_spectrum(gen_superph, spect, params.spectrum);
@@ -350,7 +351,7 @@ __host__ void mainFlowControl(time_t time, double * p){
     cudaFree(d_index_to_ijk);
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
-	
+	Free3D_Contiguous(spect, N_TYPEBINS);
 	cudaDestroyTextureObject(dPTableTexObj);
 	cudaFreeArray(dPTableCuArray);
 

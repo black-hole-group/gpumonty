@@ -347,7 +347,7 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
  * @param spect 3D array containing the accumulated spectral data (Photon physical origin,Energy,Theta bins).
  * @param filename Name of the output file (saved in the `./output/` directory).
  */
-__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS], const char * filename);
+__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
 
 #endif
 

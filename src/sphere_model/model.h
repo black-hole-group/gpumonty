@@ -42,12 +42,12 @@
 /**
  * Number of energy samples for the emissivity and weight tables.
  */
-#define N_ESAMP 2500
+#define N_ESAMP 800
 
 /**
  * Number of energy bins for the spectral output.
  */
-#define N_EBINS 2500
+#define N_EBINS 800
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 

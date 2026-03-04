@@ -140,7 +140,7 @@ __host__ void init_geometry()
 	}
 }
 
-__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_TYPEBINS][N_THBINS][N_EBINS], const char * filename)
+__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename)
 {
     int i, j, k;
     double dx2, dOmega, nuLnu, tau_scatt, L;
