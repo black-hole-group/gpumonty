@@ -80,7 +80,7 @@
  * 
  * This is used to characterize the lower bound for superphoton generation.
  */
-#define THETAE_MIN	1e-3
+#define THETAE_MIN	0.3
 
 /**
  * Maximum dimensionless electron temperature (\f$\Theta_{e, max}\f$) for physical validity.
