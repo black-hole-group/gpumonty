@@ -67,6 +67,8 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
@@ -118,6 +120,8 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.xstr"><code class="docutils literal notranslate"><span class="pre">xstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -329,7 +333,7 @@
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -344,6 +348,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -367,8 +373,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
@@ -407,6 +419,7 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -678,6 +691,43 @@
 <li><p><strong>texObj</strong> – Pointer to the resulting texture object. </p></li>
 <li><p><strong>ptr</strong> – Input 1D data array. </p></li>
 <li><p><strong>cudaArray</strong> – Pointer to the allocated 1D CUDA array resource.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419Malloc3D_Contiguousiii">
+<span id="_CPPv319Malloc3D_Contiguousiii"></span><span id="_CPPv219Malloc3D_Contiguousiii"></span><span id="Malloc3D_Contiguous__i.i.i"></span><span class="target" id="memory_8h_1a6cdf1add79b3d31502d3f7bff861ef39"></span><span class="pre">__host__</span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Malloc3D_Contiguous</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim1</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim2</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim3</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419Malloc3D_Contiguousiii" title="Link to this definition"></a><br /></dt>
+<dd><p>Allocates a 3D array of structure <a class="reference internal" href="defs.html#structof__spectrum"><span class="std std-ref">of_spectrum</span></a> on the host and initializes it to zero. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dim1</strong> – Size of the first dimension. </p></li>
+<li><p><strong>dim2</strong> – Size of the second dimension. </p></li>
+<li><p><strong>dim3</strong> – Size of the third dimension.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the allocated spectrum 3D array. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417Free3D_ContiguousPPP11of_spectrumi">
+<span id="_CPPv317Free3D_ContiguousPPP11of_spectrumi"></span><span id="_CPPv217Free3D_ContiguousPPP11of_spectrumi"></span><span id="Free3D_Contiguous__of_spectrumPPP.i"></span><span class="target" id="memory_8h_1af3e7a6bdd0378f749c580db281e081f9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Free3D_Contiguous</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417Free3D_ContiguousPPP11of_spectrumi" title="Link to this definition"></a><br /></dt>
+<dd><p>Frees a previously allocated spectrum 3D array. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> – Pointer to the 3D array to be freed. </p></li>
+<li><p><strong>dim1</strong> – Size of the first dimension. </p></li>
+<li><p><strong>dim2</strong> – Size of the second dimension. </p></li>
+<li><p><strong>dim3</strong> – Size of the third dimension.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

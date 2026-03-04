@@ -63,6 +63,8 @@
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
@@ -114,6 +116,8 @@
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/config.html#c.xstr"><code class="docutils literal notranslate"><span class="pre">xstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/config.html#c.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -325,7 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -340,6 +344,8 @@
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -363,8 +369,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/model_iharm.html">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
@@ -403,6 +415,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -628,6 +641,8 @@
 </li>
       <li><a href="api/hotcross.html#_CPPv410boostcrossddd">boostcross (C++ function)</a>
 </li>
+      <li><a href="api/model_iharm.html#c.BREMSSTRAHLUNG">BREMSSTRAHLUNG (C macro)</a>
+</li>
       <li><a href="api/config.html#c.BTHSQMAX">BTHSQMAX (C macro)</a>
 </li>
       <li><a href="api/config.html#c.BTHSQMIN">BTHSQMIN (C macro)</a>
@@ -642,12 +657,14 @@
 </li>
       <li><a href="api/constant.html#c.CL">CL (C macro)</a>
 </li>
-      <li><a href="api/model_iharm.html#_CPPv45coordKiKiKiPd">coord (C++ function)</a>
+      <li><a href="api/model_iharm.html#c.COMPTON">COMPTON (C macro)</a>
 </li>
-      <li><a href="api/tetrads.html#_CPPv420coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d">coordinate_to_tetrad (C++ function)</a>
+      <li><a href="api/model_iharm.html#_CPPv45coordKiKiKiPd">coord (C++ function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tetrads.html#_CPPv420coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d">coordinate_to_tetrad (C++ function)</a>
+</li>
       <li><a href="api/memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t">create1DTextureObj (C++ function)</a>
 </li>
       <li><a href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t">createdPTextureObj (C++ function)</a>
@@ -750,6 +767,8 @@
 </li>
       <li><a href="api/model_iharm.html#c.dlE">dlE (C macro)</a>
 </li>
+      <li><a href="api/model_iharm.html#c.DLNU">DLNU (C macro)</a>
+</li>
       <li><a href="api/config.html#c.DLOOP">DLOOP (C macro)</a>
 </li>
       <li><a href="api/defs.html#_CPPv43dlT">dlT (C++ member)</a>
@@ -813,6 +832,8 @@
       <li><a href="api/constant.html#c.FOUR_PI">FOUR_PI (C macro)</a>
 </li>
       <li><a href="api/constant.html#c.FOUR_PISQ">FOUR_PISQ (C macro)</a>
+</li>
+      <li><a href="api/memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi">Free3D_Contiguous (C++ function)</a>
 </li>
       <li><a href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA">freePhotonData (C++ function)</a>
 </li>
@@ -998,13 +1019,17 @@
 </li>
       <li><a href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd">linear_interp_K2 (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/weight.html#_CPPv420linear_interp_weightKd">linear_interp_weight (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/defs.html#_CPPv45lmint">lmint (C++ member)</a>
 </li>
       <li><a href="api/defs.html#_CPPv45lminw">lminw (C++ member)</a>
+</li>
+      <li><a href="api/model_iharm.html#c.LNUMAX">LNUMAX (C macro)</a>
+</li>
+      <li><a href="api/model_iharm.html#c.LNUMIN">LNUMIN (C macro)</a>
 </li>
       <li><a href="api/par.html#_CPPv48load_parPKcP6Params">load_par (C++ function)</a>
 </li>
@@ -1032,6 +1057,8 @@
 </li>
       <li><a href="api/tetrads.html#_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d">make_tetrad (C++ function)</a>
 </li>
+      <li><a href="api/memory.html#_CPPv419Malloc3D_Contiguousiii">Malloc3D_Contiguous (C++ function)</a>
+</li>
       <li><a href="api/config.html#c.MAX">MAX (C macro)</a>
 </li>
       <li><a href="api/config.html#c.MAX_ITER">MAX_ITER (C macro)</a>
@@ -1044,10 +1071,10 @@
 </li>
       <li><a href="api/config.html#c.MAXNSTEP">MAXNSTEP (C macro)</a>
 </li>
-      <li><a href="api/config.html#c.MAXT">MAXT (C macro)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/config.html#c.MAXT">MAXT (C macro)</a>
+</li>
       <li><a href="api/config.html#c.MAXW">MAXW (C macro)</a>
 </li>
       <li><a href="api/constant.html#c.ME">ME (C macro)</a>
@@ -1084,6 +1111,8 @@
 </li>
       <li><a href="api/config.html#c.N_BLOCKS">N_BLOCKS (C macro)</a>
 </li>
+      <li><a href="api/config.html#c.N_COMPTBINS">N_COMPTBINS (C macro)</a>
+</li>
       <li><a href="api/model_iharm.html#c.N_EBINS">N_EBINS (C macro)</a>
 </li>
       <li><a href="api/model_iharm.html#c.N_ESAMP">N_ESAMP (C macro)</a>
@@ -1096,10 +1125,12 @@
 </li>
       <li><a href="api/config.html#c.N_THREADS">N_THREADS (C macro)</a>
 </li>
-      <li><a href="api/config.html#c.NDIM">NDIM (C macro)</a>
+      <li><a href="api/config.html#c.N_TYPEBINS">N_TYPEBINS (C macro)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/config.html#c.NDIM">NDIM (C macro)</a>
+</li>
       <li><a href="api/defs.html#_CPPv47Ne_unit">Ne_unit (C++ member)</a>
 </li>
       <li><a href="api/config.html#c.NINT">NINT (C macro)</a>
@@ -1178,10 +1209,12 @@
 </li>
       <li><a href="api/model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy">record_super_photon (C++ function)</a>
 </li>
-      <li><a href="api/main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc">report_spectrum (C++ function)</a>
+      <li><a href="api/main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc">report_spectrum (C++ function)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc">report_spectrum_h5 (C++ function)</a>
+</li>
       <li><a href="api/constant.html#c.RGAS">RGAS (C macro)</a>
 </li>
       <li><a href="api/defs.html#_CPPv42Rh">Rh (C++ member)</a>
@@ -1232,10 +1265,10 @@
 </li>
       <li><a href="api/memory.html#_CPPv412setMaxBlocksv">setMaxBlocks (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/constant.html#c.SIG">SIG (C macro)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/constant.html#c.SIGMA_THOMSON">SIGMA_THOMSON (C macro)</a>
 </li>
       <li><a href="api/config.html#c.SLOOP_DEVICE">SLOOP_DEVICE (C macro)</a>
@@ -1261,6 +1294,10 @@
       <li><a href="api/model_iharm.html#_CPPv414stop_criteriondPdP11curandState">stop_criterion (C++ function)</a>
 </li>
       <li><a href="api/defs.html#_CPPv45stopx">stopx (C++ member)</a>
+</li>
+      <li><a href="api/config.html#c.str">str (C macro)</a>
+</li>
+      <li><a href="api/model_iharm.html#c.SYNCHROTRON">SYNCHROTRON (C macro)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1359,6 +1396,10 @@
 
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/config.html#c.xstr">xstr (C macro)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/model_iharm.html#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d">Xtoijk (C++ function)</a>
 </li>

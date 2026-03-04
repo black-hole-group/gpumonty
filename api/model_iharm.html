@@ -67,6 +67,8 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
@@ -118,6 +120,8 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.xstr"><code class="docutils literal notranslate"><span class="pre">xstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -329,7 +333,7 @@
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -344,6 +348,8 @@
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -367,8 +373,14 @@
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
@@ -407,6 +419,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -557,6 +570,22 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SYNCHROTRON">
+<span class="target" id="iharm__model_2model_8h_1a87066377fd17a309bfe3313b8a18a221"></span><span class="sig-name descname"><span class="n"><span class="pre">SYNCHROTRON</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.SYNCHROTRON" title="Link to this definition"></a><br /></dt>
+<dd><p>Radiation flags TODO: implement said flags (currently used for io purposes). maybe use runtime parameters? TODO: implement Bremss </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.BREMSSTRAHLUNG">
+<span class="target" id="iharm__model_2model_8h_1a4e7aeed1a50fe8a97591f3ad4ae98832"></span><span class="sig-name descname"><span class="n"><span class="pre">BREMSSTRAHLUNG</span></span></span> <span class="pre">(0)</span><a class="headerlink" href="#c.BREMSSTRAHLUNG" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.COMPTON">
+<span class="target" id="iharm__model_2model_8h_1a5932524044494a403fd1f178ac0c1fb6"></span><span class="sig-name descname"><span class="n"><span class="pre">COMPTON</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.COMPTON" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.NUMIN">
 <span class="target" id="iharm__model_2model_8h_1a41613ad5755b669e1225184e5bf63683"></span><span class="sig-name descname"><span class="n"><span class="pre">NUMIN</span></span></span> <span class="pre">1.e8</span><a class="headerlink" href="#c.NUMIN" title="Link to this definition"></a><br /></dt>
 <dd><p>Lowest sampled frequency for superphotons in the simulation in Hz. </p>
@@ -570,6 +599,27 @@
 <p class="admonition-title">Note</p>
 <p>Superphotons with frequencies above NUMAX can be generated through scattering events. </p>
 </div>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.LNUMIN">
+<span class="target" id="iharm__model_2model_8h_1af09918bfc83875492da2fd0ca59fcdc5"></span><span class="sig-name descname"><span class="n"><span class="pre">LNUMIN</span></span></span> <span class="pre">log(</span><span class="pre">NUMIN</span><span class="pre">)</span><a class="headerlink" href="#c.LNUMIN" title="Link to this definition"></a><br /></dt>
+<dd><p>Natural logarithm of the lower sampling bound. </p>
+<p>Derived from <code class="docutils literal notranslate"><span class="pre">NUMIN</span></code> as <code class="docutils literal notranslate"><span class="pre">log(NUMIN)</span></code>, this value represents the log-space minimum used for energy/frequency grid construction. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.LNUMAX">
+<span class="target" id="iharm__model_2model_8h_1a0686cfabdb9d51afacee38ec4be272a5"></span><span class="sig-name descname"><span class="n"><span class="pre">LNUMAX</span></span></span> <span class="pre">log(</span><span class="pre">NUMAX</span><span class="pre">)</span><a class="headerlink" href="#c.LNUMAX" title="Link to this definition"></a><br /></dt>
+<dd><p>Natural logarithm of the upper sampling bound. </p>
+<p>Derived from <code class="docutils literal notranslate"><span class="pre">NUMAX</span></code> as <code class="docutils literal notranslate"><span class="pre">log(NUMAX)</span></code>, this value represents the log-space maximum used for energy/frequency grid construction. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DLNU">
+<span class="target" id="iharm__model_2model_8h_1ab23a612e3f47e8906922560a1d3a5867"></span><span class="sig-name descname"><span class="n"><span class="pre">DLNU</span></span></span> <span class="pre">((</span><a class="reference internal" href="#iharm__model_2model_8h_1a0686cfabdb9d51afacee38ec4be272a5"><span class="std std-ref"><span class="pre">LNUMAX</span></span></a><span class="pre">-</span><a class="reference internal" href="#iharm__model_2model_8h_1af09918bfc83875492da2fd0ca59fcdc5"><span class="std std-ref"><span class="pre">LNUMIN</span></span></a><span class="pre">)/</span><span class="pre">N_ESAMP</span><span class="pre">)</span><a class="headerlink" href="#c.DLNU" title="Link to this definition"></a><br /></dt>
+<dd><p>Log-space step size between samples. </p>
+<p>Computed from the log-range <code class="docutils literal notranslate"><span class="pre">[LNUMIN,</span> <span class="pre">LNUMAX]</span></code> divided by <code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code>, giving the increment used to traverse the sampling domain uniformly in natural-log space. </p>
 </dd></dl>
 
 <dl class="cpp macro">
@@ -1029,6 +1079,22 @@ r = e^{X^1}
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The effective dimensionless electron temperature, soft-clamped by Thetae_max. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418report_spectrum_h5yPPP11of_spectrumPKc">
+<span id="_CPPv318report_spectrum_h5yPPP11of_spectrumPKc"></span><span id="_CPPv218report_spectrum_h5yPPP11of_spectrumPKc"></span><span id="report_spectrum_h5__unsigned-l-l.of_spectrumPPP.cCP"></span><span class="target" id="iharm__model_2model_8h_1a3af0fe67c4905b8607b326283e05a995"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">report_spectrum_h5</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_superph_made</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc" title="Link to this definition"></a><br /></dt>
+<dd><p>Processes energy and angled binned simulation data to generate and save the final spectrum in hdf5 format. </p>
+<p>This function converts the raw energy and photon counts accumulated in the spectral grid into physical units. It calculates the SED across different inclination angles, determines the average optical depths, and computes global simulation diagnostics such as total luminosity and accretion efficiency. Contains the fluid_header, params and output groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N_superph_made</strong> – Total number of superphotons generated during the run. </p></li>
+<li><p><strong>spect</strong> – 3D array containing the accumulated spectral data (Photon physical origin,Energy,Theta bins). </p></li>
+<li><p><strong>filename</strong> – Name of the output file (saved in the <code class="docutils literal notranslate"><span class="pre">./output/</span></code> directory). </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
