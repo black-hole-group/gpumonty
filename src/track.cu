@@ -217,7 +217,8 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 							}
 							if (weight_scat > 0) {
 								atomicAdd(&d_N_scatt, 1);
-								unsigned long long my_local_index = starting_scattering_index + atomicAdd(&d_num_scat_phs[round_scat], 1);
+
+								unsigned long long my_local_index = atomicAdd(&d_num_scat_phs[round_scat], 1);
 
 								scat_ofphoton.X0[my_local_index] = XArray[0];
 								scat_ofphoton.X1[my_local_index] = XArray[1];

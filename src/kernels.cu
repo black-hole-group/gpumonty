@@ -89,7 +89,7 @@ __host__ void mainFlowControl(time_t time, double * p){
     gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
 	double * d_p; 
     gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
-    cudaMemcpyErrorCheck(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice);
+    gpuErrchk(cudaMemcpy(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice));
 
 	cudaTextureObject_t dPTableTexObj = 0;
 	cudaArray_t dPTableCuArray;
@@ -99,7 +99,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 	
 	double *d_table_ptr;
     gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-    cudaMemcpyErrorCheck(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice);
+    gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
 	
 	cudaTextureObject_t besselTexObj = 0;
 	cudaArray_t besselCuArray;
@@ -108,7 +108,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	struct of_geom *d_geom;
 	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
-    cudaMemcpyErrorCheck(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice);
+    gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
 
 
 
@@ -168,7 +168,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		}
 
 		allocatePhotonData(&initial_photon_states, instant_photon_number);
-		allocatePhotonData(&scat_ofphoton, MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON *instant_photon_number);
+		allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
 
 		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
@@ -237,14 +237,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 			cudaEventElapsedTime(&milliseconds, start, stop);
 			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
 
-			cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
+			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
 
-			cudaStatus = cudaGetLastError();
-			if (cudaStatus != cudaSuccess) {
-				fprintf(stderr, "in track %s\n", cudaGetErrorString(cudaStatus));
-				fprintf(stderr, "number of scattered photons: %llu out of %llu\n", num_scat_phs[0], MAX_LAYER_SCA * instant_photon_number);
-				exit(1);
-			}
+
+			Flag("the tracking kernel");
 
 			if(params.fitBias){
 				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
@@ -253,15 +249,13 @@ __host__ void mainFlowControl(time_t time, double * p){
 					params.biasTuning *= params.targetRatio/Ratio;
 					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
 					printf("\033[1;31mTrying new BiasTuning parameter %.3e\n", params.biasTuning);
-					cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), 0 * sizeof(double));
+					gpuErrchk(cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), 0 * sizeof(double)));
 
 					//Resetting all the arrays and global variables that keep track of progress
-					transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
-					unsigned long long reset = 0;
-					cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long));
+					gpuErrchk(cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long)));
 					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
-					cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-					cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 				}else{
 					if(BiasTuning_index < MAXITER_BIASTUNING){
 						printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
@@ -293,7 +287,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		freePhotonData(&PhotonStateCheckPoint);
 
 
-		cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 		if(params.scattering){
 			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
 			printf("\nSolving the scattered photons...\n");
@@ -308,11 +302,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	struct of_spectrum ***spect = Malloc3D_Contiguous(N_TYPEBINS, N_THBINS, N_EBINS);	
 
-	cudaMemcpyErrorCheck(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost);
-    //cudaMemcpyErrorCheck(spect, d_spect, N_TYPEBINS * N_EBINS * N_THBINS * sizeof(of_spectrum), cudaMemcpyDeviceToHost);
-	cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
+	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
+	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
 	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-	
+
 	#ifndef IHARM
 		report_spectrum(gen_superph, spect, params.spectrum);
 	#else

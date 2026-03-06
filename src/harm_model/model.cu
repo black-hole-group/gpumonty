@@ -716,7 +716,6 @@ __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* 
     index = ix2 * N_EBINS + iE;
 
     atomicAdd(&d_N_superph_recorded, 1);
-    //atomicAdd(&d_N_scatt, ph.nscatt[photon_index]);
 
     atomicAdd(&(d_spect[index].dNdlE), ph.w[photon_index]);
     atomicAdd(&(d_spect[index].dEdlE), ph.w[photon_index] * ph.E[photon_index]);

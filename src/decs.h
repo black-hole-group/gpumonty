@@ -69,14 +69,21 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
     if (code != cudaSuccess)
     {
         fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+		fflush(stderr);
         if (abort)
             exit(code);
     }
 }
+#define Flag(message) flag(message, __FILE__, __LINE__)
 
-// Macro to simplify cudaMemcpy calls with error checking
-#define cudaMemcpyErrorCheck(dst, src, count, kind) \
-    cudaMemcpyCheck((dst), (src), (count), (kind), __FILE__, __LINE__)
+inline void flag(const char *message, const char *file, int line) {
+    cudaError_t cudaStatus = cudaGetLastError();
+    if (cudaStatus != cudaSuccess) {
+        // 3. Print the passed-in 'file' and 'line' instead of the macros
+        fprintf(stderr, "Error in %s at line %d in: %s: ERROR: %s\n", file, line, message, cudaGetErrorString(cudaStatus));
+        exit(1);
+    }
+}
 
 // Function to handle CUDA memory copies and check for errors
 inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpyKind kind,
@@ -178,7 +185,7 @@ struct of_spectrum {
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 	extern double table[NW + 1][NT + 1];
 
-	extern int N_scatt;
+	extern unsigned long long N_scatt;
 	extern unsigned long long N_superph_recorded;
 
 	/* some coordinate parameters */

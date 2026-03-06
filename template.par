@@ -28,6 +28,6 @@ Thetae_max 1.e3
 
 # Whether or not to have scattering activated
 scattering 1
-fit_bias 1
+fit_bias 0
 ratio 1
 
