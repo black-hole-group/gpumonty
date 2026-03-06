@@ -138,4 +138,28 @@ __host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cud
 __host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size);
 
 
+
+/**
+ * @brief Allocates a 3D array of structure of_spectrum on the host and initializes it to zero.
+ * 
+ * @param dim1 Size of the first dimension.
+ * @param dim2 Size of the second dimension.
+ * @param dim3 Size of the third dimension.
+ * 
+ * @return A pointer to the allocated spectrum 3D array.
+ */
+__host__ struct of_spectrum*** Malloc3D_Contiguous(int dim1, int dim2, int dim3);
+
+
+/**
+ * @brief Frees a previously allocated spectrum 3D array.
+ * 
+ * @param ptr Pointer to the 3D array to be freed.
+ * @param dim1 Size of the first dimension.
+ * @param dim2 Size of the second dimension.
+ * @param dim3 Size of the third dimension.
+ * 
+ * @return void
+ */
+void Free3D_Contiguous(struct of_spectrum ***ptr, int dim1);
 #endif

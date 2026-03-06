@@ -99,5 +99,5 @@ __host__ void init_geometry();
  * @param spect 2D array containing the accumulated spectral data (Energy/Theta bins).
  * @param filename Name of the output file (saved in the `./output/` directory).
  */
-__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum spect[N_THBINS][N_EBINS], const char * filename);
+__host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
 #endif

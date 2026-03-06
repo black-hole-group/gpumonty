@@ -15,6 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
+
+/**
+ * Radiation flags 
+ * TODO: implement said flags (currently used for io purposes). maybe use runtime parameters?
+ * TODO: implement Bremss
+ */
+#define SYNCHROTRON (1)
+#define BREMSSTRAHLUNG (0)
+#define COMPTON (1)
+
 /* Range of superphoton frequencies */
 
 /**
@@ -28,6 +38,31 @@
  * @note Superphotons with frequencies above NUMAX can be generated through scattering events. 
  */
 #define NUMAX 1.e16
+
+/**
+ * @brief Natural logarithm of the lower sampling bound.
+ *
+ * Derived from `NUMIN` as `log(NUMIN)`, this value represents the
+ * log-space minimum used for energy/frequency grid construction.
+ */
+#define LNUMIN log(NUMIN)
+
+/**
+ * @brief Natural logarithm of the upper sampling bound.
+ *
+ * Derived from `NUMAX` as `log(NUMAX)`, this value represents the
+ * log-space maximum used for energy/frequency grid construction.
+ */
+#define LNUMAX log(NUMAX)
+
+/**
+ * @brief Log-space step size between samples.
+ *
+ * Computed from the log-range `[LNUMIN, LNUMAX]` divided by `N_ESAMP`,
+ * giving the increment used to traverse the sampling domain uniformly
+ * in natural-log space.
+ */
+#define DLNU ((LNUMAX-LNUMIN)/N_ESAMP)
 
 /**
  * @brief Macro to identify the iharm GRMHD model.
@@ -334,6 +369,20 @@ __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
  */
 __host__ __device__ double thetae_func(double uu, double rho, double B, double kel);
 
+
+/**
+ * @brief Processes energy and angled binned simulation data to generate and save the final spectrum in hdf5 format.
+ * 
+ * This function converts the raw energy and photon counts accumulated in the 
+ * spectral grid into physical units. It calculates the SED across different inclination angles, determines 
+ * the average optical depths, and computes global simulation diagnostics such 
+ * as total luminosity and accretion efficiency. Contains the fluid_header, params and output groups.
+ * 
+ * @param N_superph_made Total number of superphotons generated during the run.
+ * @param spect 3D array containing the accumulated spectral data (Photon physical origin,Energy,Theta bins).
+ * @param filename Name of the output file (saved in the `./output/` directory).
+ */
+__host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
 
 #endif
 

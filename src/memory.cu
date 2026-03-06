@@ -19,6 +19,30 @@
 #include "kernels.h"
 #include "memory.h"
 
+void Free3D_Contiguous(struct of_spectrum ***ptr, int dim1) {
+    free(ptr[0][0]);
+    for (int i = 0; i < dim1; i++) {
+        free(ptr[i]);
+    }
+    free(ptr);
+}
+
+struct of_spectrum*** Malloc3D_Contiguous(int dim1, int dim2, int dim3) {
+    struct of_spectrum* flat_data = (struct of_spectrum*)malloc(dim1 * dim2 * dim3 * sizeof(struct of_spectrum));
+    memset(flat_data, 0, dim1 * dim2 * dim3 * sizeof(struct of_spectrum));
+
+    struct of_spectrum*** ptr3D = (struct of_spectrum***)malloc(dim1 * sizeof(struct of_spectrum**));
+    
+    for (int i = 0; i < dim1; i++) {
+        ptr3D[i] = (struct of_spectrum**)malloc(dim2 * sizeof(struct of_spectrum*));
+        for (int j = 0; j < dim2; j++) {
+            int offset = (i * dim2 * dim3) + (j * dim3);
+            ptr3D[i][j] = &flat_data[offset];
+        }
+    }
+    return ptr3D;
+}
+
 __host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cudaArray_t * cudaArray){
 	int width = N_ESAMP + 1;
 	float float_table[width];

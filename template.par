@@ -10,7 +10,7 @@ dump ./data/dump_SANE.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum sane_iharm.spec
+spectrum ./output/spectrum.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -24,7 +24,7 @@ M_unit 1.e16
 trat_small 1.
 trat_large 10.
 beta_crit 1.
-Thetae_max 1.e100
+Thetae_max 1.e3
 
 # Whether or not to have scattering activated
 scattering 1

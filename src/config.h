@@ -48,8 +48,14 @@
  */
 #define N_THREADS 256
 
-
-
+/**
+ * Number of compton scatterings tracked in the spectrum. e.g., once, twice, >twice
+ */
+#define N_COMPTBINS (3)
+/**
+ * Number of total types of photons (synch and brems) * N_COMPTBINS
+ */
+#define N_TYPEBINS (2*(N_COMPTBINS+1))
 
 /**
  * Number of theta bins for angular distribution for the spectral output binning.
@@ -354,3 +360,10 @@
  * Maximum number of iterations until bias tuning give up on finding the optimal scalling to get the target ratio
  */
 #define MAXITER_BIASTUNING 5
+
+/**
+ * Two-level macro stringification: expands `s` first, then converts the result
+ * to a string literal (useful when `s` is itself a macro like VERSION).
+ */
+#define xstr(s) str(s)
+#define str(s) #s
