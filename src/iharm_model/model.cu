@@ -22,10 +22,7 @@
 #include "../hdf5_utils.h"
 #include "../h5io.h"
 #include "../main.h"
-static int with_electrons;
 
-
-static int with_radiation;
 
 /**
  * Time coordinate of the model.
@@ -779,7 +776,7 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
   if (bias > max) bias = max;
 
-  return bias * 30. * 1./2. * d_biastuning;
+  return bias * 30. * 1./2. * d_biastuning[round_scatt];
 }
 
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val)

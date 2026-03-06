@@ -25,7 +25,7 @@ MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?=/usr/local/cuda/
+CUDA_PATH ?=/usr/local/cuda-12.3
 
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)

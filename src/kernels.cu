@@ -253,7 +253,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 					params.biasTuning *= params.targetRatio/Ratio;
 					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
 					printf("\033[1;31mTrying new BiasTuning parameter %.3e\n", params.biasTuning);
-					cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double));
+					cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), 0 * sizeof(double));
 
 					//Resetting all the arrays and global variables that keep track of progress
 					transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
@@ -263,7 +263,12 @@ __host__ void mainFlowControl(time_t time, double * p){
 					cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 					cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 				}else{
-					printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+					if(BiasTuning_index < MAXITER_BIASTUNING){
+						printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+
+					}else{
+						printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+					}
 					RedoTuning = 0;
 				}
 

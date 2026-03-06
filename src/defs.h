@@ -418,7 +418,7 @@ __device__ int d_scattering;
 /**
  * Global device variable that scales bias to match desired ratio.
  */
-__device__ double d_biastuning;
+__device__ double d_biastuning[MAX_LAYER_SCA];
 
 /**
  * Global device variable for the black hole mass in grams (g).
