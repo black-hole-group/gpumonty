@@ -54,3 +54,9 @@ email for contact: pedronaethemotta@usp.br
    :hidden:
 
    docs_guidelines
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+
+   bias_tuning

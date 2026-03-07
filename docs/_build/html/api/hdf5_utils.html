@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hdf5_utils.cu &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
 
   
@@ -66,6 +66,8 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
@@ -117,6 +119,9 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.MAXITER_BIASTUNING"><code class="docutils literal notranslate"><span class="pre">MAXITER_BIASTUNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.xstr"><code class="docutils literal notranslate"><span class="pre">xstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -190,7 +195,6 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46startx"><code class="docutils literal notranslate"><span class="pre">startx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45stopx"><code class="docutils literal notranslate"><span class="pre">stopx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45dMact"><code class="docutils literal notranslate"><span class="pre">dMact</span></code></a></li>
@@ -220,7 +224,6 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412photon_count"><code class="docutils literal notranslate"><span class="pre">photon_count</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv420d_N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">d_N_superph_recorded</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Ns"><code class="docutils literal notranslate"><span class="pre">d_Ns</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_N_scatt"><code class="docutils literal notranslate"><span class="pre">d_N_scatt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413d_thetae_unit"><code class="docutils literal notranslate"><span class="pre">d_thetae_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_startx"><code class="docutils literal notranslate"><span class="pre">d_startx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_dx"><code class="docutils literal notranslate"><span class="pre">d_dx</span></code></a></li>
@@ -248,6 +251,7 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_scattering"><code class="docutils literal notranslate"><span class="pre">d_scattering</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_biastuning"><code class="docutils literal notranslate"><span class="pre">d_biastuning</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
@@ -327,7 +331,7 @@
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +346,9 @@
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -365,8 +372,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
@@ -380,9 +393,6 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAME"><code class="docutils literal notranslate"><span class="pre">GAME</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAMP"><code class="docutils literal notranslate"><span class="pre">GAMP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAM"><code class="docutils literal notranslate"><span class="pre">GAM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
@@ -405,6 +415,7 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -518,6 +529,35 @@
 <li class="toctree-l3"><a class="reference internal" href="../docs_guidelines.html#testing-workflow">Testing Workflow</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bias_tuning.html">Scattering Bias Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#key-parameters">Key Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#params-biastuning"><code class="docutils literal notranslate"><span class="pre">params.biasTuning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#params-targetratio"><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#acceptance-interval">Acceptance interval</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#overview-of-the-algorithm">Overview of the Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#detailed-procedure">Detailed Procedure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#load-the-bias-for-the-current-layer">1. Load the bias for the current layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#save-a-checkpoint-of-photon-states">2. Save a checkpoint of photon states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#run-the-scattering-kernel">3. Run the scattering kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#measure-the-scattering-ratio">4. Measure the scattering ratio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#check-if-the-ratio-is-acceptable">5. Check if the ratio is acceptable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#adjust-the-bias-if-necessary">6. Adjust the bias if necessary</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../bias_tuning.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#restart-the-scattering-step">7. Restart the scattering step</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#special-case-very-low-ratio">Special Case: Very Low Ratio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#termination-conditions">Termination Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
