@@ -166,7 +166,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 				double x1 = -log(curand_uniform_double(localState));
 				double weight_scat = ph.w[photon_index] / bias;
 
-				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN && d_scattering) {
+				if (bias * dtau_scatt > x1 && weight_scat > WEIGHT_MIN && d_scattering && round_scat < MAX_LAYER_SCA) {
 					/* Scattering event occurs */
 					if (isnan(weight_scat) || isinf(weight_scat)) {
 						printf("w isnan in track_super_photon: Ne, bias, ph->w, weight_scat  %g, %g, %g, %g\n",
@@ -216,7 +216,6 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 								return;
 							}
 							if (weight_scat > 0) {
-								atomicAdd(&d_N_scatt, 1);
 
 								unsigned long long my_local_index = atomicAdd(&d_num_scat_phs[round_scat], 1);
 

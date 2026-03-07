@@ -59,21 +59,31 @@ do { \
     } \
 } while(0)
 
+
+#include <execinfo.h> // For backtrace() and backtrace_symbols_fd()
+#include <unistd.h>   // For STDERR_FILENO
 /*Cuda error function*/
-#define gpuErrchk(ans)                        \
-    {                                         \
-        gpuAssert((ans), __FILE__, __LINE__); \
-    }
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort = true)
 {
     if (code != cudaSuccess)
     {
         fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-		fflush(stderr);
+        
+        // --- PRINT BACKTRACE ---
+        fprintf(stderr, "\n--- Host Call Stack (Backtrace) ---\n");
+        void* callstack[128];
+        int frames = backtrace(callstack, 128);
+        backtrace_symbols_fd(callstack, frames, STDERR_FILENO);
+        fprintf(stderr, "-----------------------------------\n\n");
+        // -----------------------
+
+        fflush(stderr);
         if (abort)
             exit(code);
     }
 }
+
 #define Flag(message) flag(message, __FILE__, __LINE__)
 
 inline void flag(const char *message, const char *file, int line) {
@@ -147,7 +157,6 @@ struct of_spectrum {
 	extern __device__ unsigned long long photon_count;
 	extern __device__ unsigned long long d_N_superph_recorded;
 	extern __device__ int d_Ns;
-	extern __device__ unsigned long long d_N_scatt;
 	extern __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
 
 

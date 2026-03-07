@@ -244,10 +244,7 @@ __device__ unsigned long long  d_N_superph_recorded;
  */
 __device__ int d_Ns;
 
-/**
- * Global device variable counter to keep track of the total number of scatterings that have occurred during the simulation.
- */
-__device__ unsigned long long d_N_scatt;
+
 
 
 /**

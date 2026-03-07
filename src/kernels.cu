@@ -36,6 +36,10 @@
 // 	printf("ph_old.K1[photon_index], ph_new.K1[photon_index] = %le, %le\n", ph_old.K1[test], ph_new.K1[test]);
 // }
 
+// __global__ void checkbias(){
+// 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_biastuning[0], d_biastuning[1], d_biastuning[2]);
+// }
+
 __host__ void mainFlowControl(time_t time, double * p){
 	/*
 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
@@ -206,7 +210,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 		struct of_photonSOA PhotonStateCheckPoint;
 		if(params.fitBias){
 			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
-			transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
+			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
+			// Turn params.biasTuning to the last value used for bias tuning
+			gpuErrchk(cudaMemcpyFromSymbol(&(params.biasTuning), d_biastuning, sizeof(double), 0 * sizeof(double)));
+			printf("Using biasTuning parameter %.3e for the tracking\n", params.biasTuning);
 		}
 
 		int RedoTuning = 1;
@@ -248,17 +255,19 @@ __host__ void mainFlowControl(time_t time, double * p){
 				if(Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance && BiasTuning_index < MAXITER_BIASTUNING){
 					params.biasTuning *= params.targetRatio/Ratio;
 					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
-					printf("\033[1;31mTrying new BiasTuning parameter %.3e\n", params.biasTuning);
+					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.biasTuning);
 					gpuErrchk(cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), 0 * sizeof(double)));
+					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
+					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
 
 					//Resetting all the arrays and global variables that keep track of progress
-					gpuErrchk(cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long)));
+					unsigned long long reset = 0;
 					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
 					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 				}else{
 					if(BiasTuning_index < MAXITER_BIASTUNING){
-						printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+						printf("\033[1;32mBias Found %.3e! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n", params.biasTuning, Ratio, InferiorAcceptance, SuperiorAcceptance);
 
 					}else{
 						printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
@@ -268,6 +277,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 			}
 		}while(params.fitBias && RedoTuning && BiasTuning_index < MAXITER_BIASTUNING);
+
 
 
 		if(ideal_nblocks > max_block_number){
@@ -290,6 +300,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 		if(params.scattering){
 			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+			N_scatt += num_scat_phs[0];
 			printf("\nSolving the scattered photons...\n");
 			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
 		}
@@ -304,8 +315,6 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
 	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
-	cudaMemcpyFromSymbol(&N_scatt, d_N_scatt, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-
 	#ifndef IHARM
 		report_spectrum(gen_superph, spect, params.spectrum);
 	#else
@@ -655,9 +664,6 @@ __global__ void record(struct of_photonSOA ph, struct of_spectrum * __restrict__
 {
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	/*track each photon we created along its geodesic*/
-	if(global_index == 0){
-		printf("Number of photons processed %llu\n", tracking_counter);
-	}
 	for(unsigned long long a = global_index; a < max_partition_ph; (a += nblocks * N_THREADS)){
 		if(record_criterion(ph.X1[a]))
 		record_super_photon(ph, d_spect, a);
@@ -724,15 +730,9 @@ __launch_bounds__(N_THREADS)
 __global__ void record_scattering(struct of_photonSOA ph, struct of_spectrum * __restrict__ d_spect, const unsigned long long  max_partition_ph, const int nblocks, const int n)
 {
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	unsigned long long round_num_scat_init = 0;
-	/*track each photon we created along its geodesic*/
-	for (int cum_sum = 0; cum_sum < n -1; cum_sum++){
-		round_num_scat_init += d_num_scat_phs[cum_sum]; 
-	}
-	unsigned long long round_num_scat_end = round_num_scat_init + d_num_scat_phs[n-1];
 	/*track each photon we created along its geodesic*/
 
-	for(unsigned long long a =  round_num_scat_init + global_index; a < round_num_scat_end; (a += nblocks * N_THREADS)){
+	for(unsigned long long a = global_index; a < d_num_scat_phs[n-1]; (a += nblocks * N_THREADS)){
 
 		if(record_criterion(ph.X1[a]))
 		record_super_photon(ph, d_spect, a);

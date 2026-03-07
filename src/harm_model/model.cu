@@ -652,7 +652,7 @@ __device__ double bias_func(double Te, double w, int round_scatt)
         return  1;
         max = 0.5 * w / WEIGHT_MIN;
 
-        avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
+        //avg_num_scatt = d_N_scatt / (1. * d_N_superph_recorded + 1.);
         bias =
         100. * Te * Te / (d_bias_norm * d_max_tau_scatt *
                 (avg_num_scatt + 2));
