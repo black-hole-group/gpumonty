@@ -210,4 +210,6 @@ struct of_spectrum {
 	extern Params params;
 	extern double L_unit, B_unit, Ne_unit, Rho_unit, U_unit, M_unit, T_unit;
 
+	extern double cstartx[NDIM], cstopx[NDIM];
+
 #endif

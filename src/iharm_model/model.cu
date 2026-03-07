@@ -16,18 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
 #include "../decs.h"
+#include "../hdf5_utils.h"
+#include "../h5io.h"
 #include "model.h"
 #include "../utils.h"
 #include "../metrics.h"
-#include "../hdf5_utils.h"
-#include "../h5io.h"
 #include "../main.h"
 
-
-/**
- * Time coordinate of the model.
- */
-static double t;
 
 __host__ void init_storage(void)
 {
@@ -41,28 +36,23 @@ __host__ void init_storage(void)
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
-
 static hdf5_blob fluid_header = { 0 };
-int METRIC_eKS = 0;
+int METRIC_eKS, METRIC_MKS = 0;
 __device__ int d_METRIC_eKS, d_METRIC_MKS3;
 int with_derefine_poles, METRIC_MKS3 = 0;
 double poly_norm, poly_xt, poly_alpha, mks_smooth; // mmks
 double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0; // mks3
-
+static double t;
 __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth; // mmks
 __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0; // mks3
-
 static int with_electrons;
 static int with_radiation;
-
 static double game, gamp, gam;
 __device__ double d_game, d_gamp, d_gam;
-
 static double MBH;
-
 double TP_OVER_TE;
-
 __device__ int d_with_electrons, d_with_radiation, d_with_derefine_poles;
+
 void init_data()
 {
   double dV, V;
@@ -75,7 +65,6 @@ void init_data()
 
   // get dump info to copy to grmonty output
   fluid_header = hdf5_get_blob("/header");
-
   // read header
   hdf5_set_directory("/header/");
   // flag reads
@@ -100,6 +89,9 @@ void init_data()
     METRIC_eKS = 1;
     METRIC_MKS3 = 1;
     fprintf(stderr, "using eKS metric with exotic \"MKS3\" zones...\n");
+  }else if (strncmp(metric_name, "MKS", 19) == 0) {
+    METRIC_MKS = 1;
+    fprintf(stderr, "using standard MKS metric...\n");
   }
   
   cudaMemcpyToSymbol(d_with_derefine_poles, &with_derefine_poles, sizeof(int));
@@ -184,6 +176,7 @@ void init_data()
   if (with_derefine_poles) hdf5_set_directory("/header/geom/mmks/");
 
   if ( METRIC_MKS3 ) {
+    printf("loading MKS3 metric parameters...\n");
     hdf5_set_directory("/header/geom/mks3/");
     hdf5_read_single_val(&bhspin, "a", H5T_IEEE_F64LE);
     hdf5_read_single_val(&mks3R0, "R0", H5T_IEEE_F64LE);
@@ -219,6 +212,17 @@ void init_data()
       cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double));
       cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double));
     }
+  }
+
+  /**
+   * This is done for ipole, I'm not sure why it forces hslope = 1;
+   * This will probably fail.
+   * TODO: implement params.simcoords
+   * TODO_coords: fix this.
+   */
+  if(1){
+  METRIC_MKS = 1;
+  hslope = 1.;
   }
 
   // Set other geometry
@@ -299,7 +303,6 @@ if (with_electrons == 1) {
   Ladv /= 1.;
   bias_norm /= V;
   fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
-
   //init_tetrads();
 }
 
@@ -431,9 +434,10 @@ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[
 
 
 
+
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
 __host__ __device__ void coord(const int i, const int j, const int k, double *X)
-{
+{  
 	#ifdef __CUDA_ARCH__
 		/* returns zone-centered values for coordinates */
 		X[0] = d_startx[0];

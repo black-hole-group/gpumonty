@@ -131,7 +131,8 @@ __host__ void init_geometry()
 			for (k = 0; k < N3; k++) {
 
 				/* zone-centered */
-				coord(i, j, k, X);
+				//coord(i, j, k, X);
+				coord_wrapper(i, j, k, X, 0, NULL, NULL);
 				gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
 				geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
 				gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);

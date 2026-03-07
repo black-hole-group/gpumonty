@@ -115,6 +115,19 @@ __host__ void mainFlowControl(time_t time, double * p){
     gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
 
 
+	double * d_ks_r;
+	double * d_ks_h;
+
+	// put params.simcoords
+	if(1){
+		gpuErrchk(cudaMalloc(&d_ks_r, N1 * N2 * sizeof(double)));
+		gpuErrchk(cudaMalloc(&d_ks_h, N1 * N2 * sizeof(double)));
+		load_simcoord_info_from_file(d_ks_r, d_ks_h);
+		int interp_n1 = 1024; 
+		int interp_n2 = 1024;
+		initialize_simgrid(interp_n1, interp_n2, startx[1], startx[1]+N1*dx[1], startx[2], startx[2]+N2*dx[2]);
+	}
+
 
 	int max_block_number = setMaxBlocks();
 
@@ -177,11 +190,11 @@ __host__ void mainFlowControl(time_t time, double * p){
 		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj, d_ks_r, d_ks_h);
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj, d_ks_r, d_ks_h);
 		}
 		cudaDeviceSynchronize();
 
@@ -334,6 +347,13 @@ __host__ void mainFlowControl(time_t time, double * p){
 	cudaDestroyTextureObject(dPTableTexObj);
 	cudaFreeArray(dPTableCuArray);
 
+	/**
+	 * TODO_coords: add parameter params.coords here;
+	 */
+	if(1){
+		finalize_simgrid();
+	}
+
 }
 
 __launch_bounds__(N_THREADS)
@@ -470,7 +490,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 
 __launch_bounds__(N_THREADS)
 __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph, 
-	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj){
+	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj, double * d_ks_r, double * d_ks_h){
 		int i,j,k;
 		unsigned long long photon_index = 0;
 		const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -491,7 +511,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 
 
 			/*Sample all the photons generated in init_zone*/
-			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState, besselTexObj);
+			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState, besselTexObj, d_ks_r, d_ks_h);
 			past_zone = zone_index;
 			
 		}
@@ -501,14 +521,15 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 __device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, 
     struct of_photonSOA ph, const struct of_geom *  d_geom, 
     const double *  d_p, const int zone_flag, const unsigned long long ph_arr_index,
-    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextureObject_t besselTexObj)
+    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextureObject_t besselTexObj, double * d_ks_r, double * d_ks_h)
 {
     double nu, weight;
     
     // Scope 1: Initial setup and coordinate transformation
     {
         double Xarray[NDIM];
-        coord(i, j, k, Xarray);
+        //coord(i, j, k, Xarray);
+		coord_wrapper(i,j,k, Xarray, 1, NULL, NULL);
         // Store back immediately, don't keep Xarray alive
         ph.X0[ph_arr_index] = Xarray[0];
         ph.X1[ph_arr_index] = Xarray[1];

@@ -509,4 +509,12 @@ typedef struct params_t {
  */
 Params params = { 0 };
 
+/**
+ * @brief Global host array for the start coordinates of the simulation grid in native coordinates.
+ */
+double cstartx[NDIM];
 
+/**
+ * @brief Global host array for the stop coordinates of the simulation grid in native coordinates.
+ */
+double cstopx[NDIM];

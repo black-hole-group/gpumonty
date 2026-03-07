@@ -353,13 +353,31 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		/* required by broken math.h */
 		//void sincos(double th, double *sth, double *cth);
 
-		
+		// double dthdx1 = 1.0;
+		// if (d_METRIC_eKS){
+		// 	r1 = exp(X[1]);
+		// 	th = M_PI * X[2];
+		// 	dthdx2 = M_PI;
+		// 	d2thdx22 = 0;
+		// }else if (d_METRIC_MKS3){
+		// 	double r1 = exp(X[1]) + d_mks3R0;
+		// 	double radial_term = d_mks3MY1 + pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * pow(r1, -d_mks3MP0);
+		// 	double dradial_dx1 = -d_mks3MP0 * exp(X[1]) * pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * pow(r1, -1.0 - d_mks3MP0);
+		// 	double deriv_factor = 1.0 - 2.0 * radial_term;
+		// 	double cot_term = 1.0 / tan(d_mks3H0 * M_PI / 2.0);
+		// 	double inner_arg = d_mks3H0 * M_PI * (-0.5 + radial_term * (1.0 - 2.0 * X[2]) + X[2]);
+		// 	double sec2_term = 1.0 / pow(cos(inner_arg), 2.0);
+		// 	double common_chain = 0.5 * d_mks3H0 * pow(M_PI, 2.0) * cot_term * sec2_term;
+		// 	th = (M_PI * (1.0 + cot_term * tan(inner_arg))) / 2.0;
+		// 	dthdx1 = common_chain * (1.0 - 2.0 * X[2]) * dradial_dx1;
+		// 	dthdx2 = common_chain * deriv_factor;
+		// 	dthdx22 = pow(d_mks3H0, 2.0) * pow(deriv_factor, 2.0) * pow(M_PI, 3.0) * cot_term * sec2_term * tan(inner_arg);
+		// }
 
 		r1 = exp(X[1]);
 		r2 = r1 * r1;
 		r3 = r2 * r1;
 		r4 = r3 * r1;
-
 
 		/* HARM-2D MKS */
 		#ifdef HAMR
@@ -369,12 +387,12 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			dthdx2 = M_PI * (1./2.);
 			d2thdx22 = 0;
 		#else
-		double sx, cx;
-		sx = sin(2 * M_PI * X[2]);
-		cx = cos(2 * M_PI * X[2]);
-		th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
-		dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
-		d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
+			double sx, cx;
+			sx = sin(2 * M_PI * X[2]);
+			cx = cos(2 * M_PI * X[2]);
+			th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
+			dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
+			d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
 		#endif
 		dthdx22 = dthdx2 * dthdx2;
 
@@ -401,16 +419,17 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		irho2 = 1. / rho2;
 		irho22 = irho2 * irho2;
 		irho23 = irho22 * irho2;
-		irho23_dthdx2 = irho23 / dthdx2;
+		irho23_dthdx2 = irho23 / dthdx2; 
 
-		fac1 = r2 - a2cth2;
-		fac1_rho23 = fac1 * irho23;
-		fac2 = a2 + 2 * r2 + a2 * c2th;
-		fac3 = a2 + r1 * (-2. + r1);
+		fac1 = r2 - a2cth2; // r^2 - a^2 cos^2(theta)
+		fac1_rho23 = fac1 * irho23; // r2-a2cth2 /(r2 + a2cth2)^3
+		fac2 = a2 + 2 * r2 + a2 * c2th; // a2 + 2r^2 + a^2 cos(2*theta)
+		fac3 = a2 + r1 * (-2. + r1); // a^2 + r(r-2)
 
 		lconn[0][0][0] = 2. * r1 * fac1_rho23;
 		lconn[0][0][1] = r1 * (2. * r1 + rho2) * fac1_rho23;
-		lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22;
+		lconn[0][0][2] = -a2 * r1 * s2th * dthdx2 * irho22; // - a^2 r (M_PI * (1. + (1 - d_hslope) * cx) sin(2*theta)) / (r^2 + a^2 cos^2(theta))^2
+															// (- a^2 r(M_PI * (1  + (1 - d_hslope) * cx)) sin(2 * theta))/ (r^2 + a^2 cos^2(theta))^2
 
 		lconn[0][0][3] = -2. * d_bhspin * r1sth2 * fac1_rho23;
 

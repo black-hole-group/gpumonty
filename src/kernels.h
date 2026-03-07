@@ -114,7 +114,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
  * @param besselTexObj Texture object for Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj);
+__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj, double * d_ks_r, double * d_ks_h);
 
 /**
  * @brief  Samples the physical properties of a single superphoton within a zone.
@@ -157,7 +157,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
  * @param besselTexObj Texture object for \f$K_2\f$ Bessel function lookups.
  * @return void
  */
-__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj);
+__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj, double * d_ks_r, double * d_ks_h);
 
 /**
  * @brief Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic.
