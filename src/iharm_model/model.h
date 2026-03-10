@@ -103,12 +103,12 @@
     /**
      * Number of energy samples for the emissivity and weight tables.
      */
-    #define N_ESAMP 800
+    #define N_ESAMP 300
 
     /**
      * Number of energy bins for the spectral output.
      */
-    #define N_EBINS 800
+    #define N_EBINS 300
 
 
     /**
@@ -439,7 +439,7 @@
     extern int METRIC_MKS3;
     extern double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0;
     extern __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0;
-
+    extern __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth;
     extern __device__ int d_METRIC;
 
 

@@ -123,20 +123,17 @@ __host__ void init_model(char *args[])
 /* set up all grid functions */
 __host__ void init_geometry()
 {
-	int i, j, k;
-	double X[NDIM];
+  	#pragma omp parallel for collapse(2)
+	for (int i = 0; i < N1; i++) {
+		for (int j = 0; j < N2; j++) {
+			double X[NDIM];
+			/* zone-centered */
+			coord(i, j, 0, X);
+			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
+			geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
+			gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
 
-	for (i = 0; i < N1; i++) {
-		for (j = 0; j < N2; j++) {
-			for (k = 0; k < N3; k++) {
-
-				/* zone-centered */
-				coord(i, j, k, X);
-				gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
-				geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
-				gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
-
-			}
+		
 		}
 	}
 }

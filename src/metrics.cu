@@ -346,50 +346,82 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 	{
 		if(d_METRIC == METRIC_MKS){
 			ConnectionAnalyticalMKS(X, lconn);
-		}else if(d_METRIC == METRIC_MKS3){
-			ConnectionAnalyticalMKS3(X, lconn);
-		}else if(d_METRIC == METRIC_FMKS){
-			printf("FMKS metric not implemented yet! The code will crash\n");
-		}else if(d_METRIC == METRIC_eKS){
-			//get_connection_eKS(X, lconn);
+		}else if(d_METRIC == METRIC_MKS3 || d_METRIC == METRIC_FMKS){
+			ConnectionAnalytical_MKS3_FMKS(X, lconn);
+		}else{
+			printf("Error: ConnectionAnalyticalWrapper called with unknown metric type %d, the code will crash!\n", d_METRIC);
 		}
 	}
-	__device__ void ConnectionAnalyticalMKS3(const double X[4], double lconn[4][4][4]){
+	__device__ void ConnectionAnalytical_MKS3_FMKS(const double X[4], double lconn[4][4][4]){
 		double r1, drdx1, th, dthdx1, dthdx2, d2thdx12, d2thdx1dx2, d2thdx22;
 		{
-			r1 = exp(X[1]) + d_mks3R0;
-			drdx1 = exp(X[1]);
-			
-			double r_p = pow(r1, -d_mks3MP0);
-			double radial_term = d_mks3MY1 + pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * r_p;
-			double dradial_dx1 = -d_mks3MP0 * drdx1 * pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * (r_p / r1);
-			
-			double deriv_factor = 1.0 - 2.0 * radial_term;
-			double half_pi = M_PI * 0.5;
-			double cot_term = 1.0 / tan(d_mks3H0 * half_pi);
-			
-			double x2_term = 1.0 - 2.0 * X[2];
-			double inner_arg = d_mks3H0 * M_PI * (-0.5 + radial_term * x2_term + X[2]);
-			
-			double c_inner = cos(inner_arg);
-			double sec2_term = 1.0 / (c_inner * c_inner);
-			double t_inner = tan(inner_arg);
-			
-			double common_chain = 0.5 * d_mks3H0 * M_PI * M_PI * cot_term * sec2_term;
-			
-			th = half_pi * (1.0 + cot_term * t_inner);
-			dthdx1 = common_chain * x2_term * dradial_dx1;
-			dthdx2 = common_chain * deriv_factor;
-			
-			d2thdx22 = d_mks3H0 * d_mks3H0 * deriv_factor * deriv_factor * M_PI * M_PI * M_PI * cot_term * sec2_term * t_inner;
-			
-			d2thdx1dx2 = 2.0 * common_chain * dradial_dx1 * (d_mks3H0 * M_PI * x2_term * deriv_factor * t_inner - 1.0);
-			
-			double d2radial_dx11 = dradial_dx1 * (1.0 - (1.0 + d_mks3MP0) * drdx1 / r1);
-			d2thdx12 = common_chain * x2_term * (
-				2.0 * d_mks3H0 * M_PI * t_inner * x2_term * dradial_dx1 * dradial_dx1 
-				+ d2radial_dx11
-			);
+			if(d_METRIC == METRIC_MKS3){
+				r1 = exp(X[1]) + d_mks3R0;
+				drdx1 = exp(X[1]);
+				
+				double r_p = pow(r1, -d_mks3MP0);
+				double radial_term = d_mks3MY1 + pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * r_p;
+				double dradial_dx1 = -d_mks3MP0 * drdx1 * pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * (r_p / r1);
+				
+				double deriv_factor = 1.0 - 2.0 * radial_term;
+				double half_pi = M_PI * 0.5;
+				double cot_term = 1.0 / tan(d_mks3H0 * half_pi);
+				
+				double x2_term = 1.0 - 2.0 * X[2];
+				double inner_arg = d_mks3H0 * M_PI * (-0.5 + radial_term * x2_term + X[2]);
+				
+				double c_inner = cos(inner_arg);
+				double sec2_term = 1.0 / (c_inner * c_inner);
+				double t_inner = tan(inner_arg);
+				
+				double common_chain = 0.5 * d_mks3H0 * M_PI * M_PI * cot_term * sec2_term;
+				
+				th = half_pi * (1.0 + cot_term * t_inner);
+				dthdx1 = common_chain * x2_term * dradial_dx1;
+				dthdx2 = common_chain * deriv_factor;
+				
+				d2thdx22 = d_mks3H0 * d_mks3H0 * deriv_factor * deriv_factor * M_PI * M_PI * M_PI * cot_term * sec2_term * t_inner;
+				
+				d2thdx1dx2 = 2.0 * common_chain * dradial_dx1 * (d_mks3H0 * M_PI * x2_term * deriv_factor * t_inner - 1.0);
+				
+				double d2radial_dx11 = dradial_dx1 * (1.0 - (1.0 + d_mks3MP0) * drdx1 / r1);
+				d2thdx12 = common_chain * x2_term * (
+					2.0 * d_mks3H0 * M_PI * t_inner * x2_term * dradial_dx1 * dradial_dx1 
+					+ d2radial_dx11
+				);
+			}else if(d_METRIC == METRIC_FMKS){
+				r1 = exp(X[1]);
+				drdx1 = exp(X[1]);
+				double y = 2.0 * X[2] - 1.0;
+				double y_over_xt = y / d_poly_xt;
+				double pow_alpha = pow(y_over_xt, d_poly_alpha);
+
+				double thG = M_PI * X[2] + ((1.0 - d_hslope) / 2.0) * sin(2.0 * M_PI * X[2]);
+				double thJ = d_poly_norm * y * (1.0 + pow_alpha / (d_poly_alpha + 1.0)) + 0.5 * M_PI;
+
+				double W = exp(d_mks_smooth * (d_startx[1] - X[1]));
+				double dWdx1 = -d_mks_smooth * W;
+				double d2Wdx12 = d_mks_smooth * d_mks_smooth * W;
+
+				// 3. Derivatives of thG with respect to X[2]
+				double dthGdx2 = M_PI + M_PI * (1.0 - d_hslope) * cos(2.0 * M_PI * X[2]);
+				double d2thGdx22 = -2.0 * M_PI * M_PI * (1.0 - d_hslope) * sin(2.0 * M_PI * X[2]);
+
+				// 4. Derivatives of thJ with respect to X[2] (Analytically simplified)
+				double dthJdx2 = 2.0 * d_poly_norm * (1.0 + pow_alpha);
+				double pow_alpha_minus_1 = pow(y_over_xt, d_poly_alpha - 1.0);
+				double d2thJdx22 = 4.0 * d_poly_norm * d_poly_alpha / d_poly_xt * pow_alpha_minus_1;
+
+				// 5. Final Combined Derivatives
+				th = thG + W * (thJ - thG);
+
+				dthdx1 = dWdx1 * (thJ - thG);
+				dthdx2 = dthGdx2 + W * (dthJdx2 - dthGdx2);
+
+				d2thdx12 = d2Wdx12 * (thJ - thG);
+				d2thdx1dx2 = dWdx1 * (dthJdx2 - dthGdx2);
+				d2thdx22 = d2thGdx22 + W * (d2thJdx22 - d2thGdx22);
+			}
 		} 
 
 
@@ -592,21 +624,12 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		r4 = r3 * r1;
 
 
-		/* HARM-2D MKS */
-		#ifdef HAMR
-			double x2_mod;
-			x2_mod = (X[2] + 1.)/2.;
-			th = M_PI * x2_mod;
-			dthdx2 = M_PI * (1./2.);
-			d2thdx22 = 0;
-		#else
 		double sx, cx;
 		sx = sin(2 * M_PI * X[2]);
 		cx = cos(2 * M_PI * X[2]);
 		th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
 		dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
 		d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
-		#endif
 		dthdx22 = dthdx2 * dthdx2;
 
 		sincos(th, &sth, &cth);

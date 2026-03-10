@@ -48,7 +48,11 @@ double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0; // mks3
 
 int METRIC;
 __device__ int d_METRIC;
+
+//FMKS
 __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth; // mmks
+
+//MKS3
 __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0; // mks3
 
 static int with_electrons;
@@ -96,11 +100,9 @@ void init_data()
   int metric_MKS3 = 0;
   if ( strncmp(metric_name, "MMKS", 19) == 0 || strncmp(metric_name, "FMKS", 19) == 0 ) {
     FMKS = 1;
-    fprintf(stderr, "using derefined poles...\n");
   } else if ( strncmp(metric_name, "MKS3", 19) == 0 ) {
     metric_eKS = 1;
     metric_MKS3 = 1;
-    fprintf(stderr, "using eKS metric with exotic \"MKS3\" zones...\n");
   }
 
   if(metric_eKS){
@@ -227,15 +229,14 @@ void init_data()
       hdf5_read_single_val(&Rout, "r_out", H5T_IEEE_F64LE);
     }
     if (FMKS) {
-      fprintf(stderr, "custom refinement at poles loaded...\n");
       hdf5_read_single_val(&poly_xt, "poly_xt", H5T_IEEE_F64LE);
       hdf5_read_single_val(&poly_alpha, "poly_alpha", H5T_IEEE_F64LE);
       hdf5_read_single_val(&mks_smooth, "mks_smooth", H5T_IEEE_F64LE);
       poly_norm = 0.5*M_PI*1./(1. + 1./(poly_alpha + 1.)*1./pow(poly_xt, poly_alpha));
-      cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double));
-      cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double));
-      cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double));
-      cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double));
+      gpuErrchk(cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double)));
+      gpuErrchk(cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double)));
+      gpuErrchk(cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double)));
+      gpuErrchk(cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double)));
     }
   }
 
@@ -298,6 +299,8 @@ if (with_electrons == 1) {
 
   V = dMact = Ladv = 0.;
   dV = dx[1]*dx[2]*dx[3];
+  
+  #pragma omp parallel for collapse(3) reduction(+:V,bias_norm,dMact,Ladv)
   ZLOOP {
 
     V += dV*geom[SPATIAL_INDEX2D(i,j)].g;
@@ -472,12 +475,15 @@ __host__ __device__ void coord(const int i, const int j, const int k, double *X)
 	return;
 }
 
+
+
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 {
 	/* required by broken math.h */
+  double gcovks[NDIM][NDIM];
   {
     int k, l;
-    DLOOP gcov[k][l] = 0.;
+    DLOOP gcovks[k][l] = 0.;
   }
 
 
@@ -498,36 +504,86 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
     rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
   }
   
-	/* transformation for Kerr-Schild -> modified Kerr-Schild */
+	/* transformation for Kerr-Schild -> Any other metric FMKS/MKS/MKS3... */
   // tfac and pfac are 1 so in order to reduce register pressure, I'm not defining them.
-  double rfac, hfac;
+  double dxdX[NDIM][NDIM] = {0.};
   {
+    dxdX[0][0] = 1.;
+    dxdX[1][1] = exp(X[1]);
     #ifdef __CUDA_ARCH__
-      double radius0 = d_R0;
-      double theta_slope = d_hslope;
+      if(d_METRIC == METRIC_FMKS){
+        dxdX[2][1] =  -exp(d_mks_smooth*(d_startx[1]-X[1]))*d_mks_smooth*(
+            M_PI/2. -
+            M_PI*X[2] +
+            d_poly_norm*(2.*X[2]-1.)*(1+(pow((-1.+2*X[2])/d_poly_xt,d_poly_alpha))/(1 + d_poly_alpha)) -
+            1./2.*(1. - d_hslope)*sin(2.*M_PI*X[2])
+            );
+         dxdX[2][2] = M_PI + (1. - d_hslope)*M_PI*cos(2.*M_PI*X[2]) +
+            exp(d_mks_smooth*(d_startx[1]-X[1]))*(
+            -M_PI +
+            2.*d_poly_norm*(1. + pow((2.*X[2]-1.)/d_poly_xt,d_poly_alpha)/(d_poly_alpha+1.)) +
+            (2.*d_poly_alpha*d_poly_norm*(2.*X[2]-1.)*pow((2.*X[2]-1.)/d_poly_xt,d_poly_alpha-1.))/((1.+d_poly_alpha)*d_poly_xt) -
+            (1.-d_hslope)*M_PI*cos(2.*M_PI*X[2])
+            );   
+      }else{
+        dxdX[2][2] = M_PI - (d_hslope - 1.)*M_PI*cos(2.*M_PI*X[2]);
+      }
+      
     #else
-    	double theta_slope = hslope;
-      double radius0 = R0;
+    	if(METRIC == METRIC_FMKS){
+        dxdX[2][1] =  -exp(mks_smooth*(startx[1]-X[1]))*mks_smooth*(
+            M_PI/2. -
+            M_PI*X[2] +
+            poly_norm*(2.*X[2]-1.)*(1+(pow((-1.+2*X[2])/poly_xt,poly_alpha))/(1 + poly_alpha)) -
+            1./2.*(1. - hslope)*sin(2.*M_PI*X[2])
+            );
+         dxdX[2][2] = M_PI + (1. - hslope)*M_PI*cos(2.*M_PI*X[2]) +
+            exp(mks_smooth*(startx[1]-X[1]))*(
+            -M_PI +
+            2.*poly_norm*(1. + pow((2.*X[2]-1.)/poly_xt,poly_alpha)/(poly_alpha+1.)) +
+            (2.*poly_alpha*poly_norm*(2.*X[2]-1.)*pow((2.*X[2]-1.)/poly_xt,poly_alpha-1.))/((1.+poly_alpha)*poly_xt) -
+            (1.-hslope)*M_PI*cos(2.*M_PI*X[2])
+            );   
+      }else{
+        dxdX[2][2] = M_PI - (hslope - 1.)*M_PI*cos(2.*M_PI*X[2]);
+      }
     #endif
-    rfac = r - radius0;
-    hfac = M_PI + (1. - theta_slope) * M_PI * cos(2. * M_PI * X[2]);
+    dxdX[3][3] = 1.;
+
   }
 
+	gcovks[0][0] = (-1. + 2. * r / rho2);
+	gcovks[0][1] = (2. * r / rho2);
+  gcovks[0][2] = 0.;
+	gcovks[0][3] = (-2. * local_bhspin * r * s2 / rho2);
 
+	gcovks[1][0] = gcovks[0][1];
+	gcovks[1][1] = (1. + 2. * r / rho2);
+  gcovks[1][2] = 0.;
+	gcovks[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2));
 
-	gcov[0][0] = (-1. + 2. * r / rho2);
-	gcov[0][1] = (2. * r / rho2) * rfac;
-	gcov[0][3] = (-2. * local_bhspin * r * s2 / rho2);
+  gcovks[2][0] = 0.;
+  gcovks[2][1] = 0.;
+	gcovks[2][2] = rho2;
+  gcovks[2][3] = 0.;
 
-	gcov[1][0] = gcov[0][1];
-	gcov[1][1] = (1. + 2. * r / rho2) * rfac * rfac;
-	gcov[1][3] = (-local_bhspin * s2 * (1. + 2. * r / rho2)) * rfac;
-	gcov[2][2] = rho2 * hfac * hfac;
-
-	gcov[3][0] = gcov[0][3];
-	gcov[3][1] = gcov[1][3];
-	gcov[3][3] =
+	gcovks[3][0] = gcovks[0][3];
+	gcovks[3][1] = gcovks[1][3];
+  gcovks[3][2] = 0.;
+	gcovks[3][3] =
 	    s2 * (rho2 + local_bhspin*local_bhspin * s2 * (1. + 2. * r / rho2));
+
+  for (int k = 0; k < NDIM; k++) {
+    for (int l = 0; l < NDIM; l++) {
+      gcov[k][l] = 0.;
+      for (int m = 0; m < NDIM; m++) {
+        for (int n = 0; n < NDIM; n++) {
+          gcov[k][l] += dxdX[m][k] * dxdX[n][l] * gcovks[m][n];
+        }
+      }
+    }
+  }
+      
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -667,8 +723,8 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 __device__ int X_in_domain(const double X[NDIM])
 {
     if (d_METRIC == METRIC_eKS) {
-      double XG[4] = { 0 };
       double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
+      if (Xks[1] < d_startx[1] || Xks[1] > d_stopx[1]) return 0;
     }else if (d_METRIC == METRIC_MKS3) {
       double XG[4] = { 0 };
       double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };

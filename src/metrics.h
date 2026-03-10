@@ -141,16 +141,21 @@ __device__ void ConnectionAnalyticalMKS(const double X[4], double lconn[4][4][4]
 __device__ void ConnectionAnalyticalWrapper(const double X[4], double lconn[4][4][4]);
 
 /**
- * @brief Computes the Christoffel symbols (\f$ \Gamma^i_{jk} \f$) analytically for the coodinate system MKS3.
+ * @brief Computes the Christoffel symbols (\f$ \Gamma^i_{jk} \f$) analytically for the coodinate system MKS3 and FMKS.
  * 
  * @param X 4-position \f$ X^\mu \f$ in code coordinates.
  * @param lconn A 3D array `[4][4][4]` populated with the connection coefficients.
  * 
- *  @note This function has been tested against finite differences.
+ *  @note This function has been tested against finite differences. 
+ * 
+ *  @note Since both MKS3 and FMKS share that \f$ θ ≡ θ(X^1, X^2) \f$, the same analytical expressions for the connection coefficients apply, only changing the derivatives.
+ * 
+ *  We used the equation to transform the connection coefficients between two coordinate systems:
+ * *  \f[ \Gamma^i_{jk} = \frac{\partial x^i}{\partial x'^m} \frac{\partial x'^n}{\partial x^j} \frac{\partial x'^p}{\partial x^k} \Gamma'^m_{np} + \frac{\partial x^i}{\partial x'^m} \frac{\partial^2 x'^m}{\partial x^j \partial x^k} \f]
  * 
  * @return void   
  */
-__device__ void ConnectionAnalyticalMKS3(const double X[4], double lconn[4][4][4]);
+__device__ void ConnectionAnalytical_MKS3_FMKS(const double X[4], double lconn[4][4][4]);
 
 /**
  * @brief Lowers the index of a contravariant 4-vector to its covariant form.
