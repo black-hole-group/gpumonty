@@ -39,6 +39,11 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   strcpy(params->spectrum, "spectrum.spec");
   params->MBH_par = 4.1e6;   // MBH for Sgr A* is updated by Gravity Collaboration 2018,615,L15
 
+  params->trace_geodesics = 0;
+  params->trace_stride = 10;
+  params->trace_maxsteps = 10000;
+  strcpy(params->trace_output, "geodesics.h5");
+
   // Load parameters
   for (int i=0; i<argc-1; ++i) {
     if ( strcmp(argv[i], "-par") == 0 ) {
@@ -74,7 +79,8 @@ __host__ void load_par (const char *fname, Params *params) {
     struct {
         int seed, Ns, MBH_par, M_unit, dump, spectrum, bias, fit_bias, fit_bias_ns, ratio, scattering;
         int tp_te, beta, trat_s, trat_l, theta_m;
-    } f = {0}; 
+        int trace_geo, trace_str, trace_max, trace_out;
+    } f = {0};
 
     if (fp == NULL) {
         printf("\033[1;31m! unable to load parameter file '%s'.\033[0m\n", fname);
@@ -104,6 +110,11 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "trat_small")) { read_param(line, "trat_small", &(params->trat_small), 2); f.trat_s = 1; }
         if (strstr(line, "trat_large")) { read_param(line, "trat_large", &(params->trat_large), 2); f.trat_l = 1; }
         if (strstr(line, "Thetae_max")) { read_param(line, "Thetae_max", &(params->Thetae_max), 2); f.theta_m = 1; }
+
+        if (strstr(line, "trace_geodesics")) { read_param(line, "trace_geodesics", &(params->trace_geodesics), 1); f.trace_geo = 1; }
+        if (strstr(line, "trace_stride"))    { read_param(line, "trace_stride", &(params->trace_stride), 1); f.trace_str = 1; }
+        if (strstr(line, "trace_maxsteps"))  { read_param(line, "trace_maxsteps", &(params->trace_maxsteps), 1); f.trace_max = 1; }
+        if (strstr(line, "trace_output"))    { read_param(line, "trace_output", (void *)(params->trace_output), 3); f.trace_out = 1; }
     }
     fclose(fp);
 
@@ -170,6 +181,13 @@ __host__ void load_par (const char *fname, Params *params) {
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_large");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "Thetae_max");
     #endif
+    if (f.trace_geo) {
+      printf("\n\033[1m--- Geodesic Tracing ---\033[0m\n");
+      print_status_i("trace_geodesics", f.trace_geo, params->trace_geodesics);
+      print_status_i("trace_stride", f.trace_str, params->trace_stride);
+      print_status_i("trace_maxsteps", f.trace_max, params->trace_maxsteps);
+      print_status_s("trace_output", f.trace_out, params->trace_output);
+    }
     printf("\033[1m================================\033[0m\n");
     params->loaded = 1;
 }

@@ -41,6 +41,12 @@ typedef struct params_t {
   double trat_large;
   double Thetae_max;
 
+  // geodesic tracing mode
+  int trace_geodesics;
+  int trace_stride;
+  int trace_maxsteps;
+  char trace_output[256];
+
   char loaded;
 } Params;
 
@@ -116,6 +122,13 @@ struct of_geom {
 	double gcon[NDIM][NDIM];
 	double gcov[NDIM][NDIM];
 	double g;
+};
+
+struct of_trajectory {
+	double *r;
+	double *theta;
+	double *phi;
+	int *nsteps_saved;
 };
 
 struct of_spectrum {

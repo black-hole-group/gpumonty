@@ -303,6 +303,83 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	return;
 }
 
+__noinline__ __device__ void track_geodesic_save(struct of_photonSOA ph,
+	const unsigned long long photon_index, struct of_trajectory traj,
+	const int max_saved, const int trace_stride, const int trace_maxsteps)
+{
+	double XArray[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
+	double KArray[NDIM] = {ph.K0[photon_index], ph.K1[photon_index], ph.K2[photon_index], ph.K3[photon_index]};
+	double dKdlamArray[NDIM];
+	double E0s = ph.E0s[photon_index];
+
+	/* Skip invalid photons */
+	#ifdef IHARM
+		if (ph.w[photon_index] < 1.) {
+			traj.nsteps_saved[photon_index] = 0;
+			return;
+		}
+	#else
+		if (ph.w[photon_index] < 1.e-100) {
+			traj.nsteps_saved[photon_index] = 0;
+			return;
+		}
+	#endif
+
+	if (isnan(XArray[0]) || isnan(XArray[1]) || isnan(XArray[2]) || isnan(XArray[3]) ||
+		isnan(KArray[0]) || isnan(KArray[1]) || isnan(KArray[2]) || isnan(KArray[3])) {
+		traj.nsteps_saved[photon_index] = 0;
+		return;
+	}
+
+	/* Initialize dK/dlam */
+	init_dKdlam(XArray, KArray, dKdlamArray);
+
+	unsigned long long base_offset = photon_index * (unsigned long long)max_saved;
+	int save_count = 0;
+
+	/* Save initial position in Boyer-Lindquist coordinates */
+	{
+		double r, th;
+		bl_coord(XArray, &r, &th);
+		traj.r[base_offset] = r;
+		traj.theta[base_offset] = th;
+		traj.phi[base_offset] = XArray[3];
+		save_count = 1;
+	}
+
+	int nstep = 0;
+	while (1) {
+		/* Check boundary: fell through horizon or escaped */
+		if (XArray[1] < d_startx[1] || XArray[1] > d_stopx[1])
+			break;
+
+		/* Step the geodesic */
+		double dl = stepsize(XArray, KArray);
+		push_photon(XArray, KArray, dKdlamArray, dl, &E0s);
+
+		/* Check boundary again after push */
+		if (XArray[1] < d_startx[1] || XArray[1] > d_stopx[1])
+			break;
+
+		nstep++;
+
+		/* Save position every trace_stride steps */
+		if (nstep % trace_stride == 0 && save_count < max_saved) {
+			double r, th;
+			bl_coord(XArray, &r, &th);
+			traj.r[base_offset + save_count] = r;
+			traj.theta[base_offset + save_count] = th;
+			traj.phi[base_offset + save_count] = XArray[3];
+			save_count++;
+		}
+
+		if (nstep >= trace_maxsteps)
+			break;
+	}
+
+	traj.nsteps_saved[photon_index] = save_count;
+}
+
 __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 {
 	int k;

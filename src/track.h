@@ -77,4 +77,21 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[]);
  * @return void
  */
 __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
+
+/**
+ * @brief Tracks a superphoton along its geodesic saving Boyer-Lindquist coordinates at regular intervals.
+ *
+ * Simplified tracking function that only integrates the geodesic (no absorption or scattering).
+ * Saves (r, theta, phi) in Boyer-Lindquist coordinates every trace_stride steps.
+ *
+ * @param ph The superphoton SoA containing initial conditions.
+ * @param photon_index Index of the photon to track.
+ * @param traj Trajectory buffer to store saved positions.
+ * @param max_saved Maximum number of positions that can be saved per photon.
+ * @param trace_stride Save position every this many geodesic steps.
+ * @param trace_maxsteps Maximum number of geodesic steps before stopping.
+ */
+__device__ void track_geodesic_save(struct of_photonSOA ph,
+	const unsigned long long photon_index, struct of_trajectory traj,
+	const int max_saved, const int trace_stride, const int trace_maxsteps);
 #endif

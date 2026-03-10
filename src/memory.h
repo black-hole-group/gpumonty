@@ -96,6 +96,22 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
  */
 __host__ void freePhotonData(struct of_photonSOA * ph);
 
+/**
+ * @brief Allocates device memory for geodesic trajectory data.
+ *
+ * @param traj Pointer to the trajectory structure to initialize.
+ * @param nph Number of photons.
+ * @param max_saved Maximum saved positions per photon.
+ */
+__host__ void allocateTrajectoryData(struct of_trajectory *traj, unsigned long long nph, int max_saved);
+
+/**
+ * @brief Frees device memory for geodesic trajectory data.
+ *
+ * @param traj Pointer to the trajectory structure to free.
+ */
+__host__ void freeTrajectoryData(struct of_trajectory *traj);
+
 
 /**
  * @brief Creates a 3D texture object from a 4D data grid for the plasma primitive properties.

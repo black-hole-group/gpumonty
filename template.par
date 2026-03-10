@@ -28,3 +28,14 @@ Thetae_max 1.e3
 
 # Whether or not to have scattering activated
 scattering 1
+
+# Geodesic tracing mode: trace photon paths and save BL coordinates
+# Set trace_geodesics to 1 to enable (skips spectrum computation).
+# Set Ns to the desired number of traced photons (e.g. 1000).
+# trace_stride: save position every N geodesic steps
+# trace_maxsteps: maximum number of geodesic integration steps per photon
+# trace_output: HDF5 output filename (saved in ./output/)
+#trace_geodesics 1
+#trace_stride 10
+#trace_maxsteps 10000
+#trace_output geodesics.h5

@@ -255,6 +255,25 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
 }
 
+__host__ void allocateTrajectoryData(struct of_trajectory *traj, unsigned long long nph, int max_saved) {
+	unsigned long long total = nph * (unsigned long long)max_saved;
+	gpuErrchk(cudaMalloc(&(traj->r), total * sizeof(double)));
+	gpuErrchk(cudaMalloc(&(traj->theta), total * sizeof(double)));
+	gpuErrchk(cudaMalloc(&(traj->phi), total * sizeof(double)));
+	gpuErrchk(cudaMalloc(&(traj->nsteps_saved), nph * sizeof(int)));
+	gpuErrchk(cudaMemset(traj->r, 0, total * sizeof(double)));
+	gpuErrchk(cudaMemset(traj->theta, 0, total * sizeof(double)));
+	gpuErrchk(cudaMemset(traj->phi, 0, total * sizeof(double)));
+	gpuErrchk(cudaMemset(traj->nsteps_saved, 0, nph * sizeof(int)));
+}
+
+__host__ void freeTrajectoryData(struct of_trajectory *traj) {
+	gpuErrchk(cudaFree(traj->r));
+	gpuErrchk(cudaFree(traj->theta));
+	gpuErrchk(cudaFree(traj->phi));
+	gpuErrchk(cudaFree(traj->nsteps_saved));
+}
+
 __host__ void freePhotonData(struct of_photonSOA * ph){
 	gpuErrchk(cudaFree(ph->X0));
 	gpuErrchk(cudaFree(ph->X1));

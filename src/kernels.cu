@@ -195,6 +195,74 @@ __host__ void mainFlowControl(time_t time, double * p){
 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
 		fprintf(stderr, "Photon sampling process completed!\n");
 
+		/* Geodesic tracing mode: track photons saving BL coordinates, skip spectrum */
+		if (params.trace_geodesics) {
+			int max_saved = params.trace_maxsteps / params.trace_stride + 1;
+			struct of_trajectory traj;
+			allocateTrajectoryData(&traj, instant_photon_number, max_saved);
+
+			cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+			fprintf(stderr, "\nTracing geodesics (stride=%d, maxsteps=%d, max_saved=%d)\n",
+				params.trace_stride, params.trace_maxsteps, max_saved);
+
+			int trace_nblocks = (int)ceil((double)instant_photon_number / (double)N_THREADS);
+			if (trace_nblocks == 0) trace_nblocks = 1;
+			if (trace_nblocks > max_block_number) trace_nblocks = max_block_number;
+
+			cudaEventRecord(start, 0);
+			track_geodesics<<<trace_nblocks, N_THREADS>>>(initial_photon_states, instant_photon_number,
+				traj, max_saved, params.trace_stride, params.trace_maxsteps);
+			cudaDeviceSynchronize();
+			cudaEventRecord(stop);
+			cudaEventSynchronize(stop);
+			cudaEventElapsedTime(&milliseconds, start, stop);
+			printf("Geodesic tracing kernel execution time: %f s\n", milliseconds / 1000.);
+
+			cudaStatus = cudaGetLastError();
+			if (cudaStatus != cudaSuccess) {
+				fprintf(stderr, "in track_geodesics: %s\n", cudaGetErrorString(cudaStatus));
+				exit(1);
+			}
+
+			/* Copy trajectory data to host */
+			unsigned long long total_traj_size = (unsigned long long)instant_photon_number * max_saved;
+			double *h_r = (double *)malloc(total_traj_size * sizeof(double));
+			double *h_theta = (double *)malloc(total_traj_size * sizeof(double));
+			double *h_phi = (double *)malloc(total_traj_size * sizeof(double));
+			int *h_nsteps = (int *)malloc(instant_photon_number * sizeof(int));
+
+			cudaMemcpyErrorCheck(h_r, traj.r, total_traj_size * sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpyErrorCheck(h_theta, traj.theta, total_traj_size * sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpyErrorCheck(h_phi, traj.phi, total_traj_size * sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpyErrorCheck(h_nsteps, traj.nsteps_saved, instant_photon_number * sizeof(int), cudaMemcpyDeviceToHost);
+
+			/* Save to HDF5 */
+			save_geodesics_h5(h_r, h_theta, h_phi, h_nsteps,
+				(unsigned long long)instant_photon_number, max_saved, params.trace_output);
+
+			free(h_r);
+			free(h_theta);
+			free(h_phi);
+			free(h_nsteps);
+			freeTrajectoryData(&traj);
+			freePhotonData(&initial_photon_states);
+			/* No need for scattering data in trace mode */
+			freePhotonData(&scat_ofphoton);
+
+			/* Clean up remaining resources and return */
+			cudaFree(d_spect);
+			cudaFree(generated_photons_arr);
+			cudaFree(dnmax_arr);
+			cudaFree(d_geom);
+			cudaFree(d_table_ptr);
+			cudaFree(d_p);
+			cudaFree(d_index_to_ijk);
+			cudaEventDestroy(start);
+			cudaEventDestroy(stop);
+			cudaDestroyTextureObject(dPTableTexObj);
+			cudaFreeArray(dPTableCuArray);
+			return;
+		}
 
 		fprintf(stderr, "\nTracking photons along the geodesics\n");
 		cudaEventRecord(start, 0);
@@ -703,7 +771,34 @@ __global__ void record(struct of_photonSOA ph, struct of_spectrum * __restrict__
 
 
 __launch_bounds__(N_THREADS)
-__global__ void track_scat(struct of_photonSOA ph, 
+__global__ void track_geodesics(struct of_photonSOA ph, const unsigned long long max_partition_ph,
+	struct of_trajectory traj, const int max_saved, const int trace_stride, const int trace_maxsteps){
+	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	unsigned long long photon_index = 0;
+	int n = 1;
+
+	while (true) {
+		photon_index = (atomicAdd(&tracking_counter, 1) - 1);
+		if (photon_index >= max_partition_ph) break;
+
+		track_geodesic_save(ph, photon_index, traj, max_saved, trace_stride, trace_maxsteps);
+
+		/* Progress indicator */
+		if (global_index == 0) {
+			float percentage = 100 - ((max_partition_ph - photon_index) * 100) / max_partition_ph;
+			if (percentage >= n * 5.0f) {
+				printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
+				n++;
+			}
+		}
+	}
+	if (global_index == 0) {
+		printf("\rProgress: \033[1;32m100%%\033[0m   \n");
+	}
+}
+
+__launch_bounds__(N_THREADS)
+__global__ void track_scat(struct of_photonSOA ph,
 	#ifdef DO_NOT_USE_TEXTURE_MEMORY
 	 double * __restrict__ d_p, 
 	#else

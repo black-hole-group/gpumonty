@@ -223,7 +223,20 @@ __global__ void track(
  * @param round_num_scat_end The ending global photon index for this scattering batch.
  * @return void
  */
-__global__ void track_scat(struct of_photonSOA ph, 
+/**
+ * @brief Kernel for geodesic tracing mode: tracks photons saving BL coordinates at regular intervals.
+ *
+ * @param ph The SoA containing sampled superphoton initial conditions.
+ * @param max_partition_ph Number of photons to trace.
+ * @param traj Trajectory buffer on the device.
+ * @param max_saved Maximum saved positions per photon.
+ * @param trace_stride Save every this many steps.
+ * @param trace_maxsteps Maximum geodesic steps per photon.
+ */
+__global__ void track_geodesics(struct of_photonSOA ph, const unsigned long long max_partition_ph,
+    struct of_trajectory traj, const int max_saved, const int trace_stride, const int trace_maxsteps);
+
+__global__ void track_scat(struct of_photonSOA ph,
     #ifdef DO_NOT_USE_TEXTURE_MEMORY
         double * __restrict__ d_p,
     #else

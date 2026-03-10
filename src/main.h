@@ -100,4 +100,21 @@ __host__ void init_geometry();
  * @param filename Name of the output file (saved in the `./output/` directory).
  */
 __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
+
+/**
+ * @brief Saves geodesic trajectory data to an HDF5 file.
+ *
+ * Writes Boyer-Lindquist coordinates (r, theta, phi) for each traced photon,
+ * along with metadata (number of photons, saved steps, stride, maxsteps).
+ *
+ * @param r Array of radial coordinates [nph * max_saved].
+ * @param theta Array of polar angle coordinates [nph * max_saved].
+ * @param phi Array of azimuthal angle coordinates [nph * max_saved].
+ * @param nsteps Array of actual saved steps per photon [nph].
+ * @param nph Number of traced photons.
+ * @param max_saved Maximum saved positions per photon.
+ * @param filename Output filename (saved in ./output/).
+ */
+__host__ void save_geodesics_h5(double *r, double *theta, double *phi, int *nsteps,
+	unsigned long long nph, int max_saved, const char *filename);
 #endif

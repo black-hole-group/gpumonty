@@ -25,6 +25,7 @@
 #include "hotcross.h"
 #include "utils.h"
 #include "par.h"
+#include "hdf5_utils.h"
 
 __host__ void init_model(char *args[]);
 __host__ void init_geometry();
@@ -231,4 +232,43 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
     fclose(fp);
 	printf("\n\033[1m================================================\033[0m\n");
 
+}
+
+__host__ void save_geodesics_h5(double *r, double *theta, double *phi, int *nsteps,
+	unsigned long long nph, int max_saved, const char *filename)
+{
+	char filepath[256];
+	snprintf(filepath, sizeof(filepath), "./output/%s", filename);
+
+	hdf5_create(filepath);
+	hdf5_set_directory("/");
+
+	/* Write metadata */
+	int nph_int = (int)nph;
+	hdf5_write_single_val(&nph_int, "nph", H5T_STD_I32LE);
+	hdf5_write_single_val(&max_saved, "max_saved_steps", H5T_STD_I32LE);
+	hdf5_write_single_val(&params.trace_stride, "trace_stride", H5T_STD_I32LE);
+	hdf5_write_single_val(&params.trace_maxsteps, "trace_maxsteps", H5T_STD_I32LE);
+	double ns_val = params.Ns;
+	hdf5_write_single_val(&ns_val, "Ns", H5T_IEEE_F64LE);
+
+	/* Write nsteps per photon [nph] */
+	hsize_t dims1d[1] = {(hsize_t)nph};
+	hsize_t start1d[1] = {0};
+	hdf5_write_array(nsteps, "nsteps", 1, dims1d, start1d, dims1d, dims1d, start1d, H5T_STD_I32LE);
+
+	/* Write 2D trajectory arrays [nph, max_saved] */
+	hsize_t dims2d[2] = {(hsize_t)nph, (hsize_t)max_saved};
+	hsize_t start2d[2] = {0, 0};
+	hdf5_write_array(r, "r", 2, dims2d, start2d, dims2d, dims2d, start2d, H5T_IEEE_F64LE);
+	hdf5_write_array(theta, "theta", 2, dims2d, start2d, dims2d, dims2d, start2d, H5T_IEEE_F64LE);
+	hdf5_write_array(phi, "phi", 2, dims2d, start2d, dims2d, dims2d, start2d, H5T_IEEE_F64LE);
+
+	hdf5_close();
+
+	printf("\n\033[1m==================== OUTPUT ====================\033[0m\n");
+	fprintf(stderr, "Geodesic trajectories saved to %s\n", filepath);
+	fprintf(stderr, "Number of photons traced: %llu\n", nph);
+	fprintf(stderr, "Max saved steps per photon: %d\n", max_saved);
+	printf("\033[1m================================================\033[0m\n");
 }
