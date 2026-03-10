@@ -26,7 +26,7 @@ Declarations of the functions in the metrics.cu file
  * if set to 1, the code will compute the inverse metric \f$ g^{\mu\nu} \f$ through LU decomposition and substitution.
  * if set to 0, the code will use the kerr analytical expressions for the inverse metric.
  */
-#define FIND_GCON_MATRIX_INV (0)
+#define FIND_GCON_MATRIX_INV (1)
 
 
 #ifndef METRICS_H
@@ -119,18 +119,38 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 __host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM]);
 
 /**
- * @brief Computes the Christoffel symbols (connection coefficients) \f$ \Gamma^i_{jk} \f$ at a given 4-position. 
+ * @brief Computes the Christoffel symbols (\f$ \Gamma^i_{jk} \f$) analytically for the coodinate system MKS.
  * 
- * Analytically: Computed analytically if `SPHERE_TEST` is not defined.
- *
- * Numerically: Computed through Finite Differences if `SPHERE_TEST` is defined.
+ * @param X 4-position \f$ X^\mu \f$ in code coordinates.
+ * @param lconn A 3D array `[4][4][4]` populated with the connection coefficients.
+ * 
+ * @note This function has been tested against finite differences.
+ * 
+ * @return void   
+ */
+__device__ void ConnectionAnalyticalMKS(const double X[4], double lconn[4][4][4]);
+
+/**
+ * @brief Wrapper function to compute the Christoffel symbols (\f$ \Gamma^i_{jk} \f$) based on the selected metric type.
  * 
  * @param X 4-position \f$ X^\mu \f$ in code coordinates.
  * @param lconn A 3D array `[4][4][4]` populated with the connection coefficients.
  * 
  * @return void
  */
-__device__ void get_connection(const double X[4], double lconn[4][4][4]);
+__device__ void ConnectionAnalyticalWrapper(const double X[4], double lconn[4][4][4]);
+
+/**
+ * @brief Computes the Christoffel symbols (\f$ \Gamma^i_{jk} \f$) analytically for the coodinate system MKS3.
+ * 
+ * @param X 4-position \f$ X^\mu \f$ in code coordinates.
+ * @param lconn A 3D array `[4][4][4]` populated with the connection coefficients.
+ * 
+ *  @note This function has been tested against finite differences.
+ * 
+ * @return void   
+ */
+__device__ void ConnectionAnalyticalMKS3(const double X[4], double lconn[4][4][4]);
 
 /**
  * @brief Lowers the index of a contravariant 4-vector to its covariant form.

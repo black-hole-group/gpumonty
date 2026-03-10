@@ -43,12 +43,11 @@ __host__ void init_storage(void)
 
 
 static hdf5_blob fluid_header = { 0 };
-int METRIC_eKS = 0;
-__device__ int d_METRIC_eKS, d_METRIC_MKS3;
-int with_derefine_poles, METRIC_MKS3 = 0;
 double poly_norm, poly_xt, poly_alpha, mks_smooth; // mmks
 double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0; // mks3
 
+int METRIC;
+__device__ int d_METRIC;
 __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth; // mmks
 __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0; // mks3
 
@@ -62,7 +61,7 @@ static double MBH;
 
 double TP_OVER_TE;
 
-__device__ int d_with_electrons, d_with_radiation, d_with_derefine_poles;
+__device__ int d_with_electrons, d_with_radiation;
 void init_data()
 {
   double dV, V;
@@ -81,7 +80,7 @@ void init_data()
   // flag reads
   with_electrons = 0;
   with_radiation = 0;
-  with_derefine_poles = 0;
+  int FMKS = 0;
   if ( hdf5_exists("has_electrons") )
     hdf5_read_single_val(&with_electrons, "has_electrons", H5T_STD_I32LE);
   if ( hdf5_exists("has_radiation") )
@@ -89,22 +88,41 @@ void init_data()
 
   // read geometry
   //int N1_local, N2_local, N3_local;
-  METRIC_MKS3 = 0;
   char metric_name[20];
   hid_t string_type = hdf5_make_str_type(20);
   hdf5_read_single_val(&metric_name, "metric", string_type);
+
+  int metric_eKS = 0;
+  int metric_MKS3 = 0;
   if ( strncmp(metric_name, "MMKS", 19) == 0 || strncmp(metric_name, "FMKS", 19) == 0 ) {
-    with_derefine_poles = 1;
+    FMKS = 1;
     fprintf(stderr, "using derefined poles...\n");
   } else if ( strncmp(metric_name, "MKS3", 19) == 0 ) {
-    METRIC_eKS = 1;
-    METRIC_MKS3 = 1;
+    metric_eKS = 1;
+    metric_MKS3 = 1;
     fprintf(stderr, "using eKS metric with exotic \"MKS3\" zones...\n");
   }
+
+  if(metric_eKS){
+    if(metric_MKS3){
+        fprintf(stderr, "using MKS3 metric...\n");
+        int metric = METRIC_MKS3;
+        cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+      }else{
+        fprintf(stderr, "using Exponential Kerr-Schild metric\n");
+        int metric = METRIC_eKS;
+        cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+      }
+  }else if (FMKS) {
+    fprintf(stderr, "using Funky-Modified Kerr-Schild metric\n");
+    int metric = METRIC_FMKS;
+    cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+  } else {
+    fprintf(stderr, "using Modified Kerr-Schild metric\n");
+    int metric = METRIC_MKS;
+    cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+  }
   
-  cudaMemcpyToSymbol(d_with_derefine_poles, &with_derefine_poles, sizeof(int));
-  cudaMemcpyToSymbol(d_METRIC_eKS, &METRIC_eKS, sizeof(int));
-  cudaMemcpyToSymbol(d_METRIC_MKS3, &METRIC_MKS3, sizeof(int));
 
   hdf5_read_single_val(&nprims, "n_prim", H5T_STD_I32LE);
   hdf5_read_single_val(&N1, "n1", H5T_STD_I32LE);
@@ -181,9 +199,9 @@ void init_data()
   hdf5_read_single_val(&dx[3], "dx3", H5T_IEEE_F64LE);
 
   hdf5_set_directory("/header/geom/mks/");
-  if (with_derefine_poles) hdf5_set_directory("/header/geom/mmks/");
+  if (FMKS) hdf5_set_directory("/header/geom/mmks/");
 
-  if ( METRIC_MKS3 ) {
+  if ( metric_MKS3 ) {
     hdf5_set_directory("/header/geom/mks3/");
     hdf5_read_single_val(&bhspin, "a", H5T_IEEE_F64LE);
     hdf5_read_single_val(&mks3R0, "R0", H5T_IEEE_F64LE);
@@ -208,7 +226,7 @@ void init_data()
       hdf5_read_single_val(&Rin, "r_in", H5T_IEEE_F64LE);
       hdf5_read_single_val(&Rout, "r_out", H5T_IEEE_F64LE);
     }
-    if (with_derefine_poles) {
+    if (FMKS) {
       fprintf(stderr, "custom refinement at poles loaded...\n");
       hdf5_read_single_val(&poly_xt, "poly_xt", H5T_IEEE_F64LE);
       hdf5_read_single_val(&poly_alpha, "poly_alpha", H5T_IEEE_F64LE);
@@ -299,6 +317,7 @@ if (with_electrons == 1) {
   Ladv /= 1.;
   bias_norm /= V;
   fprintf(stderr, "dMact: %g, Ladv: %g\n", dMact, Ladv);
+  
 
   //init_tetrads();
 }
@@ -374,21 +393,22 @@ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[
 {
   double phi;
   double XG[NDIM];
- if (d_METRIC_eKS) {
+  if (d_METRIC == METRIC_eKS) {
     // the geodesics are evolved in eKS so invert through KS -> zone coordinates
     double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
-    if (d_METRIC_MKS3) {
-      double H0 = d_mks3H0, MY1 = d_mks3MY1, MY2 = d_mks3MY2, MP0 = d_mks3MP0;
-      double KSx1 = Xks[1], KSx2 = Xks[2];
-      XG[0] = Xks[0];
-      XG[1] = log(Xks[1] - d_mks3R0);
-      XG[2] = (-(H0*pow(KSx1,MP0)*M_PI) - pow(2.,1. + MP0)*H0*MY1*M_PI + 
-        2.*H0*pow(KSx1,MP0)*MY1*M_PI + pow(2.,1. + MP0)*H0*MY2*M_PI + 
-        2.*pow(KSx1,MP0)*atan(((-2.*KSx2 + M_PI)*tan((H0*M_PI)/2.))/M_PI))/(2.*
-        H0*(-pow(KSx1,MP0) - pow(2.,1 + MP0)*MY1 + 2.*pow(KSx1,MP0)*MY1 + 
-          pow(2.,1. + MP0)*MY2)*M_PI);
-      XG[3] = Xks[3];
-    }
+    for (int mu = 0; mu < NDIM; mu++) XG[mu] = Xks[mu];
+  }else if (d_METRIC == METRIC_MKS3) {
+    double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
+    double H0 = d_mks3H0, MY1 = d_mks3MY1, MY2 = d_mks3MY2, MP0 = d_mks3MP0;
+    double KSx1 = Xks[1], KSx2 = Xks[2];
+    XG[0] = Xks[0];
+    XG[1] = log(Xks[1] - d_mks3R0);
+    XG[2] = (-(H0*pow(KSx1,MP0)*M_PI) - pow(2.,1. + MP0)*H0*MY1*M_PI + 
+      2.*H0*pow(KSx1,MP0)*MY1*M_PI + pow(2.,1. + MP0)*H0*MY2*M_PI + 
+      2.*pow(KSx1,MP0)*atan(((-2.*KSx2 + M_PI)*tan((H0*M_PI)/2.))/M_PI))/(2.*
+      H0*(-pow(KSx1,MP0) - pow(2.,1 + MP0)*MY1 + 2.*pow(KSx1,MP0)*MY1 + 
+        pow(2.,1. + MP0)*MY2)*M_PI);
+    XG[3] = Xks[3];
   } else {
     for (int mu = 0; mu < NDIM; mu++) XG[mu] = X[mu];
   }
@@ -528,33 +548,35 @@ __host__ __device__ void bl_coord(const double *X, double *r, double *th)
   *r = exp(X[1]);
 
   #ifdef __CUDA_ARCH__
-    if (d_METRIC_eKS) {
+    if (d_METRIC == METRIC_eKS) {
       *r = exp(X[1]);
       *th = M_PI * X[2];
-    } else if (d_METRIC_MKS3) {
+    } else if (d_METRIC == METRIC_MKS3) {
       *r = exp(X[1]) + d_mks3R0;
       *th = (M_PI*(1. + 1./tan((d_mks3H0*M_PI)/2.)*tan(d_mks3H0*M_PI*(-0.5 + (d_mks3MY1 + (pow(2.,d_mks3MP0)*(-d_mks3MY1 + d_mks3MY2))/pow(exp(X[1])+d_mks3R0,d_mks3MP0))*(1. - 2.*X[2]) + X[2]))))/2.;
-    } else if (d_with_derefine_poles) {
+    } else if (d_METRIC == METRIC_FMKS) {
       double thG = M_PI*X[2] + ((1. - d_hslope)/2.)*sin(2.*M_PI*X[2]);
       double y = 2*X[2] - 1.;
       double thJ = d_poly_norm*y*(1. + pow(y/d_poly_xt,d_poly_alpha)/(d_poly_alpha+1.)) + 0.5*M_PI;
       *th = thG + exp(d_mks_smooth*(d_startx[1] - X[1]))*(thJ - thG);
     } else {
       *th = M_PI*X[2] + ((1. - d_hslope)/2.)*sin(2.*M_PI*X[2]);
+      
     }
   #else
-    if (METRIC_eKS) {
+    if (METRIC == METRIC_eKS) {
       *r = exp(X[1]);
       *th = M_PI * X[2];
-    } else if (METRIC_MKS3) {
+    } else if (METRIC == METRIC_MKS3) {
       *r = exp(X[1]) + mks3R0;
       *th = (M_PI*(1. + 1./tan((mks3H0*M_PI)/2.)*tan(mks3H0*M_PI*(-0.5 + (mks3MY1 + (pow(2.,mks3MP0)*(-mks3MY1 + mks3MY2))/pow(exp(X[1])+mks3R0,mks3MP0))*(1. - 2.*X[2]) + X[2]))))/2.;
-    } else if (with_derefine_poles) {
+    } else if (METRIC == METRIC_FMKS) {
       double thG = M_PI*X[2] + ((1. - hslope)/2.)*sin(2.*M_PI*X[2]);
       double y = 2*X[2] - 1.;
       double thJ = poly_norm*y*(1. + pow(y/poly_xt,poly_alpha)/(poly_alpha+1.)) + 0.5*M_PI;
       *th = thG + exp(mks_smooth*(startx[1] - X[1]))*(thJ - thG);
     } else {
+      printf("using MKS metric for bl_coord\n");
       *th = M_PI*X[2] + ((1. - hslope)/2.)*sin(2.*M_PI*X[2]);
     }
   #endif
@@ -645,11 +667,12 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 
 __device__ int X_in_domain(const double X[NDIM])
 {
-  if (d_METRIC_eKS) {
-    double XG[4] = { 0 };
-    double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
-
-    if (d_METRIC_MKS3) {
+    if (d_METRIC == METRIC_eKS) {
+      double XG[4] = { 0 };
+      double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
+    }else if (d_METRIC == METRIC_MKS3) {
+      double XG[4] = { 0 };
+      double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
       // if METRIC_MKS3, ignore theta boundaries
       double H0 = d_mks3H0, MY1 = d_mks3MY1, MY2 = d_mks3MY2, MP0 = d_mks3MP0;
       double KSx1 = Xks[1], KSx2 = Xks[2];
@@ -663,8 +686,6 @@ __device__ int X_in_domain(const double X[NDIM])
       XG[3] = Xks[3];
 
       if (XG[1] < d_startx[1] || XG[1] > d_stopx[1]) return 0;
-    }
-
   } else {
     if(X[1] < d_startx[1] ||
        X[1] > d_stopx[1]  ||
