@@ -106,21 +106,21 @@ void init_data()
   if(metric_eKS){
     if(metric_MKS3){
         fprintf(stderr, "using MKS3 metric...\n");
-        int metric = METRIC_MKS3;
-        cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+        METRIC= METRIC_MKS3;
+        cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
       }else{
         fprintf(stderr, "using Exponential Kerr-Schild metric\n");
-        int metric = METRIC_eKS;
-        cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+        METRIC = METRIC_eKS;
+        cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
       }
   }else if (FMKS) {
     fprintf(stderr, "using Funky-Modified Kerr-Schild metric\n");
-    int metric = METRIC_FMKS;
-    cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+    METRIC = METRIC_FMKS;
+    cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
   } else {
     fprintf(stderr, "using Modified Kerr-Schild metric\n");
-    int metric = METRIC_MKS;
-    cudaMemcpyToSymbol(d_METRIC, &metric, sizeof(int));
+    METRIC = METRIC_MKS;
+    cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
   }
   
 
@@ -576,7 +576,6 @@ __host__ __device__ void bl_coord(const double *X, double *r, double *th)
       double thJ = poly_norm*y*(1. + pow(y/poly_xt,poly_alpha)/(poly_alpha+1.)) + 0.5*M_PI;
       *th = thG + exp(mks_smooth*(startx[1] - X[1]))*(thJ - thG);
     } else {
-      printf("using MKS metric for bl_coord\n");
       *th = M_PI*X[2] + ((1. - hslope)/2.)*sin(2.*M_PI*X[2]);
     }
   #endif

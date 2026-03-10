@@ -244,7 +244,7 @@ __host__ __device__ void LU_substitution( double A[][NDIM], double B[], int perm
   /* End of LU_substitution() */
 
 }
-extern __host__ __device__ void print_matrix(const char* name, const double mat[NDIM][NDIM]);
+
 __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )  
 { 
 
@@ -309,13 +309,13 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			DLOOP gcon[k][l] = 0.;
 			bl_coord(X, &r, &th);
 
-		#ifdef __CUDA_ARCH__
-		double thetaslope = d_hslope;
-		double local_bhspin = d_bhspin;
-		#else
-		double thetaslope = hslope;
-		double local_bhspin = bhspin;
-		#endif
+			#ifdef __CUDA_ARCH__
+			double thetaslope = d_hslope;
+			double local_bhspin = d_bhspin;
+			#else
+			double thetaslope = hslope;
+			double local_bhspin = bhspin;
+			#endif
 
 			sincos(th, &sth, &cth);
 			sth = fabs(sth) + SMALL;
@@ -570,6 +570,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		} 
 	}
 
+	
 	__device__ void ConnectionAnalyticalMKS(const double X[4], double lconn[4][4][4])
 	{
 
@@ -590,12 +591,22 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		r3 = r2 * r1;
 		r4 = r3 * r1;
 
+
+		/* HARM-2D MKS */
+		#ifdef HAMR
+			double x2_mod;
+			x2_mod = (X[2] + 1.)/2.;
+			th = M_PI * x2_mod;
+			dthdx2 = M_PI * (1./2.);
+			d2thdx22 = 0;
+		#else
 		double sx, cx;
 		sx = sin(2 * M_PI * X[2]);
 		cx = cos(2 * M_PI * X[2]);
 		th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
 		dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
 		d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
+		#endif
 		dthdx22 = dthdx2 * dthdx2;
 
 		sincos(th, &sth, &cth);
@@ -635,7 +646,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		lconn[0][0][3] = -2. * d_bhspin * r1sth2 * fac1_rho23;
 
 		lconn[0][1][1] = 2. * r2 * (r4 + r1 * fac1 - a4cth4) * irho23;
-		lconn[0][1][2] = lconn[0][0][2] * r1;//-a2 * r2 * s2th * dthdx2 * irho22;
+		lconn[0][1][2] = -a2 * r2 * s2th * dthdx2 * irho22;
 		lconn[0][1][3] =
 			d_bhspin * r1 * (-r1 * (r3 + 2 * fac1) + a4cth4) * sth2 * irho23;
 
