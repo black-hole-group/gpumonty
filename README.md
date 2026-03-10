@@ -34,7 +34,7 @@ make -j 24
 ```
 2. Download the [test data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/XZECPF) from a GRMHD simulation:
 ```
-curl -L -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
+curl -L --create-dirs -o './data/dump_SANE.h5' 'https://dataverse.harvard.edu/api/access/datafile/12137142'
 ```
 3. Run gpumonty:
 ```
