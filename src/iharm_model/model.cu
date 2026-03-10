@@ -299,22 +299,44 @@ if (with_electrons == 1) {
 
   V = dMact = Ladv = 0.;
   dV = dx[1]*dx[2]*dx[3];
-  
-  #pragma omp parallel for collapse(3) reduction(+:V,bias_norm,dMact,Ladv)
-  ZLOOP {
 
-    V += dV*geom[SPATIAL_INDEX2D(i,j)].g;
+ #pragma omp parallel for collapse(2) default(none) \
+    shared(N1, N2, N3, dV, geom, p, dx) \
+    reduction(+:V, bias_norm, dMact, Ladv)
+for (int i = 0; i < N1; i++) {
+    for (int j = 0; j < N2; j++) {
+        
+        int ij_idx = SPATIAL_INDEX2D(i, j);
+        double g_det = geom[ij_idx].g;
+        
+        
+        V += dV * g_det * N3; 
 
-    double Ne, Thetae, Bmag, Ucon[NDIM], Ucov[NDIM], Bcon[NDIM];
-    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, geom, p);
-    bias_norm += dV*geom[SPATIAL_INDEX2D(i,j)].g * Thetae*Thetae;
-    if (10 <= i && i <= 20) {
-      lower(Ucon, geom[SPATIAL_INDEX2D(i,j)].gcov, Ucov);
-      dMact += geom[SPATIAL_INDEX2D(i,j)].g*dx[2]*dx[3]*p[NPRIM_INDEX3D(KRHO,i,j,k)]*Ucon[1];
-      Ladv += geom[SPATIAL_INDEX2D(i,j)].g*dx[2]*dx[3]*p[NPRIM_INDEX3D(UU,i,j,k)]*Ucon[1]*Ucov[0];
+        
+        int in_active_region = (10 <= i && i <= 20);
+        double flux_base = 0.0;
+        if (in_active_region) {
+            flux_base = g_det * dx[2] * dx[3];
+        }
+
+        
+        for (int k = 0; k < N3; k++) {
+            double Ne, Thetae, Bmag, Ucon[NDIM], Ucov[NDIM], Bcon[NDIM];
+            
+            get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, geom, p);
+            
+            bias_norm += dV * g_det * Thetae * Thetae;
+            
+            if (in_active_region) {
+                lower(Ucon, geom[ij_idx].gcov, Ucov);
+                
+                double flux_factor = flux_base * Ucon[1];
+                dMact += flux_factor * p[NPRIM_INDEX3D(KRHO, i, j, k)];
+                Ladv  += flux_factor * p[NPRIM_INDEX3D(UU, i, j, k)] * Ucov[0];
+            }
+        }
     }
-
-  }
+}
 
   dMact /= 11.;
   Ladv /= 1.;
