@@ -43,7 +43,7 @@ __host__ void init_data()
 	double two_temp_gam;
 	double sphere_radius = SPHERE_RADIUS/L_unit;
 
-	gam = 13./9.;
+	double gam = 13./9.;
 
 	/*Setting the resolution*/
     // R resolution is high here to properly deal with the sphere edge. The higher it is, the higher the anti-aliasing quality.

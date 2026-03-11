@@ -152,7 +152,7 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
     snprintf(filepath, sizeof(filepath), "./output/%s", filename);
     fp = fopen(filepath, "w");
     if (fp == NULL) {
-        fprintf(stderr, "trouble opening spectrum file\n");
+        fprintf(stderr, "Trouble opening spectrum file! Check file name in template.par\n");
         exit(0);
     }
 

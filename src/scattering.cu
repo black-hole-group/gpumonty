@@ -29,7 +29,7 @@
 // __global__ void checkbias(){
 // 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_biastuning[0], d_biastuning[1], d_biastuning[2]);
 // }
-__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double * d_p){
+__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj){
 	/*Perform scattering loop*/
 		int n = 1;
 		bool quit_flag_sca = false;
@@ -97,6 +97,9 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 
 				if(params.fitBias){
 					double Ratio = (double) num_scat_phs[n] / (double) num_scat_phs[n-1];
+					
+					// In case there haven't had scattering in layer 0;
+					if(isnan(Ratio))Ratio = 0.;
 					BiasTuning_index++;
 					if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && Ratio >= 1e-3){
 
@@ -115,6 +118,8 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 						RedoTuning = 0;
 						if(Ratio <= 1e-3){
 							printf("\033[1;33mRatio is too low (< 0.1%%), we are not gonna try to increase it anymore. Latest BiasTuning for this round will be set to 1\033[0m\n");
+							params.biasTuning = 1.;
+							gpuErrchk(cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), n * sizeof(double)));
 						}else if(BiasTuning_index < MAXITER_BIASTUNING){
 							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
 						}else{

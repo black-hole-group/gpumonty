@@ -243,6 +243,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 			cudaEventSynchronize(stop); 
 			cudaEventElapsedTime(&milliseconds, start, stop);
 			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
+			Flag("The tracking kernel - illegal memory access encountered often means too much scattering happening, try changing the bias tunning or SCATTERINGS_PER_PHOTON in config.h");
 
 			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
 
@@ -252,7 +253,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 			if(params.fitBias){
 				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
 				BiasTuning_index++;
-				if(Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance && BiasTuning_index < MAXITER_BIASTUNING){
+				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && Ratio >= 1e-3){
 					params.biasTuning *= params.targetRatio/Ratio;
 					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
 					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.biasTuning);
@@ -266,12 +267,15 @@ __host__ void mainFlowControl(time_t time, double * p){
 					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 				}else{
-					if(BiasTuning_index < MAXITER_BIASTUNING){
-						printf("\033[1;32mBias Found %.3e! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n", params.biasTuning, Ratio, InferiorAcceptance, SuperiorAcceptance);
-
-					}else{
-						printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
-					}
+						if(Ratio <= 1e-3){
+							printf("\033[1;33mRatio is too low (< 0.1%%), we are not gonna try to increase it. Latest BiasTuning for this round will be set to 1\033[0m\n");
+							params.biasTuning = 1.;
+							gpuErrchk(cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), 0 * sizeof(double)));
+						}else if(BiasTuning_index < MAXITER_BIASTUNING){
+							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+						}else{
+							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+						}
 					RedoTuning = 0;
 				}
 
@@ -306,7 +310,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		}
 
 
-		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, besselTexObj, d_table_ptr, d_p);
+		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, besselTexObj, d_table_ptr, d_p, dPTableTexObj);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
 	}

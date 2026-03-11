@@ -34,3 +34,4 @@ python/**/.ipynb_checkpoints/
 !python/expected_spectrum.png
 !python/example.py
 !python/plspec.py
+!python/sphere_example.ipynb
