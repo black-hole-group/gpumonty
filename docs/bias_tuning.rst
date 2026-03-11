@@ -93,11 +93,7 @@ The following considerations may help ensure stability when using the bias-tunin
 Target Ratio and Memory Limits
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **target ratio** should never exceed the value of ``SCATTERINGS_PER_PHOTON`` defined in ``config.h``. If this limit is exceeded, GPUmonty will target more scattering events than the GPU memory can handle, which can lead to **out-of-memory errors**.
-
-For safety, it is recommended to set the target ratio **slightly below** ``SCATTERINGS_PER_PHOTON``. This provides a buffer that allows the algorithm to reach the desired ratio without hitting memory limits.
-
-This limitation will be addressed in future versions of the code.
+The **target ratio** can exceed the value of ``SCATTERINGS_PER_PHOTON`` defined in ``config.h``. Formerly, If this limit was exceeded, GPUmonty would target more scattering events than the GPU memory could handle, which would lead to **out-of-memory errors**. Now, it will dynamically allocate ``max(2 * TargetRatio, SCATTERINGS_PER_PHOTON)`` scattering events per photon, which allows it to handle target ratios bigger than ``SCATTERINGS_PER_PHOTON`` without crashing.
 
 Very Optically Thin Plasmas
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
