@@ -9,6 +9,16 @@ Arguments:
     geodesics.h5    Path to HDF5 file (default: output/geodesics.h5)
     --n N           Number of geodesics to plot (default: 50)
     --no-bh         Skip drawing the black hole sphere
+
+What it does:
+    Reads the r, theta, phi arrays from the HDF5 file produced by GPUmonty's
+    geodesic tracing mode. Each photon's valid steps are determined by the
+    nsteps array, so truncated trajectories (photons that fell through the
+    horizon or escaped the outer boundary early) are handled correctly.
+    Boyer-Lindquist coordinates are converted to Cartesian (x, y, z) in units
+    of r_g. A random subset of --n geodesics is selected and drawn as thin
+    colored lines in an interactive Plotly 3D scene. An opaque black sphere at
+    r = 1 r_g marks the black hole horizon (disable with --no-bh).
 """
 
 import argparse
