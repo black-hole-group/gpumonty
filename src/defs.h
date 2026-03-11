@@ -415,7 +415,7 @@ __device__ int d_scattering;
 /**
  * Global device variable that scales bias to match desired ratio.
  */
-__device__ double d_biastuning[MAX_LAYER_SCA];
+__device__ double d_bias_guess[MAX_LAYER_SCA];
 
 /**
  * Global device variable for the black hole mass in grams (g).
@@ -489,7 +489,7 @@ typedef struct params_t {
 
   // bias
   int scattering;
-  double biasTuning;
+  double bias_guess;
   int    fitBias;
   double fitBiasNs;
   double targetRatio;

@@ -304,7 +304,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (5) 
+#define SCATTERINGS_PER_PHOTON (10) 
 
 /*Making of Nint table*/
 

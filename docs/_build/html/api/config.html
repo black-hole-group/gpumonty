@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>config.h &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
 
   
@@ -67,6 +67,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.MINW"><code class="docutils literal notranslate"><span class="pre">MINW</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.MAXW"><code class="docutils literal notranslate"><span class="pre">MAXW</span></code></a></li>
@@ -118,6 +120,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#c.ETOL"><code class="docutils literal notranslate"><span class="pre">ETOL</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.MAX_ITER"><code class="docutils literal notranslate"><span class="pre">MAX_ITER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.MAXNSTEP"><code class="docutils literal notranslate"><span class="pre">MAXNSTEP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.MAXITER_BIASTUNING"><code class="docutils literal notranslate"><span class="pre">MAXITER_BIASTUNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.xstr"><code class="docutils literal notranslate"><span class="pre">xstr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -191,7 +196,6 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv46startx"><code class="docutils literal notranslate"><span class="pre">startx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45stopx"><code class="docutils literal notranslate"><span class="pre">stopx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv42dx"><code class="docutils literal notranslate"><span class="pre">dx</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv43gam"><code class="docutils literal notranslate"><span class="pre">gam</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv411Thetae_unit"><code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413max_tau_scatt"><code class="docutils literal notranslate"><span class="pre">max_tau_scatt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45dMact"><code class="docutils literal notranslate"><span class="pre">dMact</span></code></a></li>
@@ -221,7 +225,6 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412photon_count"><code class="docutils literal notranslate"><span class="pre">photon_count</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv420d_N_superph_recorded"><code class="docutils literal notranslate"><span class="pre">d_N_superph_recorded</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_Ns"><code class="docutils literal notranslate"><span class="pre">d_Ns</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv49d_N_scatt"><code class="docutils literal notranslate"><span class="pre">d_N_scatt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv413d_thetae_unit"><code class="docutils literal notranslate"><span class="pre">d_thetae_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_startx"><code class="docutils literal notranslate"><span class="pre">d_startx</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv44d_dx"><code class="docutils literal notranslate"><span class="pre">d_dx</span></code></a></li>
@@ -249,6 +252,7 @@
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_scattering"><code class="docutils literal notranslate"><span class="pre">d_scattering</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv412d_bias_guess"><code class="docutils literal notranslate"><span class="pre">d_bias_guess</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
@@ -328,7 +332,7 @@
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv49set_units6Params"><code class="docutils literal notranslate"><span class="pre">set_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv410init_modelA_Pc"><code class="docutils literal notranslate"><span class="pre">init_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv413init_geometryv"><code class="docutils literal notranslate"><span class="pre">init_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyA8N_THBINS_A7N_EBINS_11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -343,6 +347,9 @@
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -366,8 +373,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
@@ -381,9 +394,6 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAME"><code class="docutils literal notranslate"><span class="pre">GAME</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAMP"><code class="docutils literal notranslate"><span class="pre">GAMP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.GAM"><code class="docutils literal notranslate"><span class="pre">GAM</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
@@ -406,6 +416,7 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -522,6 +533,25 @@
 </ul>
 </li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bias_tuning.html">Scattering Bias-Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#parameters">Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#params-biasguess"><code class="docutils literal notranslate"><span class="pre">params.biasguess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#params-targetratio"><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#overview-of-the-algorithm">Overview of the Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#improvement">Improvement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bias_tuning.html#usage-observations">Usage Observations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#target-ratio-and-memory-limits">Target Ratio and Memory Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#very-optically-thin-plasmas">Very Optically Thin Plasmas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bias_tuning.html#invalid-memory-errors-during-tracking">Invalid Memory Errors During Tracking</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
         </div>
       </div>
@@ -563,7 +593,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.N_BLOCKS">
-<span class="target" id="config_8h_1aa714b8308c6a460183a00af49b098b37"></span><span class="sig-name descname"><span class="n"><span class="pre">N_BLOCKS</span></span></span> <span class="pre">1792</span><a class="headerlink" href="#c.N_BLOCKS" title="Link to this definition"></a><br /></dt>
+<span class="target" id="config_8h_1aa714b8308c6a460183a00af49b098b37"></span><span class="sig-name descname"><span class="n"><span class="pre">N_BLOCKS</span></span></span> <span class="pre">352</span><a class="headerlink" href="#c.N_BLOCKS" title="Link to this definition"></a><br /></dt>
 <dd><p>The number of thread blocks dispatched per kernel call. This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy. This is set through automatic GPU tuning in the Makefile unless <code class="docutils literal notranslate"><span class="pre">BLOCK_TUNING</span></code> is set to 0 in the Makefile. </p>
 </dd></dl>
 
@@ -571,6 +601,18 @@
 <dt class="sig sig-object cpp" id="c.N_THREADS">
 <span class="target" id="config_8h_1ab60b5074c740fd36061f48f90d1a0b21"></span><span class="sig-name descname"><span class="n"><span class="pre">N_THREADS</span></span></span> <span class="pre">256</span><a class="headerlink" href="#c.N_THREADS" title="Link to this definition"></a><br /></dt>
 <dd><p>The number of threads per block. This defines the block size and should be chosen as a multiple of the warp size (32 for NVIDIA GPUs) to ensure efficient execution up to 2048 depending on the GPU architecture. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_COMPTBINS">
+<span class="target" id="config_8h_1ab90782c5de91e4489fa255ea9c1d2ef7"></span><span class="sig-name descname"><span class="n"><span class="pre">N_COMPTBINS</span></span></span> <span class="pre">(3)</span><a class="headerlink" href="#c.N_COMPTBINS" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of compton scatterings tracked in the spectrum. e.g., once, twice, &gt;twice </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.N_TYPEBINS">
+<span class="target" id="config_8h_1a924ec1908f73a9c37eae7ed7e5770425"></span><span class="sig-name descname"><span class="n"><span class="pre">N_TYPEBINS</span></span></span> <span class="pre">(2*(</span><a class="reference internal" href="#config_8h_1ab90782c5de91e4489fa255ea9c1d2ef7"><span class="std std-ref"><span class="pre">N_COMPTBINS</span></span></a><span class="pre">+1))</span><a class="headerlink" href="#c.N_TYPEBINS" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of total types of photons (synch and brems) * N_COMPTBINS </p>
 </dd></dl>
 
 <dl class="cpp macro">
@@ -821,7 +863,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.SCATTERINGS_PER_PHOTON">
-<span class="target" id="config_8h_1addda3b78cccaf3744a0eff165ac53a29"></span><span class="sig-name descname"><span class="n"><span class="pre">SCATTERINGS_PER_PHOTON</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.SCATTERINGS_PER_PHOTON" title="Link to this definition"></a><br /></dt>
+<span class="target" id="config_8h_1addda3b78cccaf3744a0eff165ac53a29"></span><span class="sig-name descname"><span class="n"><span class="pre">SCATTERINGS_PER_PHOTON</span></span></span> <span class="pre">(10)</span><a class="headerlink" href="#c.SCATTERINGS_PER_PHOTON" title="Link to this definition"></a><br /></dt>
 <dd><p>Number of scatterings each superphoton is allowed to undergo. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -882,6 +924,23 @@
 <span class="target" id="config_8h_1aaedb667de4411b02a53d822e161996d7"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXNSTEP</span></span></span> <span class="pre">(1280000)</span><a class="headerlink" href="#c.MAXNSTEP" title="Link to this definition"></a><br /></dt>
 <dd><p>Maximum number of integration steps for photon geodesic integration. </p>
 </dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.MAXITER_BIASTUNING">
+<span class="target" id="config_8h_1a31aba0e22e3493d928f5280024a8c985"></span><span class="sig-name descname"><span class="n"><span class="pre">MAXITER_BIASTUNING</span></span></span> <span class="pre">5</span><a class="headerlink" href="#c.MAXITER_BIASTUNING" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum number of iterations until bias tuning give up on finding the optimal scalling to get the target ratio </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.xstr">
+<span class="target" id="config_8h_1aeec40e2b433cc2844853d184006edff0"></span><span class="sig-name descname"><span class="n"><span class="pre">xstr</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span> <a class="reference internal" href="#config_8h_1ad8ab729381f270b100f3d05b6c6676fc"><span class="std std-ref"><span class="pre">str</span></span></a><span class="pre">(s)</span><a class="headerlink" href="#c.xstr" title="Link to this definition"></a><br /></dt>
+<dd><p>Two-level macro stringification: expands <code class="docutils literal notranslate"><span class="pre">s</span></code> first, then converts the result to a string literal (useful when <code class="docutils literal notranslate"><span class="pre">s</span></code> is itself a macro like VERSION). </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.str">
+<span class="target" id="config_8h_1ad8ab729381f270b100f3d05b6c6676fc"></span><span class="sig-name descname"><span class="n"><span class="pre">str</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span> <span class="pre">#s</span><a class="headerlink" href="#c.str" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 </section>

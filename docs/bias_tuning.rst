@@ -1,7 +1,7 @@
-Scattering Bias Tuning
+Scattering Bias-Tuning
 ======================
 
-This document explains how the bias tuning mechanism works in the scattering loop implemented in ``scattering_flow_control`` in ``scattering.cu``. The goal of this mechanism is to dynamically adjust the scattering bias so that the number of scattered photons remains close to a desired target ratio.
+This document explains how the bias-tuning mechanism works in the scattering loop implemented in ``scattering_flow_control`` in ``scattering.cu``. The goal of this mechanism is to dynamically adjust the scattering bias so that the number of scattered photons remains close to a desired target ratio.
 
 Motivation
 ----------
@@ -18,7 +18,7 @@ If too few photons are produced:
 - statistical noise increases
 - scattering events are poorly sampled
 
-To control this, the code dynamically adjusts a **bias tuning parameter** (``biasTuning``) to maintain a desired ratio between:
+To control this, the code dynamically adjusts a **bias-tuning parameter** (``biasguess``) to maintain a desired ratio between:
 
 .. math::
 
@@ -32,7 +32,7 @@ where:
 Parameters
 --------------------
 
-``params.biasTuning``
+``params.biasguess``
 ~~~~~~~~~~~~~~~~~~~~~
 
 Scaling factor that modifies the scattering probability.
@@ -57,20 +57,65 @@ For each scattering round ``n``:
 
 This process repeats until:
 
-- the ratio falls within the acceptable range, or
-- the maximum number of bias tuning iterations is reached.
-- the ratio becomes extremely low (indicating that scattering is physically rare).
-
-In the case of an extremely low ratio, the algorithm accepts the current bias and stops tuning to avoid excessive computational costs. 
-
-For the purposes of this algorithm,we define an extremely low ratio as one that is less than 10⁻³. 
-If the ratio falls below this threshold, it is likely that scattering events are rare in the physical scenario being simulated, and increasing the bias would be computational inefficient.
-Therefore, if the ratio is less than the threshold, the algorithm will accept the current bias without further tuning.
+- The ratio falls within the acceptable range, or
+- The maximum number of bias-tuning iterations is reached.
+- The relative improvement in the ratio is less than 10%, indicating that further tuning may not be effective.
 
 .. note::
-    In the implementation, each scattering layer has its own bias tuning parameter.
+    In the implementation, each scattering layer has its own bias-tuning parameter.
     The values are stored on the device in an array so that every scattering round :math:`n` uses its own value
     :math:`\mathrm{b}_n`. This allows the algorithm to adapt the
     scattering bias independently for each layer, since the probability of
     scattering and the number of generated photons can vary significantly
     between different layers.
+
+Improvement
+------------
+.. figure:: ./figures/bias_tuning_working.png
+   :width: 100%
+   :align: center
+   :alt: Expected spectrum output for GPUmonty
+
+   **Expected Result:** The resulting spectrum showing the :math:`\rm Ratio = 0.1, 1, 4, 10` showing improvement to the first scattering layer.
+
+
+.. figure:: ./figures/nobias_withbias.png
+   :width: 100%
+   :align: center
+
+   **Expected Result:** Comparison between the spectrum without bias tuning (top) and with bias tuning (bottom) showcasing individual layers.
+
+Usage Observations
+-------------------
+
+The following considerations may help ensure stability when using the bias-tuning algorithm in **GPUmonty**.
+
+Target Ratio and Memory Limits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The **target ratio** can exceed the value of ``SCATTERINGS_PER_PHOTON`` defined in ``config.h``. Formerly, If this limit was exceeded, GPUmonty would target more scattering events than the GPU memory could handle, which would lead to **out-of-memory errors**. Now, it will dynamically allocate ``max(2 * TargetRatio, SCATTERINGS_PER_PHOTON)`` scattering events per photon, which allows it to handle target ratios bigger than ``SCATTERINGS_PER_PHOTON`` without crashing.
+
+Very Optically Thin Plasmas
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the plasma is **too optically thin** (for example when ``M_unit`` is very small), the algorithm may struggle to produce scattering events even when using a large ``biasguess`` or target ratio.
+
+Each scattering event reduces the **weight of the superphotons**, which may eventually make their contribution to the spectrum negligible. To prevent meaningless scatterings, the code enforces the condition::
+
+    weight_scat > WEIGHT_MIN
+
+As a result, simply increasing ``biasguess`` will not always increase the number of useful scattering events.
+
+If the **relative improvement in the scattering ratio is less than 10%**, the tuning algorithm will stop adjusting the bias and accept the current value.
+
+Invalid Memory Errors During Tracking
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If **invalid memory access errors** occur during the photon tracking phase, this usually indicates that the scattering configuration is too aggressive.
+
+Possible solutions include:
+
+- Reducing ``biasguess``.
+- Increasing ``SCATTERINGS_PER_PHOTON`` in ``config.h``.
+
+Increasing ``SCATTERINGS_PER_PHOTON`` allows the code to allocate memory for a larger number of potential scattering events per photon.

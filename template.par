@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e6
+Ns 1e4
 
 #path to the GRMHD data file
 
@@ -11,7 +11,7 @@ dump ../torus.out0.05400.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum ./output/spectrum.h5
+spectrum test.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -30,6 +30,6 @@ Thetae_max 1.e100
 # Whether or not to have scattering activated
 scattering 1
 fit_bias 0
-ratio 1
-bias_tuning 0.01
+ratio 2
+bias_guess 0.1
 

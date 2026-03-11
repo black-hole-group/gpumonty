@@ -144,7 +144,7 @@ After downloading, place the GRMHD data file in the ``data/`` directory and run:
 The resulting spectrum should match the expected output shown below:
 
 
-.. figure:: ../python/expected_spectrum.png
+.. figure:: ./figures/expected_spectrum.png
    :width: 80%
    :align: center
    :alt: Expected spectrum output for GPUmonty

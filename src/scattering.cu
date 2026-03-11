@@ -27,9 +27,9 @@
 // }
 
 // __global__ void checkbias(){
-// 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_biastuning[0], d_biastuning[1], d_biastuning[2]);
+// 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_bias_guess[0], d_bias_guess[1], d_bias_guess[2]);
 // }
-__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double * d_p){
+__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj){
 	/*Perform scattering loop*/
 		int n = 1;
 		bool quit_flag_sca = false;
@@ -46,7 +46,12 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 		
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
 			struct of_photonSOA NextLayerScattering;
-			allocatePhotonData(&NextLayerScattering, SCATTERINGS_PER_PHOTON *num_scat_phs[n-1]);
+			if(params.fitBias){
+				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+				allocatePhotonData(&NextLayerScattering, ScatteringDynamicalSize * num_scat_phs[n-1]);
+			}else{
+				allocatePhotonData(&NextLayerScattering, SCATTERINGS_PER_PHOTON *num_scat_phs[n-1]);
+			}
 
 			if(!params.scattering){
 				break;
@@ -58,14 +63,15 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			if(params.fitBias){
 				allocatePhotonData(&ScatteredPhotonStateCheckPoint, num_scat_phs[n-1]);
 				transferPhotonDataDevtoDev(ScatteredPhotonStateCheckPoint, CurrentLayerScattering, num_scat_phs[n-1]);
-				gpuErrchk(cudaMemcpyFromSymbol(&(params.biasTuning), d_biastuning, sizeof(double), n * sizeof(double)));
-				printf("Using biasTuning parameter %.3e for the scattering round %d\n", params.biasTuning, n);
+				gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), n * sizeof(double)));
+				printf("Using bias_guess parameter %.3e for the scattering round %d\n", params.bias_guess, n);
 			}
 			
 			int RedoTuning = 1;
 			double InferiorAcceptance = 0.8 * params.targetRatio;
 			double SuperiorAcceptance = 1.2 * params.targetRatio;
 			int BiasTuning_index = 0;
+			double PreviousRatio = 0;
 			do{
 				cudaEventRecord(start, 0);
 				if(ideal_nblocks > max_block_number){
@@ -97,30 +103,36 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 
 				if(params.fitBias){
 					double Ratio = (double) num_scat_phs[n] / (double) num_scat_phs[n-1];
+					double RelativeImprovement = abs(Ratio - PreviousRatio)/PreviousRatio;
+					// In case there haven't had scattering in layer 0;
+					if(isnan(Ratio))Ratio = 0.1;
 					BiasTuning_index++;
-					if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && Ratio >= 1e-3){
+					if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
 
 						printf("\033[1;31mIn round %d, Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", n, Ratio, InferiorAcceptance, SuperiorAcceptance);
 						if(Ratio == 0.){
 							Ratio = 2e-1; // To avoid division by zero, multiply bias factor by 2 times the target ratio
 						}
-						params.biasTuning *= params.targetRatio/Ratio;
-						printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.biasTuning);
-						gpuErrchk(cudaMemcpyToSymbol(d_biastuning, &(params.biasTuning), sizeof(double), n * sizeof(double)));
+						params.bias_guess *= params.targetRatio/Ratio;
+						printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
+						gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), n * sizeof(double)));
 						// Turn scattering_counter to zero, since we are going to retrack the same photons with a different bias parameter
 						unsigned long long reset = 0;
 						gpuErrchk(cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long)));
 						transferPhotonDataDevtoDev(CurrentLayerScattering, ScatteredPhotonStateCheckPoint, num_scat_phs[n-1]);
 					}else{
 						RedoTuning = 0;
-						if(Ratio <= 1e-3){
-							printf("\033[1;33mRatio is too low (< 0.1%%), we are not gonna try to increase it anymore. Latest BiasTuning for this round will be set to 1\033[0m\n");
+						if(RelativeImprovement <= 0.1){
+							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
+							//params.bias_guess = 1.;
+							//gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), n * sizeof(double)));
 						}else if(BiasTuning_index < MAXITER_BIASTUNING){
-							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e]\033[0m\n",  Ratio, InferiorAcceptance, SuperiorAcceptance);
+							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
 						}else{
 							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
 						}
 					}
+					PreviousRatio = Ratio;
 				}
 			}while(params.fitBias && (RedoTuning && BiasTuning_index < MAXITER_BIASTUNING));
 			

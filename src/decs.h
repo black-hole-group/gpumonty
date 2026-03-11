@@ -29,7 +29,7 @@ typedef struct params_t {
 
   // bias
   int scattering;
-  double biasTuning;
+  double bias_guess;
   int    fitBias;
   double fitBiasNs;
   double targetRatio;
@@ -171,7 +171,7 @@ struct of_spectrum {
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
 	extern __device__ int d_scattering;
-	extern __device__ double d_biastuning[MAX_LAYER_SCA];
+	extern __device__ double d_bias_guess[MAX_LAYER_SCA];
 	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
 	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
 	extern __device__ double d_bhspin;

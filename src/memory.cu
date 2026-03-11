@@ -138,13 +138,13 @@ __host__ void transferParams() {
 
 	/*iharm variables*/
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
-	double h_biastuning[MAX_LAYER_SCA];
+	double h_bias_guess[MAX_LAYER_SCA];
 
 	for (int i = 0; i < MAX_LAYER_SCA; i++) {
-		h_biastuning[i] = params.biasTuning;
+		h_bias_guess[i] = params.bias_guess;
 	}
 
-	cudaMemcpyToSymbol(d_biastuning, h_biastuning, MAX_LAYER_SCA * sizeof(double));
+	cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double));
 	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
@@ -210,7 +210,12 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	}
     size_t required_mem ;
 	required_mem = tot_nph * sizeof(struct of_photon);
-	required_mem += MAX_LAYER_SCA *  tot_nph * SCATTERINGS_PER_PHOTON * sizeof(struct of_photon);
+	if(params.fitBias){
+		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
+	}else{
+		required_mem += SCATTERINGS_PER_PHOTON * tot_nph * sizeof(struct of_photon);
+	}
 	if (required_mem > free_mem) {
 		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
 		printf("Beginning equipartion of photons...\n");
@@ -222,7 +227,12 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	while (required_mem > free_mem) {
 		superph_per_batch = tot_nph/(*batch_divisions);
 		required_mem = superph_per_batch * sizeof(struct of_photon);
-		required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
+		if(params.fitBias){
+			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+			required_mem += MAX_LAYER_SCA * ScatteringDynamicalSize * superph_per_batch * sizeof(struct of_photon);
+		}else{
+			required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
+		}
 		*batch_divisions = *batch_divisions + 1;
 	}
 	printf("\033[1;34mRequired partitions: %d\033[0m. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
