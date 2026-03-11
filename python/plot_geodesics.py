@@ -1,14 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Plot 3D photon geodesic trajectories from GPUmonty HDF5 output.
 
 Usage:
-    python plot_geodesics.py [geodesics.h5] [--n N] [--no-bh]
+    python plot_geodesics.py [geodesics.h5] [--n N] [--no-bh] [--cam-dist D]
 
 Arguments:
     geodesics.h5    Path to HDF5 file (default: output/geodesics.h5)
     --n N           Number of geodesics to plot (default: 50)
-    --no-bh         Skip drawing the black hole sphere
+    --no-bh         Skip drawing the black hole horizon sphere
+    --cam-dist D    Initial camera distance from the origin in r_g (default: 5)
 
 What it does:
     Reads the r, theta, phi arrays from the HDF5 file produced by GPUmonty's
@@ -17,8 +18,10 @@ What it does:
     horizon or escaped the outer boundary early) are handled correctly.
     Boyer-Lindquist coordinates are converted to Cartesian (x, y, z) in units
     of r_g. A random subset of --n geodesics is selected and drawn as thin
-    colored lines in an interactive Plotly 3D scene. An opaque black sphere at
-    r = 1 r_g marks the black hole horizon (disable with --no-bh).
+    fluorescent cyan lines in an interactive Plotly 3D scene with a dark
+    background. The camera starts facing the black hole along the +y axis at
+    distance --cam-dist. An opaque black sphere at r = 1 r_g marks the black
+    hole horizon (disable with --no-bh).
 """
 
 import argparse
@@ -72,18 +75,18 @@ def make_bh_sphere(r_horizon=1.0, n=40):
     )
 
 
-def plot_geodesics(h5path, n_plot, show_bh):
-    r_all, th_all, ph_all, nsteps, idx, meta = load_geodesics(h5path, n_plot)
+LINE_COLOR = "#00ffe0"   # fluorescent cyan
 
-    # Color scale: sequential colormap across geodesics
-    colors = [f"hsl({int(360 * i / len(idx))},70%,55%)" for i in range(len(idx))]
+
+def plot_geodesics(h5path, n_plot, show_bh, cam_dist):
+    r_all, th_all, ph_all, nsteps, idx, meta = load_geodesics(h5path, n_plot)
 
     traces = []
 
     if show_bh:
         traces.append(make_bh_sphere(r_horizon=1.0))
 
-    for color, i in zip(colors, idx):
+    for i in idx:
         ns = nsteps[i]
         if ns == 0:
             continue
@@ -95,7 +98,7 @@ def plot_geodesics(h5path, n_plot, show_bh):
             go.Scatter3d(
                 x=x, y=y, z=z,
                 mode="lines",
-                line=dict(color=color, width=1.5),
+                line=dict(color=LINE_COLOR, width=1.5),
                 showlegend=False,
                 hovertemplate=(
                     "r=%{customdata[0]:.3f}<br>"
@@ -110,6 +113,9 @@ def plot_geodesics(h5path, n_plot, show_bh):
     if meta["Ns"]:
         title += f"  (Ns={meta['Ns']})"
 
+    # Camera facing the BH along +y axis at the requested distance
+    camera = dict(eye=dict(x=0, y=cam_dist, z=0), center=dict(x=0, y=0, z=0))
+
     fig = go.Figure(data=traces)
     fig.update_layout(
         title=title,
@@ -118,12 +124,16 @@ def plot_geodesics(h5path, n_plot, show_bh):
             yaxis_title="y [r_g]",
             zaxis_title="z [r_g]",
             aspectmode="data",
-            bgcolor="rgb(10,10,20)",
-            xaxis=dict(gridcolor="gray", zerolinecolor="gray"),
-            yaxis=dict(gridcolor="gray", zerolinecolor="gray"),
-            zaxis=dict(gridcolor="gray", zerolinecolor="gray"),
+            bgcolor="rgb(5,5,15)",
+            xaxis=dict(gridcolor="#333344", zerolinecolor="#333344",
+                       tickfont=dict(color="gray")),
+            yaxis=dict(gridcolor="#333344", zerolinecolor="#333344",
+                       tickfont=dict(color="gray")),
+            zaxis=dict(gridcolor="#333344", zerolinecolor="#333344",
+                       tickfont=dict(color="gray")),
+            camera=camera,
         ),
-        paper_bgcolor="rgb(20,20,30)",
+        paper_bgcolor="rgb(10,10,20)",
         font=dict(color="white"),
     )
     fig.show()
@@ -138,9 +148,11 @@ def main():
                         help="Number of geodesics to plot (default: 50)")
     parser.add_argument("--no-bh", action="store_true",
                         help="Skip drawing the black hole horizon sphere")
+    parser.add_argument("--cam-dist", type=float, default=5.0,
+                        help="Initial camera distance from origin in r_g (default: 5)")
     args = parser.parse_args()
 
-    plot_geodesics(args.h5file, args.n, not args.no_bh)
+    plot_geodesics(args.h5file, args.n, not args.no_bh, args.cam_dist)
 
 
 if __name__ == "__main__":
