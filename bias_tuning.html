@@ -3,25 +3,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search &mdash; GPUmonty 1.0 documentation</title>
+  <title>Scattering Bias-Tuning &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0ef53e4c" />
 
   
-    
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=f2a433a1"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
-    <script src="_static/searchtools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Documentation Guidelines" href="docs_guidelines.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -36,7 +36,7 @@
             GPUmonty
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -533,20 +533,20 @@
 </ul>
 </li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="bias_tuning.html">Scattering Bias-Tuning</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#motivation">Motivation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#parameters">Parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#params-biasguess"><code class="docutils literal notranslate"><span class="pre">params.biasguess</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#params-targetratio"><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code></a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scattering Bias-Tuning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#params-biasguess"><code class="docutils literal notranslate"><span class="pre">params.biasguess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#params-targetratio"><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#overview-of-the-algorithm">Overview of the Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#improvement">Improvement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#usage-observations">Usage Observations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#target-ratio-and-memory-limits">Target Ratio and Memory Limits</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#very-optically-thin-plasmas">Very Optically Thin Plasmas</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#invalid-memory-errors-during-tracking">Invalid Memory Errors During Tracking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-algorithm">Overview of the Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improvement">Improvement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-observations">Usage Observations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#target-ratio-and-memory-limits">Target Ratio and Memory Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#very-optically-thin-plasmas">Very Optically Thin Plasmas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#invalid-memory-errors-during-tracking">Invalid Memory Errors During Tracking</a></li>
 </ul>
 </li>
 </ul>
@@ -567,8 +567,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Search</li>
+      <li class="breadcrumb-item active">Scattering Bias-Tuning</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/bias_tuning.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -576,22 +577,117 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search functionality.
-    </p>
-  </div>
-  </noscript>
+  <section id="scattering-bias-tuning">
+<h1>Scattering Bias-Tuning<a class="headerlink" href="#scattering-bias-tuning" title="Link to this heading"></a></h1>
+<p>This document explains how the bias-tuning mechanism works in the scattering loop implemented in <code class="docutils literal notranslate"><span class="pre">scattering_flow_control</span></code> in <code class="docutils literal notranslate"><span class="pre">scattering.cu</span></code>. The goal of this mechanism is to dynamically adjust the scattering bias so that the number of scattered photons remains close to a desired target ratio.</p>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
+<p>In Monte Carlo radiative transfer simulations, scattering events may produce <strong>too many</strong> or <strong>too few</strong> photons depending on the bias parameter</p>
+<p>If too many photons are produced:</p>
+<ul class="simple">
+<li><p>memory usage increases</p></li>
+<li><p>computational cost grows quickly</p></li>
+</ul>
+<p>If too few photons are produced:</p>
+<ul class="simple">
+<li><p>statistical noise increases</p></li>
+<li><p>scattering events are poorly sampled</p></li>
+</ul>
+<p>To control this, the code dynamically adjusts a <strong>bias-tuning parameter</strong> (<code class="docutils literal notranslate"><span class="pre">biasguess</span></code>) to maintain a desired ratio between:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{Ratio} = \frac{N_{\rm scat}}{N_{\rm in}}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(N_{\rm scat}\)</span> is the number of scattered photons</p></li>
+<li><p><span class="math notranslate nohighlight">\(N_{\rm in}\)</span> is the number of incoming photons</p></li>
+</ul>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<section id="params-biasguess">
+<h3><code class="docutils literal notranslate"><span class="pre">params.biasguess</span></code><a class="headerlink" href="#params-biasguess" title="Link to this heading"></a></h3>
+<p>Scaling factor that modifies the scattering probability.</p>
+</section>
+<section id="params-targetratio">
+<h3><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code><a class="headerlink" href="#params-targetratio" title="Link to this heading"></a></h3>
+<p>Desired ratio between scattered photons and incoming photons. For example, a target ratio of 0.5 means the algorithm attempts to produce roughly <strong>0.5 scattered photons per incoming photon</strong>. In this
+algorithm, we accept the tuning if it falls within ±20% tolerance.</p>
+</section>
+</section>
+<section id="overview-of-the-algorithm">
+<h2>Overview of the Algorithm<a class="headerlink" href="#overview-of-the-algorithm" title="Link to this heading"></a></h2>
+<p>For each scattering round <code class="docutils literal notranslate"><span class="pre">n</span></code>:</p>
+<ol class="arabic simple">
+<li><p>The photons from the previous round are copied into <code class="docutils literal notranslate"><span class="pre">CurrentLayerScattering</span></code>.</p></li>
+<li><p>A kernel (<code class="docutils literal notranslate"><span class="pre">track_scat</span></code>) is launched to simulate scattering.</p></li>
+<li><p>The number of produced scattered photons is measured.</p></li>
+<li><p>The ratio between scattered and incoming photons is computed.</p></li>
+<li><p>If the ratio is outside the allowed interval, the bias is adjusted and the photons are re-tracked.</p></li>
+</ol>
+<p>This process repeats until:</p>
+<ul class="simple">
+<li><p>The ratio falls within the acceptable range, or</p></li>
+<li><p>The maximum number of bias-tuning iterations is reached.</p></li>
+<li><p>The relative improvement in the ratio is less than 10%, indicating that further tuning may not be effective.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the implementation, each scattering layer has its own bias-tuning parameter.
+The values are stored on the device in an array so that every scattering round <span class="math notranslate nohighlight">\(n\)</span> uses its own value
+<span class="math notranslate nohighlight">\(\mathrm{b}_n\)</span>. This allows the algorithm to adapt the
+scattering bias independently for each layer, since the probability of
+scattering and the number of generated photons can vary significantly
+between different layers.</p>
+</div>
+</section>
+<section id="improvement">
+<h2>Improvement<a class="headerlink" href="#improvement" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/bias_tuning_working.png"><img alt="Expected spectrum output for GPUmonty" src="_images/bias_tuning_working.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Expected Result:</strong> The resulting spectrum showing the <span class="math notranslate nohighlight">\(\rm Ratio = 0.1, 1, 4, 10\)</span> showing improvement to the first scattering layer.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="usage-observations">
+<h2>Usage Observations<a class="headerlink" href="#usage-observations" title="Link to this heading"></a></h2>
+<p>The following considerations may help ensure stability when using the bias-tuning algorithm in <strong>GPUmonty</strong>.</p>
+<section id="target-ratio-and-memory-limits">
+<h3>Target Ratio and Memory Limits<a class="headerlink" href="#target-ratio-and-memory-limits" title="Link to this heading"></a></h3>
+<p>The <strong>target ratio</strong> should never exceed the value of <code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code> defined in <code class="docutils literal notranslate"><span class="pre">config.h</span></code>. If this limit is exceeded, GPUmonty will target more scattering events than the GPU memory can handle, which can lead to <strong>out-of-memory errors</strong>.</p>
+<p>For safety, it is recommended to set the target ratio <strong>slightly below</strong> <code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code>. This provides a buffer that allows the algorithm to reach the desired ratio without hitting memory limits.</p>
+<p>This limitation will be addressed in future versions of the code.</p>
+</section>
+<section id="very-optically-thin-plasmas">
+<h3>Very Optically Thin Plasmas<a class="headerlink" href="#very-optically-thin-plasmas" title="Link to this heading"></a></h3>
+<p>If the plasma is <strong>too optically thin</strong> (for example when <code class="docutils literal notranslate"><span class="pre">M_unit</span></code> is very small), the algorithm may struggle to produce scattering events even when using a large <code class="docutils literal notranslate"><span class="pre">biasguess</span></code> or target ratio.</p>
+<p>Each scattering event reduces the <strong>weight of the superphotons</strong>, which may eventually make their contribution to the spectrum negligible. To prevent meaningless scatterings, the code enforces the condition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">weight_scat</span> <span class="o">&gt;</span> <span class="n">WEIGHT_MIN</span>
+</pre></div>
+</div>
+<p>As a result, simply increasing <code class="docutils literal notranslate"><span class="pre">biasguess</span></code> will not always increase the number of useful scattering events.</p>
+<p>If the <strong>relative improvement in the scattering ratio is less than 10%</strong>, the tuning algorithm will stop adjusting the bias and accept the current value.</p>
+</section>
+<section id="invalid-memory-errors-during-tracking">
+<h3>Invalid Memory Errors During Tracking<a class="headerlink" href="#invalid-memory-errors-during-tracking" title="Link to this heading"></a></h3>
+<p>If <strong>invalid memory access errors</strong> occur during the photon tracking phase, this usually indicates that the scattering configuration is too aggressive.</p>
+<p>Possible solutions include:</p>
+<ul class="simple">
+<li><p>Reducing <code class="docutils literal notranslate"><span class="pre">biasguess</span></code>.</p></li>
+<li><p>Increasing <code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code> in <code class="docutils literal notranslate"><span class="pre">config.h</span></code>.</p></li>
+</ul>
+<p>Increasing <code class="docutils literal notranslate"><span class="pre">SCATTERINGS_PER_PHOTON</span></code> allows the code to allocate memory for a larger number of potential scattering events per photon.</p>
+</section>
+</section>
+</section>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="docs_guidelines.html" class="btn btn-neutral float-left" title="Documentation Guidelines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
@@ -613,14 +709,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-  <script>
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script id="searchindexloader"></script>
-   
-
+  </script> 
 
 </body>
 </html>
