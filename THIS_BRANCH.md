@@ -45,6 +45,23 @@ The number of traced photons is controlled by `Ns` as usual.
 
 Photons that fall through the horizon or escape the outer boundary stop early; their remaining entries in the 2D arrays are zero. Use `nsteps[i]` to know how many entries are valid for photon `i`.
 
+## Visualization
+
+`python/plot_geodesics.py` reads the HDF5 output and produces an interactive 3D Plotly plot of the photon trajectories. Requires `h5py` and `plotly` (available in the conda `base` environment).
+
+```bash
+python python/plot_geodesics.py output/geodesics.h5 --n 100
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `h5file` | `output/geodesics.h5` | Path to HDF5 file |
+| `--n N` | 50 | Number of geodesics to plot (randomly sampled) |
+| `--no-bh` | — | Skip drawing the black hole horizon sphere |
+| `--cam-dist D` | 1.25 | Initial camera distance (Plotly scene units; smaller = zoomed in) |
+
+Trajectories are drawn as thin fluorescent cyan lines on a dark background. An opaque black sphere marks the horizon at r = 1 r_g. Photons that terminate early (horizon crossing or escape) are shown only up to their last valid step via the `nsteps` array.
+
 ## Files Modified
 
 | File | Change |
@@ -61,6 +78,7 @@ Photons that fall through the horizon or escape the outer boundary stop early; t
 | `src/main.cu` | `save_geodesics_h5` HDF5 output function; added `hdf5_utils.h` include |
 | `src/main.h` | Declaration of `save_geodesics_h5` |
 | `template.par` | Commented-out trace parameter examples |
+| `python/plot_geodesics.py` | Interactive 3D visualization of geodesic trajectories |
 
 ## Design Notes
 
