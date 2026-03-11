@@ -31,6 +31,8 @@ python/**/.ipynb_checkpoints/
 
 !python/example.ipynb
 !output/example.spec
-!python/expected_spectrum.png
 !python/example.py
 !python/plspec.py
+!python/sphere_example.ipynb
+!docs/figures/bias_tuning_working.png
+!docs/figures/expected_spectrum.png

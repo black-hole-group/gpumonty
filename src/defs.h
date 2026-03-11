@@ -88,10 +88,6 @@ double stopx[NDIM];
  */
 double dx[NDIM];
 
-/**
- * Global host variable for the gas adiabatic index \f$ \Gamma \f$.
- */
-double gam;
 
 /**
  * Global host variable for the electron temperature unit to translate from cgs to code units.
@@ -248,10 +244,7 @@ __device__ unsigned long long  d_N_superph_recorded;
  */
 __device__ int d_Ns;
 
-/**
- * Global device variable counter to keep track of the total number of scatterings that have occurred during the simulation.
- */
-__device__ unsigned long long d_N_scatt;
+
 
 
 /**
@@ -418,6 +411,12 @@ __device__ double d_tp_over_te;
  */
 __device__ int d_scattering;
 
+
+/**
+ * Global device variable that scales bias to match desired ratio.
+ */
+__device__ double d_bias_guess[MAX_LAYER_SCA];
+
 /**
  * Global device variable for the black hole mass in grams (g).
  */
@@ -490,7 +489,7 @@ typedef struct params_t {
 
   // bias
   int scattering;
-  double biasTuning;
+  double bias_guess;
   int    fitBias;
   double fitBiasNs;
   double targetRatio;

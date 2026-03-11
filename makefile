@@ -25,7 +25,7 @@ MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?=/usr/local/cuda/
+CUDA_PATH ?=/usr/local/cuda-12.3
 
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)
@@ -96,7 +96,7 @@ MAKEFILE_PATH := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 GIT_VERSION := $(shell cd $(MAKEFILE_PATH); git describe --dirty --always --tags)
 
 # Linker flags
-LDFLAGS = $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++ $(HDF5_LIB) -lhdf5_hl -lhdf5
+LDFLAGS =  -Xcompiler  -rdynamic $(CUDA_LIB) -lcudart -lcuda -lgomp -L$(GSL_PATH)/lib -lgsl -lgslcblas -lm -lstdc++ $(HDF5_LIB) -lhdf5_hl -lhdf5
 
 # Source and object files
 CUDA_SRC = $(wildcard $(SRC_DIR)/*.cu) $(wildcard $(MODEL_DIR)/*.cu)

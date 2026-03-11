@@ -18,7 +18,6 @@
 #include "decs.h"
 #include "utils.h"
 
-
 __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
     int kp1 = k + 1;

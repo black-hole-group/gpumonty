@@ -138,6 +138,13 @@ __host__ void transferParams() {
 
 	/*iharm variables*/
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
+	double h_bias_guess[MAX_LAYER_SCA];
+
+	for (int i = 0; i < MAX_LAYER_SCA; i++) {
+		h_bias_guess[i] = params.bias_guess;
+	}
+
+	cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double));
 	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
@@ -180,13 +187,13 @@ __host__ void cummulativePhotonsPerZone(unsigned long long * generated_photons_a
 	unsigned long long *h_index_to_ijk = (unsigned long long *)malloc(N1 * N2 * N3 * sizeof(unsigned long long));
 	unsigned long long *h_generated_photon_arr = (unsigned long long *)malloc(N1 * N2 * N3 * sizeof(unsigned long long));
 
-	cudaMemcpyErrorCheck(h_generated_photon_arr, generated_photons_arr, N1 * N2 * N3* sizeof(unsigned long long ), cudaMemcpyDeviceToHost);
+	gpuErrchk(cudaMemcpy(h_generated_photon_arr, generated_photons_arr, N1 * N2 * N3* sizeof(unsigned long long ), cudaMemcpyDeviceToHost));
 	h_index_to_ijk[0] = h_generated_photon_arr[0];
 	for (int i = 1; i < N1 * N2 * N3; i++) {
 		h_index_to_ijk[i] = h_index_to_ijk[i - 1] + h_generated_photon_arr[i];
 	}
 
-	cudaMemcpyErrorCheck(d_index_to_ijk, h_index_to_ijk, N1 * N2 * N3* sizeof(unsigned long long), cudaMemcpyHostToDevice);
+	gpuErrchk(cudaMemcpy(d_index_to_ijk, h_index_to_ijk, N1 * N2 * N3* sizeof(unsigned long long), cudaMemcpyHostToDevice));
 	free(h_index_to_ijk);
 	free(h_generated_photon_arr);
 
@@ -203,7 +210,12 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	}
     size_t required_mem ;
 	required_mem = tot_nph * sizeof(struct of_photon);
-	required_mem += MAX_LAYER_SCA *  tot_nph * SCATTERINGS_PER_PHOTON * sizeof(struct of_photon);
+	if(params.fitBias){
+		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
+	}else{
+		required_mem += SCATTERINGS_PER_PHOTON * tot_nph * sizeof(struct of_photon);
+	}
 	if (required_mem > free_mem) {
 		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
 		printf("Beginning equipartion of photons...\n");
@@ -215,7 +227,12 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	while (required_mem > free_mem) {
 		superph_per_batch = tot_nph/(*batch_divisions);
 		required_mem = superph_per_batch * sizeof(struct of_photon);
-		required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
+		if(params.fitBias){
+			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+			required_mem += MAX_LAYER_SCA * ScatteringDynamicalSize * superph_per_batch * sizeof(struct of_photon);
+		}else{
+			required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
+		}
 		*batch_divisions = *batch_divisions + 1;
 	}
 	printf("\033[1;34mRequired partitions: %d\033[0m. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
@@ -253,6 +270,34 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->E0s), size * sizeof(double)));
     
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
+}
+
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size){
+	gpuErrchk(cudaMemcpy((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.X2), (from.X2), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.X3), (from.X3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+
+	gpuErrchk(cudaMemcpy((to.K0), (from.K0), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.K1), (from.K1), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.K2), (from.K2), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.K3), (from.K3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+
+	gpuErrchk(cudaMemcpy((to.dKdlam0), (from.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.dKdlam1), (from.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.dKdlam2), (from.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.dKdlam3), (from.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+
+	gpuErrchk(cudaMemcpy((to.w), (from.w), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.E), (from.E), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.X1i), (from.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.X2i), (from.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.tau_abs), (from.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.tau_scatt), (from.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice));
+
+	gpuErrchk(cudaMemcpy((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice));
+	gpuErrchk(cudaMemcpy((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice));
 }
 
 __host__ void freePhotonData(struct of_photonSOA * ph){

@@ -39,7 +39,7 @@
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  * This is set through automatic GPU tuning in the Makefile unless ``BLOCK_TUNING`` is set to 0 in the Makefile.
  */
-#define N_BLOCKS 256
+#define N_BLOCKS 352
 
 /**
  * The number of threads per block. 
@@ -304,7 +304,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (1) 
+#define SCATTERINGS_PER_PHOTON (10) 
 
 /*Making of Nint table*/
 
@@ -355,6 +355,11 @@
  * Maximum number of integration steps for photon geodesic integration.
  */
 #define MAXNSTEP (1280000)
+
+/**
+ * Maximum number of iterations until bias tuning give up on finding the optimal scalling to get the target ratio
+ */
+#define MAXITER_BIASTUNING 5
 
 /**
  * Two-level macro stringification: expands `s` first, then converts the result

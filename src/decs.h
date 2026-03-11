@@ -29,7 +29,7 @@ typedef struct params_t {
 
   // bias
   int scattering;
-  double biasTuning;
+  double bias_guess;
   int    fitBias;
   double fitBiasNs;
   double targetRatio;
@@ -59,24 +59,41 @@ do { \
     } \
 } while(0)
 
+
+#include <execinfo.h> // For backtrace() and backtrace_symbols_fd()
+#include <unistd.h>   // For STDERR_FILENO
 /*Cuda error function*/
-#define gpuErrchk(ans)                        \
-    {                                         \
-        gpuAssert((ans), __FILE__, __LINE__); \
-    }
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort = true)
 {
     if (code != cudaSuccess)
     {
         fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+        
+        // --- PRINT BACKTRACE ---
+        fprintf(stderr, "\n--- Host Call Stack (Backtrace) ---\n");
+        void* callstack[128];
+        int frames = backtrace(callstack, 128);
+        backtrace_symbols_fd(callstack, frames, STDERR_FILENO);
+        fprintf(stderr, "-----------------------------------\n\n");
+        // -----------------------
+
+        fflush(stderr);
         if (abort)
             exit(code);
     }
 }
 
-// Macro to simplify cudaMemcpy calls with error checking
-#define cudaMemcpyErrorCheck(dst, src, count, kind) \
-    cudaMemcpyCheck((dst), (src), (count), (kind), __FILE__, __LINE__)
+#define Flag(message) flag(message, __FILE__, __LINE__)
+
+inline void flag(const char *message, const char *file, int line) {
+    cudaError_t cudaStatus = cudaGetLastError();
+    if (cudaStatus != cudaSuccess) {
+        // 3. Print the passed-in 'file' and 'line' instead of the macros
+        fprintf(stderr, "Error in %s at line %d in: %s: ERROR: %s\n", file, line, message, cudaGetErrorString(cudaStatus));
+        exit(1);
+    }
+}
 
 // Function to handle CUDA memory copies and check for errors
 inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpyKind kind,
@@ -140,7 +157,6 @@ struct of_spectrum {
 	extern __device__ unsigned long long photon_count;
 	extern __device__ unsigned long long d_N_superph_recorded;
 	extern __device__ int d_Ns;
-	extern __device__ unsigned long long d_N_scatt;
 	extern __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
 
 
@@ -155,6 +171,7 @@ struct of_spectrum {
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
 	extern __device__ int d_scattering;
+	extern __device__ double d_bias_guess[MAX_LAYER_SCA];
 	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
 	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
 	extern __device__ double d_bhspin;
@@ -177,7 +194,7 @@ struct of_spectrum {
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
 	extern double table[NW + 1][NT + 1];
 
-	extern int N_scatt;
+	extern unsigned long long N_scatt;
 	extern unsigned long long N_superph_recorded;
 
 	/* some coordinate parameters */
@@ -186,7 +203,6 @@ struct of_spectrum {
 	extern double startx[NDIM], stopx[NDIM], dx[NDIM];
 
 	//extern double dlE, lE0;
-	extern double gam;
 	extern double Thetae_unit;
 	extern double max_tau_scatt, Ladv, dMact, bias_norm;
 
