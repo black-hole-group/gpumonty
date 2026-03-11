@@ -366,7 +366,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv423ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalyticalMKS()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv427ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalyticalWrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv430ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalytical_MKS3_FMKS()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
 </ul>
 </li>
@@ -399,6 +401,10 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_eKS"><code class="docutils literal notranslate"><span class="pre">METRIC_eKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_MKS"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_MKS3"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_FMKS"><code class="docutils literal notranslate"><span class="pre">METRIC_FMKS</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="model_iharm.html#functions">Functions</a><ul>
@@ -588,7 +594,7 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.FIND_GCON_MATRIX_INV">
-<span class="target" id="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92"></span><span class="sig-name descname"><span class="n"><span class="pre">FIND_GCON_MATRIX_INV</span></span></span> <span class="pre">(0)</span><a class="headerlink" href="#c.FIND_GCON_MATRIX_INV" title="Link to this definition"></a><br /></dt>
+<span class="target" id="metrics_8h_1a48bde1aeb7eb20042a40297d9356bf92"></span><span class="sig-name descname"><span class="n"><span class="pre">FIND_GCON_MATRIX_INV</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.FIND_GCON_MATRIX_INV" title="Link to this definition"></a><br /></dt>
 <dd><p>Macro to enable or disable the computation of the inverse metric using LU decomposition. </p>
 <p>if set to 1, the code will compute the inverse metric <span class="math notranslate nohighlight">\( g^{\mu\nu} \)</span> through LU decomposition and substitution. if set to 0, the code will use the kerr analytical expressions for the inverse metric. </p>
 </dd></dl>
@@ -718,11 +724,62 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d">
-<span id="_CPPv314get_connectionAL4E_KdAL4E_AL4E_AL4E_d"></span><span id="_CPPv214get_connectionA4_KdA4_A4_A4_d"></span><span id="get_connection__doubleCA.doubleAAA"></span><span class="target" id="metrics_8h_1a7b304bd39d3e8940483b77e7312e4182"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_connection</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lconn</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d" title="Link to this definition"></a><br /></dt>
-<dd><p>Computes the Christoffel symbols (connection coefficients) <span class="math notranslate nohighlight">\( \Gamma^i_{jk} \)</span> at a given 4-position. </p>
-<p>Analytically: Computed analytically if <code class="docutils literal notranslate"><span class="pre">SPHERE_TEST</span></code> is not defined.</p>
-<p>Numerically: Computed through Finite Differences if <code class="docutils literal notranslate"><span class="pre">SPHERE_TEST</span></code> is defined.</p>
+<dt class="sig sig-object cpp" id="_CPPv423ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d">
+<span id="_CPPv323ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d"></span><span id="_CPPv223ConnectionAnalyticalMKSA4_KdA4_A4_A4_d"></span><span id="ConnectionAnalyticalMKS__doubleCA.doubleAAA"></span><span class="target" id="metrics_8h_1a584f026cd626a1a47c29aa1431c749ef"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConnectionAnalyticalMKS</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lconn</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the Christoffel symbols ( <span class="math notranslate nohighlight">\( \Gamma^i_{jk} \)</span>) analytically for the coodinate system MKS. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function has been tested against finite differences.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – 4-position <span class="math notranslate nohighlight">\( X^\mu \)</span> in code coordinates. </p></li>
+<li><p><strong>lconn</strong> – A 3D array <code class="docutils literal notranslate"><span class="pre">[4][4][4]</span></code> populated with the connection coefficients.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d">
+<span id="_CPPv327ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d"></span><span id="_CPPv227ConnectionAnalyticalWrapperA4_KdA4_A4_A4_d"></span><span id="ConnectionAnalyticalWrapper__doubleCA.doubleAAA"></span><span class="target" id="metrics_8h_1aa3f41173b4057c0b3f7bb3cd1998ec08"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConnectionAnalyticalWrapper</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lconn</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Wrapper function to compute the Christoffel symbols ( <span class="math notranslate nohighlight">\( \Gamma^i_{jk} \)</span>) based on the selected metric type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – 4-position <span class="math notranslate nohighlight">\( X^\mu \)</span> in code coordinates. </p></li>
+<li><p><strong>lconn</strong> – A 3D array <code class="docutils literal notranslate"><span class="pre">[4][4][4]</span></code> populated with the connection coefficients.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d">
+<span id="_CPPv330ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d"></span><span id="_CPPv230ConnectionAnalytical_MKS3_FMKSA4_KdA4_A4_A4_d"></span><span id="ConnectionAnalytical_MKS3_FMKS__doubleCA.doubleAAA"></span><span class="target" id="metrics_8h_1a0a14a8703d8bc4a8108153d598ee0b39"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConnectionAnalytical_MKS3_FMKS</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lconn</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the Christoffel symbols ( <span class="math notranslate nohighlight">\( \Gamma^i_{jk} \)</span>) analytically for the coodinate system MKS3 and FMKS. </p>
+<p>
+We used the equation to transform the connection coefficients between two coordinate systems:<ul class="simple">
+<li><p><div class="math notranslate nohighlight">
+\[ \Gamma^i_{jk} = \frac{\partial x^i}{\partial x'^m} \frac{\partial x'^n}{\partial x^j} \frac{\partial x'^p}{\partial x^k} \Gamma'^m_{np} + \frac{\partial x^i}{\partial x'^m} \frac{\partial^2 x'^m}{\partial x^j \partial x^k} \]</div>
+</p></li>
+</ul>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function has been tested against finite differences.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since both MKS3 and FMKS share that <span class="math notranslate nohighlight">\( θ ≡ θ(X^1, X^2) \)</span>, the same analytical expressions for the connection coefficients apply, only changing the derivatives.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

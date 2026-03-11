@@ -366,7 +366,9 @@
 <li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i"><code class="docutils literal notranslate"><span class="pre">LU_substitution()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">invert_matrix()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcon_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv414get_connectionAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">get_connection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv423ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalyticalMKS()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv427ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalyticalWrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv430ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d"><code class="docutils literal notranslate"><span class="pre">ConnectionAnalytical_MKS3_FMKS()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd"><code class="docutils literal notranslate"><span class="pre">lower()</span></code></a></li>
 </ul>
 </li>
@@ -399,6 +401,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_eKS"><code class="docutils literal notranslate"><span class="pre">METRIC_eKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_MKS"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_MKS3"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS3</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_FMKS"><code class="docutils literal notranslate"><span class="pre">METRIC_FMKS</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
@@ -610,7 +616,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.NUMAX">
-<span class="target" id="iharm__model_2model_8h_1adb0fd449699fedc3e3a49cf0a354263a"></span><span class="sig-name descname"><span class="n"><span class="pre">NUMAX</span></span></span> <span class="pre">1.e16</span><a class="headerlink" href="#c.NUMAX" title="Link to this definition"></a><br /></dt>
+<span class="target" id="iharm__model_2model_8h_1adb0fd449699fedc3e3a49cf0a354263a"></span><span class="sig-name descname"><span class="n"><span class="pre">NUMAX</span></span></span> <span class="pre">1.e24</span><a class="headerlink" href="#c.NUMAX" title="Link to this definition"></a><br /></dt>
 <dd><p>Highest sampled frequency for superphotons in the simulation in Hz.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -653,7 +659,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.THETAE_MIN">
-<span class="target" id="iharm__model_2model_8h_1afd1f0c8a9c5da942a57b0361dcd7fbfb"></span><span class="sig-name descname"><span class="n"><span class="pre">THETAE_MIN</span></span></span> <span class="pre">0.3</span><a class="headerlink" href="#c.THETAE_MIN" title="Link to this definition"></a><br /></dt>
+<span class="target" id="iharm__model_2model_8h_1afd1f0c8a9c5da942a57b0361dcd7fbfb"></span><span class="sig-name descname"><span class="n"><span class="pre">THETAE_MIN</span></span></span> <span class="pre">0.001</span><a class="headerlink" href="#c.THETAE_MIN" title="Link to this definition"></a><br /></dt>
 <dd><p>Minimum dimensionless electron temperature ( <span class="math notranslate nohighlight">\(\Theta_{e, min}\)</span>) for physical validity.</p>
 <p>This is used to characterize the lower bound for superphoton generation. </p>
 </dd></dl>
@@ -666,7 +672,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.dlE">
-<span class="target" id="iharm__model_2model_8h_1abfdf8549767cfdd4e24b384195d59249"></span><span class="sig-name descname"><span class="n"><span class="pre">dlE</span></span></span> <span class="pre">(0.12)</span><a class="headerlink" href="#c.dlE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="iharm__model_2model_8h_1abfdf8549767cfdd4e24b384195d59249"></span><span class="sig-name descname"><span class="n"><span class="pre">dlE</span></span></span> <span class="pre">(0.25)</span><a class="headerlink" href="#c.dlE" title="Link to this definition"></a><br /></dt>
 <dd><p>Size of the energy bin in logarithmic scale for the spectral output binning. </p>
 </dd></dl>
 
@@ -758,6 +764,26 @@
 <span class="target" id="iharm__model_2model_8h_1ac8b973bce4dcedb06b10ea23d7fe6d4a"></span><span class="sig-name descname"><span class="n"><span class="pre">ZLOOP</span></span></span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">N1</span><span class="pre">;</span> <span class="pre">i++)</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">j</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">j</span> <span class="pre">&lt;</span> <span class="pre">N2</span><span class="pre">;</span> <span class="pre">j++)</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">k</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">k</span> <span class="pre">&lt;</span> <span class="pre">N3</span><span class="pre">;</span> <span class="pre">k++)</span><a class="headerlink" href="#c.ZLOOP" title="Link to this definition"></a><br /></dt>
 <dd><p>Macro for looping over all grid zones in 3D. </p>
 </dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.METRIC_eKS">
+<span class="target" id="iharm__model_2model_8h_1ac1ee4760de54166e428821bce5b3e8ae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_eKS</span></span></span> <span class="pre">0</span><a class="headerlink" href="#c.METRIC_eKS" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.METRIC_MKS">
+<span class="target" id="iharm__model_2model_8h_1ad242047875de2d47eb4e32a962dbabae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_MKS</span></span></span> <span class="pre">1</span><a class="headerlink" href="#c.METRIC_MKS" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.METRIC_MKS3">
+<span class="target" id="iharm__model_2model_8h_1acd81fffe8af1f09fda98852e977116dd"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_MKS3</span></span></span> <span class="pre">2</span><a class="headerlink" href="#c.METRIC_MKS3" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.METRIC_FMKS">
+<span class="target" id="iharm__model_2model_8h_1a09ac9ce3a037d2971ce5e95d2f3ea0ae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_FMKS</span></span></span> <span class="pre">3</span><a class="headerlink" href="#c.METRIC_FMKS" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 </section>
