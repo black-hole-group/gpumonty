@@ -46,7 +46,12 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 		
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
 			struct of_photonSOA NextLayerScattering;
-			allocatePhotonData(&NextLayerScattering, SCATTERINGS_PER_PHOTON *num_scat_phs[n-1]);
+			if(params.fitBias){
+				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+				allocatePhotonData(&NextLayerScattering, ScatteringDynamicalSize * num_scat_phs[n-1]);
+			}else{
+				allocatePhotonData(&NextLayerScattering, SCATTERINGS_PER_PHOTON *num_scat_phs[n-1]);
+			}
 
 			if(!params.scattering){
 				break;

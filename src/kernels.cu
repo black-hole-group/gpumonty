@@ -172,7 +172,15 @@ __host__ void mainFlowControl(time_t time, double * p){
 		}
 
 		allocatePhotonData(&initial_photon_states, instant_photon_number);
-		allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+		{
+			if(params.fitBias){
+				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+				allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
+			}else{
+				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+			}
+
+		}
 
 		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);

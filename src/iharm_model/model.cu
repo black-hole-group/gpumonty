@@ -887,7 +887,9 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   hid_t fid = -1;
 
   if (params.loaded && strlen(params.spectrum) > 0) {
-    fid = H5Fcreate(params.spectrum, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    char path[512];
+    snprintf(path, sizeof(path), "./output/%s", params.spectrum);
+    fid = H5Fcreate(path, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   } else {
     fid = H5Fcreate("./output/spectrum.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   }
