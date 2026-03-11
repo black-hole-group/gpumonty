@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
 #include "decs.h"
+#include "metrics.h"
 #include "model.h"
 /* 
 	In this file, given gcov_func in the model, we can calculate the gcon, gdet and also the connection terms.
@@ -281,7 +282,7 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 
 
 
-#if FIND_GCON_MATRIX_INV
+#ifdef FIND_GCON_MATRIX_INV
 	__host__ __device__ void gcon_func(const double X[4], double gcov[][NDIM], double gcon[][NDIM])
 	{
 	invert_matrix( gcov, gcon );
@@ -308,13 +309,13 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			DLOOP gcon[k][l] = 0.;
 			bl_coord(X, &r, &th);
 
-		#ifdef __CUDA_ARCH__
-		double thetaslope = d_hslope;
-		double local_bhspin = d_bhspin;
-		#else
-		double thetaslope = hslope;
-		double local_bhspin = bhspin;
-		#endif
+			#ifdef __CUDA_ARCH__
+			double thetaslope = d_hslope;
+			double local_bhspin = d_bhspin;
+			#else
+			double thetaslope = hslope;
+			double local_bhspin = bhspin;
+			#endif
 
 			sincos(th, &sth, &cth);
 			sth = fabs(sth) + SMALL;
@@ -340,7 +341,269 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 #endif
 
 #ifndef SPHERE_TEST
-	__device__ void get_connection(const double X[4], double lconn[4][4][4])
+
+	__device__ void ConnectionAnalyticalWrapper(const double X[4], double lconn[4][4][4])
+	{
+		if(d_METRIC == METRIC_MKS){
+			ConnectionAnalyticalMKS(X, lconn);
+		}else if(d_METRIC == METRIC_MKS3 || d_METRIC == METRIC_FMKS){
+			ConnectionAnalytical_MKS3_FMKS(X, lconn);
+		}else{
+			printf("Error: ConnectionAnalyticalWrapper called with unknown metric type %d, the code will crash!\n", d_METRIC);
+		}
+	}
+	__device__ void ConnectionAnalytical_MKS3_FMKS(const double X[4], double lconn[4][4][4]){
+		double r1, drdx1, th, dthdx1, dthdx2, d2thdx12, d2thdx1dx2, d2thdx22;
+		{
+			if(d_METRIC == METRIC_MKS3){
+				r1 = exp(X[1]) + d_mks3R0;
+				drdx1 = exp(X[1]);
+				
+				double r_p = pow(r1, -d_mks3MP0);
+				double radial_term = d_mks3MY1 + pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * r_p;
+				double dradial_dx1 = -d_mks3MP0 * drdx1 * pow(2.0, d_mks3MP0) * (-d_mks3MY1 + d_mks3MY2) * (r_p / r1);
+				
+				double deriv_factor = 1.0 - 2.0 * radial_term;
+				double half_pi = M_PI * 0.5;
+				double cot_term = 1.0 / tan(d_mks3H0 * half_pi);
+				
+				double x2_term = 1.0 - 2.0 * X[2];
+				double inner_arg = d_mks3H0 * M_PI * (-0.5 + radial_term * x2_term + X[2]);
+				
+				double c_inner = cos(inner_arg);
+				double sec2_term = 1.0 / (c_inner * c_inner);
+				double t_inner = tan(inner_arg);
+				
+				double common_chain = 0.5 * d_mks3H0 * M_PI * M_PI * cot_term * sec2_term;
+				
+				th = half_pi * (1.0 + cot_term * t_inner);
+				dthdx1 = common_chain * x2_term * dradial_dx1;
+				dthdx2 = common_chain * deriv_factor;
+				
+				d2thdx22 = d_mks3H0 * d_mks3H0 * deriv_factor * deriv_factor * M_PI * M_PI * M_PI * cot_term * sec2_term * t_inner;
+				
+				d2thdx1dx2 = 2.0 * common_chain * dradial_dx1 * (d_mks3H0 * M_PI * x2_term * deriv_factor * t_inner - 1.0);
+				
+				double d2radial_dx11 = dradial_dx1 * (1.0 - (1.0 + d_mks3MP0) * drdx1 / r1);
+				d2thdx12 = common_chain * x2_term * (
+					2.0 * d_mks3H0 * M_PI * t_inner * x2_term * dradial_dx1 * dradial_dx1 
+					+ d2radial_dx11
+				);
+			}else if(d_METRIC == METRIC_FMKS){
+				r1 = exp(X[1]);
+				drdx1 = exp(X[1]);
+				double y = 2.0 * X[2] - 1.0;
+				double y_over_xt = y / d_poly_xt;
+				double pow_alpha = pow(y_over_xt, d_poly_alpha);
+
+				double thG = M_PI * X[2] + ((1.0 - d_hslope) / 2.0) * sin(2.0 * M_PI * X[2]);
+				double thJ = d_poly_norm * y * (1.0 + pow_alpha / (d_poly_alpha + 1.0)) + 0.5 * M_PI;
+
+				double W = exp(d_mks_smooth * (d_startx[1] - X[1]));
+				double dWdx1 = -d_mks_smooth * W;
+				double d2Wdx12 = d_mks_smooth * d_mks_smooth * W;
+
+				// 3. Derivatives of thG with respect to X[2]
+				double dthGdx2 = M_PI + M_PI * (1.0 - d_hslope) * cos(2.0 * M_PI * X[2]);
+				double d2thGdx22 = -2.0 * M_PI * M_PI * (1.0 - d_hslope) * sin(2.0 * M_PI * X[2]);
+
+				// 4. Derivatives of thJ with respect to X[2] (Analytically simplified)
+				double dthJdx2 = 2.0 * d_poly_norm * (1.0 + pow_alpha);
+				double pow_alpha_minus_1 = pow(y_over_xt, d_poly_alpha - 1.0);
+				double d2thJdx22 = 4.0 * d_poly_norm * d_poly_alpha / d_poly_xt * pow_alpha_minus_1;
+
+				// 5. Final Combined Derivatives
+				th = thG + W * (thJ - thG);
+
+				dthdx1 = dWdx1 * (thJ - thG);
+				dthdx2 = dthGdx2 + W * (dthJdx2 - dthGdx2);
+
+				d2thdx12 = d2Wdx12 * (thJ - thG);
+				d2thdx1dx2 = dWdx1 * (dthJdx2 - dthGdx2);
+				d2thdx22 = d2thGdx22 + W * (d2thJdx22 - d2thGdx22);
+			}
+		} 
+
+
+	
+		double r2, r3, r4;
+		double sth, cth, sth2, cth2, sth4, cth4, s2th, c2th;
+		double a2, a3, a4, a2sth2, a2cth2, a4cth4, r1sth2;
+		double rho2, rho22, rho23, irho2, irho22, irho23;
+		double fac1, fac2, fac3, fac1_rho23, gamma002;
+		{
+			r2 = r1 * r1;
+			r3 = r2 * r1;
+			r4 = r3 * r1;
+
+			sincos(th, &sth, &cth);
+
+			sth2 = sth * sth;
+			r1sth2 = r1 * sth2;
+			sth4 = sth2 * sth2;
+			cth2 = cth * cth;
+			cth4 = cth2 * cth2;
+			s2th = 2.0 * sth * cth;
+			c2th = 2.0 * cth2 - 1.0;
+
+			a2 = d_bhspin * d_bhspin;
+			a2sth2 = a2 * sth2;
+			a2cth2 = a2 * cth2;
+			a3 = a2 * d_bhspin;
+			a4 = a3 * d_bhspin;
+			a4cth4 = a4 * cth4;
+
+			rho2 = r2 + a2cth2;                
+			rho22 = rho2 * rho2;
+			rho23 = rho22 * rho2;
+			
+			irho2 = 1.0 / rho2;
+			irho22 = irho2 * irho2;
+			irho23 = irho22 * irho2;
+
+			fac1 = r2 - a2cth2;
+			fac1_rho23 = fac1 * irho23;
+			fac2 = a2 + 2.0 * r2 + a2 * c2th; 
+			fac3 = a2 + r1 * (-2.0 + r1);
+			
+			gamma002 = -a2 * r1 * s2th * irho22;
+		} 
+
+
+	
+		{
+			lconn[0][0][0] = 2.0 * r1 * fac1_rho23;
+			lconn[0][0][1] = drdx1 * (2.0 * r1 + rho2) * fac1_rho23 + gamma002 * dthdx1;
+			lconn[0][0][2] = gamma002 * dthdx2;
+			lconn[0][0][3] = -2.0 * d_bhspin * r1sth2 * fac1_rho23;
+
+			double base_011 = 2.0 * (r4 + r1 * fac1 - a4cth4) * irho23;
+			double drdx1_2 = drdx1 * drdx1;
+			double dthdx1_2 = dthdx1 * dthdx1;
+
+			lconn[0][1][1] = base_011 * drdx1_2 + 2.0 * gamma002 * drdx1 * dthdx1 - 2.0 * r2 * irho2 * dthdx1_2;
+			lconn[0][1][2] = dthdx2 * (gamma002 * drdx1 - 2.0 * r2 * irho2 * dthdx1);
+			lconn[0][1][3] = d_bhspin * drdx1 * (-r1 * (r3 + 2.0 * fac1) + a4cth4) * sth2 * irho23 
+						+ a3 * r1sth2 * s2th * irho22 * dthdx1;
+
+			double dthdx2_2 = dthdx2 * dthdx2;
+			lconn[0][2][2] = -2.0 * r2 * irho2 * dthdx2_2;
+			lconn[0][2][3] = a3 * r1sth2 * s2th * irho22 * dthdx2;
+			
+			lconn[0][3][3] = 2.0 * r1sth2 * (-r1 * rho22 + a2sth2 * fac1) * irho23;
+		} 
+
+
+	
+		{
+			double idrdx1 = 1.0 / drdx1;
+			double idthdx2 = 1.0 / dthdx2;
+			double idrdx1_idthdx2 = idthdx2 * idrdx1;
+			
+			lconn[1][0][0] = fac3 * fac1 * irho23 * idrdx1;
+			lconn[1][0][1] = fac1 * (-2.0 * r1 + a2sth2) * irho23;
+			lconn[1][0][2] = 0.0;
+			lconn[1][0][3] = -d_bhspin * sth2 * lconn[1][0][0];
+
+			double term_111_1 = -(r2 - a2cth2) * (4.0 * r1 + fac3 - 2.0 * a2sth2) * irho23;
+			double term_111_2 = -2.0 * a2 * s2th / fac2;
+			double term_111_3 = -fac3 * irho2;
+			
+			double dthdx1_2 = dthdx1 * dthdx1;
+			
+			lconn[1][1][1] = term_111_1 * drdx1 + 1.0 + term_111_2 * dthdx1 + term_111_3  * dthdx1_2;
+
+			lconn[1][1][2] = dthdx2 * (0.5 * term_111_2 + term_111_3 * r1 * idrdx1 * dthdx1);
+			
+			lconn[1][1][3] = d_bhspin * sth2 * (a4 * r1 * cth4 + r2 * (2.0 * r1 + r3 - a2sth2) 
+							+ a2cth2 * (2.0 * r1 * (-1.0 + r2) + a2sth2)) * irho23;
+			
+			double dthdx2_2 = dthdx2 * dthdx2;
+			lconn[1][2][2] = term_111_3 * r1 * idrdx1 * dthdx2_2;
+			lconn[1][2][3] = 0.0;
+			lconn[1][3][3] = -fac3 * sth2 * (r1 * rho22 - a2 * fac1 * sth2) * irho23 * idrdx1;
+
+			double gamma002_irho2 = gamma002 * irho2;
+			
+			lconn[2][0][0] = gamma002_irho2 * idthdx2 - fac3 * fac1_rho23 * dthdx1 * idrdx1_idthdx2;
+			lconn[2][0][1] = (gamma002_irho2 * drdx1 - lconn[1][0][1] * dthdx1) * idthdx2; // reused lconn[1][0][1]
+			lconn[2][0][2] = 0.0;
+			lconn[2][0][3] = d_bhspin * r1 * (a2 + r2) * s2th * irho23 * idthdx2 
+						+ d_bhspin * sth2 * fac3 * fac1 * irho23 * dthdx1 * idrdx1_idthdx2;
+						
+			double drdx1_2 = drdx1 * drdx1;
+			double dthdx1_3 = dthdx1_2 * dthdx1;
+
+			lconn[2][1][1] = (
+				gamma002_irho2 * drdx1_2
+				- term_111_1 * drdx1 * dthdx1
+				+ 2.0 * r1 * irho2 * drdx1 * dthdx1
+				- term_111_2 * dthdx1_2
+				- a2 * cth * sth * irho2 * dthdx1_2
+				- term_111_3 * dthdx1_3
+				- dthdx1 + d2thdx12
+			) * idthdx2;
+
+			lconn[2][1][2] = r1 * irho2 * drdx1 
+						- 0.5 * term_111_2 * dthdx1 
+						- a2 * cth * sth * irho2 * dthdx1 
+						- term_111_3 * r1 * idrdx1 * dthdx1_2 
+						+ d2thdx1dx2 * idthdx2;
+
+			double term_213_a = d_bhspin * cth * sth * (r3 * (2.0 + r1) 
+							+ a2 * (2.0 * r1 * (1.0 + r1) * cth2 + a2 * cth4 + 2.0 * r1sth2)) * irho23;
+			lconn[2][1][3] = (term_213_a * drdx1 - lconn[1][1][3] * dthdx1) * idthdx2; // reused lconn[1][1][3]
+
+			lconn[2][2][2] = -a2 * cth * sth * irho2 * dthdx2 
+						+ d2thdx22 * idthdx2 
+						- term_111_3 * r1 * idrdx1 * dthdx2 * dthdx1; 
+						
+			lconn[2][2][3] = 0.0;
+
+			double term_233_a = -cth * sth * (rho23 + a2sth2 * rho2 * (r1 * (4.0 + r1) + a2cth2) 
+								+ 2.0 * r1 * a4 * sth4) * irho23;
+			lconn[2][3][3] = (term_233_a - lconn[1][3][3] *dthdx1) * idthdx2; // reused lconn[1][3][3]
+	
+
+
+		} 
+
+
+		
+		{
+			lconn[3][0][0] = d_bhspin * fac1_rho23;
+			
+			double term_301_b = -2.0 * d_bhspin * r1 * cth / (sth * rho22); 
+			lconn[3][0][1] = lconn[3][0][0] * drdx1 + term_301_b * dthdx1;
+			lconn[3][0][2] = term_301_b * dthdx2;
+			lconn[3][0][3] = -a2sth2 * fac1_rho23;
+
+			double term_311_2 = -2.0 * d_bhspin * (a2 + 2.0 * r1 * (2.0 + r1) + a2 * c2th) * cth / (sth * fac2 * fac2);
+			double term_311_3 = -d_bhspin * r1 * irho2;
+			
+			double drdx1_2 = drdx1 * drdx1;
+			double dthdx1_2 = dthdx1 * dthdx1;
+
+			lconn[3][1][1] = lconn[3][0][0] * drdx1_2 + 2.0 * term_311_2 * drdx1 * dthdx1 + term_311_3 * dthdx1_2;
+			
+
+			lconn[3][1][2] = term_311_2 * drdx1 * dthdx2 + term_311_3 * dthdx2 * dthdx1;
+
+			double term_313_1 = (r1 * rho22 - a2sth2 * fac1) * irho23;
+			double term_313_2 = (0.25 * fac2 * fac2 * cth / sth + a2 * r1 * s2th) * irho22;
+			
+			lconn[3][1][3] = term_313_1 * drdx1 + term_313_2 * dthdx1;
+
+			double dthdx2_2 = dthdx2 * dthdx2;
+			lconn[3][2][2] = term_311_3 * dthdx2_2;
+			lconn[3][2][3] = term_313_2 * dthdx2;
+			
+			lconn[3][3][3] = (-d_bhspin * r1sth2 * rho22 + a3 * sth4 * fac1) * irho23;
+		} 
+	}
+
+	
+	__device__ void ConnectionAnalyticalMKS(const double X[4], double lconn[4][4][4])
 	{
 
 		double r1, r2, r3, r4;
@@ -361,21 +624,12 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		r4 = r3 * r1;
 
 
-		/* HARM-2D MKS */
-		#ifdef HAMR
-			double x2_mod;
-			x2_mod = (X[2] + 1.)/2.;
-			th = M_PI * x2_mod;
-			dthdx2 = M_PI * (1./2.);
-			d2thdx22 = 0;
-		#else
 		double sx, cx;
 		sx = sin(2 * M_PI * X[2]);
 		cx = cos(2 * M_PI * X[2]);
 		th = M_PI * X[2] + 0.5 * (1 - d_hslope) * sx;
 		dthdx2 = M_PI * (1. + (1 - d_hslope) * cx);
 		d2thdx22 = -2. * M_PI * M_PI * (1 - d_hslope) * sx;
-		#endif
 		dthdx22 = dthdx2 * dthdx2;
 
 		sincos(th, &sth, &cth);

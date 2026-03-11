@@ -94,7 +94,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	}
 	/* Initialize dK/dlam */
 	init_dKdlam(XArray, KArray, dKdlamArray);
-
+	
 	while (!stop_criterion(XArray[1], &(ph.w[photon_index]), localState)) {
 		/* Save initial state for this step */
 		double Xi[NDIM] = {XArray[0], XArray[1], XArray[2], XArray[3]};
@@ -308,7 +308,7 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 	int k;
 	double lconn[NDIM][NDIM][NDIM];
 	
-	get_connection(X, lconn);
+	ConnectionAnalyticalWrapper(X, lconn);
 
 	for (k = 0; k < 4; k++) {
 
@@ -358,7 +358,7 @@ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM
         }
 
 
-        get_connection(X, lconn);
+        ConnectionAnalyticalWrapper(X, lconn);
 
         /* We're in a coordinate basis so take advantage of symmetry in the connection */
         iter = 0;
