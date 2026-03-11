@@ -79,6 +79,12 @@ Improvement
    **Expected Result:** The resulting spectrum showing the :math:`\rm Ratio = 0.1, 1, 4, 10` showing improvement to the first scattering layer.
 
 
+.. figure:: ./figures/nobias_withbias.png
+   :width: 100%
+   :align: center
+
+   **Expected Result:** Comparison between the spectrum without bias tuning (top) and with bias tuning (bottom) showcasing individual layers.
+
 Usage Observations
 -------------------
 
