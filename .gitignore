@@ -35,4 +35,5 @@ python/**/.ipynb_checkpoints/
 !python/plspec.py
 !python/sphere_example.ipynb
 !docs/figures/bias_tuning_working.png
+!docs/figures/nobias_withbias.png
 !docs/figures/expected_spectrum.png
