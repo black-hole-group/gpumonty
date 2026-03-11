@@ -47,7 +47,7 @@ Declaration of the par.cu functions
  * **Default Parameter Values:**
  * - **seed**: If not specified, the random seed is set to -1, which triggers time-based seeding for randomness.
  * - **scattering**: Enables scattering by default (set to 1).
- * - **biasTuning**: Default bias tuning factor is set to 1.0. BIAS TUNING STILL NOT IMPLEMENTED.
+ * - **bias_guess**: Default bias tuning factor is set to 1.0. BIAS TUNING STILL NOT IMPLEMENTED.
  * - **fitBias**: Default fitting bias factor is set to 1.0. FITTING BIAS STILL NOT IMPLEMENTED.
  * - **fitBiasNs**: Scale input number of superphotons generated in each zone. Default is 1.0 (no scaling). FITTING BIAS STILL NOT IMPLEMENTED.
  * - **tp_over_te**: Sets the default proton-to-electron temperature ratio \f$ T_p/T_e \f$ for the simulation. Default is 3.0.

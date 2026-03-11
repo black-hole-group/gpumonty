@@ -18,7 +18,7 @@
 
 
 # Model name ( harm_model, sphere_model, iharm_model)
-MODEL = sphere
+MODEL = iharm
 MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 

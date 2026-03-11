@@ -138,13 +138,13 @@ __host__ void transferParams() {
 
 	/*iharm variables*/
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
-	double h_biastuning[MAX_LAYER_SCA];
+	double h_bias_guess[MAX_LAYER_SCA];
 
 	for (int i = 0; i < MAX_LAYER_SCA; i++) {
-		h_biastuning[i] = params.biasTuning;
+		h_bias_guess[i] = params.bias_guess;
 	}
 
-	cudaMemcpyToSymbol(d_biastuning, h_biastuning, MAX_LAYER_SCA * sizeof(double));
+	cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double));
 	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
 	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
 	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));

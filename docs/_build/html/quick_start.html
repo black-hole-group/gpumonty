@@ -252,7 +252,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_scattering"><code class="docutils literal notranslate"><span class="pre">d_scattering</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_biastuning"><code class="docutils literal notranslate"><span class="pre">d_biastuning</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_bias_guess"><code class="docutils literal notranslate"><span class="pre">d_bias_guess</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv48d_B_unit"><code class="docutils literal notranslate"><span class="pre">d_B_unit</span></code></a></li>
@@ -536,29 +536,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bias_tuning.html">Scattering Bias Tuning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#motivation">Motivation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#key-parameters">Key Parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#params-biastuning"><code class="docutils literal notranslate"><span class="pre">params.biasTuning</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#parameters">Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#params-biasguess"><code class="docutils literal notranslate"><span class="pre">params.biasguess</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#params-targetratio"><code class="docutils literal notranslate"><span class="pre">params.targetRatio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#acceptance-interval">Acceptance interval</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#overview-of-the-algorithm">Overview of the Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#detailed-procedure">Detailed Procedure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#load-the-bias-for-the-current-layer">1. Load the bias for the current layer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#save-a-checkpoint-of-photon-states">2. Save a checkpoint of photon states</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#run-the-scattering-kernel">3. Run the scattering kernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#measure-the-scattering-ratio">4. Measure the scattering ratio</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#check-if-the-ratio-is-acceptable">5. Check if the ratio is acceptable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#adjust-the-bias-if-necessary">6. Adjust the bias if necessary</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bias_tuning.html#examples">Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#restart-the-scattering-step">7. Restart the scattering step</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#special-case-very-low-ratio">Special Case: Very Low Ratio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#termination-conditions">Termination Conditions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#improvement">Improvement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#usage-observations">Usage Observations</a></li>
 </ul>
 </li>
 </ul>

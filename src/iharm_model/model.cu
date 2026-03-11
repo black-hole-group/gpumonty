@@ -776,7 +776,7 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
   if (bias > max) bias = max;
 
-  return bias * 30. * 1./2. * d_biastuning[round_scatt];
+  return bias * 30. * 1./2. * d_bias_guess[round_scatt];
 }
 
 __device__ __forceinline__ double atomicMaxdouble(double *address, double val)
@@ -889,7 +889,7 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   if (params.loaded && strlen(params.spectrum) > 0) {
     fid = H5Fcreate(params.spectrum, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   } else {
-    fid = H5Fcreate("spectrum.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    fid = H5Fcreate("./output/spectrum.h5", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   }
 
   if (fid < 0) {
@@ -930,7 +930,7 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   h5io_add_data_dbl(fid, "/params/Rout", Rout);
   h5io_add_data_dbl(fid, "/params/hslope", hslope);
   h5io_add_data_dbl(fid, "/params/t", t);
-  // h5io_add_data_dbl(fid, "/params/bias", biasTuning);
+  // h5io_add_data_dbl(fid, "/params/bias", bias_guess);
 
   h5io_add_data_int(fid, "/params/SYNCHROTRON", SYNCHROTRON);
   h5io_add_data_int(fid, "/params/BREMSSTRAHLUNG", BREMSSTRAHLUNG);
