@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e4
+Ns 1e6
 
 #path to the GRMHD data file
 
@@ -25,7 +25,7 @@ M_unit 1.e16
 trat_small 1.
 trat_large 10.
 beta_crit 1.
-Thetae_max 1.e3
+Thetae_max 1.e100
 
 # Whether or not to have scattering activated
 scattering 1

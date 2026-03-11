@@ -62,13 +62,14 @@ __host__ void init_weight_table()
 						if (Ne == 0. || Thetae < THETAE_MIN)
 							continue;
 						#ifdef __CUDA_ARCH__
-						K2 =K2_eval(Thetae, NULL);
+						K2 = K2_eval(Thetae, NULL);
 						#else
 						K2 = K2_eval(Thetae);
 						#endif
 						fac =
 							(JCST * Ne * B * Thetae * Thetae /
 							K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
+						
 						for (l = lstart; l < lend; l++){
 							sum[l] +=
 								fac * F_eval(Thetae, B, nu[l]);

@@ -39,7 +39,7 @@
      * 
      * @note Superphotons with frequencies above NUMAX can be generated through scattering events. 
      */
-    #define NUMAX 1.e16
+    #define NUMAX 1.e24
 
     /**
      * @brief Natural logarithm of the lower sampling bound.
@@ -82,7 +82,7 @@
      * 
      * This is used to characterize the lower bound for superphoton generation.
      */
-    #define THETAE_MIN	0.3
+    #define THETAE_MIN	0.001
 
     /**
      * Maximum dimensionless electron temperature (\f$\Theta_{e, max}\f$) for physical validity.
@@ -93,7 +93,7 @@
     /**
      * Size of the energy bin in logarithmic scale for the spectral output binning.
      */
-    #define	dlE (0.12) //Size of the energy bin
+    #define	dlE (0.25) //Size of the energy bin
 
     /**
      * Minimum energy of the energy bin in logarithmic scale.
@@ -103,12 +103,12 @@
     /**
      * Number of energy samples for the emissivity and weight tables.
      */
-    #define N_ESAMP 300
+    #define N_ESAMP 800
 
     /**
      * Number of energy bins for the spectral output.
      */
-    #define N_EBINS 300
+    #define N_EBINS 800
 
 
     /**
@@ -435,8 +435,6 @@
      */
     #define ZLOOP for (int i = 0; i < N1; i++) for (int j = 0; j < N2; j++) for (int k = 0; k < N3; k++)
 
-    extern int METRIC_MKS;
-    extern int METRIC_MKS3;
     extern double mks3R0, mks3H0, mks3MY1, mks3MY2, mks3MP0;
     extern __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0;
     extern __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth;

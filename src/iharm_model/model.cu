@@ -108,6 +108,7 @@ void init_data()
   if(metric_eKS){
     if(metric_MKS3){
         fprintf(stderr, "using MKS3 metric...\n");
+        fprintf(stderr, "MKS3 hasn't been tested against igrmonty yet, so use with caution!\n");
         METRIC= METRIC_MKS3;
         cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
       }else{
@@ -233,6 +234,7 @@ void init_data()
       hdf5_read_single_val(&poly_alpha, "poly_alpha", H5T_IEEE_F64LE);
       hdf5_read_single_val(&mks_smooth, "mks_smooth", H5T_IEEE_F64LE);
       poly_norm = 0.5*M_PI*1./(1. + 1./(poly_alpha + 1.)*1./pow(poly_xt, poly_alpha));
+      printf("Using FMKS with poly_norm = %g, poly_xt = %g, poly_alpha = %g, mks_smooth = %g\n", poly_norm, poly_xt, poly_alpha, mks_smooth);
       gpuErrchk(cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double)));
       gpuErrchk(cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double)));
       gpuErrchk(cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double)));
@@ -485,12 +487,66 @@ __host__ __device__ void coord(const int i, const int j, const int k, double *X)
     X[1] = d_startx[1] + (i+0.5)*d_dx[1];
     X[2] = d_startx[2] + (j+0.5)*d_dx[2];
     X[3] = d_startx[3] + (k+0.5)*d_dx[3];
+    if(d_METRIC == METRIC_eKS){
+      // convert from zone coordinates to eKS coordinates
+      X[1] = log(X[1]);
+      X[2] = X[2] / M_PI;
+      
+    }else if(d_METRIC == METRIC_MKS3){
+        double xKS[4] = { 0 };
+        double x0 = X[0];
+        double x1 = X[1];
+        double x2 = X[2];
+        double x3 = X[3];
+
+        double H0 = d_mks3H0;
+        double MY1 = d_mks3MY1;
+        double MY2 = d_mks3MY2;
+        double MP0 = d_mks3MP0;
+        
+        xKS[0] = x0;
+        xKS[1] = exp(x1) + d_mks3R0;
+        xKS[2] = (M_PI*(1+1./tan((H0*M_PI)/2.)*tan(H0*M_PI*(-0.5+(MY1+(pow(2,MP0)*(-MY1+MY2))/pow(exp(x1)+d_mks3R0,MP0))*(1-2*x2)+x2))))/2.;
+        xKS[3] = x3;
+        
+        X[0] = xKS[0];
+        X[1] = log(xKS[1]);
+        X[2] = xKS[2] / M_PI;
+        X[3] = xKS[3];
+      }
 	#else
 		/* returns zone-centered values for coordinates */
 		X[0] = startx[0];
 		X[1] = startx[1] + (i + 0.5) * dx[1];
 		X[2] = startx[2] + (j + 0.5) * dx[2];
 		X[3] = startx[3] + (k + 0.5) * dx[3];
+
+    if(METRIC == METRIC_eKS){
+      // convert from zone coordinates to eKS coordinates
+      X[1] = log(X[1]);
+      X[2] = X[2]/M_PI;
+    }else if(METRIC == METRIC_MKS3){
+        double xKS[4] = { 0 };
+        double x0 = X[0];
+        double x1 = X[1];
+        double x2 = X[2];
+        double x3 = X[3];
+
+        double H0 = mks3H0;
+        double MY1 = mks3MY1;
+        double MY2 = mks3MY2;
+        double MP0 = mks3MP0;
+        
+        xKS[0] = x0;
+        xKS[1] = exp(x1) + mks3R0;
+        xKS[2] = (M_PI*(1+1./tan((H0*M_PI)/2.)*tan(H0*M_PI*(-0.5+(MY1+(pow(2,MP0)*(-MY1+MY2))/pow(exp(x1)+R0,MP0))*(1-2*x2)+x2))))/2.;
+        xKS[3] = x3;
+        
+        X[0] = xKS[0];
+        X[1] = log(xKS[1]);
+        X[2] = xKS[2] / M_PI;
+        X[3] = xKS[3];
+      }
 	#endif
 
 
@@ -605,7 +661,6 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
       }
     }
   }
-      
 }
 
 __host__ double dOmega_func(double x2i, double x2f)
@@ -962,7 +1017,7 @@ __host__ __device__ double thetae_func(double uu, double rho, double B, double k
     int w_electrons = with_electrons;
     #endif
     // Gotta save beta, beta_crit, trat_large, trat_small to device memory
-
+ 
     if (w_electrons == 0) {
     //fixed tp/te ratio
       thetae = uu / rho * theta_unit;

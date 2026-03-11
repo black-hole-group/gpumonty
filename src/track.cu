@@ -94,7 +94,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	}
 	/* Initialize dK/dlam */
 	init_dKdlam(XArray, KArray, dKdlamArray);
-
+	
 	while (!stop_criterion(XArray[1], &(ph.w[photon_index]), localState)) {
 		/* Save initial state for this step */
 		double Xi[NDIM] = {XArray[0], XArray[1], XArray[2], XArray[3]};
