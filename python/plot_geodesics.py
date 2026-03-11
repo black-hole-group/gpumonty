@@ -9,7 +9,8 @@ Arguments:
     geodesics.h5    Path to HDF5 file (default: output/geodesics.h5)
     --n N           Number of geodesics to plot (default: 50)
     --no-bh         Skip drawing the black hole horizon sphere
-    --cam-dist D    Initial camera distance from the origin in r_g (default: 5)
+    --cam-dist D    Initial camera distance from the origin in r_g (default: 5);
+                    scaled relative to the maximum r in the data
 
 What it does:
     Reads the r, theta, phi arrays from the HDF5 file produced by GPUmonty's
@@ -113,8 +114,11 @@ def plot_geodesics(h5path, n_plot, show_bh, cam_dist):
     if meta["Ns"]:
         title += f"  (Ns={meta['Ns']})"
 
-    # Camera facing the BH along +y axis at the requested distance
-    camera = dict(eye=dict(x=0, y=cam_dist, z=0), center=dict(x=0, y=0, z=0))
+    # Plotly camera eye coordinates are in normalized scene units where
+    # 1 unit ≈ half the largest data extent. Scale cam_dist (in r_g) accordingly.
+    max_r = float(r_all[r_all > 0].max()) if r_all.size else 1.0
+    eye_scene = cam_dist / max_r * 0.5
+    camera = dict(eye=dict(x=0, y=eye_scene, z=0), center=dict(x=0, y=0, z=0))
 
     fig = go.Figure(data=traces)
     fig.update_layout(
