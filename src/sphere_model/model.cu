@@ -209,6 +209,14 @@ __host__ __device__ void gcov_func(const double *X, double gcov[][NDIM])
 	#endif
 }
 
+__host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM])
+{
+	gcov[0] = -1;
+	gcov[1] = 0;
+    gcov[2] = 0.;
+	gcov[3] = 0;
+}
+
 __host__ double dOmega_func(double x2i, double x2f)
 {
 	double dO;

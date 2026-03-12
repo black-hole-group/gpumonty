@@ -72,4 +72,5 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne, double *Th
 __device__ double bias_func(double Te, double w, int round_scatt);
 __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
+__host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
 #endif

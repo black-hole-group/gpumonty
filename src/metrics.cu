@@ -787,6 +787,11 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 		}
 	}
 	#undef DEL
+
+	__device__ void ConnectionAnalyticalWrapper(const double X[4], double lconn[4][4][4])
+	{
+		return get_connection(X, lconn);
+	}
 #endif
 
 
