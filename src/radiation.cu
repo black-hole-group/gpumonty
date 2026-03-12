@@ -41,8 +41,9 @@ __device__ double Bnu_inv(const double nu, const double Thetae)
 __device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta)
 {
 	double j;
+	double K2 = K2_eval(Thetae);
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta);
+	j = jnu_synch(nu, Ne, Thetae, B, theta, K2);
 
 	return (j / (nu * nu));
 }

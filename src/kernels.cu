@@ -405,51 +405,51 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		*dnmax = 0.;
 		return;
 	}
+	double K2 = K2_eval(Thetae);
 
-		lbth = log(Bmag * Thetae * Thetae);
+	lbth = log(Bmag * Thetae * Thetae);
 
-		dl = (lbth - lb_min) / dlb;
-		l = (int) dl;
-		dl = dl - l;
-		if (l < 0) {
-			*dnmax = 0.;
-			*n2gen = 0.;
-			return;
-		} else if (l >= NINT || 1) {
-			//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
+	dl = (lbth - lb_min) / dlb;
+	l = (int) dl;
+	dl = dl - l;
+	if (l < 0) {
+		*dnmax = 0.;
+		*n2gen = 0.;
+		return;
+	} else if (l >= NINT || 1) {
+		//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
+		ninterp = 0.;
+		*dnmax = 0.;
+		for (int m = 0; m <= N_ESAMP; m++) {
+			// dn = F_eval(Thetae, Bmag,
+			// 		exp(m * dlnu +
+			// 		lnu_min)) / (exp(d_wgt[m]) +
+			// 				1.e-100);
+			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2) / (exp(d_wgt[m]) + 1.e-100);
+			if (dn > *dnmax)
+				*dnmax = dn;
+			ninterp += dlnu * dn;
+		}
+		// ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
+		// 	* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
+		// 	* 1. / HPL;
+		ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit * 1./HPL;
+
+	} else {
+		if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
 			ninterp = 0.;
 			*dnmax = 0.;
-			for (int m = 0; m <= N_ESAMP; m++) {
-				// dn = F_eval(Thetae, Bmag,
-				// 		exp(m * dlnu +
-				// 		lnu_min)) / (exp(d_wgt[m]) +
-				// 				1.e-100);
-				dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min)) / (exp(d_wgt[m]) + 1.e-100);
-				if (dn > *dnmax)
-					*dnmax = dn;
-				ninterp += dlnu * dn;
-			}
-			// ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
-			// 	* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-			// 	* 1. / HPL;
-			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit * 1./HPL;
-
 		} else {
-			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
-				ninterp = 0.;
-				*dnmax = 0.;
-			} else {
-				ninterp =
-					exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
+			ninterp =
+				exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
 
-				*dnmax =
-					exp((1. - dl) * d_dndlnu_max[l] +
-					dl * d_dndlnu_max[l + 1]);
-			}
-
+			*dnmax =
+				exp((1. - dl) * d_dndlnu_max[l] +
+				dl * d_dndlnu_max[l + 1]);
 		}
+
+	}
 		
-	double K2 = K2_eval(Thetae);
 
 
 	if (K2 == 0.) {
@@ -541,23 +541,25 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     {
         const double lnu_min = log(NUMIN);
         const double Nln = log(NUMAX) - lnu_min;
+		const double K2 = K2_eval(Thetae);
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
         //} while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
     
     // Scope 4: Sample angles  
     double cth;
     {
-        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2.);
+		const double K2 = K2_eval(Thetae);
+        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
 		double j_th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
             const double th = acos(cth);
-        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th);
+        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
         } while (curand_uniform_double(localState) > j_th / jmax);
     } // jmax, th, j_th go out of scope
     

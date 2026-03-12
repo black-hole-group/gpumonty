@@ -114,10 +114,14 @@ __host__ void init_model(char *args[])
 	init_emiss_tables();
 
 	/* make table for superphoton weights */
+	double start = omp_get_wtime();
 	init_weight_table();
+	double end = omp_get_wtime();
+	fprintf(stderr, "Time spent building weight table: %.4f seconds\n", end - start);
 	//init_weight_table_blackbody();
 	/* make table for quick evaluation of ns_zone */
-	init_nint_table();
+	/*Currently not using it*/
+	//init_nint_table();
 
 }
 /* set up all grid functions */

@@ -30,12 +30,12 @@ good for Thetae > 1
 */
 
 
-__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta){
+__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
 	double j = 0;
 
 
 	if(d_synchrotron)
-		j += jnu_synch(nu, Ne, Thetae, B, theta);
+		j += jnu_synch(nu, Ne, Thetae, B, theta,K2 );
 	if(d_bremsstrahlung)
 		j += jnu_bremss(nu, Ne, Thetae);
 
@@ -45,21 +45,20 @@ __device__ double jnu_total(const double nu, const double Ne, const double Theta
 }
 
 #define CST 1.88774862536	/* 2^{11/12} */
-
+#define SYNCH_FAC (1.139685508680628e-29) /* √2·π·e²/(3·c) [CGS] */
+#define NUC_FAC (2.799248729308765e+06) /* e/(2π·mₑ·c) [Hz/G] (cyclotron freq per unit B) */
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
-		 const double theta)
+		 const double theta, const double K2)
 {
 
-	double K2, nuc, nus, x, f, j, sth, xp1, xx;
+	double nuc, nus, x, f, j, sth, xp1, xx;
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
 
 	
-	K2 = K2_eval(Thetae);
 
-
-	nuc = EE * B / (2. * M_PI * ME * CL);
+	nuc = NUC_FAC * B;
 	sth = sin(theta);
 	
 	
@@ -71,20 +70,23 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 	xp1 = pow(x, 1. / 3.);
 	xx = sqrt(x) + CST * sqrt(xp1);
 	f = xx * xx;
-	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f *
+	j = (SYNCH_FAC * Ne * nus / (K2)) * f *
 	    exp(-xp1);
 
 	return (j);
 }
 #undef CST
 
+//
+/* (8/3)·(2π/3)^½ · e⁶/(mₑc³) · (kʙmₑ)^(-½) · g_ff [CGS], g_ff assumed to be 1.2 */
+#define BREMS_FAC (6.533236526124812e-39)
 __host__ __device__  double jnu_bremss(const double nu, const double Ne, const double Thetae){
 	if (Thetae < THETAE_MIN) 
 		return 0.;
 
 	double Te = Thetae * ME * CL * CL / KBOL;
 	double x = HPL*nu/(KBOL*Te);
-	double efac, gff, jv;
+	double efac, jv;
 
 	if (x < 1.e-3) {
 		efac = (24. - 24.*x + 12.*x*x - 4.*x*x*x + x*x*x*x) / 24.;
@@ -94,16 +96,15 @@ __host__ __device__  double jnu_bremss(const double nu, const double Ne, const d
 
 	//Method from Rybicki & Lightman, ultimately from Novikov & Thorne
 	double rel = (1. + 4.4e-10*Te);
-	gff = 1.2;
 
-	jv = 1./(4.*M_PI)*pow(2,5)*M_PI*pow(EE,6)/(3.*ME*pow(CL,3));
-	jv *= pow(2.*M_PI/(3.*KBOL*ME),1./2.);
-	jv *= pow(Te,-1./2.)*Ne*Ne;
-	jv *= efac*rel*gff;
+	
+	//rsqrt(x) is 1/sqrt(x)
+	jv = BREMS_FAC * rsqrt(Te) * Ne*Ne * efac*rel;
 	return jv;
 }
+#undef BREMS_FAC
 
-__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu)
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2)
 {
 	#ifdef __CUDA_ARCH__
 		int is_synchrotron = d_synchrotron;
@@ -115,27 +116,27 @@ __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, c
 	double intj = 0;
 
 	if(is_synchrotron)
-		intj += int_jnu_thermal_synch(Ne, Thetae, Bmag, nu);
+		intj += int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, K2);
 	if(is_bremsstrahlung)
 		intj += int_jnu_bremss(Ne, Thetae, nu);
 	
 	return intj;
 }
 
-#define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu)
+//#define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
+#define JCST (7.089473804413026e-24) /* √2·e³/(27·mₑ·c²) [CGS] */
+__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu, double K2)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/
 
-	double j_fac, K2;
+	double j_fac;
 	double F_eval(const double Thetae, const double B, const double nu);
 
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
 
-	K2 = K2_eval(Thetae);
 
 
 	if (K2 == 0.)

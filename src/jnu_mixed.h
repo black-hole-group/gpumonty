@@ -34,10 +34,11 @@ Declaration of the functions in the jnu_mixed.cu file
  * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
  * @param B Magnetic field strength.
  * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
+ * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
  * @return The local emissivity \f$ j_\nu \f$ in CGS units.
  */
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
-    const double theta);
+    const double theta, const double K2);
 
 /**
  * @brief Calculates the angle-integrated thermal synchrotron emissivity \f$ J_\nu \f$ in CGS units.
@@ -52,9 +53,10 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
  * @param Thetae Dimensionless electron temperature \f$ \Theta_{\rm e} \f$.
  * @param Bmag Magnetic field strength \f$ B \f$.
  * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
  * @return The integrated emissivity in \f$ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} \f$.
  */
-__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu);
+__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu, double K2);
 
 /**
  * @brief Provides the integrand for calculating the angle-integrated thermal synchrotron emissivity.
@@ -160,10 +162,11 @@ __host__ __device__ double jnu_bremss(const double nu, const double Ne, const do
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
  * @param B Magnetic field strength \f$ B \f$.
  * @param theta Angle between the magnetic field and the line of sight.
+ * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
  * 
  * @return The value of the total emissivity \f$ j_\nu \f$.
  */
-__device__  double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta);
+__device__  double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2);
 
 /**
  * @brief Calculates the angle-integrated thermal bremsstrahlung emissivity \f$ J_\nu \f$ for a Maxwellian distribution of electrons.
@@ -184,9 +187,10 @@ __host__ __device__ double int_jnu_bremss(const double Ne, const double Thetae, 
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
  * @param B Magnetic field strength \f$ B \f$.
  * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
  * 
  * @return The value of the total angle-integrated emissivity \f$ J_\nu \f$.
  */
-__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu);
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2);
 
 #endif
