@@ -54,7 +54,7 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
  * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
  * @return The integrated emissivity in \f$ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} \f$.
  */
-__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu);
+__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu);
 
 /**
  * @brief Provides the integrand for calculating the angle-integrated thermal synchrotron emissivity.
@@ -150,7 +150,7 @@ __host__ __device__ double linear_interp_K2(const double Thetae);
  * 
  * @return The value of the bremsstrahlung emissivity \f$ j_\nu \f$.
  */
-__host__ double jnu_bremss(const double nu, const double Ne, const double Thetae);
+__host__ __device__ double jnu_bremss(const double nu, const double Ne, const double Thetae);
 
 /**
  * @brief Calculates the total emissivity \f$ j_\nu \f$ by summing contributions from synchrotron and bremsstrahlung processes.
@@ -163,6 +163,30 @@ __host__ double jnu_bremss(const double nu, const double Ne, const double Thetae
  * 
  * @return The value of the total emissivity \f$ j_\nu \f$.
  */
-__host__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta);
+__device__  double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta);
+
+/**
+ * @brief Calculates the angle-integrated thermal bremsstrahlung emissivity \f$ J_\nu \f$ for a Maxwellian distribution of electrons.
+ * 
+ * @param Ne Electron density.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * 
+ * @return The value of the angle-integrated bremsstrahlung emissivity \f$ J_\nu \f$.
+ */
+__host__ __device__ double int_jnu_bremss(const double Ne, const double Thetae, const double nu);
+
+
+/**
+ * @brief Calculates the total angle-integrated emissivity \f$ J_\nu \f$ by summing contributions from synchrotron and bremsstrahlung processes.
+ * 
+ * @param Ne Electron density.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param B Magnetic field strength \f$ B \f$.
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * 
+ * @return The value of the total angle-integrated emissivity \f$ J_\nu \f$.
+ */
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu);
 
 #endif

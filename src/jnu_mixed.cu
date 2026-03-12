@@ -29,14 +29,17 @@ good for Thetae > 1
 
 */
 
-__host__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta){
+
+__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta){
 	double j = 0;
 
 
-	if(params.synchrotron)
+	if(d_synchrotron)
 		j += jnu_synch(nu, Ne, Thetae, B, theta);
-	if(params.bremsstrahlung)
+	if(d_bremsstrahlung)
 		j += jnu_bremss(nu, Ne, Thetae);
+
+	
 	
 	return j;
 }
@@ -75,7 +78,7 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 }
 #undef CST
 
-__host__  double jnu_bremss(const double nu, const double Ne, const double Thetae){
+__host__ __device__  double jnu_bremss(const double nu, const double Ne, const double Thetae){
 	if (Thetae < THETAE_MIN) 
 		return 0.;
 
@@ -100,8 +103,27 @@ __host__  double jnu_bremss(const double nu, const double Ne, const double Theta
 	return jv;
 }
 
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu)
+{
+	#ifdef __CUDA_ARCH__
+		int is_synchrotron = d_synchrotron;
+		int is_bremsstrahlung = d_bremsstrahlung;
+	#else
+		int is_synchrotron = params.synchrotron;
+		int is_bremsstrahlung = params.bremsstrahlung;
+	#endif
+	double intj = 0;
+
+	if(is_synchrotron)
+		intj += int_jnu_thermal_synch(Ne, Thetae, Bmag, nu);
+	if(is_bremsstrahlung)
+		intj += int_jnu_bremss(Ne, Thetae, nu);
+	
+	return intj;
+}
+
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
+__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/
@@ -124,6 +146,11 @@ __host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double
 }
 
 #undef JCST
+
+__host__ __device__ double int_jnu_bremss(const double Ne, const double Thetae, const double nu)
+{
+	return 4 * M_PI * jnu_bremss(nu, Ne, Thetae);
+}
 
 #define CST 1.88774862536	/* 2^{11/12} */
 double jnu_integrand(double th, void *params)
@@ -171,7 +198,9 @@ __host__ void init_emiss_tables(void)
 		gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL,
 				    1000, GSL_INTEG_GAUSS61, w, &result,
 				    &err);
+		
 		F[k] = log(4 * M_PI * result);
+		
 		//if(k < 10)
 	}
 

@@ -420,17 +420,19 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 			ninterp = 0.;
 			*dnmax = 0.;
 			for (int m = 0; m <= N_ESAMP; m++) {
-				dn = F_eval(Thetae, Bmag,
-						exp(m * dlnu +
-						lnu_min)) / (exp(d_wgt[m]) +
-								1.e-100);
+				// dn = F_eval(Thetae, Bmag,
+				// 		exp(m * dlnu +
+				// 		lnu_min)) / (exp(d_wgt[m]) +
+				// 				1.e-100);
+				dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min)) / (exp(d_wgt[m]) + 1.e-100);
 				if (dn > *dnmax)
 					*dnmax = dn;
 				ninterp += dlnu * dn;
 			}
-			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
-				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-				* 1. / HPL;
+			// ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
+			// 	* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
+			// 	* 1. / HPL;
+			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit * 1./HPL;
 
 		} else {
 			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
@@ -456,7 +458,8 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		return;
 	}
 	
-	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	//double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * ninterp;
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -541,19 +544,20 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-        } while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-        ph.w[ph_arr_index] = weight;
+        //} while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
     
     // Scope 4: Sample angles  
     double cth;
     {
-        const double jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
+        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2.);
 		double j_th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
             const double th = acos(cth);
-        	j_th = jnu_synch(nu, Ne, Thetae, Bmag, th);
+        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th);
         } while (curand_uniform_double(localState) > j_th / jmax);
     } // jmax, th, j_th go out of scope
     

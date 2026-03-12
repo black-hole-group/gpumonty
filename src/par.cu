@@ -98,6 +98,7 @@ __host__ void load_par (const char *fname, Params *params) {
 
         if (strstr(line, "scattering")) { read_param(line, "scattering", &(params->scattering), 1); f.scattering = 1; }
         if (strstr(line, "bremsstrahlung")) { read_param(line, "bremsstrahlung", &(params->bremsstrahlung), 1); f.bremsstrahlung = 1; }
+        if (strstr(line, "synchrotron")) { read_param(line, "synchrotron", &(params->synchrotron), 1); f.synchrotron = 1; }
 
         if (strstr(line, "bias_guess"))        { read_param(line, "bias_guess", &(params->bias_guess), 2); f.bias_guess = 1; }
         if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }

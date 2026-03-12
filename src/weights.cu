@@ -25,7 +25,8 @@ __host__ void init_weight_table()
 {
 	int k;
 	int i, j, l, lstart, lend, myid, nthreads;
-	double Ne, Thetae, B, K2;
+	double Ne, Thetae, B;
+	//double K2;
 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
 	double fac, sfac;
 	double Ucon[NDIM], Bcon[NDIM];
@@ -61,14 +62,16 @@ __host__ void init_weight_table()
 						get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
 						if (Ne == 0. || Thetae < THETAE_MIN)
 							continue;
-						K2 = K2_eval(Thetae);
-						fac =
-							(JCST * Ne * B * Thetae * Thetae /
-							K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
+						// K2 = K2_eval(Thetae);
+						// fac =
+						// 	(JCST * Ne * B * Thetae * Thetae /
+						// 	K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
+						fac = sfac * geom[SPATIAL_INDEX2D(i,j)].g;
 						
 						for (l = lstart; l < lend; l++){
-							sum[l] +=
-								fac * F_eval(Thetae, B, nu[l]);
+							// sum[l] +=
+							// 	fac * F_eval(Thetae, B, nu[l]);
+							sum[l] += int_jnu_total(Ne, Thetae, B, nu[l]) * fac;
 						}
 			}
 #pragma omp barrier
@@ -81,7 +84,8 @@ __host__ void init_weight_table()
 	
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
-
+// Their equivalent for sum is int_jnu * fac * gdet = (JCST * Ne * B * Thetae * Thetae /K2) * F_eval * sfac * geom[SPATIAL_INDEX2D(i,j)].g
+// So int_jnu = (JCST * Ne * B * Thetae * Thetae /K2) * F_eval
 	return;
 }
 

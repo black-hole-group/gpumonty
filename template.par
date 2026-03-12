@@ -4,8 +4,8 @@ Ns 1e4
 #path to the GRMHD data file
 
 #Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
-#dump ../sample_dump_SANE_a+0.94_MKS_0900.h5
-dump ../torus.out0.05400.h5
+dump ../sample_dump_SANE_a+0.94_MKS_0900.h5
+#dump ../torus.out0.05400.h5
 
 #Use this path when testing harm_model
 #dump ./data/dump019
@@ -28,8 +28,11 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 1
+scattering 0
 fit_bias 0
 ratio 2
 bias_guess 0.1
 
+#emissions
+bremsstrahlung 1
+synchrotron 1
