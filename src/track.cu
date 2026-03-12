@@ -39,7 +39,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	#else
 		cudaTextureObject_t d_p,
 	#endif
-	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState)
 {
 	// Keeping only essential variables at function scope
 	double XArray[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
@@ -89,7 +89,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 		theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 		nu = get_fluid_nu(XArray, KArray, Ucov);
 		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 		bi = bias_func(Thetae, ph.w[photon_index], round_scat);
 	}
 	/* Initialize dK/dlam */
@@ -151,7 +151,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 					alpha_scatti = alpha_scattf;
 
-					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 					dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 					alpha_absi = alpha_absf;
 
@@ -249,7 +249,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 							alpha_scatti = alpha_absi = 0.;
 						} else {
 							alpha_scatti = alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, d_table_ptr);
-							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat, besselTexObj);
+							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat);
 						}
 						bi = bias_func(Thetae_scat, ph.w[photon_index], round_scat);
 					}

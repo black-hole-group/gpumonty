@@ -1087,9 +1087,9 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   h5io_add_data_dbl(fid, "/params/t", t);
   // h5io_add_data_dbl(fid, "/params/bias", bias_guess);
 
-  h5io_add_data_int(fid, "/params/SYNCHROTRON", SYNCHROTRON);
-  h5io_add_data_int(fid, "/params/BREMSSTRAHLUNG", BREMSSTRAHLUNG);
-  h5io_add_data_int(fid, "/params/COMPTON", COMPTON);
+  h5io_add_data_int(fid, "/params/SYNCHROTRON", params.synchrotron);
+  h5io_add_data_int(fid, "/params/BREMSSTRAHLUNG", params.bremsstrahlung);
+  h5io_add_data_int(fid, "/params/COMPTON", params.scattering);
   // h5io_add_data_int(fid, "/params/DIST_KAPPA", MODEL_EDF==EDF_KAPPA_FIXED?1:0);
   h5io_add_data_int(fid, "/params/N_ESAMP", N_ESAMP);
   h5io_add_data_int(fid, "/params/N_EBINS", N_EBINS);

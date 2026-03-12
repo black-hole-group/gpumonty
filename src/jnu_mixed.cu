@@ -29,14 +29,22 @@ good for Thetae > 1
 
 */
 
+__host__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta){
+	double j = 0;
+
+
+	if(params.synchrotron)
+		j += jnu_synch(nu, Ne, Thetae, B, theta);
+	if(params.bremsstrahlung)
+		j += jnu_bremss(nu, Ne, Thetae);
+	
+	return j;
+}
+
 #define CST 1.88774862536	/* 2^{11/12} */
 
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
-		 const double theta
-		#ifdef __CUDA_ARCH__
-		, cudaTextureObject_t besselTexObj
-		#endif
-		)
+		 const double theta)
 {
 
 	double K2, nuc, nus, x, f, j, sth, xp1, xx;
@@ -44,11 +52,9 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 	if (Thetae < THETAE_MIN)
 		return 0.;
 
-	#ifdef __CUDA_ARCH__
-	K2 = K2_eval(Thetae, besselTexObj);
-	#else
+	
 	K2 = K2_eval(Thetae);
-	#endif
+
 
 	nuc = EE * B / (2. * M_PI * ME * CL);
 	sth = sin(theta);
@@ -69,6 +75,31 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 }
 #undef CST
 
+__host__  double jnu_bremss(const double nu, const double Ne, const double Thetae){
+	if (Thetae < THETAE_MIN) 
+		return 0.;
+
+	double Te = Thetae * ME * CL * CL / KBOL;
+	double x = HPL*nu/(KBOL*Te);
+	double efac, gff, jv;
+
+	if (x < 1.e-3) {
+		efac = (24. - 24.*x + 12.*x*x - 4.*x*x*x + x*x*x*x) / 24.;
+	} else {
+		efac = exp(-x);
+	}
+
+	//Method from Rybicki & Lightman, ultimately from Novikov & Thorne
+	double rel = (1. + 4.4e-10*Te);
+	gff = 1.2;
+
+	jv = 1./(4.*M_PI)*pow(2,5)*M_PI*pow(EE,6)/(3.*ME*pow(CL,3));
+	jv *= pow(2.*M_PI/(3.*KBOL*ME),1./2.);
+	jv *= pow(Te,-1./2.)*Ne*Ne;
+	jv *= efac*rel*gff;
+	return jv;
+}
+
 #define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
 __host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
 {
@@ -81,11 +112,9 @@ __host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
-	#ifdef __CUDA_ARCH__
-	K2 = K2_eval(Thetae, NULL);
-	#else
+
 	K2 = K2_eval(Thetae);
-	#endif
+
 
 	if (K2 == 0.)
 		return 0.;
@@ -165,22 +194,15 @@ __host__ void init_emiss_tables(void)
 }
 
 
-__host__ __device__ double K2_eval(const double Thetae
-#ifdef __CUDA_ARCH__
-	,cudaTextureObject_t besselTexObj
-#endif
-	)
+__host__ __device__ double K2_eval(const double Thetae)
 {
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
 	if (Thetae > TMAX)
 		return 2. * Thetae * Thetae;
-	#ifdef __CUDA_ARCH__
-	return linear_interp_K2(Thetae, besselTexObj);
-	#else
+
 	return linear_interp_K2(Thetae);
-	#endif
 }
 
 __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu)
@@ -226,11 +248,7 @@ __host__ __device__ double linear_interp_F(const double K)
 	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
 	return result;
 }
-__host__ __device__ double linear_interp_K2(const double Thetae
-#ifdef __CUDA_ARCH__
-	, cudaTextureObject_t besselTexObj
-#endif
-	)
+__host__ __device__ double linear_interp_K2(const double Thetae)
 {
 	int i;
 	double di, lT;
@@ -241,7 +259,6 @@ __host__ __device__ double linear_interp_K2(const double Thetae
 	di = (lT - d_lT_min) * d_dlT1;
 
 	#ifdef __CUDA_ARCH__
-	//return __expf(tex1D<float>(besselTexObj, di + 0.5f));
 	bessel_table = d_K2;
 	#else
 	bessel_table = K2;

@@ -34,15 +34,10 @@ Declaration of the functions in the jnu_mixed.cu file
  * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
  * @param B Magnetic field strength.
  * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
- * @param besselTexObj (CUDA only) Texture object for Bessel function look-up tables.
  * @return The local emissivity \f$ j_\nu \f$ in CGS units.
  */
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
-    const double theta
-   #ifdef __CUDA_ARCH__
-   , cudaTextureObject_t besselTexObj
-   #endif
-   );
+    const double theta);
 
 /**
  * @brief Calculates the angle-integrated thermal synchrotron emissivity \f$ J_\nu \f$ in CGS units.
@@ -57,7 +52,6 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
  * @param Thetae Dimensionless electron temperature \f$ \Theta_{\rm e} \f$.
  * @param Bmag Magnetic field strength \f$ B \f$.
  * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
- * @param besselTexObj (CUDA only) Texture object for Bessel function look-up tables.
  * @return The integrated emissivity in \f$ \text{erg} \cdot \text{s}^{-1} \cdot \text{cm}^{-3} \cdot \text{Hz}^{-1} \f$.
  */
 __host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu);
@@ -99,7 +93,6 @@ __host__ void init_emiss_tables(void);
  * This function retrieves the value of \f$ K_2(1/\Theta_e) \f$ from precomputed lookup tables for efficient computation during simulations.
  * 
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
- * @param besselTexObj (CUDA only) Texture object for Bessel function look-up tables.
  * 
  * @note for large \f$ \Theta_e \f$, we can use the asymptotic expansion \f$ K_2(1/\Theta_e) \approx 2 \Theta_e^2 \f$.
  * @note TMAX and THETA_MIN define the valid range for \f$ \Theta_e \f$ in the lookup tables.
@@ -107,11 +100,7 @@ __host__ void init_emiss_tables(void);
  * @return The value of \f$ K_2(1/\Theta_e) \f$.
 
  */
-__host__ __device__ double K2_eval(const double Thetae
-    #ifdef __CUDA_ARCH__
-        , cudaTextureObject_t besselTexObj
-    #endif
-        );
+__host__ __device__ double K2_eval(const double Thetae);
 
 /**
  * @brief Evaluates the frequency-dependent component \f$ F(K) \f$ of the angle-integrated emissivity.
@@ -145,13 +134,35 @@ __host__ __device__ double linear_interp_F(const double K);
  * @brief Performs linear interpolation on the precomputed modified Bessel function \f$ K_2(1/\Theta_e) \f$.
  * 
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
- * @param besselTexObj (CUDA only) Texture object for Bessel function look-up tables.
  * 
  * @return The interpolated value of \f$ K_2(1/\Theta_e) \f$.
  */
-__host__ __device__ double linear_interp_K2(const double Thetae
-    #ifdef __CUDA_ARCH__
-        , cudaTextureObject_t besselTexObj
-    #endif
-        );
+__host__ __device__ double linear_interp_K2(const double Thetae);
+
+/**
+ * @brief Calculates the thermal bremsstrahlung emissivity \f$ j_\nu \f$ for a Maxwellian distribution of electrons.
+ * 
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param Ne Electron density.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * 
+ * @note This method is from Method from Rybicki & Lightman, ultimately from Novikov & Thorne.
+ * 
+ * @return The value of the bremsstrahlung emissivity \f$ j_\nu \f$.
+ */
+__host__ double jnu_bremss(const double nu, const double Ne, const double Thetae);
+
+/**
+ * @brief Calculates the total emissivity \f$ j_\nu \f$ by summing contributions from synchrotron and bremsstrahlung processes.
+ * 
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param Ne Electron density.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param B Magnetic field strength \f$ B \f$.
+ * @param theta Angle between the magnetic field and the line of sight.
+ * 
+ * @return The value of the total emissivity \f$ j_\nu \f$.
+ */
+__host__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta);
+
 #endif

@@ -29,7 +29,7 @@
 // __global__ void checkbias(){
 // 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_bias_guess[0], d_bias_guess[1], d_bias_guess[2]);
 // }
-__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj){
+__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj){
 	/*Perform scattering loop*/
 		int n = 1;
 		bool quit_flag_sca = false;
@@ -76,17 +76,17 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 				cudaEventRecord(start, 0);
 				if(ideal_nblocks > max_block_number){
 					#ifdef DO_NOT_USE_TEXTURE_MEMORY
-						track_scat<<<max_block_number,N_THREADS>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, besselTexObj, 0, num_scat_phs[n-1]);
+						track_scat<<<max_block_number,N_THREADS>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
 					#else
-						track_scat<<<max_block_number,N_THREADS>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, besselTexObj, 0, num_scat_phs[n-1]);
+						track_scat<<<max_block_number,N_THREADS>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
 					#endif
 				}else{
 					if (ideal_nblocks == 0)
 						ideal_nblocks = 1;
 					#ifdef DO_NOT_USE_TEXTURE_MEMORY
-						track_scat<<<ideal_nblocks,N_THREADS>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, besselTexObj, 0, num_scat_phs[n-1]);
+						track_scat<<<ideal_nblocks,N_THREADS>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
 					#else
-						track_scat<<<ideal_nblocks,N_THREADS>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, besselTexObj, 0, num_scat_phs[n-1]);
+						track_scat<<<ideal_nblocks,N_THREADS>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
 					#endif
 				}
 				cudaDeviceSynchronize();

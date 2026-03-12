@@ -411,6 +411,15 @@ __device__ double d_tp_over_te;
  */
 __device__ int d_scattering;
 
+/**
+ * Global device variable that controls whether bremsstrahlung emission is enabled (1) or disabled (0) in the simulation.
+ */
+__device__ int d_bremsstrahlung;
+
+/**
+ * Global device variable that controls whether synchrotron emission is enabled (1) or disabled (0) in the simulation.
+ */
+__device__ int d_synchrotron;
 
 /**
  * Global device variable that scales bias to match desired ratio.
@@ -500,6 +509,10 @@ typedef struct params_t {
   double trat_small;
   double trat_large;
   double Thetae_max;
+
+  //emissions
+  int bremsstrahlung;
+  int synchrotron;
 
   char loaded;
 } Params;

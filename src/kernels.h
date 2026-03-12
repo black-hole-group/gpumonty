@@ -41,10 +41,9 @@ Declarations of the kernels.cu file functions
  * @param time Current time used to seed the random number generator for photon generation.
  * @param generated_photons_arr Pointer to the device array that will store the number of photons generated per zone.
  * @param dnmax_arr Pointer to the device array that will store the maximum value of \f$ \frac{dN}{d\ln\nu} \f$ per zone.
- * @param besselTexObj CUDA texture object for Bessel function lookups.
  * @return void
  */
-__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr, cudaTextureObject_t besselTexObj);    
+__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr);    
 
 
 
@@ -83,10 +82,9 @@ __global__ void generate_photons(const struct of_geom * __restrict__  d_geom, co
  * @param d_p Pointer to the device simulation plasma properties.
  * @param d_Ns_par Target superphoton count parameter.
  * @param localState Pointer to the curandState for the current thread.
- * @param besselTexObj Texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__device__ void init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState  * localState, cudaTextureObject_t besselTexObj);
+__device__ void init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState  * localState);
 
 /**
  * @brief Samples superphoton properties for the current batch using dynamic workload allocation.
@@ -111,10 +109,9 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
  * @param max_partition_ph The maximum number of photons assigned to this batch.
  * @param photons_processed_sofar Offset for the current batch relative to the total simulation count.
  * @param index_to_ijk Cumulative sum array mapping global photon indices to zone indices.
- * @param besselTexObj Texture object for Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
-__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj);
+__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk);
 
 /**
  * @brief  Samples the physical properties of a single superphoton within a zone.
@@ -154,10 +151,9 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
  * @param Econ Tetrad basis (coordinate to orthonormal).
  * @param Ecov Dual tetrad basis (orthonormal to coordinate).
  * @param localState Pointer to the curandState for the current thread.
- * @param besselTexObj Texture object for \f$K_2\f$ Bessel function lookups.
  * @return void
  */
-__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, cudaTextureObject_t besselTexObj);
+__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState);
 
 /**
  * @brief Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic.
@@ -180,7 +176,6 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
  * @param scat_ofphoton A secondary SoA used to store the relevant local and instantaneous information of the scattered photon 
  * to be processed later.
  * @param max_partition_ph Total number of superphotons assigned to this specific tracking batch.
- * @param besselTexObj CUDA texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * @return void
  */
 __global__ void track(
@@ -192,9 +187,7 @@ __global__ void track(
     #endif
     const double * __restrict__ d_table_ptr, 
     struct of_photonSOA scat_ofphoton, 
-    const unsigned long long max_partition_ph, 
-    cudaTextureObject_t besselTexObj
-);
+    const unsigned long long max_partition_ph);
 
 
 /**
@@ -218,7 +211,6 @@ __global__ void track(
  * @param scat_ofphoton A secondary SoA used to store the relevant local and instantaneous information of the scattered photon 
  * to be processed later.
  * @param n Current scattering layer index.
- * @param besselTexObj CUDA texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * @param round_num_scat_init The starting global photon index for this scattering batch.
  * @param round_num_scat_end The ending global photon index for this scattering batch.
  * @return void
@@ -229,7 +221,7 @@ __global__ void track_scat(struct of_photonSOA ph,
     #else
         cudaTextureObject_t d_p,
     #endif
-    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end);
+    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end);
 
 
 /**

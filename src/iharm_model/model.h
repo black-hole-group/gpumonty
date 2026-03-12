@@ -18,15 +18,6 @@
 
 #ifndef MODEL_H
 #define MODEL_H
-    /**
-     * Radiation flags 
-     * TODO: implement said flags (currently used for io purposes). maybe use runtime parameters?
-     * TODO: implement Bremss
-     */
-    #define SYNCHROTRON (1)
-    #define BREMSSTRAHLUNG (0)
-    #define COMPTON (1)
-
     /* Range of superphoton frequencies */
 
     /**
