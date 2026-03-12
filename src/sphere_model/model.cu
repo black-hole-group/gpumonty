@@ -257,11 +257,11 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
     double Ucov[4] = {0.};
     double Bcov[4] = {0.};
 
-    get_fluid_params(X, gcov, Ne, Thetae, B, Ucon, Ucov, Bcon, Bcov);
+    get_fluid_params(X, Ne, Thetae, B, Ucon, Ucov, Bcon, Bcov);
 }
 
 
-__host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
                                           double *Thetae, double *B, double Ucon[NDIM],
                                           double Ucov[NDIM], double Bcon[NDIM],
                                           double Bcov[NDIM]) {
@@ -353,6 +353,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM
     Bcon[1] /= r;
     #endif
 
+    double gcov[NDIM][NDIM];
+    gcov_func(X, gcov);
     lower(Ucon, gcov, Ucov);
     lower(Bcon, gcov, Bcov);
 }

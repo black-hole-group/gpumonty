@@ -688,7 +688,7 @@ __global__ void track_scat(struct of_photonSOA ph,
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
+	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	unsigned long long scattering_counter_local = round_num_scat_init - 1;
 	int n_progress = 1;
 	
@@ -704,13 +704,13 @@ __global__ void track_scat(struct of_photonSOA ph,
 		if (scattering_counter_local >= round_num_scat_end) break;
 
 		double X[NDIM] = {ph.X0[scattering_counter_local], ph.X1[scattering_counter_local], ph.X2[scattering_counter_local], ph.X3[scattering_counter_local]};
-		gcov_func(X, Gcov);
 		#ifndef SPHERE_TEST
-			get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 		#else
-			get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
-
+		double Gcov[NDIM][NDIM];
+		gcov_func(X, Gcov);
 		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, scattering_counter_local);
 		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;

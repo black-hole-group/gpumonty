@@ -553,7 +553,31 @@ __host__ __device__ void coord(const int i, const int j, const int k, double *X)
 	return;
 }
 
+__device__ void gcov_func_row0(const double * X, double gcov_row0[NDIM])
+{
+  #ifdef __CUDA_ARCH__
+    double local_bhspin = d_bhspin;
+  #else
+    double local_bhspin = bhspin;
+  #endif
 
+  double r, s2, rho2;
+  {
+    double th;
+    bl_coord(X, &r, &th);
+    double sth, cth;
+    sincos(th, &sth, &cth);
+    sth = fabs(sth) + SMALL;
+    s2 = sth * sth;
+    rho2 = r * r + local_bhspin * local_bhspin * cth * cth;
+  }
+  
+	gcov_row0[0] = (-1. + 2. * r / rho2);
+	gcov_row0[1] = (2. * r / rho2);
+  gcov_row0[2] = 0.;
+	gcov_row0[3] = (-2. * local_bhspin * r * s2 / rho2);
+
+}
 
 __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM])
 {
@@ -830,7 +854,7 @@ __device__ int X_in_domain(const double X[NDIM])
   return 1;
 }
 
-__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
     double Bcov[NDIM], double * d_p)
@@ -860,11 +884,14 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double
       coeff[7] = del[1] * del[2] * (1. - del[3]);
     }
 
+    double gcov[NDIM][NDIM];
+    gcov_func(X, gcov);
     {
     double Vcon[NDIM], Vfac, VdotV;
     Vcon[1] = interp_scalar_pointer(d_p, U1, i, j, k, coeff);
     Vcon[2] = interp_scalar_pointer(d_p, U2, i, j, k, coeff);
     Vcon[3] = interp_scalar_pointer(d_p, U3, i, j, k, coeff);
+
 
     double gcon[NDIM][NDIM];
     gcon_func(X, gcov, gcon);

@@ -75,5 +75,5 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[]);
  * 
  * @return void
  */
-__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
+__noinline__ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
 #endif
