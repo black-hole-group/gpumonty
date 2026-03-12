@@ -138,6 +138,11 @@ The following runtime parameters are supported:
 | `scattering` | **Scattering boolean**: Enable or disable scattering processes in the simulation.|
 | `bremsstrahlung` | **Bremsstrahlung boolean**: Enable or disable Bremsstrahlung emission processes in the simulation.|
 | `synchrotron` | **Synchrotron boolean**: Enable or disable Synchrotron emission processes in the simulation.|
+| `fit_bias` | **Fit Bias boolean**: Enable or disable fit bias correction in the simulation.|
+| `bias_guess` | **Bias Guess**: Initial guess value for bias correction parameter in the simulation.|
+| `bias_ratio` | **Bias Target Ratio**: The target ratio parameter used for bias correction tuning in the simulation. |
+
+
 
 
 ## Data Analysis
