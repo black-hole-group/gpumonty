@@ -3,7 +3,7 @@
 #define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e16
+#define NUMAX 1.e24
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -32,7 +32,7 @@
 /**
  * Size of the energy bin in logarithmic scale for the spectral output binning.
  */
-#define	dlE (0.01) //Size of the energy bin
+#define	dlE (0.015) //Size of the energy bin
 
 /**
  * Minimum energy of the energy bin in logarithmic scale.

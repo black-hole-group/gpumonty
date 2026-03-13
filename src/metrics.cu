@@ -563,9 +563,6 @@ __host__ __device__ int invert_matrix( double Am[][NDIM], double Aminv[][NDIM] )
 			double term_233_a = -cth * sth * (rho23 + a2sth2 * rho2 * (r1 * (4.0 + r1) + a2cth2) 
 								+ 2.0 * r1 * a4 * sth4) * irho23;
 			lconn[2][3][3] = (term_233_a - lconn[1][3][3] *dthdx1) * idthdx2; // reused lconn[1][3][3]
-	
-
-
 		} 
 
 

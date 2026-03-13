@@ -11,7 +11,7 @@ dump ../sample_dump_SANE_a+0.94_MKS_0900.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum test.h5
+spectrum bremss_synch_sphere_1e5.h5
 
 # T_p/T_e
 tp_over_te 3.
