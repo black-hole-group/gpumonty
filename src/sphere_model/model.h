@@ -3,7 +3,7 @@
 #define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e16
+#define NUMAX 1.e24
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
 #define THETAE_MIN	0.3
@@ -32,7 +32,7 @@
 /**
  * Size of the energy bin in logarithmic scale for the spectral output binning.
  */
-#define	dlE (0.01) //Size of the energy bin
+#define	dlE (0.015) //Size of the energy bin
 
 /**
  * Minimum energy of the energy bin in logarithmic scale.
@@ -68,8 +68,9 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
-__host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
+__host__ __device__ void get_fluid_params(double X[NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
 __device__ double bias_func(double Te, double w, int round_scatt);
 __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
+__host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
 #endif

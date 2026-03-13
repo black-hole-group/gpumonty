@@ -466,7 +466,7 @@ __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, d
 }
 
 
-__device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne,
+__device__ void get_fluid_params(double X[NDIM], double *Ne,
     double *Thetae, double *B, double Ucon[NDIM],
     double Ucov[NDIM], double Bcon[NDIM],
     double Bcov[NDIM], cudaTextureObject_t d_p)
@@ -518,6 +518,8 @@ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double
     Vcon[2] = interp_scalar(d_p, U2, i, j, k, del);
     Vcon[3] = interp_scalar(d_p, U3, i, j, k, del);
 
+    double gcov[NDIM][NDIM];
+    gcov_func(X, gcov);
     gcon_func(X, gcov, gcon);
 
     /* Get Ucov */

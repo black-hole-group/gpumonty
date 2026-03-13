@@ -18,15 +18,6 @@
 
 #ifndef MODEL_H
 #define MODEL_H
-    /**
-     * Radiation flags 
-     * TODO: implement said flags (currently used for io purposes). maybe use runtime parameters?
-     * TODO: implement Bremss
-     */
-    #define SYNCHROTRON (1)
-    #define BREMSSTRAHLUNG (0)
-    #define COMPTON (1)
-
     /* Range of superphoton frequencies */
 
     /**
@@ -300,7 +291,6 @@
      * 5. Applies safety cuts.
      * 
      * @param X Continuous internal coordinates.
-     * @param gcov [out] Local covariant metric tensor.
      * @param Ne [out] Interpolated electron number density.
      * @param Thetae [out] Interpolated dimensionless electron temperature.
      * @param B [out] Physical magnetic field magnitude.
@@ -310,7 +300,17 @@
      * 
      * @return void
      */
-    __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
+    __device__ void get_fluid_params(double X[NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM], double * d_p);
+
+    /**
+     * @brief Computes the first row of the covariant metric tensor \f$ g_{μν} \f$.
+     * 
+     * @param X Input internal coordinates \f$ X^\mu \f$.
+     * @param gcov_row0 Output array to store the first row of the covariant metric tensor \f$ g_{0ν} \f$.
+     * 
+     * @return void
+     */
+    __device__ void gcov_func_row0(const double * X, double gcov_row0[NDIM]);
 
     /**
      * @brief Calculates the scattering bias parameter based on local temperature.

@@ -38,15 +38,13 @@ __device__ double Bnu_inv(const double nu, const double Thetae)
 }
 
 
-__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj)
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta)
 {
 	double j;
+	double K2 = K2_eval(Thetae);
 
-	#ifdef __CUDA_ARCH__
-	j = jnu_synch(nu, Ne, Thetae, B, theta, besselTexObj);
-	#else
-	j = jnu_synch(nu, Ne, Thetae, B, theta);
-	#endif
+	j = jnu_synch(nu, Ne, Thetae, B, theta, K2);
+
 	return (j / (nu * nu));
 }
 
@@ -57,10 +55,10 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
 }
 /* return Lorentz invariant absorption opacity */
 __device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
-		    double theta, cudaTextureObject_t besselTexObj)
+		    double theta)
 {
 	double j, bnu;
-	j = jnu_inv(nu, Thetae, Ne, B, theta, besselTexObj);
+	j = jnu_inv(nu, Thetae, Ne, B, theta);
 	bnu = Bnu_inv(nu, Thetae);
 	if (j > 0){
 		return (j / (bnu + 1.e-100));

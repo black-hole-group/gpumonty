@@ -39,7 +39,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	#else
 		cudaTextureObject_t d_p,
 	#endif
-	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState, cudaTextureObject_t besselTexObj)
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState *  localState)
 {
 	// Keeping only essential variables at function scope
 	double XArray[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
@@ -76,20 +76,19 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 	/* Initialize opacities and fluid parameters */
 	double alpha_scatti, alpha_absi, bi;
 	{
-		double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
+		double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 		double Ne, Thetae, B, theta, nu;
 		
-		gcov_func(XArray, Gcov);
 		#ifndef SPHERE_TEST
-			get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 		#else
-			get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
 		
 		theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 		nu = get_fluid_nu(XArray, KArray, Ucov);
 		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 		bi = bias_func(Thetae, ph.w[photon_index], round_scat);
 	}
 	/* Initialize dK/dlam */
@@ -113,12 +112,11 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 		/* Get fluid parameters at new position */
 		double Ne, Thetae, B;
 		{
-			double Gcov[NDIM][NDIM], Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
-			gcov_func(XArray, Gcov);
+			double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 			#ifndef SPHERE_TEST
-				get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+				get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 			#else
-				get_fluid_params(XArray, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+				get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 			#endif
 
 			
@@ -151,7 +149,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 					alpha_scatti = alpha_scattf;
 
-					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta, besselTexObj);
+					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
 					dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 					alpha_absi = alpha_absf;
 
@@ -201,14 +199,14 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 
 					/* Get plasma parameters at scattering location and store scattered photon */
 					{
-						double Gcov_scat[NDIM][NDIM], Ucon_scat[NDIM], Ucov_scat[NDIM], Bcon_scat[NDIM], Bcov_scat[NDIM];
+						double Ucon_scat[NDIM], Ucov_scat[NDIM], Bcon_scat[NDIM], Bcov_scat[NDIM];
 						double Ne_scat, Thetae_scat, B_scat;
 						
-						gcov_func(XArray, Gcov_scat);
+
 						#ifndef SPHERE_TEST
-							get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat, d_p);
+							get_fluid_params(XArray, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat, d_p);
 						#else
-							get_fluid_params(XArray, Gcov_scat, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
+							get_fluid_params(XArray, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
 						#endif
 						
 						if (Ne_scat > 0.) {
@@ -249,7 +247,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 							alpha_scatti = alpha_absi = 0.;
 						} else {
 							alpha_scatti = alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, d_table_ptr);
-							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat, besselTexObj);
+							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat);
 						}
 						bi = bias_func(Thetae_scat, ph.w[photon_index], round_scat);
 					}
@@ -335,63 +333,56 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 }
 
 
-
-__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl,
-	double *E0)
+__noinline__ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0)
 {
-        double lconn[NDIM][NDIM][NDIM];
-        double Kcont[NDIM], K[NDIM], dK;
-        double Gcov[NDIM][NDIM];
-        double dl_2, err;
-        int i, k, iter;
+    double lconn[NDIM][NDIM][NDIM];
+    double Kcont[NDIM], K[NDIM], dK;
+    double dl_2, err;
+    int i, k, iter;
 
-        if (X[1] < d_startx[1]) return;
+    if (X[1] < d_startx[1]) return;
 
-        dl_2 = 0.5 * dl;
+    dl_2 = 0.5 * dl;
 
-        /* Step the position and estimate new wave vector */
-        for (i = 0; i < NDIM; i++) {
-                dK = dKcon[i] * dl_2;
-                Kcon[i] += dK;
-                K[i] = Kcon[i] + dK;
-                X[i] += Kcon[i] * dl;
+    for (i = 0; i < NDIM; i++) {
+        dK = dKcon[i] * dl_2;
+        Kcon[i] += dK;
+        K[i] = Kcon[i] + dK;
+        X[i] += Kcon[i] * dl;
+    }
+
+    ConnectionAnalyticalWrapper(X, lconn);
+
+    iter = 0;
+    do {
+        iter++;
+        FAST_CPY(K, Kcont);
+        err = 0.;
+        for (k = 0; k < 4; k++) {
+            dKcon[k] = fma(-2.0,
+                (fma(Kcont[0],
+                    fma(lconn[k][0][1], Kcont[1],
+                        fma(lconn[k][0][2], Kcont[2],
+                            lconn[k][0][3] * Kcont[3])),
+                    fma(Kcont[1],
+                        fma(lconn[k][1][2], Kcont[2],
+                            lconn[k][1][3] * Kcont[3]),
+                        lconn[k][2][3] * Kcont[2] * Kcont[3]))),
+                -1.0 * (fma(lconn[k][0][0], Kcont[0] * Kcont[0],
+                        fma(lconn[k][1][1], Kcont[1] * Kcont[1],
+                            fma(lconn[k][2][2], Kcont[2] * Kcont[2],
+                                lconn[k][3][3] * Kcont[3] * Kcont[3])))));
+            K[k] = fma(dl_2, dKcon[k], Kcon[k]);
+            err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
         }
+    } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
 
+    FAST_CPY(K, Kcon);
 
-        ConnectionAnalyticalWrapper(X, lconn);
-
-        /* We're in a coordinate basis so take advantage of symmetry in the connection */
-        iter = 0;
-
-        do {
-			iter++;
-			FAST_CPY(K, Kcont);
-
-			err = 0.;
-
-			for (k = 0; k < 4; k++) {
-				dKcon[k] = fma(-2.0, 
-					(fma(Kcont[0], 
-						fma(lconn[k][0][1], Kcont[1], 
-							fma(lconn[k][0][2], Kcont[2], 
-								lconn[k][0][3] * Kcont[3])),
-						fma(Kcont[1], 
-							fma(lconn[k][1][2], Kcont[2], 
-								lconn[k][1][3] * Kcont[3]),
-							lconn[k][2][3] * Kcont[2] * Kcont[3]))),
-					-1.0 * (fma(lconn[k][0][0], Kcont[0] * Kcont[0],
-							fma(lconn[k][1][1], Kcont[1] * Kcont[1],
-								fma(lconn[k][2][2], Kcont[2] * Kcont[2],
-									lconn[k][3][3] * Kcont[3] * Kcont[3])))));
-					K[k] = fma(dl_2, dKcon[k], Kcon[k]);
-					err += fabs((Kcont[k] - K[k]) / (K[k] + SMALL));
-			}
-
-        } while ((err > ETOL || isinf(err) || isnan(err)) && iter < MAX_ITER);
-        FAST_CPY(K, Kcon);
-		gcov_func(X, Gcov);
-        *E0 = -(Kcon[0] * Gcov[0][0] + Kcon[1] * Gcov[0][1] +
-               Kcon[2] * Gcov[0][2] + Kcon[3] * Gcov[0][3]);
-
-		/* done! */
+    /* compute E0 directly from metric without storing full Gcov */
+    {
+        double gcov0[NDIM]; // only need first row of gcov
+        gcov_func_row0(X, gcov0);
+        *E0 = -(Kcon[0]*gcov0[0] + Kcon[1]*gcov0[1] + Kcon[2]*gcov0[2] + Kcon[3]*gcov0[3]);
+    }
 }

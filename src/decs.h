@@ -28,7 +28,6 @@ typedef struct params_t {
   char spectrum[256];
 
   // bias
-  int scattering;
   double bias_guess;
   int    fitBias;
   double fitBiasNs;
@@ -41,6 +40,11 @@ typedef struct params_t {
   double trat_large;
   double Thetae_max;
 
+  //emissions
+  int bremsstrahlung;
+  int synchrotron;
+  int scattering;
+  
   char loaded;
 } Params;
 
@@ -170,7 +174,7 @@ struct of_spectrum {
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
-	extern __device__ int d_scattering;
+	extern __device__ int d_scattering, d_bremsstrahlung, d_synchrotron;
 	extern __device__ double d_bias_guess[MAX_LAYER_SCA];
 	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
 	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
