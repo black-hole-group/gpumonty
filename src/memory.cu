@@ -43,39 +43,7 @@ struct of_spectrum*** Malloc3D_Contiguous(int dim1, int dim2, int dim3) {
     return ptr3D;
 }
 
-__host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cudaArray_t * cudaArray){
-	int width = N_ESAMP + 1;
-	float float_table[width];
-	for (int i = 0; i < width; i++) {
-		float_table[i] = (float)ptr[i];
-	}
 
-
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-    CHECK_CUDA_ERROR(cudaMallocArray(cudaArray, &channelDesc, width, 1));
-
-	// Copy data from host to device
-    size_t spitch = width * sizeof(float);
-    CHECK_CUDA_ERROR(cudaMemcpy2DToArray(*cudaArray, 0, 0, float_table, spitch, spitch, 1, cudaMemcpyHostToDevice));
-	
-	// Specify texture object parameters
-    struct cudaResourceDesc resDesc;
-    memset(&resDesc, 0, sizeof(resDesc));
-    resDesc.resType = cudaResourceTypeArray;
-    resDesc.res.array.array = *cudaArray;
-	 // Specify texture description parameters
-	 struct cudaTextureDesc texDesc;
-	 memset(&texDesc, 0, sizeof(texDesc));
-	 texDesc.addressMode[0] = cudaAddressModeClamp;
-	 texDesc.filterMode = cudaFilterModeLinear;
-	 texDesc.readMode = cudaReadModeElementType;
-	 texDesc.normalizedCoords = 0;  // Using non-normalized coordinates
- 
-	 // Create texture object
-	 CHECK_CUDA_ERROR(cudaCreateTextureObject(texObj, &resDesc, &texDesc, NULL));
-	 // Destroy texture object and free CUDA array
-	 //CHECK_CUDA_ERROR(cudaFreeArray(cuArray));
-}
 __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cudaArray_t * cuArray) {	
 	const int nw = N1; //r
 	const int nx = NPRIM; //Nvar
@@ -136,8 +104,10 @@ __host__ void transferParams() {
 	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
 
 
-	/*iharm variables*/
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
+	cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int));
+	cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int));
+
 	double h_bias_guess[MAX_LAYER_SCA];
 
 	for (int i = 0; i < MAX_LAYER_SCA; i++) {

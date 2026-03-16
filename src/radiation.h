@@ -36,11 +36,10 @@ Declaration of the functions in radiation.cu file
  * @param Ne Electron number density \f$ N_e \f$ in cgs.
  * @param B Magnetic field strength \f$ B \f$ in Gauss.
  * @param theta Pitch angle \f$ \theta \f$ between the photon wavevector and the magnetic field.
- * @param besselTexObj CUDA texture object used for fast lookup of modified Bessel functions.
  *
  * @return The invariant emissivity \f$ j_\nu / \nu^2 \f$.
  */
-__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, cudaTextureObject_t besselTexObj);
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta);
 
 /**
  * @brief Calculates the invariant Planck source function for a thermal distribution.
@@ -145,12 +144,11 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
  * @param Ne Electron number density \f$N_e\f$ (cm\f$^{-3}\f$).
  * @param B Magnetic field strength (Gauss).
  * @param theta Pitch angle between photon and magnetic field.
- * @param besselTexObj CUDA texture for Bessel function lookups.
  * @return The invariant absorption coefficient \f$\nu \alpha_{a}\f$ [units: Hz \f$ \rm{cm}^{-1} \f$].
  *
  * @note A small epsilon (\f$ 10^{-100} \f$) is added to the denominator to prevent division by zero.
  */
-__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta, cudaTextureObject_t besselTexObj);
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta);
 
 
 /**

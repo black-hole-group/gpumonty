@@ -29,11 +29,10 @@
  * @param d_spect device pointer to the spectrum structure used to save the spectrum.
  * @param instant_photon_number The number of superphotons in the current batch in the current batch.
  * @param max_block_number The maximum number of blocks that can be launched in the scattering kernel.
- * @param besselTexObj The texture object for the Bessel function values.
  * @param d_table_ptr Device pointer to the table.
  * @param d_p Device pointer to the plasma properties
  * @param dPTableTexObj The texture object for the plasma table values.
  * @returns void
  */
-void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, cudaTextureObject_t besselTexObj, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj);
+void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj);
 #endif
