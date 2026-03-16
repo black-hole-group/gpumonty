@@ -22,6 +22,7 @@ jobs:
 
       - name: Compile
         run: |
+          make CUDA_PATH=/usr -j$(nproc)
           make clean
           make -j 12
 
