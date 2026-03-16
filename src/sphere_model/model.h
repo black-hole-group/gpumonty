@@ -6,18 +6,18 @@
 #define NUMAX 1.e24
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
-#define THETAE_MIN	0.3
+#define THETAE_MIN 0.3
 #define THETAE_MAX 1000.
 
 /*Ratio of proton temperature to electron temperature*/
-#define TP_OVER_TE	(3.)
+#define TP_OVER_TE (3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0.)
+#define WEIGHT_MIN (0.)
 
 /*for stop criterium*/
-#define RMAX	(10000.) //Define the maximum radius up to track the photon
-#define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
+#define RMAX (10000.)
+#define ROULETTE 1.e4
 #define R_RECORD (3000.)
 //RMIN for sphere model only
 #define RMIN (0.01)
@@ -51,7 +51,7 @@
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 
-#define NPRIM	8
+#define NPRIM 8
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)

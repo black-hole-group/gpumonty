@@ -1,0 +1,28 @@
+name: gpumonty tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install python dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip
+          pip install numpy scipy astropy matplotlib
+
+      - name: Compile code
+        run: |
+          make clean
+          make -j 12
+
+      - name: Run CI tests
+        run: |
+          python3 tests-ci/run_ci_tests.py

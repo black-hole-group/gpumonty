@@ -18,14 +18,14 @@
 
 
 # Model name ( harm_model, sphere_model, iharm_model)
-MODEL = sphere
+MODEL = iharm
 MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-CUDA_PATH ?=/usr/local/cuda-12.3
+CUDA_PATH ?=/usr/local/cuda-12.4/
 
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)
