@@ -78,14 +78,15 @@ jobs:
           
           while true; do
             STATUS=$(kaggle kernels status $KAGGLE_USERNAME/gpumonty-ci-run 2>&1)
+            STATUS_LOWER=$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')
             echo "Current status: $STATUS"
-            
-            if [[ "$STATUS" == *"complete"* ]]; then
+
+            if [[ "$STATUS_LOWER" == *"complete"* ]]; then
               echo "Tests passed successfully on Kaggle!"
               kaggle kernels output $KAGGLE_USERNAME/gpumonty-ci-run -p ./output
               cat ./output/*.log || true
               break
-            elif [[ "$STATUS" == *"error"* || "$STATUS" == *"cancel"* || "$STATUS" == *"fatal"* ]]; then
+            elif [[ "$STATUS_LOWER" == *"error"* || "$STATUS_LOWER" == *"cancel"* || "$STATUS_LOWER" == *"fatal"* ]]; then
               echo "Tests failed or kernel errored!"
               kaggle kernels output $KAGGLE_USERNAME/gpumonty-ci-run -p ./output
               cat ./output/*.log || true
