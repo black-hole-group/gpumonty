@@ -41,7 +41,8 @@ jobs:
 
           print("Installing dependencies...")
           run("pip install numpy scipy astropy matplotlib")
-
+          print("Installing C++ dependencies (GSL)...")
+          run("apt-get update && apt-get install -y libgsl-dev")
           print("Compiling CUDA code...")
           run("make CUDA_PATH=/usr/local/cuda -j$(nproc)")
           run("make clean")
@@ -70,7 +71,6 @@ jobs:
       - name: Trigger Kaggle GPU and Wait for Results
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          # TWEAK 2: Use the new KAGGLE_API_TOKEN variable
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           cd kaggle_run
