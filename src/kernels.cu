@@ -556,11 +556,14 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		const double K2 = K2_eval(Thetae);
         const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
 		double j_th;
+		double th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
-            const double th = acos(cth);
+            th = acos(cth);
         	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
         } while (curand_uniform_double(localState) > j_th / jmax);
+		ph.ratio_brems[ph_arr_index] = jnu_ratio_brems(nu, Ne, Thetae, Bmag, th, K2);
+
     } // jmax, th, j_th go out of scope
     
     // Reuse arrays - use one array for both K_tetrad and final storage
