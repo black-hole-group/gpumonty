@@ -77,9 +77,9 @@ def configure_headers():
 
 
 def compile_code():
+    run(f"OMP_NUM_THREADS=8")
     run("make clean")
-    run("make -j 12")
-
+    run("make CUDA_PATH=/usr/local/cuda CUDA_LIB='-L/usr/local/cuda/lib64 -L/usr/local/cuda/lib64/stubs' -j$(nproc)")
 
 def run_test(par, script):
     run(f"./gpumonty -par {par}")
