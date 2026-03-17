@@ -1,0 +1,43 @@
+stages:
+  - build
+  - test
+
+variables:
+  CUDA_PATH: "/usr/local/cuda" 
+  BUILD_DIR: "build"
+
+before_script:
+  - apt-get update -y
+  - apt-get install -y python3-pip python3-numpy python3-scipy python3-matplotlib build-essential
+
+build_gpumonty:
+  stage: build
+  tags:
+    - gpu
+  script:
+    - make clean
+    - make -j$(nproc)
+
+test_synchrotron:
+  stage: test
+  tags:
+    - gpu
+  script:
+    - ./gpumonty -par ./tests-ci/sphere-emission-test-synchrotron.par
+    - python3 ./tests-ci/sphere-emission-test-synchrotron.py
+
+test_bremsstrahlung:
+  stage: test
+  tags:
+    - gpu
+  script:
+    - ./gpumonty -par ./tests-ci/sphere-emission-test-bremsstrahlung.par
+    - python3 ./tests-ci/sphere-emission-test-bremsstrahlung.py
+
+test_mixed:
+  stage: test
+  tags:
+    - gpu
+  script:
+    - ./gpumonty -par ./tests-ci/sphere-emission-test-mixed.par
+    - python3 ./tests-ci/sphere-emission-test-mixed.py
