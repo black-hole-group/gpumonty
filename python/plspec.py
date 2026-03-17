@@ -22,7 +22,6 @@ MANY_SPEC = True
 def mkplot(nu, nuLnu, fname):
 
   print("plotting spectrum for {0:s}".format(fname))
-
   # plot
   plt.close("all")
   ax = plt.subplot(1,1,1)
