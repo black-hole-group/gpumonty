@@ -47,6 +47,7 @@ cpp_id_attributes = [
     "__device__",
     "__global__",
     "__forceinline__",
+    "__noinline__",
 ]
 
 

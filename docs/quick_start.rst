@@ -113,7 +113,7 @@ To run a simulation with your custom parameters:
    * - ``scattering``
      - **Boolean for Scattering**: Enable or disable scattering processes in the simulation.
    * - ``bremsstrahlung``
-   - **Boolean for Bremsstrahlung**: Enable or disable Bremsstrahlung emission processes in the simulation.
+     - **Boolean for Bremsstrahlung**: Enable or disable Bremsstrahlung emission processes in the simulation.
    * - ``synchrotron``
      - **Boolean for Synchrotron**: Enable or disable synchrotron emission processes in the simulation.
    * - ``fit_bias``
