@@ -9,7 +9,7 @@ def run(cmd):
     print(f"\nRunning: {cmd}")
     result = subprocess.run(cmd, shell=True)
     if result.returncode != 0:
-        print("❌ Command failed")
+        print("Command failed")
         sys.exit(result.returncode)
 
 

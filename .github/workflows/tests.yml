@@ -44,9 +44,8 @@ jobs:
           print("Installing C++ dependencies (GSL)...")
           run("apt-get update && apt-get install -y libgsl-dev")
           print("Compiling CUDA code...")
-          run("make CUDA_PATH=/usr/local/cuda -j$(nproc)")
           run("make clean")
-          run("make -j 12")
+          run("make CUDA_PATH=/usr/local/cuda CUDA_LIB='-L/usr/local/cuda/lib64 -L/usr/local/cuda/lib64/stubs' -j$(nproc)")
 
           print("Running Tests...")
           run("python3 tests-ci/run_ci_tests.py")
