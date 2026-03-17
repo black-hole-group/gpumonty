@@ -3,9 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; GPUmonty 1.0 documentation</title>
+  <title>Continuous Integration Testing &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0ef53e4c" />
@@ -17,8 +18,9 @@
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Scattering Bias-Tuning" href="bias_tuning.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,7 +42,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/compton.html">compton.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/compton.html#functions">Functions</a><ul>
@@ -551,15 +553,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="continuous_integration.html">Continuous Integration Testing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#trigger-conditions">Trigger Conditions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="continuous_integration.html#skipping-ci">Skipping CI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Continuous Integration Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trigger-conditions">Trigger Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#skipping-ci">Skipping CI</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#pipeline-architecture">Pipeline Architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#test-suite">Test Suite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#local-git-hook-setup">Local Git Hook Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pipeline-architecture">Pipeline Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-suite">Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-git-hook-setup">Local Git Hook Setup</a></li>
 </ul>
 </li>
 </ul>
@@ -578,8 +580,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Index</li>
+      <li class="breadcrumb-item active">Continuous Integration Testing</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/continuous_integration.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -587,891 +590,145 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
- | <a href="#D"><strong>D</strong></a>
- | <a href="#E"><strong>E</strong></a>
- | <a href="#F"><strong>F</strong></a>
- | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
- | <a href="#I"><strong>I</strong></a>
- | <a href="#J"><strong>J</strong></a>
- | <a href="#K"><strong>K</strong></a>
- | <a href="#L"><strong>L</strong></a>
- | <a href="#M"><strong>M</strong></a>
- | <a href="#N"><strong>N</strong></a>
- | <a href="#O"><strong>O</strong></a>
- | <a href="#P"><strong>P</strong></a>
- | <a href="#R"><strong>R</strong></a>
- | <a href="#S"><strong>S</strong></a>
- | <a href="#T"><strong>T</strong></a>
- | <a href="#U"><strong>U</strong></a>
- | <a href="#W"><strong>W</strong></a>
- | <a href="#X"><strong>X</strong></a>
- | <a href="#Y"><strong>Y</strong></a>
- | <a href="#Z"><strong>Z</strong></a>
- 
+  <section id="continuous-integration-testing">
+<h1>Continuous Integration Testing<a class="headerlink" href="#continuous-integration-testing" title="Link to this heading"></a></h1>
+<p>GPUmonty uses a GPU-accelerated Continuous Integration (CI) pipeline to automatically validate the physics of the code on every push to the <code class="docutils literal notranslate"><span class="pre">main</span></code> or <code class="docutils literal notranslate"><span class="pre">feature/test-ci</span></code> branches. Since the code requires a real NVIDIA GPU to run, the CI pipeline offloads execution to <a class="reference external" href="https://www.kaggle.com/">Kaggle</a>, which provides free GPU compute.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The CI pipeline is built on two components working together:</p>
+<ul class="simple">
+<li><p><strong>GitHub Actions</strong>: Detects the push, prepares the test script, sends it to Kaggle, and polls for results.</p></li>
+<li><p><strong>Kaggle Kernels</strong>: Clones the repository, compiles the code on a real GPU, runs the physics tests, and reports pass or fail.</p></li>
+</ul>
+<p>The pipeline is entirely one-way: Kaggle runs the code in a virtual environment and discards all build artifacts after the session ends. Nothing is written back to the repository.</p>
+</section>
+<section id="trigger-conditions">
+<h2>Trigger Conditions<a class="headerlink" href="#trigger-conditions" title="Link to this heading"></a></h2>
+<p>The CI pipeline triggers automatically under the following conditions:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Behaviour</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Push to <code class="docutils literal notranslate"><span class="pre">main</span></code></p></td>
+<td><p>Triggers CI unless commit message contains <code class="docutils literal notranslate"><span class="pre">[skip-ci]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Push to <code class="docutils literal notranslate"><span class="pre">feature/test-ci</span></code></p></td>
+<td><p>Always triggers CI</p></td>
+</tr>
+<tr class="row-even"><td><p>Push to any other branch</p></td>
+<td><p>CI is skipped entirely</p></td>
+</tr>
+</tbody>
+</table>
+<section id="skipping-ci">
+<h3>Skipping CI<a class="headerlink" href="#skipping-ci" title="Link to this heading"></a></h3>
+<p>When pushing directly to <code class="docutils literal notranslate"><span class="pre">main</span></code>, a local Git hook will prompt you interactively:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>You are pushing to main. Run Kaggle CI tests? [y/N]
+</pre></div>
 </div>
-<h2 id="A">A</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy">allocatePhotonData (C++ function)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv413alpha_inv_absKdKdKdKdd">alpha_inv_abs (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/radiation.html#_CPPv415alpha_inv_scattKdKdKdPKd">alpha_inv_scatt (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.AMU">AMU (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.AU">AU (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="B">B</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.B1">B1 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.B2">B2 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.B3">B3 (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv46B_unit">B_unit (C++ member)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv46bessi0d">bessi0 (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv46bessi1d">bessi1 (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv46bessk0d">bessk0 (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv46bessk1d">bessk1 (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv46bessk2d">bessk2 (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv46bhspin">bhspin (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv49bias_funcddi">bias_func (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv49bias_norm">bias_norm (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv48bl_coordPKdPdPd">bl_coord (C++ function)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv47Bnu_invKdKd">Bnu_inv (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv45boostAL4E_dAL4E_dAL4E_d">boost (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv410boostcrossddd">boostcross (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.BTHSQMAX">BTHSQMAX (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.BTHSQMIN">BTHSQMIN (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/curand.html#_CPPv410chi_squareiP11curandState">chi_square (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.CL">CL (C macro)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv430ConnectionAnalytical_MKS3_FMKSAL4E_KdAL4E_AL4E_AL4E_d">ConnectionAnalytical_MKS3_FMKS (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv423ConnectionAnalyticalMKSAL4E_KdAL4E_AL4E_AL4E_d">ConnectionAnalyticalMKS (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv427ConnectionAnalyticalWrapperAL4E_KdAL4E_AL4E_AL4E_d">ConnectionAnalyticalWrapper (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#_CPPv45coordKiKiKiPd">coord (C++ function)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv420coordinate_to_tetradA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d">coordinate_to_tetrad (C++ function)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t">createdPTextureObj (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.CST">CST (C macro)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv425cummulativePhotonsPerZonePyPy">cummulativePhotonsPerZone (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="D">D</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv48d_B_unit">d_B_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv411d_beta_crit">d_beta_crit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48d_bhspin">d_bhspin (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_bias_guess">d_bias_guess (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv411d_bias_norm">d_bias_norm (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv416d_bremsstrahlung">d_bremsstrahlung (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.d_dlT1">d_dlT1 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.d_dlT2">d_dlT2 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.d_dlw">d_dlw (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_dndlnu_max">d_dndlnu_max (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_dx">d_dx (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv43d_F">d_F (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48d_hslope">d_hslope (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_K2">d_K2 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48d_L_unit">d_L_unit (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.d_lmint">d_lmint (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.d_lminw">d_lminw (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.d_lT_min">d_lT_min (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv415d_max_tau_scatt">d_max_tau_scatt (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45d_MBH">d_MBH (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_N1">d_N1 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_N2">d_N2 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_N3">d_N3 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv420d_N_superph_recorded">d_N_superph_recorded (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv49d_Ne_unit">d_Ne_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv46d_nint">d_nint (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_Ns">d_Ns (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv414d_num_scat_phs">d_num_scat_phs (C++ member)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv44d_R0">d_R0 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44d_Rh">d_Rh (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_scattering">d_scattering (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48d_startx">d_startx (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv47d_stopx">d_stopx (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv413d_synchrotron">d_synchrotron (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv47d_table">d_table (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_thetae_max">d_thetae_max (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv413d_thetae_unit">d_thetae_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_tp_over_te">d_tp_over_te (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_trat_large">d_trat_large (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv412d_trat_small">d_trat_small (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45d_wgt">d_wgt (C++ member)</a>
-</li>
-      <li><a href="api/constant.html#c.DAY">DAY (C macro)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv45deltaii">delta (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.DGAMMAE">DGAMMAE (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.dlE">dlE (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.DLNU">DLNU (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.DLOOP">DLOOP (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv43dlT">dlT (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv43dlw">dlw (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45dMact">dMact (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.DMUE">DMUE (C macro)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv49dNdgammaedd">dNdgammae (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv410dndlnu_max">dndlnu_max (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY">DO_NOT_USE_TEXTURE_MEMORY (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv411dOmega_funcdd">dOmega_func (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.DSGRA">DSGRA (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv42dx">dx (C++ member)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="E">E</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/constant.html#c.EE">EE (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.EPS">EPS (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.EPSABS">EPSABS (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.EPSREL">EPSREL (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.ETOL">ETOL (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.EV">EV (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="F">F</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv41F">F (C++ member)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv46F_evalKdKdKd">F_eval (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.FAST_CPY">FAST_CPY (C macro)</a>
-</li>
-      <li><a href="api/metrics.html#c.FIND_GCON_MATRIX_INV">FIND_GCON_MATRIX_INV (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/utils.html#_CPPv415findPhotonIndexPKyiy">findPhotonIndex (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.FOUR_PI">FOUR_PI (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.FOUR_PISQ">FOUR_PISQ (C macro)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi">Free3D_Contiguous (C++ function)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA">freePhotonData (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="G">G</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/metrics.html#_CPPv49gcon_funcAL4E_KdA_A4NDIM_dA_A4NDIM_d">gcon_func (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv49gcov_funcPKdA_A4NDIM_d">gcov_func (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv414gcov_func_row0PKdA4NDIM_d">gcov_func_row0 (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv49gdet_funcA_A4NDIM_d">gdet_func (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd">generate_photons (C++ function)</a>
-</li>
-      <li><a href="api/curand.html#_CPPv425generate_random_directionPdPdPdP11curandState">generate_random_direction (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv44geom">geom (C++ member)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv412get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd">get_bk_angle (C++ function)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv412get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd">get_fluid_nu (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd">get_fluid_params (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd">get_fluid_zone (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.GNEWT">GNEWT (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/constant.html#c.HBAR">HBAR (C macro)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv416hc_klein_nishinad">hc_klein_nishina (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv410hdf5_closev">hdf5_close (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv415hdf5_close_blob9hdf5_blob">hdf5_close_blob (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv411hdf5_createPKc">hdf5_create (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv413hdf5_get_blobPKc">hdf5_get_blob (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/hdf5_utils.html#_CPPv419hdf5_make_directoryPKc">hdf5_make_directory (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv49hdf5_openPKc">hdf5_open (C++ function)</a>
-</li>
-      <li><a href="api/hdf5_utils.html#_CPPv415hdf5_write_blob9hdf5_blobPKc">hdf5_write_blob (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.HOTCROSS">HOTCROSS (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.HOUR">HOUR (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.HPL">HPL (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv46hslope">hslope (C++ member)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="I">I</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#c.IHARM">IHARM (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv49init_datav">init_data (C++ function)</a>
-</li>
-      <li><a href="api/track.html#_CPPv411init_dKdlamA_dA_dA_d">init_dKdlam (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv417init_emiss_tablesv">init_emiss_tables (C++ function)</a>
-</li>
-      <li><a href="api/main.html#_CPPv413init_geometryv">init_geometry (C++ function)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv413init_hotcrossv">init_hotcross (C++ function)</a>
-</li>
-      <li><a href="api/main.html#_CPPv410init_modelA_Pc">init_model (C++ function)</a>
-</li>
-      <li><a href="api/curand.html#_CPPv415init_monty_randi">init_monty_rand (C++ function)</a>
-</li>
-      <li><a href="api/weight.html#_CPPv415init_nint_tablev">init_nint_table (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#_CPPv412init_storagev">init_storage (C++ function)</a>
-</li>
-      <li><a href="api/weight.html#_CPPv417init_weight_tablev">init_weight_table (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState">init_zone (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv414int_jnu_bremssKdKdKd">int_jnu_bremss (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv421int_jnu_thermal_synchddddd">int_jnu_thermal_synch (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv413int_jnu_totalKdKdKdKdKd">int_jnu_total (C++ function)</a>
-</li>
-      <li><a href="api/utils.html#_CPPv413interp_scalar19cudaTextureObject_tKiKiKiKiAL4E_Kd">interp_scalar (C++ function)</a>
-</li>
-      <li><a href="api/utils.html#_CPPv421interp_scalar_pointerPKdKiKiKiKiAL8E_Kd">interp_scalar_pointer (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv413invert_matrixA_A4NDIM_dA_A4NDIM_d">invert_matrix (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="J">J</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/jnu_mixed.html#_CPPv410jnu_bremssKdKdKd">jnu_bremss (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv413jnu_integranddPv">jnu_integrand (C++ function)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv47jnu_invKdKdKdKdKd">jnu_inv (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKdKd">jnu_synch (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv49jnu_totalKdKdKdKdKdKd">jnu_total (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.JY">JY (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="K">K</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv42K2">K2 (C++ member)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv47K2_evalKd">K2_eval (C++ function)</a>
-</li>
-      <li><a href="api/radiation.html#_CPPv48kappa_esKdKdPKd">kappa_es (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.KBOL">KBOL (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.KEL">KEL (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.KFAC">KFAC (C macro)</a>, <a href="api/constant.html#c.KFAC">[1]</a>
-</li>
-      <li><a href="api/compton.html#_CPPv413klein_nishinaKdKd">klein_nishina (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.KMAX">KMAX (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.KMIN">KMIN (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.KRHO">KRHO (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.KTOT">KTOT (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="L">L</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv46L_unit">L_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44Ladv">Ladv (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.lE0">lE0 (C macro)</a>
-</li>
-      <li><a href="api/curand.html#_CPPv412legacy_gaussPdPdP11curandState">legacy_gauss (C++ function)</a>
-</li>
-      <li><a href="api/curand.html#_CPPv427legacy_standard_exponentialP11curandState">legacy_standard_exponential (C++ function)</a>
-</li>
-      <li><a href="api/curand.html#_CPPv421legacy_standard_gammadP11curandState">legacy_standard_gamma (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv415linear_interp_FKd">linear_interp_F (C++ function)</a>
-</li>
-      <li><a href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd">linear_interp_K2 (C++ function)</a>
-</li>
-      <li><a href="api/weight.html#_CPPv420linear_interp_weightKd">linear_interp_weight (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv45lmint">lmint (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45lminw">lminw (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.LNUMAX">LNUMAX (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.LNUMIN">LNUMIN (C macro)</a>
-</li>
-      <li><a href="api/par.html#_CPPv48load_parPKcP6Params">load_par (C++ function)</a>
-</li>
-      <li><a href="api/par.html#_CPPv418load_par_from_argviA_PcP6Params">load_par_from_argv (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv45lowerPdA4NDIM_A4NDIM_KdPd">lower (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.LSUN">LSUN (C macro)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv412LU_decomposeA_A4NDIM_dA_i">LU_decompose (C++ function)</a>
-</li>
-      <li><a href="api/metrics.html#_CPPv415LU_substitutionA_A4NDIM_dA_dA_i">LU_substitution (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="M">M</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv46M_unit">M_unit (C++ member)</a>
-</li>
-      <li><a href="api/main.html#_CPPv44mainiA_Pc">main (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv415mainFlowControl6time_tPd">mainFlowControl (C++ function)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv411make_tetradA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_KdA4NDIM_A4NDIM_dA4NDIM_A4NDIM_d">make_tetrad (C++ function)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv419Malloc3D_Contiguousiii">Malloc3D_Contiguous (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.MAX">MAX (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAX_ITER">MAX_ITER (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAX_LAYER_SCA">MAX_LAYER_SCA (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv413max_tau_scatt">max_tau_scatt (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.MAXGAMMA">MAXGAMMA (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAXITER_BIASTUNING">MAXITER_BIASTUNING (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAXNSTEP">MAXNSTEP (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAXT">MAXT (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MAXW">MAXW (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/constant.html#c.ME">ME (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.MEARTH">MEARTH (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.METRIC_eKS">METRIC_eKS (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.METRIC_FMKS">METRIC_FMKS (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.METRIC_MKS">METRIC_MKS (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.METRIC_MKS3">METRIC_MKS3 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MINT">MINT (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MINW">MINW (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.MMW">MMW (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.MN">MN (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.MODEL_FUNCTIONS">MODEL_FUNCTIONS (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.MP">MP (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.MSUN">MSUN (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv415my_curand_state">my_curand_state (C++ member)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="N">N</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv42N1">N1 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv42N2">N2 (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv42N3">N3 (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.N_BLOCKS">N_BLOCKS (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.N_COMPTBINS">N_COMPTBINS (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.N_EBINS">N_EBINS (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.N_ESAMP">N_ESAMP (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv47N_scatt">N_scatt (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv418N_superph_recorded">N_superph_recorded (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.N_THBINS">N_THBINS (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.N_THREADS">N_THREADS (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.N_TYPEBINS">N_TYPEBINS (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.NDIM">NDIM (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv47Ne_unit">Ne_unit (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.NINT">NINT (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44nint">nint (C++ member)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv49normalizePdA4NDIM_A4NDIM_Kd">normalize (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.NPRIM">NPRIM (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.NPRIM_INDEX">NPRIM_INDEX (C macro)</a>
-</li>
-      <li><a href="api/utils.html#_CPPv413NPRIM_INDEX3Diiii">NPRIM_INDEX3D (C++ function)</a>
-</li>
-      <li><a href="api/config.html#c.NT">NT (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.NUMAX">NUMAX (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.NUMIN">NUMIN (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.NW">NW (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv47of_geom">of_geom (C++ struct)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv411of_spectrum">of_spectrum (C++ struct)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="P">P</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv41p">p (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv46params">params (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48params_t">params_t (C++ struct)</a>
-</li>
-      <li><a href="api/constant.html#c.PC">PC (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv412photon_count">photon_count (C++ member)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv415photonsPerBatchyPi">photonsPerBatch (C++ function)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv411project_outPdPdA4NDIM_A4NDIM_Kd">project_out (C++ function)</a>
-</li>
-      <li><a href="api/track.html#_CPPv411push_photonA4NDIM_dA4NDIM_dA4NDIM_dKdPd">push_photon (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv42R0">R0 (C++ member)</a>
-</li>
-      <li><a href="api/par.html#_CPPv410read_paramPKcPKcPvi">read_param (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.REARTH">REARTH (C macro)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv46record12of_photonSOAP11of_spectrumKyKi">record (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv416record_criteriond">record_criterion (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi">record_scattering (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy">record_super_photon (C++ function)</a>
-</li>
-      <li><a href="api/main.html#_CPPv415report_spectrumyPPP11of_spectrumPKc">report_spectrum (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc">report_spectrum_h5 (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.RGAS">RGAS (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv42Rh">Rh (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv48Rho_unit">Rho_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv43Rin">Rin (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.RMAX">RMAX (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.ROULETTE">ROULETTE (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv44Rout">Rout (C++ member)</a>
-</li>
-      <li><a href="api/constant.html#c.RSUN">RSUN (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="S">S</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/compton.html#_CPPv417sample_beta_distrdPdPdP11curandState">sample_beta_distr (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv423sample_electron_distr_pAL4E_dAL4E_ddP11curandState">sample_electron_distr_p (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv420sample_klein_nishinadP11curandState">sample_klein_nishina (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv415sample_mu_distrKdd">sample_mu_distr (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy">sample_photons_batch (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv423sample_scattered_photonAL4E_dAL4E_dAL4E_dP11curandState">sample_scattered_photon (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv414sample_thomsonP11curandState">sample_thomson (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv414sample_y_distrKdP11curandState">sample_y_distr (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState">sample_zone_photon (C++ function)</a>
-</li>
-      <li><a href="api/compton.html#_CPPv420scatter_super_photon12of_photonSOA12of_photonSOAdddA4NDIM_dA4NDIM_dA4NDIM_A4NDIM_dP11curandStatey">scatter_super_photon (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv418scattering_counter">scattering_counter (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.SCATTERINGS_PER_PHOTON">SCATTERINGS_PER_PHOTON (C macro)</a>
-</li>
-      <li><a href="api/main.html#_CPPv49set_units6Params">set_units (C++ function)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv412setMaxBlocksv">setMaxBlocks (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/constant.html#c.SIG">SIG (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.SIGMA_THOMSON">SIGMA_THOMSON (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.SLOOP_DEVICE">SLOOP_DEVICE (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.SMALL">SMALL (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.SMALL_VECTOR">SMALL_VECTOR (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.SOLX">SOLX (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.SOLY">SOLY (C macro)</a>
-</li>
-      <li><a href="api/constant.html#c.SOLZ">SOLZ (C macro)</a>
-</li>
-      <li><a href="api/utils.html#_CPPv415SPATIAL_INDEX2Dii">SPATIAL_INDEX2D (C++ function)</a>
-</li>
-      <li><a href="api/utils.html#_CPPv415SPATIAL_INDEX3Diii">SPATIAL_INDEX3D (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv46startx">startx (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd">stepsize (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv414stop_criteriondPdP11curandState">stop_criterion (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45stopx">stopx (C++ member)</a>
-</li>
-      <li><a href="api/config.html#c.str">str (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="T">T</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv46T_unit">T_unit (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv45table">table (C++ member)</a>
-</li>
-      <li><a href="api/constant.html#c.TCBR">TCBR (C macro)</a>
-</li>
-      <li><a href="api/tetrads.html#_CPPv420tetrad_to_coordinateA4NDIM_A4NDIM_KdA4NDIM_KdA4NDIM_d">tetrad_to_coordinate (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#_CPPv411thetae_funcdddd">thetae_func (C++ function)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.THETAE_MAX">THETAE_MAX (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.THETAE_MIN">THETAE_MIN (C macro)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv411Thetae_unit">Thetae_unit (C++ member)</a>
-</li>
-      <li><a href="api/constant.html#c.THREEPI_TWO">THREEPI_TWO (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.TMAX">TMAX (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.TMIN">TMIN (C macro)</a>
-</li>
-      <li><a href="api/hotcross.html#_CPPv424total_compton_cross_lkupddPKd">total_compton_cross_lkup (C++ function)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/hotcross.html#_CPPv423total_compton_cross_numdd">total_compton_cross_num (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy">track (C++ function)</a>
-</li>
-      <li><a href="api/kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyy">track_scat (C++ function)</a>
-</li>
-      <li><a href="api/track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState">track_super_photon (C++ function)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv416tracking_counter">tracking_counter (C++ member)</a>
-</li>
-      <li><a href="api/defs.html#_CPPv425tracking_counter_sampling">tracking_counter_sampling (C++ member)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv414transferParamsv">transferParams (C++ function)</a>
-</li>
-      <li><a href="api/memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy">transferPhotonDataDevtoDev (C++ function)</a>
-</li>
-      <li><a href="api/constant.html#c.TSUN">TSUN (C macro)</a>
-</li>
-      <li><a href="api/par.html#c.TYPE_DBL">TYPE_DBL (C macro)</a>
-</li>
-      <li><a href="api/par.html#c.TYPE_INT">TYPE_INT (C macro)</a>
-</li>
-      <li><a href="api/par.html#c.TYPE_STR">TYPE_STR (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.U1">U1 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.U2">U2 (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.U3">U3 (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv46U_unit">U_unit (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.USE_FIXED_TPTE">USE_FIXED_TPTE (C macro)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.USE_MIXED_TPTE">USE_MIXED_TPTE (C macro)</a>
-</li>
-      <li><a href="api/config.html#c.UU">UU (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="W">W</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv41w">w (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.WEIGHT_MIN">WEIGHT_MIN (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/defs.html#_CPPv43wgt">wgt (C++ member)</a>
-</li>
-      <li><a href="api/model_iharm.html#c.WITH_ELECTRONS">WITH_ELECTRONS (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="X">X</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/config.html#c.xstr">xstr (C macro)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d">Xtoijk (C++ function)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="Y">Y</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/constant.html#c.YEAR">YEAR (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="Z">Z</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model_iharm.html#c.ZLOOP">ZLOOP (C macro)</a>
-</li>
-  </ul></td>
-</tr></table>
-
+<p>If you answer <strong>N</strong>, the hook automatically appends <code class="docutils literal notranslate"><span class="pre">[skip-ci]</span></code> to your commit message, and the GitHub Actions workflow will skip execution. If you answer <strong>Y</strong>, the pipeline runs normally.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Git hook requires a one-time setup after cloning the repository. See <span class="xref std std-ref">hook-setup</span> below.</p>
+<p>Note that direct pushes to <code class="docutils literal notranslate"><span class="pre">main</span></code> should be rare. Commits should generally reach <code class="docutils literal notranslate"><span class="pre">main</span></code> through a pull request after review. Direct pushes are only appropriate for minor changes such as documentation or README updates, in which case running the full GPU test suite is
+unnecessary and can be safely skipped.</p>
+</div>
+</section>
+</section>
+<section id="pipeline-architecture">
+<h2>Pipeline Architecture<a class="headerlink" href="#pipeline-architecture" title="Link to this heading"></a></h2>
+<p>The following diagram summarizes the full CI flow:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>git push (main or feature/test-ci)
+      │
+      ▼
+GitHub Actions triggered
+      │
+      ├─ Clones repository at the pushed commit SHA
+      ├─ Generates a Kaggle runner script (ci_script.py)
+      └─ Pushes script to Kaggle via the Kaggle CLI
+                │
+                ▼
+         Kaggle GPU Kernel
+                │
+                ├─ Clones repository
+                ├─ Installs dependencies (GSL, HDF5)
+                ├─ Compiles GPUmonty with nvcc
+                └─ Runs physics test suite
+                          │
+                          ▼
+               GitHub Actions polls status
+                          │
+                ┌─────────┴──────────┐
+              PASS                 FAIL
+                │                    │
+         Workflow succeeds    Workflow fails
+</pre></div>
+</div>
+</section>
+<section id="test-suite">
+<h2>Test Suite<a class="headerlink" href="#test-suite" title="Link to this heading"></a></h2>
+<p>The physics tests are located in the <code class="docutils literal notranslate"><span class="pre">tests-ci/</span></code> directory. Each test runs GPUmonty with a known configuration and compares the output spectrum against an analytical solution and looks at the relative error. The following tests are currently included:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Test</p></th>
+<th class="head"><p>Emission Process</p></th>
+<th class="head"><p>Tolerance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sphere-emission-test-synchrotron</span></code></p></td>
+<td><p>Synchrotron only</p></td>
+<td><p>10%</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sphere-emission-test-bremsstrahlung</span></code></p></td>
+<td><p>Bremsstrahlung only</p></td>
+<td><p>5%</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sphere-emission-test-mixed</span></code></p></td>
+<td><p>Synchrotron + Bremsstrahlung</p></td>
+<td><p>5%</p></td>
+</tr>
+</tbody>
+</table>
+<p>All tests use the <code class="docutils literal notranslate"><span class="pre">sphere</span></code> model, as described in the paper, a uniform spherical plasma with analytically known emissivity, to isolate and validate the emission physics independently of the GRMHD model.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Because the CI pipeline exclusively evaluates the <code class="docutils literal notranslate"><span class="pre">sphere</span></code> model, any modifications made to functions, or data-handling routines outside of this specific model (e.g., changes within <code class="docutils literal notranslate"><span class="pre">harm_model</span></code> or <code class="docutils literal notranslate"><span class="pre">iharm_model</span></code>) are currently <strong>not checked</strong> by the automated test suite. Developers must validate GRMHD-specific changes locally before pushing.</p>
+</div>
+</section>
+<section id="local-git-hook-setup">
+<h2>Local Git Hook Setup<a class="headerlink" href="#local-git-hook-setup" title="Link to this heading"></a></h2>
+<p>The pre-push hook that enables the interactive CI prompt is stored in <code class="docutils literal notranslate"><span class="pre">.git/hooks/pre-push</span></code> and is version-controlled with the repository. To activate it, run the following command once after cloning:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>config<span class="w"> </span>core.hooksPath<span class="w"> </span>.git/hooks
+chmod<span class="w"> </span>+x<span class="w"> </span>.git/hooks/pre-push
+</pre></div>
+</div>
+<p>After this one-time setup, every push to <code class="docutils literal notranslate"><span class="pre">main</span></code> or <code class="docutils literal notranslate"><span class="pre">feature/test-ci</span></code> will trigger the prompt automatically.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This configuration is local to your clone and is not propagated automatically to other contributors. Each developer must run the setup command independently after cloning.</p>
+</div>
+</section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bias_tuning.html" class="btn btn-neutral float-left" title="Scattering Bias-Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

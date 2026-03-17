@@ -251,6 +251,8 @@
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_thetae_max"><code class="docutils literal notranslate"><span class="pre">d_thetae_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_tp_over_te"><code class="docutils literal notranslate"><span class="pre">d_tp_over_te</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_scattering"><code class="docutils literal notranslate"><span class="pre">d_scattering</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv416d_bremsstrahlung"><code class="docutils literal notranslate"><span class="pre">d_bremsstrahlung</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv413d_synchrotron"><code class="docutils literal notranslate"><span class="pre">d_synchrotron</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv412d_bias_guess"><code class="docutils literal notranslate"><span class="pre">d_bias_guess</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv45d_MBH"><code class="docutils literal notranslate"><span class="pre">d_MBH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/defs.html#_CPPv48d_L_unit"><code class="docutils literal notranslate"><span class="pre">d_L_unit</span></code></a></li>
@@ -298,26 +300,30 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/jnu_mixed.html">jnu_mixed.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/jnu_mixed.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47int_jnudddd"><code class="docutils literal notranslate"><span class="pre">int_jnu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv49jnu_synchKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_synch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv421int_jnu_thermal_synchddddd"><code class="docutils literal notranslate"><span class="pre">int_jnu_thermal_synch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv413jnu_integranddPv"><code class="docutils literal notranslate"><span class="pre">jnu_integrand()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv417init_emiss_tablesv"><code class="docutils literal notranslate"><span class="pre">init_emiss_tables()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv47K2_evalKd"><code class="docutils literal notranslate"><span class="pre">K2_eval()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv46F_evalKdKdKd"><code class="docutils literal notranslate"><span class="pre">F_eval()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv415linear_interp_FKd"><code class="docutils literal notranslate"><span class="pre">linear_interp_F()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv416linear_interp_K2Kd"><code class="docutils literal notranslate"><span class="pre">linear_interp_K2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv410jnu_bremssKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_bremss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv49jnu_totalKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_total()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv414int_jnu_bremssKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_bremss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/jnu_mixed.html#_CPPv413int_jnu_totalKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_total()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/kernels.html">kernels.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/kernels.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKi19cudaTextureObject_tyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv46record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">record()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">record_scattering()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
@@ -345,7 +351,6 @@
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418create1DTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">create1DTextureObj()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
@@ -374,9 +379,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/model_iharm.html">model.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/model_iharm.html#macros">Macros</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.SYNCHROTRON"><code class="docutils literal notranslate"><span class="pre">SYNCHROTRON</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.BREMSSTRAHLUNG"><code class="docutils literal notranslate"><span class="pre">BREMSSTRAHLUNG</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.COMPTON"><code class="docutils literal notranslate"><span class="pre">COMPTON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
@@ -416,7 +418,8 @@
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv411dOmega_funcdd"><code class="docutils literal notranslate"><span class="pre">dOmega_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv48bl_coordPKdPdPd"><code class="docutils literal notranslate"><span class="pre">bl_coord()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"><code class="docutils literal notranslate"><span class="pre">get_fluid_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dA4NDIM_A4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
@@ -443,12 +446,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/radiation.html">radiation.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/radiation.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv47jnu_invKdKdKdKdKd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">jnu_inv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv47jnu_invKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_inv()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv47Bnu_invKdKd"><code class="docutils literal notranslate"><span class="pre">Bnu_inv()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv48kappa_esKdKdPKd"><code class="docutils literal notranslate"><span class="pre">kappa_es()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv412get_fluid_nuA4NDIM_KdA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">get_fluid_nu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv415alpha_inv_scattKdKdKdPKd"><code class="docutils literal notranslate"><span class="pre">alpha_inv_scatt()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv413alpha_inv_absKdKdKdKdd19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">alpha_inv_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv413alpha_inv_absKdKdKdKdd"><code class="docutils literal notranslate"><span class="pre">alpha_inv_abs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/radiation.html#_CPPv412get_bk_angleA4NDIM_KdA4NDIM_KdA4NDIM_KdA4NDIM_KdKd"><code class="docutils literal notranslate"><span class="pre">get_bk_angle()</span></code></a></li>
 </ul>
 </li>
@@ -468,7 +471,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/track.html">track.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/track.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState19cudaTextureObject_t"><code class="docutils literal notranslate"><span class="pre">track_super_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState"><code class="docutils literal notranslate"><span class="pre">track_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/track.html#_CPPv411init_dKdlamA_dA_dA_d"><code class="docutils literal notranslate"><span class="pre">init_dKdlam()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/track.html#_CPPv411push_photonA4NDIM_dA4NDIM_dA4NDIM_dKdPd"><code class="docutils literal notranslate"><span class="pre">push_photon()</span></code></a></li>
 </ul>
@@ -498,8 +501,6 @@
 </li>
 </ul>
 </li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide for GPUmonty</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quick_start.html#prerequisites">Prerequisites</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="quick_start.html#environment-configuration">Environment Configuration</a></li>
@@ -516,8 +517,6 @@
 <li class="toctree-l2"><a class="reference internal" href="quick_start.html#license">LICENSE</a></li>
 </ul>
 </li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="docs_guidelines.html">Documentation Guidelines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="docs_guidelines.html#file-based-organization-and-commenting">File-Based Organization and Commenting</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="docs_guidelines.html#function-documentation">Function Documentation</a></li>
@@ -537,8 +536,6 @@
 </li>
 </ul>
 </li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="bias_tuning.html">Scattering Bias-Tuning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#motivation">Motivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bias_tuning.html#parameters">Parameters</a><ul>
@@ -554,6 +551,17 @@
 <li class="toctree-l3"><a class="reference internal" href="bias_tuning.html#invalid-memory-errors-during-tracking">Invalid Memory Errors During Tracking</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_integration.html">Continuous Integration Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#trigger-conditions">Trigger Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="continuous_integration.html#skipping-ci">Skipping CI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#pipeline-architecture">Pipeline Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#test-suite">Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#local-git-hook-setup">Local Git Hook Setup</a></li>
 </ul>
 </li>
 </ul>
@@ -613,12 +621,6 @@
 email for contact: <a class="reference external" href="mailto:pedronaethemotta&#37;&#52;&#48;usp&#46;br">pedronaethemotta<span>&#64;</span>usp<span>&#46;</span>br</a></p>
 <p><strong>Developed by</strong>: Pedro Naethe Motta</p>
 <p><strong>Currently maintained by</strong>: Pedro Naethe Motta</p>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>
