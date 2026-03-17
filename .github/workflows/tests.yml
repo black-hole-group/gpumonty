@@ -2,11 +2,16 @@ name: gpumonty tests
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
+      - feature/test-ci
 
 jobs:
-  test:
+  sphere-tests:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' ||
+      !contains(github.event.head_commit.message, '[skip-ci]')
 
     steps:
       - uses: actions/checkout@v4
