@@ -104,10 +104,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 	double *d_table_ptr;
     gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
     gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
-	
-	cudaTextureObject_t besselTexObj = 0;
-	cudaArray_t besselCuArray;
-	create1DTextureObj(&besselTexObj, K2, &besselCuArray);
+
 
 
 	struct of_geom *d_geom;
@@ -126,7 +123,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	fprintf(stderr, "Generating super photons!\n");
 	cudaEventRecord(start, 0);
-    generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr, besselTexObj);	
+    generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);	
 	cudaDeviceSynchronize();
 	cudaEventRecord(stop);
 	cudaEventSynchronize(stop); 
@@ -185,11 +182,11 @@ __host__ void mainFlowControl(time_t time, double * p){
 		fprintf(stderr, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, besselTexObj);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
 		}
 		cudaDeviceSynchronize();
 
@@ -233,17 +230,17 @@ __host__ void mainFlowControl(time_t time, double * p){
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#else
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#endif
 			}else{
 				if (ideal_nblocks == 0)
 				ideal_nblocks = 1;
 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#else
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number, besselTexObj);
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#endif
 			}		
 
@@ -320,7 +317,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		}
 
 
-		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, besselTexObj, d_table_ptr, d_p, dPTableTexObj);
+		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
 	}
@@ -351,7 +348,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 }
 
 __launch_bounds__(N_THREADS)
-__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr, cudaTextureObject_t besselTexObj){
+__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr){
 	unsigned long long generated_photons;
 	double dnmax;
 	int i, j, k;
@@ -369,7 +366,7 @@ __global__ void generate_photons(const struct of_geom * __restrict__  d_geom, co
 
 		/*This portion of the code will estimate the number of photons that are going to be generated in each zone (n2gen). It will also estimate the dnmax
 		which will be used when sampling the photons*/
-		init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, &localState, besselTexObj);
+		init_zone(i,j,k, &generated_photons, &dnmax, d_geom, d_p, d_Ns, &localState);
 		
 		generated_photons_arr[a] = generated_photons;
 
@@ -383,11 +380,11 @@ __global__ void generate_photons(const struct of_geom * __restrict__  d_geom, co
 
 
 
-__device__ void init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState * localState, cudaTextureObject_t besselTexObj)
+__device__ void init_zone(const int i, const int j, const int k, unsigned long long * __restrict__  n2gen, double * __restrict__ dnmax, const struct of_geom * __restrict__  d_geom, const double * __restrict__ d_p, const int d_Ns_par, curandState * localState)
 {
 	int l;
 	double Ne, Thetae, Bmag, lbth;
-	double dl, dn, ninterp, K2;
+	double dl, dn, ninterp;
 	double Ucon[NDIM], Bcon[NDIM];
 	double lb_min = log(BTHSQMIN);
 	double dlb = log(BTHSQMAX / BTHSQMIN) / NINT;
@@ -408,53 +405,52 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		*dnmax = 0.;
 		return;
 	}
+	double K2 = K2_eval(Thetae);
 
-		lbth = log(Bmag * Thetae * Thetae);
+	lbth = log(Bmag * Thetae * Thetae);
 
-		dl = (lbth - lb_min) / dlb;
-		l = (int) dl;
-		dl = dl - l;
-		if (l < 0) {
-			*dnmax = 0.;
-			*n2gen = 0.;
-			return;
-		} else if (l >= NINT || 1) {
-			//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
+	dl = (lbth - lb_min) / dlb;
+	l = (int) dl;
+	dl = dl - l;
+	if (l < 0) {
+		*dnmax = 0.;
+		*n2gen = 0.;
+		return;
+	} else if (l >= NINT || 1) {
+		//printf( "Outside of range! Change Nint!. B * th**2 = %le, lbth = %le, lb_min = %le, dlb = %le l = %d, (i,j) = (%d, %d)\n", Bmag * Thetae * Thetae, lbth, lb_min, dlb, l,i, j);
+		ninterp = 0.;
+		*dnmax = 0.;
+		for (int m = 0; m <= N_ESAMP; m++) {
+			// dn = F_eval(Thetae, Bmag,
+			// 		exp(m * dlnu +
+			// 		lnu_min)) / (exp(d_wgt[m]) +
+			// 				1.e-100);
+			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2) / (exp(d_wgt[m]) + 1.e-100);
+			if (dn > *dnmax)
+				*dnmax = dn;
+			ninterp += dlnu * dn;
+		}
+		// ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
+		// 	* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
+		// 	* 1. / HPL;
+		ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit * 1./HPL;
+
+	} else {
+		if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
 			ninterp = 0.;
 			*dnmax = 0.;
-			for (int m = 0; m <= N_ESAMP; m++) {
-				dn = F_eval(Thetae, Bmag,
-						exp(m * dlnu +
-						lnu_min)) / (exp(d_wgt[m]) +
-								1.e-100);
-				if (dn > *dnmax)
-					*dnmax = dn;
-				ninterp += dlnu * dn;
-			}
-			ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
-				* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-				* 1. / HPL;
-
 		} else {
-			if (isinf(d_nint[l]) || isinf(d_nint[l + 1])) {
-				ninterp = 0.;
-				*dnmax = 0.;
-			} else {
-				ninterp =
-					exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
+			ninterp =
+				exp((1. - dl) * d_nint[l] + dl * d_nint[l + 1]);	
 
-				*dnmax =
-					exp((1. - dl) * d_dndlnu_max[l] +
-					dl * d_dndlnu_max[l + 1]);
-			}
-
+			*dnmax =
+				exp((1. - dl) * d_dndlnu_max[l] +
+				dl * d_dndlnu_max[l + 1]);
 		}
+
+	}
 		
-	#ifdef __CUDA_ARCH__
-	K2 = K2_eval(Thetae, besselTexObj);
-	#else
-	K2 = K2_eval(Thetae);
-	#endif
+
 
 	if (K2 == 0.) {
 		*n2gen = 0.;
@@ -462,7 +458,8 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		return;
 	}
 	
-	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	//double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
+	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * ninterp;
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
 			"Something very wrong in zone %d %d: \n Ne = %le, B=%g  Thetae=%g  K2=%g  ninterp=%g\n", i, j, Ne, Bmag, Thetae, K2, ninterp);
@@ -484,7 +481,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 
 __launch_bounds__(N_THREADS)
 __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph, 
-	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, cudaTextureObject_t besselTexObj){
+	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk){
 		int i,j,k;
 		unsigned long long photon_index = 0;
 		const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -505,7 +502,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 
 
 			/*Sample all the photons generated in init_zone*/
-			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState, besselTexObj);
+			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState);
 			past_zone = zone_index;
 			
 		}
@@ -515,7 +512,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 __device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, 
     struct of_photonSOA ph, const struct of_geom *  d_geom, 
     const double *  d_p, const int zone_flag, const unsigned long long ph_arr_index,
-    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, cudaTextureObject_t besselTexObj)
+    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState)
 {
     double nu, weight;
     
@@ -544,30 +541,25 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     {
         const double lnu_min = log(NUMIN);
         const double Nln = log(NUMAX) - lnu_min;
+		const double K2 = K2_eval(Thetae);
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-        } while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
-        ph.w[ph_arr_index] = weight;
+        //} while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
+		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
+		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
     
     // Scope 4: Sample angles  
     double cth;
     {
-        #ifdef __CUDA_ARCH__
-        const double jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2., besselTexObj);
-        #else
-        const double jmax = jnu_synch(nu, Ne, Thetae, Bmag, M_PI / 2.);
-        #endif
+		const double K2 = K2_eval(Thetae);
+        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
 		double j_th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
             const double th = acos(cth);
-            #ifdef __CUDA_ARCH__
-            j_th = jnu_synch(nu, Ne, Thetae, Bmag, th, besselTexObj);
-            #else
-        	j_th = jnu_synch(nu, Ne, Thetae, Bmag, th);
-            #endif
+        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
         } while (curand_uniform_double(localState) > j_th / jmax);
     } // jmax, th, j_th go out of scope
     
@@ -634,7 +626,7 @@ __global__ void track(struct of_photonSOA ph,
 	#else
 	cudaTextureObject_t d_p,
 	#endif
-	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph, cudaTextureObject_t besselTexObj){
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long photon_index = 0;
 	int n = 1;
@@ -651,7 +643,7 @@ __global__ void track(struct of_photonSOA ph,
         if (photon_index >= max_partition_ph) break;
         
 		// Track the photon
-        track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState, besselTexObj);
+        track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState);
 
         // Progress indicator
         if (global_index == 0) {
@@ -692,11 +684,11 @@ __global__ void track_scat(struct of_photonSOA ph,
 	#else
 	 cudaTextureObject_t d_p,
 	#endif
-	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, cudaTextureObject_t besselTexObj, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
-	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM], Gcov[NDIM][NDIM];
+	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	unsigned long long scattering_counter_local = round_num_scat_init - 1;
 	int n_progress = 1;
 	
@@ -712,18 +704,18 @@ __global__ void track_scat(struct of_photonSOA ph,
 		if (scattering_counter_local >= round_num_scat_end) break;
 
 		double X[NDIM] = {ph.X0[scattering_counter_local], ph.X1[scattering_counter_local], ph.X2[scattering_counter_local], ph.X3[scattering_counter_local]};
-		gcov_func(X, Gcov);
 		#ifndef SPHERE_TEST
-			get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
 		#else
-			get_fluid_params(X, Gcov, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
-
+		double Gcov[NDIM][NDIM];
+		gcov_func(X, Gcov);
 		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, scattering_counter_local);
 		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;
 		}
-		track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState, besselTexObj);
+		track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState);
         // Progress indicator
 		if (global_index == 0) {		
 			float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);

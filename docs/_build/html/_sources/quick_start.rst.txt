@@ -112,6 +112,16 @@ To run a simulation with your custom parameters:
      - **Temperature Ceiling**: Numerical cap for the dimensionless electron temperature (:math:`\Theta_e = k_B T_e / m_e c^2`).
    * - ``scattering``
      - **Boolean for Scattering**: Enable or disable scattering processes in the simulation.
+   * - ``bremsstrahlung``
+     - **Boolean for Bremsstrahlung**: Enable or disable Bremsstrahlung emission processes in the simulation.
+   * - ``synchrotron``
+     - **Boolean for Synchrotron**: Enable or disable synchrotron emission processes in the simulation.
+   * - ``fit_bias``
+     - **Bias Fitting**: Enable or disable the bias fitting procedure to optimize photon packet generation.
+   * - ``bias_guess``
+     - **Initial Bias Guess**: Initial guess for the bias factor used in the bias fitting procedure.
+   * - ``ratio``
+     - **Bias Ratio**: Ratio used in the bias fitting procedure to adjust the bias factor iteratively.
 
 Analyzing the Output
 ====================

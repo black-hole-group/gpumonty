@@ -29,28 +29,36 @@ good for Thetae > 1
 
 */
 
-#define CST 1.88774862536	/* 2^{11/12} */
 
+__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
+	double j = 0;
+
+
+	if(d_synchrotron)
+		j += jnu_synch(nu, Ne, Thetae, B, theta,K2 );
+	if(d_bremsstrahlung)
+		j += jnu_bremss(nu, Ne, Thetae);
+
+	
+	
+	return j;
+}
+
+#define CST 1.88774862536	/* 2^{11/12} */
+#define SYNCH_FAC (1.139685508680628e-29) /* √2·π·e²/(3·c) [CGS] */
+#define NUC_FAC (2.799248729308765e+06) /* e/(2π·mₑ·c) [Hz/G] (cyclotron freq per unit B) */
 __host__ __device__ double jnu_synch(const double nu, const double Ne, const double Thetae, const double B,
-		 const double theta
-		#ifdef __CUDA_ARCH__
-		, cudaTextureObject_t besselTexObj
-		#endif
-		)
+		 const double theta, const double K2)
 {
 
-	double K2, nuc, nus, x, f, j, sth, xp1, xx;
+	double nuc, nus, x, f, j, sth, xp1, xx;
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
 
-	#ifdef __CUDA_ARCH__
-	K2 = K2_eval(Thetae, besselTexObj);
-	#else
-	K2 = K2_eval(Thetae);
-	#endif
+	
 
-	nuc = EE * B / (2. * M_PI * ME * CL);
+	nuc = NUC_FAC * B;
 	sth = sin(theta);
 	
 	
@@ -62,30 +70,74 @@ __host__ __device__ double jnu_synch(const double nu, const double Ne, const dou
 	xp1 = pow(x, 1. / 3.);
 	xx = sqrt(x) + CST * sqrt(xp1);
 	f = xx * xx;
-	j = (M_SQRT2 * M_PI * EE * EE * Ne * nus / (3. * CL * K2)) * f *
+	j = (SYNCH_FAC * Ne * nus / (K2)) * f *
 	    exp(-xp1);
 
 	return (j);
 }
 #undef CST
 
-#define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-__host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double nu)
+//
+/* (8/3)·(2π/3)^½ · e⁶/(mₑc³) · (kʙmₑ)^(-½) · g_ff [CGS], g_ff assumed to be 1.2 */
+#define BREMS_FAC (6.533236526124812e-39)
+__host__ __device__  double jnu_bremss(const double nu, const double Ne, const double Thetae){
+	if (Thetae < THETAE_MIN) 
+		return 0.;
+
+	double Te = Thetae * ME * CL * CL / KBOL;
+	double x = HPL*nu/(KBOL*Te);
+	double efac, jv;
+
+	if (x < 1.e-3) {
+		efac = (24. - 24.*x + 12.*x*x - 4.*x*x*x + x*x*x*x) / 24.;
+	} else {
+		efac = exp(-x);
+	}
+
+	//Method from Rybicki & Lightman, ultimately from Novikov & Thorne
+	double rel = (1. + 4.4e-10*Te);
+
+	
+	//rsqrt(x) is 1/sqrt(x)
+	jv = BREMS_FAC * rsqrt(Te) * Ne*Ne * efac*rel;
+	return jv;
+}
+#undef BREMS_FAC
+
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2)
+{
+	#ifdef __CUDA_ARCH__
+		int is_synchrotron = d_synchrotron;
+		int is_bremsstrahlung = d_bremsstrahlung;
+	#else
+		int is_synchrotron = params.synchrotron;
+		int is_bremsstrahlung = params.bremsstrahlung;
+	#endif
+	double intj = 0;
+
+	if(is_synchrotron)
+		intj += int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, K2);
+	if(is_bremsstrahlung)
+		intj += int_jnu_bremss(Ne, Thetae, nu);
+	
+	return intj;
+}
+
+//#define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
+#define JCST (7.089473804413026e-24) /* √2·e³/(27·mₑ·c²) [CGS] */
+__host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, double Bmag, double nu, double K2)
 {
 /* Returns energy per unit time at							*
  * frequency nu in cgs										*/
 
-	double j_fac, K2;
+	double j_fac;
 	double F_eval(const double Thetae, const double B, const double nu);
 
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
-	#ifdef __CUDA_ARCH__
-	K2 = K2_eval(Thetae, NULL);
-	#else
-	K2 = K2_eval(Thetae);
-	#endif
+
+
 
 	if (K2 == 0.)
 		return 0.;
@@ -95,6 +147,11 @@ __host__ __device__ double int_jnu(double Ne, double Thetae, double Bmag, double
 }
 
 #undef JCST
+
+__host__ __device__ double int_jnu_bremss(const double Ne, const double Thetae, const double nu)
+{
+	return 4 * M_PI * jnu_bremss(nu, Ne, Thetae);
+}
 
 #define CST 1.88774862536	/* 2^{11/12} */
 double jnu_integrand(double th, void *params)
@@ -142,7 +199,9 @@ __host__ void init_emiss_tables(void)
 		gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL,
 				    1000, GSL_INTEG_GAUSS61, w, &result,
 				    &err);
+		
 		F[k] = log(4 * M_PI * result);
+		
 		//if(k < 10)
 	}
 
@@ -165,22 +224,15 @@ __host__ void init_emiss_tables(void)
 }
 
 
-__host__ __device__ double K2_eval(const double Thetae
-#ifdef __CUDA_ARCH__
-	,cudaTextureObject_t besselTexObj
-#endif
-	)
+__host__ __device__ double K2_eval(const double Thetae)
 {
 
 	if (Thetae < THETAE_MIN)
 		return 0.;
 	if (Thetae > TMAX)
 		return 2. * Thetae * Thetae;
-	#ifdef __CUDA_ARCH__
-	return linear_interp_K2(Thetae, besselTexObj);
-	#else
+
 	return linear_interp_K2(Thetae);
-	#endif
 }
 
 __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu)
@@ -226,11 +278,7 @@ __host__ __device__ double linear_interp_F(const double K)
 	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
 	return result;
 }
-__host__ __device__ double linear_interp_K2(const double Thetae
-#ifdef __CUDA_ARCH__
-	, cudaTextureObject_t besselTexObj
-#endif
-	)
+__host__ __device__ double linear_interp_K2(const double Thetae)
 {
 	int i;
 	double di, lT;
@@ -241,7 +289,6 @@ __host__ __device__ double linear_interp_K2(const double Thetae
 	di = (lT - d_lT_min) * d_dlT1;
 
 	#ifdef __CUDA_ARCH__
-	//return __expf(tex1D<float>(besselTexObj, di + 0.5f));
 	bessel_table = d_K2;
 	#else
 	bessel_table = K2;

@@ -1,0 +1,17 @@
+#input super photons parameter
+Ns 1e6
+
+#Name of the spectrum file generated
+spectrum test_sphere_emissivity_synchrotron.spec
+
+# T_p/T_e
+tp_over_te 3.
+
+#Black hole mass and mass unit to translate accretion rate to physical units
+MBH 4.14e6
+M_unit 1.e16
+
+#emissions
+scattering 0
+bremsstrahlung 0
+synchrotron 1

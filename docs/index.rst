@@ -42,21 +42,7 @@ email for contact: pedronaethemotta@usp.br
    :hidden:
 
    documentation
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
    quick_start
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
    docs_guidelines
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
    bias_tuning
+   continuous_integration

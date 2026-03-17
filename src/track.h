@@ -36,7 +36,6 @@ Declarations of the functions in the track.cu file
  * @param round_scat The current scattering layer index.
  * @param photon_index The global index of the photon being tracked.
  * @param localState Pointer to the curand state for random number generation.
- * @param besselTexObj CUDA texture object for accelerated Modified Bessel function \f$ K_2 \f$ lookups.
  * 
  * @return void
  */
@@ -46,7 +45,7 @@ __device__ void track_super_photon(struct of_photonSOA ph ,
     #else
     	cudaTextureObject_t d_p,
     #endif
-    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState * localState, cudaTextureObject_t besselTexObj);
+    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long starting_scattering_index, const int round_scat, const unsigned long long photon_index, curandState * localState);
 
 /**
  * @brief Initializes the change in superphoton momentum per unit affine parameter \f$ \frac{dK^{\mu}}{d\lambda} \f$.
@@ -76,5 +75,5 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[]);
  * 
  * @return void
  */
-__device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
+__noinline__ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
 #endif

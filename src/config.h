@@ -39,7 +39,7 @@
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  * This is set through automatic GPU tuning in the Makefile unless ``BLOCK_TUNING`` is set to 0 in the Makefile.
  */
-#define N_BLOCKS 352
+#define N_BLOCKS 1792
 
 /**
  * The number of threads per block. 
@@ -304,7 +304,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (10) 
+#define SCATTERINGS_PER_PHOTON (10)
 
 /*Making of Nint table*/
 

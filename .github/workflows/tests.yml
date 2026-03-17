@@ -1,0 +1,101 @@
+name: gpumonty tests
+
+on:
+  push:
+    branches:
+      - main
+      - feature/test-ci
+
+jobs:
+  sphere-tests:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' ||
+      !contains(github.event.head_commit.message, '[skip-ci]')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install "kaggle>=1.8.3"
+
+      - name: Generate Kaggle Runner Script
+        run: |
+          mkdir kaggle_run
+          cd kaggle_run
+          
+          cat << 'EOF' > ci_script.py
+          import os
+          import subprocess
+          import sys
+
+          def run(cmd):
+              print(f"========== RUNNING: {cmd} ==========")
+              if subprocess.run(cmd, shell=True).returncode != 0:
+                  sys.exit(1)
+
+          print("Cloning repository...")
+          run("git clone https://github.com/${{ github.repository }}.git repo")
+          os.chdir("repo")
+          run("git checkout ${{ github.sha }}")
+
+          print("Installing dependencies...")
+          run("pip install numpy scipy astropy matplotlib")
+          
+          print("Installing C++ dependencies (GSL)...")
+          run("apt-get update && apt-get install -y libgsl-dev")
+
+          print("Running Tests via Python Script...")
+          run("python3 tests-ci/run_ci_tests.py")
+          EOF
+          
+          cat << EOF > kernel-metadata.json
+          {
+            "id": "${{ secrets.KAGGLE_USERNAME }}/gpumonty-ci-run",
+            "title": "gpumonty-ci-run",
+            "code_file": "ci_script.py",
+            "language": "python",
+            "kernel_type": "script",
+            "is_private": "true",
+            "enable_gpu": "true",
+            "enable_internet": "true",
+            "dataset_sources": [],
+            "competition_sources": [],
+            "kernel_sources": []
+          }
+          EOF
+
+      - name: Trigger Kaggle GPU and Wait for Results
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          cd kaggle_run
+          
+          kaggle kernels push -p .
+          
+          echo "Code sent to Kaggle. Waiting for GPU provisioning and tests..."
+          
+          while true; do
+            STATUS=$(kaggle kernels status $KAGGLE_USERNAME/gpumonty-ci-run 2>&1)
+            STATUS_LOWER=$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')
+            echo "Current status: $STATUS"
+
+            if [[ "$STATUS_LOWER" == *"complete"* ]]; then
+              echo "Tests passed successfully on Kaggle!"
+              kaggle kernels output $KAGGLE_USERNAME/gpumonty-ci-run -p ./output
+              cat ./output/*.log || true
+              break
+            elif [[ "$STATUS_LOWER" == *"error"* || "$STATUS_LOWER" == *"cancel"* || "$STATUS_LOWER" == *"fatal"* ]]; then
+              echo "Tests failed or kernel errored!"
+              kaggle kernels output $KAGGLE_USERNAME/gpumonty-ci-run -p ./output
+              cat ./output/*.log || true
+              exit 1
+            fi
+            sleep 30
+          done

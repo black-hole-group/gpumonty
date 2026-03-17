@@ -112,21 +112,6 @@ __host__ void freePhotonData(struct of_photonSOA * ph);
 __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cudaArray_t * cuArray);
 
 
-/**
- * @brief Creates a 1D texture object from a 1D data array.
- *
- * Converts input `double` data to `float`, uploads it to a 1D CUDA array, and 
- * initializes a texture object with linear filtering and clamp addressing. 
- *
- * This is used for the Modified Bessel function lookup table (\f$ K_2 \f$).
- * @param texObj Pointer to the resulting texture object.
- * @param ptr  Input 1D data array.
- * @param cudaArray Pointer to the allocated 1D CUDA array resource.
- * 
- * @return void
- */
-__host__ void create1DTextureObj(cudaTextureObject_t * texObj, double * ptr, cudaArray_t * cudaArray);
-
 
 /**
  * @brief Function to transfer of_photonSoA structures between two different device structures.

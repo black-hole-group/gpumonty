@@ -3,21 +3,21 @@
 #define EXP_COORDS (1)
 /* Range of superphoton frequencies */
 #define NUMIN 1.e8
-#define NUMAX 1.e16
+#define NUMAX 1.e24
 
 /*This indicates the minimum of thetae = kTe/(mec^2)*/
-#define THETAE_MIN	0.3
+#define THETAE_MIN 0.3
 #define THETAE_MAX 1000.
 
 /*Ratio of proton temperature to electron temperature*/
-#define TP_OVER_TE	(3.)
+#define TP_OVER_TE (3.)
 
 /*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN	(0.)
+#define WEIGHT_MIN (0.)
 
 /*for stop criterium*/
-#define RMAX	(10000.) //Define the maximum radius up to track the photon
-#define ROULETTE	1.e4 //Roulette to randomly increase superphoton weight
+#define RMAX (10000.)
+#define ROULETTE 1.e4
 #define R_RECORD (3000.)
 //RMIN for sphere model only
 #define RMIN (0.01)
@@ -32,7 +32,7 @@
 /**
  * Size of the energy bin in logarithmic scale for the spectral output binning.
  */
-#define	dlE (0.01) //Size of the energy bin
+#define	dlE (0.015) //Size of the energy bin
 
 /**
  * Minimum energy of the energy bin in logarithmic scale.
@@ -51,7 +51,7 @@
 
 /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 
-#define NPRIM	8
+#define NPRIM 8
 
 /*Some basic functions had to be changed to do the sphere_test, therefore, I had to create this switch.*/
 #define SPHERE_TEST (1)
@@ -68,8 +68,9 @@ __host__ __device__ void gcov_func(const double *X , double gcov[][NDIM]);
 __host__ double dOmega_func(double x2i, double x2f);
 __host__ __device__ void bl_coord(const double *X, double *r, double *th);
 __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
-__host__ __device__ void get_fluid_params(double X[NDIM], double gcov[NDIM][NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
+__host__ __device__ void get_fluid_params(double X[NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
 __device__ double bias_func(double Te, double w, int round_scatt);
 __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
+__host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
 #endif

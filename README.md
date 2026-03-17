@@ -136,6 +136,14 @@ The following runtime parameters are supported:
 | `tp_over_te` | **Proton-to-Electron Temperature Ratio**: A constant ratio ($T_p/T_e$) used if a dynamic heating model is not active. |
 | `Thetae_max` | **Temperature Ceiling**: A numerical cap for the dimensionless electron temperature ($\Theta_e = k_B T_e / m_e c^2$). |
 | `scattering` | **Scattering boolean**: Enable or disable scattering processes in the simulation.|
+| `bremsstrahlung` | **Bremsstrahlung boolean**: Enable or disable Bremsstrahlung emission processes in the simulation.|
+| `synchrotron` | **Synchrotron boolean**: Enable or disable Synchrotron emission processes in the simulation.|
+| `fit_bias` | **Fit Bias boolean**: Enable or disable fit bias correction in the simulation.|
+| `bias_guess` | **Bias Guess**: Initial guess value for bias correction parameter in the simulation.|
+| `bias_ratio` | **Bias Target Ratio**: The target ratio parameter used for bias correction tuning in the simulation. |
+
+
+
 
 ## Data Analysis
 
