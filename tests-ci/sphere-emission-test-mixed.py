@@ -8,14 +8,7 @@ import matplotlib.pyplot as plt
 #put no scattering, so scattering from photons = 1 and max_layer_sca = 1.
 
 import h5py
-with h5py.File('./output/test_sphere_emissivity_mixed.h5', 'r') as f:
-#with h5py.File('../../igrmonty/spectrum.h5', 'r') as f:
-    # Access the 'output' group
-    output_group = f['output']
-    # Extract the datasets 'lnu' and 'nulnu'
-    nu = 10**output_group['lnu'][:] * (ME * CL**2/HPL)
-    nuLnu = output_group['nuLnu'][:] * LSUN
-    domega_array = output_group['dOmega'][:]
+
 
 
 import numpy as np
@@ -33,6 +26,7 @@ CL = 2.99792458e10
 ME = 9.1093826e-28
 HPL = 6.6260693e-27
 THETAE_MIN = 0.3
+LSUN = 3.827e33
 
 KMIN = 0.002
 KMAX = 1e7
@@ -45,6 +39,14 @@ dlT = 1/(np.log(TMAX/TMIN)/N_ESAMP)
 lT_min = np.log(TMIN)
 F_table = np.zeros(N_ESAMP + 1)
 K2_table = np.zeros(N_ESAMP + 1)
+with h5py.File('./output/test_sphere_emissivity_mixed.h5', 'r') as f:
+#with h5py.File('../../igrmonty/spectrum.h5', 'r') as f:
+    # Access the 'output' group
+    output_group = f['output']
+    # Extract the datasets 'lnu' and 'nulnu'
+    nu = 10**output_group['lnu'][:] * (ME * CL**2/HPL)
+    nuLnu = output_group['nuLnu'][:] * LSUN
+    domega_array = output_group['dOmega'][:]
 
 def jnu_integrand(th, K):
     """Integrand for the emissivity calculation."""
@@ -223,7 +225,7 @@ Luminosity_analytic = jnu_values
 exp_approx = np.zeros_like(nu)
 
 xdata = nu
-y_simdata = (nuLnu * domega_array[:, None] / (4 * np.pi)).sum(0)
+y_simdata = (nuLnu.sum(0) * domega_array / (4 * np.pi)).sum(1)
 y_analyticdata = Luminosity_analytic * nu * dv
 
 # --- find closest indices to frequency limits ---

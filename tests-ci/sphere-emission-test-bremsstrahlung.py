@@ -72,7 +72,7 @@ Luminosity_analytic = jnu_values
 exp_approx = np.zeros_like(nu)
 
 xdata = nu
-y_simdata = (nuLnu * domega_array[:, None] / (4 * np.pi)).sum(0)
+y_simdata = (nuLnu.sum(0) * domega_array / (4 * np.pi)).sum(1)
 y_analyticdata = Luminosity_analytic * nu * dv
 
 # --- find closest indices to frequency limits ---
