@@ -240,6 +240,7 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->E0s), size * sizeof(double)));
     
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
+	gpuErrchk(cudaMalloc(&(ph->ratio_brems), size * sizeof(double)));
 }
 
 __host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size){

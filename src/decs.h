@@ -129,6 +129,7 @@ struct of_photonSOA {
     double *tau_abs, *tau_scatt;
     double *E0, *E0s;
     int *nscatt;
+	double *ratio_brems;
 
 };
 

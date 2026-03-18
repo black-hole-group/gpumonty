@@ -326,10 +326,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
 	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
-	#ifndef IHARM
-		report_spectrum(gen_superph, spect, params.spectrum);
-	#else
+	#if(HDF5_OUTPUT)
 		report_spectrum_h5(gen_superph, spect, params.spectrum);
+	#else
+		report_spectrum(gen_superph, spect, params.spectrum);
 	#endif
 	
 	cudaFree(d_spect);
@@ -556,11 +556,14 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		const double K2 = K2_eval(Thetae);
         const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
 		double j_th;
+		double th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
-            const double th = acos(cth);
+            th = acos(cth);
         	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
         } while (curand_uniform_double(localState) > j_th / jmax);
+		ph.ratio_brems[ph_arr_index] = jnu_ratio_brems(nu, Ne, Thetae, Bmag, th, K2);
+
     } // jmax, th, j_th go out of scope
     
     // Reuse arrays - use one array for both K_tetrad and final storage
