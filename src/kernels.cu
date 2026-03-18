@@ -326,10 +326,10 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
 	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
-	#ifndef IHARM
-		report_spectrum(gen_superph, spect, params.spectrum);
-	#else
+	#if(HDF5_OUTPUT)
 		report_spectrum_h5(gen_superph, spect, params.spectrum);
+	#else
+		report_spectrum(gen_superph, spect, params.spectrum);
 	#endif
 	
 	cudaFree(d_spect);

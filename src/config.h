@@ -39,7 +39,7 @@
  * This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy.
  * This is set through automatic GPU tuning in the Makefile unless ``BLOCK_TUNING`` is set to 0 in the Makefile.
  */
-#define N_BLOCKS 1792
+#define N_BLOCKS 3456
 
 /**
  * The number of threads per block. 
@@ -47,6 +47,11 @@
  * to ensure efficient execution up to 2048 depending on the GPU architecture.
  */
 #define N_THREADS 256
+
+/**
+ * This flag defines whether to store the output in an hdf5 file. Currently working for iharm and 
+ */
+#define HDF5_OUTPUT (0)
 
 /**
  * Number of compton scatterings tracked in the spectrum. e.g., once, twice, >twice
@@ -327,7 +332,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (3)
+#define MAX_LAYER_SCA (5)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.
