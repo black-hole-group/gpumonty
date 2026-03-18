@@ -2,8 +2,6 @@ import numpy as np
 from astropy.io import ascii
 import matplotlib.pyplot as plt
 
-from python.example import grmonty
-
 #check if compilation is sphere
 #check if nu emission sphere is between 1e8 1e24
 #check if Ne = 1e13, Thetae = 100, B = 1.
