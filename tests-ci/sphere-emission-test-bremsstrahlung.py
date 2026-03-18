@@ -2,79 +2,29 @@ import numpy as np
 from astropy.io import ascii
 import matplotlib.pyplot as plt
 
+from python.example import grmonty
+
 #check if compilation is sphere
 #check if nu emission sphere is between 1e8 1e24
 #check if Ne = 1e13, Thetae = 100, B = 1.
 #put no scattering, so scattering from photons = 1 and max_layer_sca = 1.
 
 #read from other models
-def grmonty(file):
-    """
-    Reads SEDs in the format provided by grmonty.
+LSUN = 3.827e33
+CL = 2.99792458e10
+ME = 9.1093826e-28
+HPL =  6.6260693e-27
+# Open the HDF5 file
+import h5py
+with h5py.File('./output/test_sphere_emissivity_bremsstrahlung.h5', 'r') as f:
+#with h5py.File('../../igrmonty/spectrum.h5', 'r') as f:
+    # Access the 'output' group
+    output_group = f['output']
+    # Extract the datasets 'lnu' and 'nulnu'
+    nu = 10**output_group['lnu'][:] * (ME * CL**2/HPL)
+    nuLnu = output_group['nuLnu'][:] * LSUN
+    domega_array = output_group['dOmega'][:]
     
-    Returns:
-        nu: Frequency array
-        ll: Luminosity array (log10)
-        tauabs: Absorption optical depth
-        domega: Array of solid angles for each theta bin
-    """
-    LSUN = 3.827e33
-    CL = 2.99792458e10
-    ME = 9.1093826e-28
-    HPL =  6.6260693e-27
-
-    # 1. Parse the header for dOmega
-    domega_arr = None
-    with open(file, 'r') as f:
-        for line in f:
-            if line.startswith("# dOmega:"):
-                # Split by colon to get the numbers, then split by space
-                parts = line.split(':')[1].strip().split()
-                domega_arr = np.array([np.float64(x) for x in parts])
-                break
-    
-    # Check if dOmega was found; if not, you might want a default or error
-    if domega_arr is None:
-        print(f"Warning: No dOmega header found in {file}")
-
-    # 2. Read the numerical data
-    # format='no_header' treats lines starting with # as comments, 
-    # so our new header won't break this.
-    s = ascii.read(file, format='no_header')
-
-    # Array conversions for luminosity values (log10)
-    # Note: This hardcoding of 6 bins assumes N_THBINS is always 6.
-    # If N_THBINS changes, this section needs to be dynamic based on domega_arr.size
-    ll = np.zeros((6, len(s))) 
-    ll[0] = np.array(s['col2'] * LSUN)
-    ll[1] = np.array(s['col8'] * LSUN)
-    ll[2] = np.array(s['col14']* LSUN)
-    ll[3] = np.array(s['col20']* LSUN)
-    ll[4] = np.array(s['col26']* LSUN)
-    ll[5] = np.array(s['col32']* LSUN)
-    
-    tauabs = np.zeros((6, len(s)))
-    tauabs[0] = np.array(s['col3'])     
-    tauabs[1] = np.array(s['col9'])
-    tauabs[2] = np.array(s['col15'])
-    tauabs[3] = np.array(s['col21'])
-    tauabs[4] = np.array(s['col27'])
-    tauabs[5] = np.array(s['col33'])
-
-    # Compute frequency (nu) values
-    # The C code outputs log10(energy), so we convert back
-    nu = np.array(10**s['col1'] * (ME * CL**2/HPL))
-
-    return nu, ll, tauabs, domega_arr
-
-# Example usage:
-nu, nuLnu, tauabs, domega_array = grmonty('./output/test_sphere_emissivity_bremsstrahlung.spec')
-print("Read dOmega:", domega_array)
-
-
-import numpy as np
-from scipy.special import kn  
-from scipy.integrate import quad
 
 # Constants
 
