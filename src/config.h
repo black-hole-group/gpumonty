@@ -51,7 +51,7 @@
 /**
  * This flag defines whether to store the output in an hdf5 file. Currently working for iharm and 
  */
-#define HDF5_OUTPUT (0)
+#define HDF5_OUTPUT (1)
 
 /**
  * Number of compton scatterings tracked in the spectrum. e.g., once, twice, >twice
