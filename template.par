@@ -4,7 +4,7 @@ Ns 1e5
 #path to the GRMHD data file
 
 #Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
-dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
+dump ../sample_dump_SANE_a+0.94_MKS_0900.h5
 #dump ../torus.out0.05400.h5
 
 #Use this path when testing harm_model

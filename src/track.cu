@@ -332,6 +332,67 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[])
 	return;
 }
 
+__device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index) {
+    double lE, dx2;
+    int itype, iE, ix2;
+
+    if (isnan(ph.w[photon_index]) || isnan(ph.E[photon_index])) {
+        printf("record isnan: %g %g\n", ph.w[photon_index], ph.E[photon_index]);
+        return;
+    }
+    d_max_tau_scatt = atomicMaxdouble(&d_max_tau_scatt, ph.tau_scatt[photon_index]);
+
+    double r, th;
+    double X_Array[NDIM] = {ph.X0[photon_index], ph.X1[photon_index], ph.X2[photon_index], ph.X3[photon_index]};
+    bl_coord(X_Array, &r, &th);
+    dx2 = M_PI/2./N_THBINS;
+    if (th > M_PI/2.) {
+        ix2 = (int)( (M_PI - th) / dx2 );
+    } else {
+        ix2 = (int)( th / dx2 );
+    }
+    if (ix2 < 0 || ix2 >= N_THBINS) return;
+    // Get energy bin
+    lE = log(ph.E[photon_index]);
+    iE = (int)((lE - lE0) / dlE + 2.5) - 2;
+    if (iE < 0 || iE >= N_EBINS) return;
+
+    // Calculate the compton bin index
+    itype = *ph.nscatt;
+    if (itype>=N_COMPTBINS) itype = N_COMPTBINS;
+
+    // Calculate the 1D indices for the flattened array
+    double r_brems = ph.ratio_brems[photon_index];
+    double r_synch = 1.0 - r_brems;
+    int synch_index = itype * (N_THBINS * N_EBINS) + ix2 * N_EBINS + iE;
+    int brems_index = (itype + N_COMPTBINS + 1) * (N_THBINS * N_EBINS) + ix2 * N_EBINS + iE;
+
+    atomicAdd(&d_N_superph_recorded, 1);
+
+    //Record Synchrotron Contribution
+    atomicAdd(&(d_spect[synch_index].dNdlE), ph.w[photon_index] * r_synch);
+    atomicAdd(&(d_spect[synch_index].dEdlE), ph.w[photon_index] * ph.E[photon_index] * r_synch);
+    atomicAdd(&(d_spect[synch_index].tau_abs), ph.w[photon_index] * ph.tau_abs[photon_index] * r_synch);
+    atomicAdd(&(d_spect[synch_index].tau_scatt), ph.w[photon_index] * ph.tau_scatt[photon_index] * r_synch);
+    atomicAdd(&(d_spect[synch_index].X1iav), ph.w[photon_index] * ph.X1i[photon_index] * r_synch);
+    atomicAdd(&(d_spect[synch_index].X2isq), ph.w[photon_index] * (ph.X2i[photon_index] * ph.X2i[photon_index]) * r_synch);
+    atomicAdd(&(d_spect[synch_index].X3fsq), ph.w[photon_index] * (ph.X3[photon_index] * ph.X3[photon_index]) * r_synch);
+    atomicAdd(&(d_spect[synch_index].nscatt), ph.w[photon_index] * ph.nscatt[photon_index] * r_synch); 
+    atomicAdd(&(d_spect[synch_index].nph), 1);
+
+    //Record Bremsstrahlung Contribution
+    atomicAdd(&(d_spect[brems_index].dNdlE), ph.w[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].dEdlE), ph.w[photon_index] * ph.E[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].tau_abs), ph.w[photon_index] * ph.tau_abs[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].tau_scatt), ph.w[photon_index] * ph.tau_scatt[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].X1iav), ph.w[photon_index] * ph.X1i[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].X2isq), ph.w[photon_index] * (ph.X2i[photon_index] * ph.X2i[photon_index]) * r_brems);
+    atomicAdd(&(d_spect[brems_index].X3fsq), ph.w[photon_index] * (ph.X3[photon_index] * ph.X3[photon_index]) * r_brems);
+    atomicAdd(&(d_spect[brems_index].nscatt), ph.w[photon_index] * ph.nscatt[photon_index] * r_brems);
+    atomicAdd(&(d_spect[brems_index].nph), 1);
+}
+
+
 
 __noinline__ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0)
 {

@@ -76,4 +76,23 @@ __device__ void init_dKdlam(double X[], double Kcon[], double dK[]);
  * @return void
  */
 __noinline__ __device__ void push_photon(double X[NDIM], double Kcon[NDIM], double dKcon[NDIM], const double dl, double *E0);
+
+
+   /**
+     * @brief Records a photon's final properties into the global spectrum array.
+     * This function maps a photon's energy and polar exit angle to a specific energy and angular
+     * bin in the spectrum. Because many threads may try to update the same 
+     * bin simultaneously, it uses CUDA atomic operations to ensure thread safety.
+     * 
+     * @note Energy is binned logarithmically: \f$ i_E \approx \frac{\ln(E) - \ln(E_0)}{\Delta \ln E} \f$.
+     * @note Polar angle \f$ \theta \f$ is binned into angular zones, mirrored across the equator.
+     *
+     * @param ph The Structure of Arrays (SOA) containing all photon data.
+     * @param d_spect Pointer to the global spectrum structure array.
+     * @param photon_index The specific index of the photon being recorded.
+     * 
+     * @return void
+     */
+    __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
+
 #endif

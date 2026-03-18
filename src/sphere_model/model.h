@@ -93,7 +93,6 @@
     __host__ __device__ void get_fluid_zone(const int i, const int j, const int k, double *  Ne, double *  Thetae, double * B,  double Ucon[NDIM], double Bcon[NDIM], const struct of_geom *   d_geom, const double *  d_p);
     __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne, double *Thetae, double *B, double Ucon[NDIM], double Ucov[NDIM], double Bcon[NDIM], double Bcov[NDIM]);
     __device__ double bias_func(double Te, double w, int round_scatt);
-    __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
     __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
     __host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
     __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
