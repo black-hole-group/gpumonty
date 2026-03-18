@@ -67,6 +67,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c.HDF5_OUTPUT"><code class="docutils literal notranslate"><span class="pre">HDF5_OUTPUT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
@@ -314,6 +315,7 @@
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_totalKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_total()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv414int_jnu_bremssKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_bremss()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413int_jnu_totalKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_total()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415jnu_ratio_bremsKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_ratio_brems()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -423,7 +425,6 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
@@ -476,6 +477,7 @@
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState"><code class="docutils literal notranslate"><span class="pre">track_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411init_dKdlamA_dA_dA_d"><code class="docutils literal notranslate"><span class="pre">init_dKdlam()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411push_photonA4NDIM_dA4NDIM_dA4NDIM_dKdPd"><code class="docutils literal notranslate"><span class="pre">push_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -607,7 +609,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.N_BLOCKS">
-<span class="target" id="config_8h_1aa714b8308c6a460183a00af49b098b37"></span><span class="sig-name descname"><span class="n"><span class="pre">N_BLOCKS</span></span></span> <span class="pre">1792</span><a class="headerlink" href="#c.N_BLOCKS" title="Link to this definition"></a><br /></dt>
+<span class="target" id="config_8h_1aa714b8308c6a460183a00af49b098b37"></span><span class="sig-name descname"><span class="n"><span class="pre">N_BLOCKS</span></span></span> <span class="pre">352</span><a class="headerlink" href="#c.N_BLOCKS" title="Link to this definition"></a><br /></dt>
 <dd><p>The number of thread blocks dispatched per kernel call. This defines the grid size and should ideally be a multiple of the number of Streaming Multiprocessors (SMs) on your GPU to maximize occupancy. This is set through automatic GPU tuning in the Makefile unless <code class="docutils literal notranslate"><span class="pre">BLOCK_TUNING</span></code> is set to 0 in the Makefile. </p>
 </dd></dl>
 
@@ -615,6 +617,12 @@
 <dt class="sig sig-object cpp" id="c.N_THREADS">
 <span class="target" id="config_8h_1ab60b5074c740fd36061f48f90d1a0b21"></span><span class="sig-name descname"><span class="n"><span class="pre">N_THREADS</span></span></span> <span class="pre">256</span><a class="headerlink" href="#c.N_THREADS" title="Link to this definition"></a><br /></dt>
 <dd><p>The number of threads per block. This defines the block size and should be chosen as a multiple of the warp size (32 for NVIDIA GPUs) to ensure efficient execution up to 2048 depending on the GPU architecture. </p>
+</dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.HDF5_OUTPUT">
+<span class="target" id="config_8h_1a6ca3206858330ed1468a11dcb9b94d44"></span><span class="sig-name descname"><span class="n"><span class="pre">HDF5_OUTPUT</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.HDF5_OUTPUT" title="Link to this definition"></a><br /></dt>
+<dd><p>This flag defines whether to store the output in an hdf5 file. Currently working for iharm and </p>
 </dd></dl>
 
 <dl class="cpp macro">
@@ -905,7 +913,7 @@
 
 <dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.MAX_LAYER_SCA">
-<span class="target" id="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa"></span><span class="sig-name descname"><span class="n"><span class="pre">MAX_LAYER_SCA</span></span></span> <span class="pre">(3)</span><a class="headerlink" href="#c.MAX_LAYER_SCA" title="Link to this definition"></a><br /></dt>
+<span class="target" id="config_8h_1a37d846ac240fba08067a4e18ddb9e8aa"></span><span class="sig-name descname"><span class="n"><span class="pre">MAX_LAYER_SCA</span></span></span> <span class="pre">(5)</span><a class="headerlink" href="#c.MAX_LAYER_SCA" title="Link to this definition"></a><br /></dt>
 <dd><p>Maximum number of scattering layers allowed. </p>
 </dd></dl>
 

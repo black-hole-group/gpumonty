@@ -67,6 +67,7 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.HDF5_OUTPUT"><code class="docutils literal notranslate"><span class="pre">HDF5_OUTPUT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
@@ -314,6 +315,7 @@
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv49jnu_totalKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_total()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv414int_jnu_bremssKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_bremss()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv413int_jnu_totalKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_total()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="jnu_mixed.html#_CPPv415jnu_ratio_bremsKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_ratio_brems()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -423,7 +425,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
@@ -476,6 +477,7 @@
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState"><code class="docutils literal notranslate"><span class="pre">track_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411init_dKdlamA_dA_dA_d"><code class="docutils literal notranslate"><span class="pre">init_dKdlam()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411push_photonA4NDIM_dA4NDIM_dA4NDIM_dKdPd"><code class="docutils literal notranslate"><span class="pre">push_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1054,32 +1056,6 @@ r = e^{X^1}
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The calculated bias factor used to rescale Monte Carlo probabilities. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv419record_super_photon12of_photonSOAP11of_spectrumy">
-<span id="_CPPv319record_super_photon12of_photonSOAP11of_spectrumy"></span><span id="_CPPv219record_super_photon12of_photonSOAP11of_spectrumy"></span><span id="record_super_photon__of_photonSOA.of_spectrumP.unsigned-l-l"></span><span class="target" id="iharm__model_2model_8h_1a897afb9e3fc66025ee70b00e9c6e8399"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">record_super_photon</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ph</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_spect</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">photon_index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy" title="Link to this definition"></a><br /></dt>
-<dd><p>Records a photon’s final properties into the global spectrum array. This function maps a photon’s energy and polar exit angle to a specific energy and angular bin in the spectrum. Because many threads may try to update the same bin simultaneously, it uses CUDA atomic operations to ensure thread safety. </p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Energy is binned logarithmically: <span class="math notranslate nohighlight">\( i_E \approx \frac{\ln(E) - \ln(E_0)}{\Delta \ln E} \)</span>. </p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Polar angle <span class="math notranslate nohighlight">\( \theta \)</span> is binned into angular zones, mirrored across the equator.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ph</strong> – The Structure of Arrays (SOA) containing all photon data. </p></li>
-<li><p><strong>d_spect</strong> – Pointer to the global spectrum structure array. </p></li>
-<li><p><strong>photon_index</strong> – The specific index of the photon being recorded.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
 </dd>
 </dl>
 </dd></dl>

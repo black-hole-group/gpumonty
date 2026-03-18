@@ -67,6 +67,7 @@
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="config.html#c.HDF5_OUTPUT"><code class="docutils literal notranslate"><span class="pre">HDF5_OUTPUT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_COMPTBINS"><code class="docutils literal notranslate"><span class="pre">N_COMPTBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_TYPEBINS"><code class="docutils literal notranslate"><span class="pre">N_TYPEBINS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THBINS"><code class="docutils literal notranslate"><span class="pre">N_THBINS</span></code></a></li>
@@ -314,6 +315,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv49jnu_totalKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_total()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv414int_jnu_bremssKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_bremss()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv413int_jnu_totalKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">int_jnu_total()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv415jnu_ratio_bremsKdKdKdKdKdKd"><code class="docutils literal notranslate"><span class="pre">jnu_ratio_brems()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -423,7 +425,6 @@
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
@@ -476,6 +477,7 @@
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv418track_super_photon12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKyKiKyP11curandState"><code class="docutils literal notranslate"><span class="pre">track_super_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411init_dKdlamA_dA_dA_d"><code class="docutils literal notranslate"><span class="pre">init_dKdlam()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv411push_photonA4NDIM_dA4NDIM_dA4NDIM_dKdPd"><code class="docutils literal notranslate"><span class="pre">push_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="track.html#_CPPv419record_super_photon12of_photonSOAP11of_spectrumy"><code class="docutils literal notranslate"><span class="pre">record_super_photon()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -838,6 +840,27 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The value of the total angle-integrated emissivity <span class="math notranslate nohighlight">\( J_\nu \)</span>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415jnu_ratio_bremsKdKdKdKdKdKd">
+<span id="_CPPv315jnu_ratio_bremsKdKdKdKdKdKd"></span><span id="_CPPv215jnu_ratio_bremsKdKdKdKdKdKd"></span><span id="jnu_ratio_brems__doubleC.doubleC.doubleC.doubleC.doubleC.doubleC"></span><span class="target" id="jnu__mixed_8h_1aaea675dc9c3ddc4c87245e7d21cfcc1d"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jnu_ratio_brems</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theta</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">K2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415jnu_ratio_bremsKdKdKdKdKdKd" title="Link to this definition"></a><br /></dt>
+<dd><p>Calculates the ratio of bremsstrahlung to total emissivity. It serves to realocate it in the correct bins when saving the final spectrum. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nu</strong> – Photon frequency <span class="math notranslate nohighlight">\( \nu \)</span> in the plasma frame. </p></li>
+<li><p><strong>Ne</strong> – Electron density. </p></li>
+<li><p><strong>Thetae</strong> – Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. </p></li>
+<li><p><strong>B</strong> – Magnetic field strength <span class="math notranslate nohighlight">\( B \)</span>. </p></li>
+<li><p><strong>theta</strong> – Angle between the magnetic field and the line of sight. </p></li>
+<li><p><strong>K2</strong> – Precomputed value of the modified Bessel function <span class="math notranslate nohighlight">\( K_2(1/\Theta_e) \)</span> for efficiency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ratio of bremsstrahlung to total emissivity. </p>
 </dd>
 </dl>
 </dd></dl>
