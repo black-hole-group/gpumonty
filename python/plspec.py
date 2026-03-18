@@ -22,6 +22,7 @@ MANY_SPEC = True
 def mkplot(nu, nuLnu, fname):
 
   print("plotting spectrum for {0:s}".format(fname))
+
   # plot
   plt.close("all")
   ax = plt.subplot(1,1,1)
@@ -51,7 +52,8 @@ def mkplot(nu, nuLnu, fname):
   # saving
   plt.legend()
   plt.grid()
-  plt.savefig(fname)
+  plt.tight_layout()
+  plt.savefig(fname,bbox_inches="tight",dpi=200)
 
 
 if __name__ == "__main__":
