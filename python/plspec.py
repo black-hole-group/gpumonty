@@ -17,6 +17,7 @@ HPL  = 6.6260755e-27
 LSUN = 3.827e33
 
 MANY_SPEC = True
+AVG = False
 
 
 def mkplot(nu, nuLnu, fname):
@@ -78,5 +79,6 @@ if __name__ == "__main__":
 
     mkplot(nu, nuLnu, fname.replace(".h5", ".png"))
     nuLnu_total += nuLnu
-
-  mkplot(nu, nuLnu_total/len(fnamelist), fname.replace(".h5", "-avg.png"))
+  
+  if AVG:
+    mkplot(nu, nuLnu_total/len(fnamelist), fname.replace(".h5", "-avg.png"))
