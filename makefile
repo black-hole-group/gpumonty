@@ -35,6 +35,24 @@ CUDA_PATH ?= $(shell \
 		echo ""; \
 	fi)
 
+# GSL auto-detection: derive GSL root from gsl-config or fallback paths
+GSL_HOME ?= $(strip $(shell \
+	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
+		echo $$GSL_HOME; \
+	elif command -v gsl-config >/dev/null 2>&1; then \
+		gsl-config --prefix; \
+	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
+		echo $$HOME/gsl; \
+	elif [ -d /usr/local/include/gsl ]; then \
+		echo /usr/local; \
+	elif [ -d /usr/include/gsl ]; then \
+		echo /usr; \
+	else \
+		echo ""; \
+	fi))
+
+GSL_PATH ?= $(GSL_HOME)
+
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)
 
@@ -65,6 +83,7 @@ ifeq ($(CUDA_PATH),)
 $(error CUDA not found. Install the CUDA toolkit or set CUDA_PATH manually.)
 endif
 $(info [DETECT] CUDA_PATH    = $(CUDA_PATH))
+$(info [DETECT] GSL_PATH     = $(GSL_PATH))
 $(info [DETECT] HDF5_INCLUDE = $(HDF5_INCLUDE))
 $(info [DETECT] HDF5_LIB     = $(HDF5_LIB))
 ifeq ($(HDF5_INCLUDE),)
@@ -74,6 +93,13 @@ endif
 ifeq ($(AUTO_CC),1)
 GPU_CC := $(shell \
 	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
+
+# Fallback: if 6.1, force 6.0
+# This has been added due to weird compatibility issues with 6.1 archtecture specifically for the terminator machine
+# I personally haven't tested if it happens for other machines with 6.1 archtecture, might be a driver specific issue for this machine.
+ifeq ($(GPU_CC),6.1)
+GPU_CC := 6.0
+endif
 
 GPU_CC_NODOT := $(subst .,,$(GPU_CC))
 
