@@ -45,8 +45,12 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void gpuworker(unsigned long long photons_per_batch, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, cudaTextureObject_t besselTexObj, cudaArray_t besselCuArray, double *d_table_ptr, cudaTextureObject_t dPTableTexObj){
+__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj)
 {
+	cudaEvent_t start, stop;
+	CreateCUDAStartStop(&start, &stop);
+	float milliseconds = 0;
+	cudaError_t cudaStatus;
 	int max_block_number = setMaxBlocks();
 	int instant_partition = 1;
 	int offset = 0;
@@ -56,15 +60,20 @@ __host__ void gpuworker(unsigned long long photons_per_batch, int batch_division
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
 	int ideal_nblocks;
+
+	//d_spect is the local structure to each GPU where we are going to save the spectrum properties of the photons. 
+	//We will have one of these per GPU and then we will merge them at the end of the process.
+	struct of_spectrum* d_spect;
+    gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
 	while(instant_partition <= batch_divisions){
 		printf("\n\n\033[1m===========================================\033[0m\n");
 		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
-			offset = gen_superph % batch_divisions;
+			offset = photons_per_gpu % batch_divisions;
 			printf("Last partition with an offset of =%d\n", offset);
 		}
-		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
+		instant_photon_number = (unsigned long long)(photons_per_gpu + offset);
 		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
 		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
 
@@ -225,6 +234,9 @@ __host__ void gpuworker(unsigned long long photons_per_batch, int batch_division
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
 	}
+
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 }
 
 __host__ void CummulativePhotonsPerZonePerGPU(
@@ -275,7 +287,7 @@ __host__ void CummulativePhotonsPerZonePerGPU(
     free(current_cum_sum);
 }
 
-__host__ void mainFlowControl(time_t time, double * p, const char * filename){
+__host__ void mainFlowControl(time_t time, double * p){
 	//Figure out how many gpus we have available for us.
 	int num_gpus;
     cudaGetDeviceCount(&num_gpus);
@@ -285,12 +297,12 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	//Transfer the geom array that stores gdet, gcov, gcon for each zone
 	struct of_geom *d_geom;
 	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
-    cudaMemcpyErrorCheck(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice);
+    gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
 
 	//Transfer the p array that stores the primitive variables for each zone
 	double * d_p; 
     gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
-    cudaMemcpyErrorCheck(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice);
+    gpuErrchk(cudaMemcpy(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice));
 
 	// Transfer the generated_photons_arr which is the array that will store the total number of superphotons generated in each zone.
 	unsigned long long * generated_photons_arr;
@@ -300,19 +312,18 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	double * dnmax_arr;
 	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
 
-	//Finally, we transfer the K2 modified Bessel function table to the GPU and create a texture object for it.
-	cudaTextureObject_t besselTexObj = 0;
-	cudaArray_t besselCuArray;
-	create1DTextureObj(&besselTexObj, K2, &besselCuArray);
-
 
 	//In GPU 0, generate the total number of photons that will be generated in each zone.
 	{
-	cudasetDevice(0);
-	printf("Generating photons on GPU 0!\n");
-	GeneratePhotons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr, besselTexObj);	
-	cudaDeviceSynchronize();
-	DiagnosticRunTime(start, stop, "Photon Generation");
+		cudaSetDevice(0);
+		cudaEvent_t start, stop;
+		CreateCUDAStartStop(&start, &stop);
+		printf("Generating photons on GPU 0!\n");
+		generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);	
+		cudaDeviceSynchronize();
+		DiagnosticRunTime(start, stop, "Photon Generation");
+		cudaEventDestroy(start);
+		cudaEventDestroy(stop);
 	}
 
 	//Some other arrays that are gonna be constant for all the gpus are the table for the scattering kernel and the p array 
@@ -324,7 +335,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	//Finally, we transfer the table for the scattering kernel to the GPU.
 	double *d_table_ptr;
 	gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-	cudaMemcpyErrorCheck(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice);
+	gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
 
 	//Create one array of spectra for each GPU, since we can't write to the same array from different GPUs, we will have to merge them at the end of the process.
 	struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
@@ -332,6 +343,7 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	//After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
 	//we can know the index of the first photon generated in each zone. This will be used in the sampling process.
 	//Bring the initial generated photons array back to the host (if not already there)
+	int num_zones = N1 * N2 * N3;
 	unsigned long long *h_generated_photons = (unsigned long long *)malloc(num_zones * sizeof(unsigned long long));
 	gpuErrchk(cudaMemcpy(h_generated_photons, generated_photons_arr, num_zones * sizeof(unsigned long long), cudaMemcpyDeviceToHost));
 
@@ -362,12 +374,14 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 
 		//Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
 		int batch_divisions = 1;
-		photons_per_batch = photonsPerBatch(h_totals_per_gpu[i], &batch_divisions);
+		unsigned long long photons_per_batch = photonsPerBatch(h_totals_per_gpu[i], &batch_divisions);
 		printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
-		// Call the worker function for this specific GPU
-		// NOTE: We pass d_index_to_ijk directly to the worker!
-		gpuWorker(i, my_num, p, geom, d_index_to_ijk, host_dnmax_arr, all_spectra[i]); 
+		// Call the worker function for this specific GPU.
+		// This function will be particular for each GPU since each one has a different number of photons to process.
+		GPUWorker(my_num, batch_divisions, d_geom, d_p, generated_photons_arr, dnmax_arr, d_index_to_ijk, d_table_ptr, dPTableTexObj);
+		
+		cudaFree(d_index_to_ijk);
 	}
 
 	//Sure, after the main loop, we can free all the CUDA variables that we created here.
@@ -375,320 +389,317 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	cudaFree(d_p);
 	cudaFree(generated_photons_arr);
 	cudaFree(dnmax_arr);
-	cudaFree(d_index_to_ijk);
-	cudaFreeArray(besselCuArray);
-	cudaDestroyTextureObject(besselTexObj);
 	cudaFree(d_table_ptr);
 	cudaFreeArray(dPTableCuArray);
 	
 }
 
-__host__ void mainFlowControl(time_t time, double * p){
-	/*
-	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
+// __host__ void mainFlowControl(time_t time, double * p){
+// 	/*
+// 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
 
-	Parameters:
-	@time: This is the usual C function that returns the number of seconds since the epoch. It is used to seed the random number generator
-	@p: Array of the primitive variables at each grid cell
+// 	Parameters:
+// 	@time: This is the usual C function that returns the number of seconds since the epoch. It is used to seed the random number generator
+// 	@p: Array of the primitive variables at each grid cell
 
-	Variables:
-	@start: Start event to measure the time of the kernel
-	@stop: Stop event to measure the time of the kernel
-	@milliseconds: Time in milliseconds that the kernel took to execute
-	@d_spect: Array of struct of_spectrum in device. This is where we save the spectrum properties of the photons.
-	@d_p: Array of the primitive variables in the device
-	@d_table_ptr: Array of the table values in the device
-	@d_geom: Array of the struct of_geom in the device
-	@d_index_to_ijk: Array of the cumulative sum of photons per zone in the device
-	@gen_superph: Number of generated photons
-	@generated_photons_arr: Array of the number of photons to be generated in each zone
-	@dnmax_arr: Array of the dnmax values in each zone
-	@max_block_number: Maximum number of blocks that can be launched
-	@instant_photon_number: Number of photons to be generated in each batch
-	@offset: Offset to be used in the last batch
-	@ideal_nblocks: Ideal number of blocks to be launched
-	@batch_divisions: Number of batches to divide the photons into
-	@initial_photon_states: Array of the initial photon states
-	@scat_ofphoton: Array of the scattered photons
-	@num_scat_phs: Array of the number of scattered photons
-	@instant_partition: Number of the current batch
-	@photons_processed: Number of photons processed so far
-	@reset: Variable to reset the counters
-	@n: Counter to keep track of the number of scattering rounds
-	@quit_flag_sca: Flag to quit the scattering process
-	@scatterings_performed: Number of scatterings performed
-	@nblocks: Number of blocks to be launched
+// 	Variables:
+// 	@start: Start event to measure the time of the kernel
+// 	@stop: Stop event to measure the time of the kernel
+// 	@milliseconds: Time in milliseconds that the kernel took to execute
+// 	@d_spect: Array of struct of_spectrum in device. This is where we save the spectrum properties of the photons.
+// 	@d_p: Array of the primitive variables in the device
+// 	@d_table_ptr: Array of the table values in the device
+// 	@d_geom: Array of the struct of_geom in the device
+// 	@d_index_to_ijk: Array of the cumulative sum of photons per zone in the device
+// 	@gen_superph: Number of generated photons
+// 	@generated_photons_arr: Array of the number of photons to be generated in each zone
+// 	@dnmax_arr: Array of the dnmax values in each zone
+// 	@max_block_number: Maximum number of blocks that can be launched
+// 	@instant_photon_number: Number of photons to be generated in each batch
+// 	@offset: Offset to be used in the last batch
+// 	@ideal_nblocks: Ideal number of blocks to be launched
+// 	@batch_divisions: Number of batches to divide the photons into
+// 	@initial_photon_states: Array of the initial photon states
+// 	@scat_ofphoton: Array of the scattered photons
+// 	@num_scat_phs: Array of the number of scattered photons
+// 	@instant_partition: Number of the current batch
+// 	@photons_processed: Number of photons processed so far
+// 	@reset: Variable to reset the counters
+// 	@n: Counter to keep track of the number of scattering rounds
+// 	@quit_flag_sca: Flag to quit the scattering process
+// 	@scatterings_performed: Number of scatterings performed
+// 	@nblocks: Number of blocks to be launched
 
-	*/
-    cudaEvent_t start, stop;
+// 	*/
+//     cudaEvent_t start, stop;
 
-    float milliseconds = 0;
+//     float milliseconds = 0;
 
-	cudaEventCreate(&start);
+// 	cudaEventCreate(&start);
 
-    cudaEventCreate(&stop);
+//     cudaEventCreate(&stop);
 
-	cudaError_t cudaStatus;
-	cudaStatus = cudaGetLastError();
-	transferParams();
+// 	cudaError_t cudaStatus;
+// 	cudaStatus = cudaGetLastError();
+// 	transferParams();
 	
-    struct of_spectrum* d_spect;
-    gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
-	double * d_p; 
-    gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
-    gpuErrchk(cudaMemcpy(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice));
+//     struct of_spectrum* d_spect;
+//     gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
+// 	double * d_p; 
+//     gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
+//     gpuErrchk(cudaMemcpy(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice));
 
-	cudaTextureObject_t dPTableTexObj = 0;
-	cudaArray_t dPTableCuArray;
-	createdPTextureObj(&dPTableTexObj, p, &dPTableCuArray);
-	free(p);
-
-	
-	double *d_table_ptr;
-    gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-    gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
-
-
-
-	struct of_geom *d_geom;
-	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
-    gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
-
-
-
-	int max_block_number = setMaxBlocks();
-
-	unsigned long long gen_superph = 0;
-	unsigned long long * generated_photons_arr;
-	gpuErrchk(cudaMalloc(&generated_photons_arr, N1 * N2 * N3 * sizeof(unsigned long long)));
-	double * dnmax_arr;
-	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
-
-	fprintf(stderr, "Generating super photons!\n");
-	cudaEventRecord(start, 0);
-    generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);	
-	cudaDeviceSynchronize();
-	cudaEventRecord(stop);
-	cudaEventSynchronize(stop); 
-	cudaEventElapsedTime(&milliseconds, start, stop);
-	printf("Generation kernel, execution time: %f s\n",milliseconds/1000.);
-	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
-
-
-	unsigned long long * d_index_to_ijk;
-	gpuErrchk(cudaMalloc(&d_index_to_ijk, N1 * N2 * N3 * sizeof(unsigned long long)));
-	cummulativePhotonsPerZone(generated_photons_arr, d_index_to_ijk);
-
-
-	/*Creating array of initial superphotons state*/
-	int instant_partition = 1;
-	int offset = 0;
-	struct of_photonSOA initial_photon_states;
-	struct of_photonSOA scat_ofphoton;
-	unsigned long long num_scat_phs[MAX_LAYER_SCA];
-	unsigned long long instant_photon_number = 0;
-	unsigned long long photons_processed =0;
-	int ideal_nblocks;
-	int batch_divisions = 1;
-	instant_photon_number = photonsPerBatch(gen_superph, &batch_divisions);
-
-
-
-	while(instant_partition <= batch_divisions){
-		printf("\n\n\033[1m===========================================\033[0m\n");
-		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
-		//If in the last partition and there is an offset, just do it;
-		if(instant_partition == batch_divisions){
-			offset = gen_superph % batch_divisions;
-			printf("Last partition with an offset of =%d\n", offset);
-		}
-		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
-		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
-		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
-
-		if(ideal_nblocks == 0){
-			ideal_nblocks = 1;
-		}
-
-		allocatePhotonData(&initial_photon_states, instant_photon_number);
-		{
-			if(params.fitBias){
-				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
-				allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
-			}else{
-				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
-			}
-
-		}
-
-		fprintf(stderr, "\nSampling the photons!\n");
-		cudaEventRecord(start, 0);
-		if(ideal_nblocks > max_block_number){
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
-		}else{
-			if (ideal_nblocks == 0)
-			ideal_nblocks = 1;
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
-		}
-		cudaDeviceSynchronize();
-
-		cudaEventRecord(stop);
-		cudaEventSynchronize(stop); 
-		cudaEventElapsedTime(&milliseconds, start, stop);
-		printf("Sampling kernel execution time: %f s\n", milliseconds/1000.);
-
-		cudaStatus = cudaGetLastError();
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
-			fprintf(stderr, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
-			exit(1);
-		}
-
-		unsigned long long reset = 0;
-		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-		fprintf(stderr, "Photon sampling process completed!\n");
-
+// 	cudaTextureObject_t dPTableTexObj = 0;
+// 	cudaArray_t dPTableCuArray;
+// 	createdPTextureObj(&dPTableTexObj, p, &dPTableCuArray);
+// 	free(p);
 
 	
-		fprintf(stderr, "\nTracking photons along the geodesics\n");
-
-		// Checkpoint array to save photon states before evolving. Since we are going to do bias tuning, we might want to retrack
-		// the same photons with a different bias parameter.
-		struct of_photonSOA PhotonStateCheckPoint;
-		if(params.fitBias){
-			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
-			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
-			// Turn params.bias_guess to the last value used for bias tuning
-			gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), 0 * sizeof(double)));
-			printf("Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
-		}
-
-		int RedoTuning = 1;
-		double InferiorAcceptance = 0.8 * params.targetRatio;
-		double SuperiorAcceptance = 1.2 * params.targetRatio;
-		int BiasTuning_index = 0;
-		double PreviousRatio = 0;
-		do{
-			cudaEventRecord(start, 0);
-			if(ideal_nblocks > max_block_number){
-				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
-				#else
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
-				#endif
-			}else{
-				if (ideal_nblocks == 0)
-				ideal_nblocks = 1;
-				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
-				#else
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
-				#endif
-			}		
-
-			cudaDeviceSynchronize();
-			cudaEventRecord(stop);
-			cudaEventSynchronize(stop); 
-			cudaEventElapsedTime(&milliseconds, start, stop);
-			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
-			Flag("The tracking kernel - illegal memory access encountered often means too much scattering happening, try changing the bias tunning or SCATTERINGS_PER_PHOTON in config.h");
-
-			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
+// 	double *d_table_ptr;
+//     gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
+//     gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
 
 
-			Flag("the tracking kernel");
 
-			if(params.fitBias){
-				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
-				double RelativeImprovement = abs(Ratio - PreviousRatio)/PreviousRatio;
-				BiasTuning_index++;
-				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
-					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
-					params.bias_guess *= params.targetRatio/Ratio;
-					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
-					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
-					gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), 0 * sizeof(double)));
-					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
-					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
+// 	struct of_geom *d_geom;
+// 	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
+//     gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
 
-					//Resetting all the arrays and global variables that keep track of progress
-					unsigned long long reset = 0;
-					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
-					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
-					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
-				}else{
-						if(RelativeImprovement <= 0.1){
-							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
+
+
+// 	int max_block_number = setMaxBlocks();
+
+// 	unsigned long long gen_superph = 0;
+// 	unsigned long long * generated_photons_arr;
+// 	gpuErrchk(cudaMalloc(&generated_photons_arr, N1 * N2 * N3 * sizeof(unsigned long long)));
+// 	double * dnmax_arr;
+// 	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
+
+// 	fprintf(stderr, "Generating super photons!\n");
+// 	cudaEventRecord(start, 0);
+//     generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);	
+// 	cudaDeviceSynchronize();
+// 	cudaEventRecord(stop);
+// 	cudaEventSynchronize(stop); 
+// 	cudaEventElapsedTime(&milliseconds, start, stop);
+// 	printf("Generation kernel, execution time: %f s\n",milliseconds/1000.);
+// 	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
+// 	fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
+
+
+// 	unsigned long long * d_index_to_ijk;
+// 	gpuErrchk(cudaMalloc(&d_index_to_ijk, N1 * N2 * N3 * sizeof(unsigned long long)));
+// 	cummulativePhotonsPerZone(generated_photons_arr, d_index_to_ijk);
+
+
+// 	/*Creating array of initial superphotons state*/
+// 	int instant_partition = 1;
+// 	int offset = 0;
+// 	struct of_photonSOA initial_photon_states;
+// 	struct of_photonSOA scat_ofphoton;
+// 	unsigned long long num_scat_phs[MAX_LAYER_SCA];
+// 	unsigned long long instant_photon_number = 0;
+// 	unsigned long long photons_processed =0;
+// 	int ideal_nblocks;
+// 	int batch_divisions = 1;
+// 	instant_photon_number = photonsPerBatch(gen_superph, &batch_divisions);
+
+
+
+// 	while(instant_partition <= batch_divisions){
+// 		printf("\n\n\033[1m===========================================\033[0m\n");
+// 		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
+// 		//If in the last partition and there is an offset, just do it;
+// 		if(instant_partition == batch_divisions){
+// 			offset = gen_superph % batch_divisions;
+// 			printf("Last partition with an offset of =%d\n", offset);
+// 		}
+// 		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
+// 		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
+// 		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
+
+// 		if(ideal_nblocks == 0){
+// 			ideal_nblocks = 1;
+// 		}
+
+// 		allocatePhotonData(&initial_photon_states, instant_photon_number);
+// 		{
+// 			if(params.fitBias){
+// 				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+// 				allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
+// 			}else{
+// 				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+// 			}
+
+// 		}
+
+// 		fprintf(stderr, "\nSampling the photons!\n");
+// 		cudaEventRecord(start, 0);
+// 		if(ideal_nblocks > max_block_number){
+// 			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+// 		}else{
+// 			if (ideal_nblocks == 0)
+// 			ideal_nblocks = 1;
+// 			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+// 		}
+// 		cudaDeviceSynchronize();
+
+// 		cudaEventRecord(stop);
+// 		cudaEventSynchronize(stop); 
+// 		cudaEventElapsedTime(&milliseconds, start, stop);
+// 		printf("Sampling kernel execution time: %f s\n", milliseconds/1000.);
+
+// 		cudaStatus = cudaGetLastError();
+// 		if (cudaStatus != cudaSuccess) {
+// 			fprintf(stderr, "in sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
+// 			fprintf(stderr, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
+// 			exit(1);
+// 		}
+
+// 		unsigned long long reset = 0;
+// 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+// 		fprintf(stderr, "Photon sampling process completed!\n");
+
+
+	
+// 		fprintf(stderr, "\nTracking photons along the geodesics\n");
+
+// 		// Checkpoint array to save photon states before evolving. Since we are going to do bias tuning, we might want to retrack
+// 		// the same photons with a different bias parameter.
+// 		struct of_photonSOA PhotonStateCheckPoint;
+// 		if(params.fitBias){
+// 			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
+// 			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
+// 			// Turn params.bias_guess to the last value used for bias tuning
+// 			gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), 0 * sizeof(double)));
+// 			printf("Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
+// 		}
+
+// 		int RedoTuning = 1;
+// 		double InferiorAcceptance = 0.8 * params.targetRatio;
+// 		double SuperiorAcceptance = 1.2 * params.targetRatio;
+// 		int BiasTuning_index = 0;
+// 		double PreviousRatio = 0;
+// 		do{
+// 			cudaEventRecord(start, 0);
+// 			if(ideal_nblocks > max_block_number){
+// 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+// 					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+// 				#else
+// 					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+// 				#endif
+// 			}else{
+// 				if (ideal_nblocks == 0)
+// 				ideal_nblocks = 1;
+// 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+// 					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+// 				#else
+// 					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+// 				#endif
+// 			}		
+
+// 			cudaDeviceSynchronize();
+// 			cudaEventRecord(stop);
+// 			cudaEventSynchronize(stop); 
+// 			cudaEventElapsedTime(&milliseconds, start, stop);
+// 			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
+// 			Flag("The tracking kernel - illegal memory access encountered often means too much scattering happening, try changing the bias tunning or SCATTERINGS_PER_PHOTON in config.h");
+
+// 			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
+
+
+// 			Flag("the tracking kernel");
+
+// 			if(params.fitBias){
+// 				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
+// 				double RelativeImprovement = abs(Ratio - PreviousRatio)/PreviousRatio;
+// 				BiasTuning_index++;
+// 				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
+// 					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
+// 					params.bias_guess *= params.targetRatio/Ratio;
+// 					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
+// 					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
+// 					gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), 0 * sizeof(double)));
+// 					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
+// 					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
+
+// 					//Resetting all the arrays and global variables that keep track of progress
+// 					unsigned long long reset = 0;
+// 					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
+// 					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+// 					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+// 				}else{
+// 						if(RelativeImprovement <= 0.1){
+// 							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
 							
-						}else if(BiasTuning_index < MAXITER_BIASTUNING){
-							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
-						}else{
-							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
-						}
-					RedoTuning = 0;
-				}
-				PreviousRatio = Ratio;
-			}
-		}while(params.fitBias && RedoTuning && BiasTuning_index < MAXITER_BIASTUNING);
+// 						}else if(BiasTuning_index < MAXITER_BIASTUNING){
+// 							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
+// 						}else{
+// 							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+// 						}
+// 					RedoTuning = 0;
+// 				}
+// 				PreviousRatio = Ratio;
+// 			}
+// 		}while(params.fitBias && RedoTuning && BiasTuning_index < MAXITER_BIASTUNING);
 
 
 
-		if(ideal_nblocks > max_block_number){
-			record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
-		}else{
-			if (ideal_nblocks == 0)
-			ideal_nblocks = 1;
-			record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
-		}			
-		cudaStatus = cudaGetLastError();
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in record %s\n", cudaGetErrorString(cudaStatus));
-			exit(1);
-		}
-	 	freePhotonData(&initial_photon_states);
-		if(params.fitBias)
-		freePhotonData(&PhotonStateCheckPoint);
+// 		if(ideal_nblocks > max_block_number){
+// 			record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
+// 		}else{
+// 			if (ideal_nblocks == 0)
+// 			ideal_nblocks = 1;
+// 			record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
+// 		}			
+// 		cudaStatus = cudaGetLastError();
+// 		if (cudaStatus != cudaSuccess) {
+// 			fprintf(stderr, "in record %s\n", cudaGetErrorString(cudaStatus));
+// 			exit(1);
+// 		}
+// 	 	freePhotonData(&initial_photon_states);
+// 		if(params.fitBias)
+// 		freePhotonData(&PhotonStateCheckPoint);
 
 
-		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
-		if(params.scattering){
-			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
-			N_scatt += num_scat_phs[0];
-			printf("\nSolving the scattered photons...\n");
-			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
-		}
+// 		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+// 		if(params.scattering){
+// 			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+// 			N_scatt += num_scat_phs[0];
+// 			printf("\nSolving the scattered photons...\n");
+// 			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
+// 		}
 
 
-		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj);
-		instant_partition +=1;
-		photons_processed += instant_photon_number;
-	}
+// 		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj);
+// 		instant_partition +=1;
+// 		photons_processed += instant_photon_number;
+// 	}
 
-	struct of_spectrum ***spect = Malloc3D_Contiguous(N_TYPEBINS, N_THBINS, N_EBINS);	
+// 	struct of_spectrum ***spect = Malloc3D_Contiguous(N_TYPEBINS, N_THBINS, N_EBINS);	
 
-	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
-	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
-	#if(HDF5_OUTPUT)
-		report_spectrum_h5(gen_superph, spect, params.spectrum);
-	#else
-		report_spectrum(gen_superph, spect, params.spectrum);
-	#endif
+// 	gpuErrchk(cudaMemcpy(spect[0][0], d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum), cudaMemcpyDeviceToHost));
+// 	gpuErrchk(cudaMemcpyFromSymbol(&N_superph_recorded, d_N_superph_recorded, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
+// 	#if(HDF5_OUTPUT)
+// 		report_spectrum_h5(gen_superph, spect, params.spectrum);
+// 	#else
+// 		report_spectrum(gen_superph, spect, params.spectrum);
+// 	#endif
 	
-	cudaFree(d_spect);
-	cudaFree(generated_photons_arr); 
-	cudaFree(dnmax_arr);
-	cudaFree(d_geom);
-	cudaFree(d_table_ptr);
-	cudaFree(d_p);
-    cudaFree(d_index_to_ijk);
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
-	Free3D_Contiguous(spect, N_TYPEBINS);
-	cudaDestroyTextureObject(dPTableTexObj);
-	cudaFreeArray(dPTableCuArray);
+// 	cudaFree(d_spect);
+// 	cudaFree(generated_photons_arr); 
+// 	cudaFree(dnmax_arr);
+// 	cudaFree(d_geom);
+// 	cudaFree(d_table_ptr);
+// 	cudaFree(d_p);
+//     cudaFree(d_index_to_ijk);
+//     cudaEventDestroy(start);
+//     cudaEventDestroy(stop);
+// 	Free3D_Contiguous(spect, N_TYPEBINS);
+// 	cudaDestroyTextureObject(dPTableTexObj);
+// 	cudaFreeArray(dPTableCuArray);
 
-}
+// }
 
 __launch_bounds__(N_THREADS)
 __global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr){
