@@ -45,9 +45,234 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void MainLoop(unsigned long long photons_per_batch, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, cudaTextureObject_t besselTexObj, cudaArray_t besselCuArray, double *d_table_ptr, cudaTextureObject_t dPTableTexObj){
+__host__ void gpuworker(unsigned long long photons_per_batch, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, cudaTextureObject_t besselTexObj, cudaArray_t besselCuArray, double *d_table_ptr, cudaTextureObject_t dPTableTexObj){
 {
+	int max_block_number = setMaxBlocks();
+	int instant_partition = 1;
+	int offset = 0;
+	struct of_photonSOA initial_photon_states;
+	struct of_photonSOA scat_ofphoton;
+	unsigned long long num_scat_phs[MAX_LAYER_SCA];
+	unsigned long long instant_photon_number = 0;
+	unsigned long long photons_processed =0;
+	int ideal_nblocks;
+	while(instant_partition <= batch_divisions){
+		printf("\n\n\033[1m===========================================\033[0m\n");
+		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
+		//If in the last partition and there is an offset, just do it;
+		if(instant_partition == batch_divisions){
+			offset = gen_superph % batch_divisions;
+			printf("Last partition with an offset of =%d\n", offset);
+		}
+		instant_photon_number = (unsigned long long)((gen_superph/batch_divisions) + offset);
+		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
+		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
 
+		if(ideal_nblocks == 0){
+			ideal_nblocks = 1;
+		}
+
+		allocatePhotonData(&initial_photon_states, instant_photon_number);
+		{
+			if(params.fitBias){
+				double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
+				allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
+			}else{
+				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+			}
+
+		}
+
+		fprintf(stderr, "\nSampling the photons!\n");
+		cudaEventRecord(start, 0);
+		if(ideal_nblocks > max_block_number){
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+		}else{
+			if (ideal_nblocks == 0)
+			ideal_nblocks = 1;
+			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+		}
+		cudaDeviceSynchronize();
+
+		cudaEventRecord(stop);
+		cudaEventSynchronize(stop); 
+		cudaEventElapsedTime(&milliseconds, start, stop);
+		printf("Sampling kernel execution time: %f s\n", milliseconds/1000.);
+
+		cudaStatus = cudaGetLastError();
+		if (cudaStatus != cudaSuccess) {
+			fprintf(stderr, "in sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
+			fprintf(stderr, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
+			exit(1);
+		}
+
+		unsigned long long reset = 0;
+		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
+		fprintf(stderr, "Photon sampling process completed!\n");
+
+
+	
+		fprintf(stderr, "\nTracking photons along the geodesics\n");
+
+		// Checkpoint array to save photon states before evolving. Since we are going to do bias tuning, we might want to retrack
+		// the same photons with a different bias parameter.
+		struct of_photonSOA PhotonStateCheckPoint;
+		if(params.fitBias){
+			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
+			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
+			// Turn params.bias_guess to the last value used for bias tuning
+			gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), 0 * sizeof(double)));
+			printf("Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
+		}
+
+		int RedoTuning = 1;
+		double InferiorAcceptance = 0.8 * params.targetRatio;
+		double SuperiorAcceptance = 1.2 * params.targetRatio;
+		int BiasTuning_index = 0;
+		double PreviousRatio = 0;
+		do{
+			cudaEventRecord(start, 0);
+			if(ideal_nblocks > max_block_number){
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+				#else
+					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+				#endif
+			}else{
+				if (ideal_nblocks == 0)
+				ideal_nblocks = 1;
+				#ifdef DO_NOT_USE_TEXTURE_MEMORY
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+				#else
+					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+				#endif
+			}		
+
+			cudaDeviceSynchronize();
+			cudaEventRecord(stop);
+			cudaEventSynchronize(stop); 
+			cudaEventElapsedTime(&milliseconds, start, stop);
+			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
+			Flag("The tracking kernel - illegal memory access encountered often means too much scattering happening, try changing the bias tunning or SCATTERINGS_PER_PHOTON in config.h");
+
+			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
+
+
+			Flag("the tracking kernel");
+
+			if(params.fitBias){
+				double Ratio = ((double)num_scat_phs[0])/((double)instant_photon_number);
+				double RelativeImprovement = abs(Ratio - PreviousRatio)/PreviousRatio;
+				BiasTuning_index++;
+				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
+					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
+					params.bias_guess *= params.targetRatio/Ratio;
+					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
+					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
+					gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), 0 * sizeof(double)));
+					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
+					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
+
+					//Resetting all the arrays and global variables that keep track of progress
+					unsigned long long reset = 0;
+					memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
+					gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+				}else{
+						if(RelativeImprovement <= 0.1){
+							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
+							
+						}else if(BiasTuning_index < MAXITER_BIASTUNING){
+							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
+						}else{
+							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+						}
+					RedoTuning = 0;
+				}
+				PreviousRatio = Ratio;
+			}
+		}while(params.fitBias && RedoTuning && BiasTuning_index < MAXITER_BIASTUNING);
+
+
+
+		if(ideal_nblocks > max_block_number){
+			record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
+		}else{
+			if (ideal_nblocks == 0)
+			ideal_nblocks = 1;
+			record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
+		}			
+		cudaStatus = cudaGetLastError();
+		if (cudaStatus != cudaSuccess) {
+			fprintf(stderr, "in record %s\n", cudaGetErrorString(cudaStatus));
+			exit(1);
+		}
+	 	freePhotonData(&initial_photon_states);
+		if(params.fitBias)
+		freePhotonData(&PhotonStateCheckPoint);
+
+
+		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+		if(params.scattering){
+			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+			N_scatt += num_scat_phs[0];
+			printf("\nSolving the scattered photons...\n");
+			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
+		}
+
+
+		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj);
+		instant_partition +=1;
+		photons_processed += instant_photon_number;
+	}
+}
+
+__host__ void CummulativePhotonsPerZonePerGPU(
+    unsigned long long *h_generated_photons_arr, 
+    unsigned long long *h_index_to_ijk_2d, 
+    unsigned long long *h_total_per_gpu, 
+    int num_gpus) 
+{
+    // The idea behind this function is that each cpu thread will solely get
+    // its specific "slice" of that array and hands it to its assigned GPU.
+    int num_zones = N1 * N2 * N3;
+    unsigned long long *current_cum_sum = (unsigned long long *)calloc(num_gpus, sizeof(unsigned long long));
+
+    // Keeps track of whose turn it is to get the extra photon across the WHOLE grid
+    int next_gpu_for_remainder = 0; 
+
+    // Distribute photons and build the cumulative sums per GPU
+    for (int z = 0; z < num_zones; z++) {
+        unsigned long long total_in_zone = h_generated_photons_arr[z];
+        unsigned long long base_per_gpu = total_in_zone / num_gpus;
+        unsigned long long remainder = total_in_zone % num_gpus;
+
+        // 1. Give every GPU its guaranteed base share for this zone
+        for (int g = 0; g < num_gpus; g++) {
+            current_cum_sum[g] += base_per_gpu;
+        }
+
+        // 2. Deal out the extra remainder photons one by one
+        for (unsigned long long r = 0; r < remainder; r++) {
+            current_cum_sum[next_gpu_for_remainder] += 1;
+            
+            // Move to the next GPU, wrapping back to 0 if we hit the end
+            next_gpu_for_remainder = (next_gpu_for_remainder + 1) % num_gpus;
+        }
+
+        // 3. Store the updated running totals in the flattened 2D array
+        for (int g = 0; g < num_gpus; g++) {
+            // Index: (GPU_ID * NUM_ZONES) + ZONE_ID
+            h_index_to_ijk_2d[g * num_zones + z] = current_cum_sum[g];
+        }
+    }
+
+    // Save the grand total of photons assigned to each GPU
+    for (int g = 0; g < num_gpus; g++) {
+        h_total_per_gpu[g] = current_cum_sum[g];
+    }
+    
+    free(current_cum_sum);
 }
 
 __host__ void mainFlowControl(time_t time, double * p, const char * filename){
@@ -90,19 +315,6 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	DiagnosticRunTime(start, stop, "Photon Generation");
 	}
 
-
-	//After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
-	//we can know the index of the first photon generated in each zone. This will be used in the sampling process.
-	unsigned long long * d_index_to_ijk;
-	gpuErrchk(cudaMalloc(&d_index_to_ijk, N1 * N2 * N3 * sizeof(unsigned long long)));
-	cummulativePhotonsPerZone(generated_photons_arr, d_index_to_ijk);
-
-	//Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
-	//First transfer the ammount of superphotons generated back to the CPU and then calculate how many photons we can process per batch.
-	cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-	int batch_divisions = 1;
-	photons_per_batch = photonsPerBatch(gen_superph, &batch_divisions);
-
 	//Some other arrays that are gonna be constant for all the gpus are the table for the scattering kernel and the p array 
 	//that stores the primitive variables. We can transfer them once and then use them as arguments to the kernel that will call the main loop.
 	cudaTextureObject_t dPTableTexObj = 0;
@@ -117,33 +329,46 @@ __host__ void mainFlowControl(time_t time, double * p, const char * filename){
 	//Create one array of spectra for each GPU, since we can't write to the same array from different GPUs, we will have to merge them at the end of the process.
 	struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
 
-	//Since all the CUDA variables created here are theoretically immutable, since the grid won't change when we change GPUs
-	//We maintain them and use them as arguments to the kernel that will call the mainloop
-	MainLoop(photons_per_batch, batch_divisions, d_geom, d_p, generated_photons_arr, dnmax_arr, d_index_to_ijk, besselTexObj, besselCuArray, d_table_ptr, dPTableTexObj);
-	//I'm gonna write here so I won't forget, so each gpu will get a well divide, and what we are going to do is once we divide
-	// we will know how many superphotons are generated in zone 1, 2, 3... and so on, what we are gonna do is
-	//Imagine you have x photons generated in zone 1 and you have n gpus, each gpu will be assinged x/n superphotons to sample and evolve
-	// the offset can stay with the last gpu. So our cumulative array will be, if it was x1, x1 + x2, x1 + x2 + x3, now it's gonna be
-	// x1/n, x1/n + x2/n, x1/n + x2/n + x3/n and so on, so each gpu will know that it has to sample the photons between x1/n and x1 + x2/n and so on.
-	// I'll have to change how to do the cummulative sum, but it shouldn't be too hard...
+	//After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
+	//we can know the index of the first photon generated in each zone. This will be used in the sampling process.
+	//Bring the initial generated photons array back to the host (if not already there)
+	unsigned long long *h_generated_photons = (unsigned long long *)malloc(num_zones * sizeof(unsigned long long));
+	gpuErrchk(cudaMemcpy(h_generated_photons, generated_photons_arr, num_zones * sizeof(unsigned long long), cudaMemcpyDeviceToHost));
+
+	//Allocate space for our 2D array and totals on the host
+	unsigned long long *h_index_to_ijk_2d = (unsigned long long *)malloc(num_gpus * num_zones * sizeof(unsigned long long));
+	unsigned long long *h_totals_per_gpu = (unsigned long long *)malloc(num_gpus * sizeof(unsigned long long));
+
+	//Pre-calculate the balanced zones
+	CummulativePhotonsPerZonePerGPU(h_generated_photons, h_index_to_ijk_2d, h_totals_per_gpu, num_gpus);
+
 	
-	unsigned long long photons_per_gpu = gen_superph / num_gpus;
+	#pragma omp parallel for num_threads(num_gpus)
+	for (int i = 0; i < num_gpus; i++) {
+		
+		// Set the device for this CPU thread. Thread 0 -> GPU 0, etc.
+		cudaSetDevice(i);
+		
+		// Each GPU id is assinged with the total number of photons.
+		unsigned long long my_num = h_totals_per_gpu[i];
 
-		#pragma omp parallel for num_threads(num_gpus)
-		for (int i = 0; i < num_gpus; i++) {
-			unsigned long long my_start = i * photons_per_gpu;
-			unsigned long long my_num = photons_per_gpu;
-			
-			// Give any leftover photons to the last GPU
-			if (i == num_gpus - 1) {
-				my_num += (gen_superph % num_gpus);
-			}
+		// Allocate the cumulative array for THIS specific GPU
+		unsigned long long * d_index_to_ijk;
+		gpuErrchk(cudaMalloc(&d_index_to_ijk, num_zones * sizeof(unsigned long long)));
+		
+		// Grab just the slice of the 2D array that belongs to GPU 'i' and copy it to device
+		unsigned long long *my_host_slice = &h_index_to_ijk_2d[i * num_zones];
+		gpuErrchk(cudaMemcpy(d_index_to_ijk, my_host_slice, num_zones * sizeof(unsigned long long), cudaMemcpyHostToDevice));
 
-			// Call the worker function for this specific GPU
-			gpuWorker(i, my_start, my_num, p, geom, 
-					host_generated_photons_arr, host_dnmax_arr, 
-					all_spectra[i]);
-		}
+		//Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
+		int batch_divisions = 1;
+		photons_per_batch = photonsPerBatch(h_totals_per_gpu[i], &batch_divisions);
+		printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
+
+		// Call the worker function for this specific GPU
+		// NOTE: We pass d_index_to_ijk directly to the worker!
+		gpuWorker(i, my_num, p, geom, d_index_to_ijk, host_dnmax_arr, all_spectra[i]); 
+	}
 
 	//Sure, after the main loop, we can free all the CUDA variables that we created here.
 	cudaFree(d_geom);
