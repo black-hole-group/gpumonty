@@ -291,7 +291,8 @@ __host__ void mainFlowControl(time_t time, double * p){
 	//Figure out how many gpus we have available for us.
 	int num_gpus;
     cudaGetDeviceCount(&num_gpus);
-	printf("Number of GPUs available: %d\n", num_gpus);
+
+	printf("\n\n \033[1mUsing %d GPUs available...\033[0m\n\n", num_gpus);
 
 	//Transfer from CPU to GPU the global variables that are needed for the photon generation process.
 	//Transfer the geom array that stores gdet, gcov, gcon for each zone
@@ -324,6 +325,9 @@ __host__ void mainFlowControl(time_t time, double * p){
 		DiagnosticRunTime(start, stop, "Photon Generation");
 		cudaEventDestroy(start);
 		cudaEventDestroy(stop);
+		unsigned long long gen_superph = 0;
+		cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
+		fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
 	}
 
 	//Some other arrays that are gonna be constant for all the gpus are the table for the scattering kernel and the p array 
@@ -354,7 +358,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 	//Pre-calculate the balanced zones
 	CummulativePhotonsPerZonePerGPU(h_generated_photons, h_index_to_ijk_2d, h_totals_per_gpu, num_gpus);
 
-	
+	printf("\n\n \033[1mBalanced zones calculated...\033[0m\n\n");
 	#pragma omp parallel for num_threads(num_gpus)
 	for (int i = 0; i < num_gpus; i++) {
 		
@@ -375,6 +379,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 		//Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
 		int batch_divisions = 1;
 		unsigned long long photons_per_batch = photonsPerBatch(h_totals_per_gpu[i], &batch_divisions);
+		printf("h_totals_per_gpu[%d] = %llu\n", i, h_totals_per_gpu[i]);
 		printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
 		// Call the worker function for this specific GPU.
