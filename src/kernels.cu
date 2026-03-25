@@ -45,7 +45,7 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj)
+__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename)
 {
 	cudaEvent_t start, stop;
 	CreateCUDAStartStop(&start, &stop);
@@ -60,21 +60,22 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
 	int ideal_nblocks;
-
+	FILE *log_file = fopen(log_filename, "w");
+	fprintf(log_file, "Log for GPU number %d\n", omp_get_thread_num());
 	//d_spect is the local structure to each GPU where we are going to save the spectrum properties of the photons. 
 	//We will have one of these per GPU and then we will merge them at the end of the process.
 	struct of_spectrum* d_spect;
     gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
 	while(instant_partition <= batch_divisions){
-		printf("\n\n\033[1m===========================================\033[0m\n");
-		printf("\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
+		fprintf(log_file, "\n\n\033[1m===========================================\033[0m\n");
+		fprintf(log_file, "\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
 			offset = photons_per_gpu % batch_divisions;
-			printf("Last partition with an offset of =%d\n", offset);
+			fprintf(log_file, "Last partition with an offset of =%d\n", offset);
 		}
 		instant_photon_number = (unsigned long long)(photons_per_gpu + offset);
-		printf("Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
+		fprintf(log_file, "Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
 		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
 
 		if(ideal_nblocks == 0){
@@ -92,7 +93,7 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 
 		}
 
-		fprintf(stderr, "\nSampling the photons!\n");
+		fprintf(log_file, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
 			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
@@ -106,22 +107,22 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 		cudaEventRecord(stop);
 		cudaEventSynchronize(stop); 
 		cudaEventElapsedTime(&milliseconds, start, stop);
-		printf("Sampling kernel execution time: %f s\n", milliseconds/1000.);
+		fprintf(log_file, "Sampling kernel execution time: %f s\n", milliseconds/1000.);
 
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
-			fprintf(stderr, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
+			fprintf(log_file, "in sample_photons_batch %s, partition (%d)\n", cudaGetErrorString(cudaStatus), instant_partition);
+			fprintf(log_file, "If the error is invalid memory location, there is probably too much scattering photons, try changing the bias function.\n");
 			exit(1);
 		}
 
 		unsigned long long reset = 0;
 		cudaMemcpyToSymbol(tracking_counter_sampling, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice);
-		fprintf(stderr, "Photon sampling process completed!\n");
+		fprintf(log_file, "Photon sampling process completed!\n");
 
 
 	
-		fprintf(stderr, "\nTracking photons along the geodesics\n");
+		fprintf(log_file, "\nTracking photons along the geodesics\n");
 
 		// Checkpoint array to save photon states before evolving. Since we are going to do bias tuning, we might want to retrack
 		// the same photons with a different bias parameter.
@@ -131,7 +132,7 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
 			// Turn params.bias_guess to the last value used for bias tuning
 			gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), 0 * sizeof(double)));
-			printf("Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
+			fprintf(log_file, "Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
 		}
 
 		int RedoTuning = 1;
@@ -161,7 +162,7 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 			cudaEventRecord(stop);
 			cudaEventSynchronize(stop); 
 			cudaEventElapsedTime(&milliseconds, start, stop);
-			printf("Tracking kernel execution time: %f s\n", milliseconds/1000.);
+			fprintf(log_file, "Tracking kernel execution time: %f s\n", milliseconds/1000.);
 			Flag("The tracking kernel - illegal memory access encountered often means too much scattering happening, try changing the bias tunning or SCATTERINGS_PER_PHOTON in config.h");
 
 			gpuErrchk(cudaMemcpyFromSymbol(&num_scat_phs, d_num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
@@ -176,8 +177,8 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
 					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
 					params.bias_guess *= params.targetRatio/Ratio;
-					printf("\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
-					printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
+					fprintf(log_file, "\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
+					fprintf(log_file, "\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
 					gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), 0 * sizeof(double)));
 					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
 					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
@@ -189,12 +190,12 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 					gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 				}else{
 						if(RelativeImprovement <= 0.1){
-							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
+							fprintf(log_file, "\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
 							
 						}else if(BiasTuning_index < MAXITER_BIASTUNING){
-							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
+							fprintf(log_file, "\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
 						}else{
-							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+							fprintf(log_file, "\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
 						}
 					RedoTuning = 0;
 				}
@@ -213,7 +214,7 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 		}			
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in record %s\n", cudaGetErrorString(cudaStatus));
+			fprintf(log_file, "in record %s\n", cudaGetErrorString(cudaStatus));
 			exit(1);
 		}
 	 	freePhotonData(&initial_photon_states);
@@ -223,10 +224,10 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 
 		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 		if(params.scattering){
-			printf("number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+			fprintf(log_file, "number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
 			N_scatt += num_scat_phs[0];
-			printf("\nSolving the scattered photons...\n");
-			printf("Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
+			fprintf(log_file, "\nSolving the scattered photons...\n");
+			fprintf(log_file, "Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
 		}
 
 
@@ -259,12 +260,12 @@ __host__ void CummulativePhotonsPerZonePerGPU(
         unsigned long long base_per_gpu = total_in_zone / num_gpus;
         unsigned long long remainder = total_in_zone % num_gpus;
 
-        // 1. Give every GPU its guaranteed base share for this zone
+        //Give every GPU its guaranteed base share for this zone
         for (int g = 0; g < num_gpus; g++) {
             current_cum_sum[g] += base_per_gpu;
         }
 
-        // 2. Deal out the extra remainder photons one by one
+        //Deal out the extra remainder photons one by one
         for (unsigned long long r = 0; r < remainder; r++) {
             current_cum_sum[next_gpu_for_remainder] += 1;
             
@@ -272,9 +273,9 @@ __host__ void CummulativePhotonsPerZonePerGPU(
             next_gpu_for_remainder = (next_gpu_for_remainder + 1) % num_gpus;
         }
 
-        // 3. Store the updated running totals in the flattened 2D array
+        //Store the updated running totals in the flattened 2D array
         for (int g = 0; g < num_gpus; g++) {
-            // Index: (GPU_ID * NUM_ZONES) + ZONE_ID
+            // The index here will be: (GPU_ID * NUM_ZONES) + ZONE_ID
             h_index_to_ijk_2d[g * num_zones + z] = current_cum_sum[g];
         }
     }
@@ -287,118 +288,155 @@ __host__ void CummulativePhotonsPerZonePerGPU(
     free(current_cum_sum);
 }
 
-__host__ void mainFlowControl(time_t time, double * p){
-	//Figure out how many gpus we have available for us.
-	int num_gpus;
-    cudaGetDeviceCount(&num_gpus);
-
-	printf("\n\n \033[1mUsing %d GPUs available...\033[0m\n\n", num_gpus);
-
-	//Transfer from CPU to GPU the global variables that are needed for the photon generation process.
-	//Transfer the geom array that stores gdet, gcov, gcon for each zone
-	struct of_geom *d_geom;
-	gpuErrchk(cudaMalloc(&d_geom, N1 * N2 * sizeof(struct of_geom)));
-    gpuErrchk(cudaMemcpy(d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
-
-	//Transfer the p array that stores the primitive variables for each zone
-	double * d_p; 
-    gpuErrchk(cudaMalloc((void**)&d_p, NPRIM * N1 * N2 * N3*sizeof(double)));
-    gpuErrchk(cudaMemcpy(d_p, p, NPRIM * N1 * N2 * N3* sizeof(double), cudaMemcpyHostToDevice));
-
-	// Transfer the generated_photons_arr which is the array that will store the total number of superphotons generated in each zone.
-	unsigned long long * generated_photons_arr;
-	gpuErrchk(cudaMalloc(&generated_photons_arr, N1 * N2 * N3 * sizeof(unsigned long long)));
-
-	// Transfer the dnmax_arr which is the array that will store the maximum value for superphoton generation in each zone.
-	double * dnmax_arr;
-	gpuErrchk(cudaMalloc(&dnmax_arr, N1 * N2 * N3 * sizeof(double)));
-
-
-	//In GPU 0, generate the total number of photons that will be generated in each zone.
-	{
-		cudaSetDevice(0);
-		cudaEvent_t start, stop;
-		CreateCUDAStartStop(&start, &stop);
-		printf("Generating photons on GPU 0!\n");
-		generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom, d_p, time, generated_photons_arr, dnmax_arr);	
-		cudaDeviceSynchronize();
-		DiagnosticRunTime(start, stop, "Photon Generation");
-		cudaEventDestroy(start);
-		cudaEventDestroy(stop);
-		unsigned long long gen_superph = 0;
-		cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
-		fprintf(stderr, "Number of generated photons: %llu\n", gen_superph);
-	}
-
-	//Some other arrays that are gonna be constant for all the gpus are the table for the scattering kernel and the p array 
-	//that stores the primitive variables. We can transfer them once and then use them as arguments to the kernel that will call the main loop.
-	cudaTextureObject_t dPTableTexObj = 0;
-	cudaArray_t dPTableCuArray;
-	createdPTextureObj(&dPTableTexObj, p, &dPTableCuArray);
-
-	//Finally, we transfer the table for the scattering kernel to the GPU.
-	double *d_table_ptr;
-	gpuErrchk(cudaMalloc((void**)&d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpy(d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
-
-	//Create one array of spectra for each GPU, since we can't write to the same array from different GPUs, we will have to merge them at the end of the process.
-	struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
-
-	//After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
-	//we can know the index of the first photon generated in each zone. This will be used in the sampling process.
-	//Bring the initial generated photons array back to the host (if not already there)
-	int num_zones = N1 * N2 * N3;
-	unsigned long long *h_generated_photons = (unsigned long long *)malloc(num_zones * sizeof(unsigned long long));
-	gpuErrchk(cudaMemcpy(h_generated_photons, generated_photons_arr, num_zones * sizeof(unsigned long long), cudaMemcpyDeviceToHost));
-
-	//Allocate space for our 2D array and totals on the host
-	unsigned long long *h_index_to_ijk_2d = (unsigned long long *)malloc(num_gpus * num_zones * sizeof(unsigned long long));
-	unsigned long long *h_totals_per_gpu = (unsigned long long *)malloc(num_gpus * sizeof(unsigned long long));
-
-	//Pre-calculate the balanced zones
-	CummulativePhotonsPerZonePerGPU(h_generated_photons, h_index_to_ijk_2d, h_totals_per_gpu, num_gpus);
-
-	printf("\n\n \033[1mBalanced zones calculated...\033[0m\n\n");
-	#pragma omp parallel for num_threads(num_gpus)
-	for (int i = 0; i < num_gpus; i++) {
-		
-		// Set the device for this CPU thread. Thread 0 -> GPU 0, etc.
-		cudaSetDevice(i);
-		
-		// Each GPU id is assinged with the total number of photons.
-		unsigned long long my_num = h_totals_per_gpu[i];
-
-		// Allocate the cumulative array for THIS specific GPU
-		unsigned long long * d_index_to_ijk;
-		gpuErrchk(cudaMalloc(&d_index_to_ijk, num_zones * sizeof(unsigned long long)));
-		
-		// Grab just the slice of the 2D array that belongs to GPU 'i' and copy it to device
-		unsigned long long *my_host_slice = &h_index_to_ijk_2d[i * num_zones];
-		gpuErrchk(cudaMemcpy(d_index_to_ijk, my_host_slice, num_zones * sizeof(unsigned long long), cudaMemcpyHostToDevice));
-
-		//Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
-		int batch_divisions = 1;
-		unsigned long long photons_per_batch = photonsPerBatch(h_totals_per_gpu[i], &batch_divisions);
-		printf("h_totals_per_gpu[%d] = %llu\n", i, h_totals_per_gpu[i]);
-		printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
-
-		// Call the worker function for this specific GPU.
-		// This function will be particular for each GPU since each one has a different number of photons to process.
-		GPUWorker(my_num, batch_divisions, d_geom, d_p, generated_photons_arr, dnmax_arr, d_index_to_ijk, d_table_ptr, dPTableTexObj);
-		
-		cudaFree(d_index_to_ijk);
-	}
-
-	//Sure, after the main loop, we can free all the CUDA variables that we created here.
-	cudaFree(d_geom);
-	cudaFree(d_p);
-	cudaFree(generated_photons_arr);
-	cudaFree(dnmax_arr);
-	cudaFree(d_table_ptr);
-	cudaFreeArray(dPTableCuArray);
 	
-}
+  
+__host__ void mainFlowControl(time_t time, double * p){
+    //Figure out how many gpus we have available for us.
+    int num_gpus;
+    gpuErrchk(cudaGetDeviceCount(&num_gpus));
+    // Total number of cells
+    int num_zones = N1 * N2 * N3;
 
+    printf("\n\n \033[1mUsing %d GPUs available...\033[0m\n\n", num_gpus);
+
+    cudaSetDevice(0);
+
+    //Transfer from CPU to GPU the global variables that are needed for the photon generation process.
+    //Transfer the geom array that stores gdet, gcov, gcon for each zone
+    struct of_geom *d_geom_gen;
+    gpuErrchk(cudaMalloc(&d_geom_gen, N1 * N2 * sizeof(struct of_geom)));
+    gpuErrchk(cudaMemcpy(d_geom_gen, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
+
+    //Transfer the p array that stores the primitive variables for each zone
+    double * d_p_gen; 
+    gpuErrchk(cudaMalloc((void**)&d_p_gen, NPRIM * num_zones * sizeof(double)));
+    gpuErrchk(cudaMemcpy(d_p_gen, p, NPRIM * num_zones * sizeof(double), cudaMemcpyHostToDevice));
+
+    // Transfer the generated_photons_arr which is the array that will store the total number of superphotons generated in each zone.
+    unsigned long long * d_generated_photons_gen;
+    gpuErrchk(cudaMalloc(&d_generated_photons_gen, num_zones * sizeof(unsigned long long)));
+
+    // Transfer the dnmax_arr which is the array that will store the maximum value for superphoton generation in each zone.
+    double * d_dnmax_gen;
+    gpuErrchk(cudaMalloc(&d_dnmax_gen, num_zones * sizeof(double)));
+
+    // This function transfer the GRMHD simulation header parameters to GPU memory
+    transferParams(); 
+
+    //In GPU 0, generate the total number of photons that will be generated in each zone.
+    {
+        cudaEvent_t start, stop;
+        CreateCUDAStartStop(&start, &stop);
+        printf("Generating photons on GPU 0!\n");
+        generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom_gen, d_p_gen, time, d_generated_photons_gen, d_dnmax_gen);  
+        gpuErrchk(cudaDeviceSynchronize());
+        DiagnosticRunTime(start, stop, "Photon Generation");
+        cudaEventDestroy(start);
+        cudaEventDestroy(stop);
+        unsigned long long gen_superph = 0;
+        gpuErrchk(cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
+        fprintf(stderr, "Number of generated superphotons: %llu\n", gen_superph);
+    }
+
+    //Here, we are pulling back results to host and cleaning GPU 0`s memory.
+    unsigned long long *h_generated_photons = (unsigned long long *)malloc(num_zones * sizeof(unsigned long long));
+    gpuErrchk(cudaMemcpy(h_generated_photons, d_generated_photons_gen, num_zones * sizeof(unsigned long long), cudaMemcpyDeviceToHost));
+
+    double *h_dnmax_arr = (double *)malloc(num_zones * sizeof(double));
+    gpuErrchk(cudaMemcpy(h_dnmax_arr, d_dnmax_gen, num_zones * sizeof(double), cudaMemcpyDeviceToHost));
+
+    // Free the initialization arrays to keep VRAM clean for the main run
+    cudaFree(d_geom_gen);
+    cudaFree(d_p_gen);
+    cudaFree(d_generated_photons_gen);
+    cudaFree(d_dnmax_gen);
+
+    //Create one array of spectra for each GPU, since we can't write to the same array from different GPUs, we will have to merge them at the end of the process.
+    struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
+    
+    //After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
+    //we can know the index of the first photon generated in each zone. This will be used in the sampling process.
+    //Bring the initial generated photons array back to the host (if not already there)
+
+    //Allocate space for our 2D array and totals on the host
+    unsigned long long *h_index_to_ijk_2d = (unsigned long long *)malloc(num_gpus * num_zones * sizeof(unsigned long long));
+    unsigned long long *h_totals_per_gpu = (unsigned long long *)malloc(num_gpus * sizeof(unsigned long long));
+
+    //Pre-calculate the balanced zones
+    CummulativePhotonsPerZonePerGPU(h_generated_photons, h_index_to_ijk_2d, h_totals_per_gpu, num_gpus);
+
+    #pragma omp parallel for num_threads(num_gpus)
+    for (int i = 0; i < num_gpus; i++) {
+        
+        //Lock this CPU thread to the specific GPU with the same id.
+        cudaSetDevice(i);
+        
+        // Ensure simulation parameters are in local GPU's global memory
+        // This sets the grid/grmhd parameters to device memory
+        transferParams(); 
+
+        printf("Thread %d handling GPU %d with %llu photons\n", omp_get_thread_num(), i, h_totals_per_gpu[i]);
+        char log_filename[256];
+        sprintf(log_filename, "./log_GPU%d.txt", i);
+
+        //Allocate and copy ALL required arrays into local GPU's local memory
+        struct of_geom *local_d_geom;
+        gpuErrchk(cudaMalloc(&local_d_geom, N1 * N2 * sizeof(struct of_geom)));
+        gpuErrchk(cudaMemcpy(local_d_geom, geom, N1 * N2 * sizeof(struct of_geom), cudaMemcpyHostToDevice));
+
+        //Some other arrays that are gonna be constant for all the gpus are the table for the scattering kernel and the p array 
+        //that stores the primitive variables. We can transfer them once and then use them as arguments to the kernel that will call the main loop.
+        double * local_d_p; 
+        gpuErrchk(cudaMalloc((void**)&local_d_p, NPRIM * num_zones * sizeof(double)));
+        gpuErrchk(cudaMemcpy(local_d_p, p, NPRIM * num_zones * sizeof(double), cudaMemcpyHostToDevice));
+
+        cudaTextureObject_t local_dPTableTexObj = 0;
+        cudaArray_t local_dPTableCuArray;
+        createdPTextureObj(&local_dPTableTexObj, p, &local_dPTableCuArray);
+
+        //Finally, we transfer the table for the scattering kernel to the GPU.
+        double *local_d_table_ptr;
+        gpuErrchk(cudaMalloc((void**)&local_d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
+        gpuErrchk(cudaMemcpy(local_d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
+
+        unsigned long long * local_generated_photons_arr;
+        gpuErrchk(cudaMalloc(&local_generated_photons_arr, num_zones * sizeof(unsigned long long)));
+        gpuErrchk(cudaMemcpy(local_generated_photons_arr, h_generated_photons, num_zones * sizeof(unsigned long long), cudaMemcpyHostToDevice));
+
+        double * local_dnmax_arr;
+        gpuErrchk(cudaMalloc(&local_dnmax_arr, num_zones * sizeof(double)));
+        gpuErrchk(cudaMemcpy(local_dnmax_arr, h_dnmax_arr, num_zones * sizeof(double), cudaMemcpyHostToDevice));
+
+        unsigned long long * local_d_index_to_ijk;
+        gpuErrchk(cudaMalloc(&local_d_index_to_ijk, num_zones * sizeof(unsigned long long)));
+        unsigned long long *my_host_slice = &h_index_to_ijk_2d[i * num_zones];
+        gpuErrchk(cudaMemcpy(local_d_index_to_ijk, my_host_slice, num_zones * sizeof(unsigned long long), cudaMemcpyHostToDevice));
+
+        //Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
+        unsigned long long my_num = h_totals_per_gpu[i];
+        int batch_divisions = 1;
+        unsigned long long photons_per_batch = photonsPerBatch(my_num, &batch_divisions);
+        printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
+
+        // Pass the GPU local pointers to the GPU Worker
+        GPUWorker(my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename);
+        
+        //Sure, after the main loop, we can free all the CUDA variables that we created here.
+        cudaFree(local_d_geom);
+        cudaFree(local_d_p);
+        cudaFree(local_generated_photons_arr);
+        cudaFree(local_dnmax_arr);
+        cudaFree(local_d_table_ptr);
+        cudaFree(local_d_index_to_ijk);
+        cudaFreeArray(local_dPTableCuArray);
+        cudaDestroyTextureObject(local_dPTableTexObj);
+    }
+
+    free(h_generated_photons);
+    free(h_dnmax_arr);
+    free(h_index_to_ijk_2d);
+    free(h_totals_per_gpu);
+}
 // __host__ void mainFlowControl(time_t time, double * p){
 // 	/*
 // 	Launches the kernels that will generate the photons and sample them. It will also track the photons along the geodesics and solve the scattered photons.
