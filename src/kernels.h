@@ -38,15 +38,22 @@ Declarations of the kernels.cu file functions
  * 
  * @param d_geom Pointer to the device geometry structure that carries the metric information \f$ g_{μν}, g^{μν},\ \rm{and}\ \sqrt{- g}  \f$ .
  * @param d_p Pointer to the device array containing the plasma parameters of the simulation.
- * @param time Current time used to seed the random number generator for photon generation.
  * @param generated_photons_arr Pointer to the device array that will store the number of photons generated per zone.
  * @param dnmax_arr Pointer to the device array that will store the maximum value of \f$ \frac{dN}{d\ln\nu} \f$ per zone.
  * @return void
  */
-__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr);    
+__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr);    
 
 
 
+/**
+ * @brief Initializes the random number generator states for each GPU thread.
+ *
+ * @param time Current epoch time used as part of the seed for RNG initialization to ensure variability across runs.
+ * @param GPUindex The index of the GPU being used, included in the seed to ensure different RNG states across multiple GPUs.
+ * @return void
+ */
+__global__ void InitializeRNGStates(const time_t time, int GPUindex);
 /**
  * @brief Initializes the photon generation parameters for a specific grid zone.
  *
@@ -111,7 +118,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
  * @param index_to_ijk Cumulative sum array mapping global photon indices to zone indices.
  * @return void
  */
-__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk);
+__global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph,  const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, int GPU_id);
 
 /**
  * @brief  Samples the physical properties of a single superphoton within a zone.
@@ -153,7 +160,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
  * @param localState Pointer to the curandState for the current thread.
  * @return void
  */
-__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState);
+__device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, struct of_photonSOA ph, const struct of_geom * d_geom, const double * d_p, const int zone_flag, const unsigned long long ph_arr_index, double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState * localState, int GPU_id);
 
 /**
  * @brief Assign each superphoton to a thread through dynamic load balancing to be evolved through the geodesic.

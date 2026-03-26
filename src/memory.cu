@@ -82,31 +82,34 @@ __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cuda
 
 __host__ void transferParams() {
 	int Ns_int = (int) params.Ns;
-    cudaMemcpyToSymbol(d_Ns, &Ns_int, sizeof(int));
-    cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double));
-
+    gpuErrchk(cudaMemcpyToSymbol(d_Ns, &Ns_int, sizeof(int)));
+    gpuErrchk(cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_L_unit, &L_unit, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_MBH, &params.MBH_par, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_B_unit, &B_unit, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_Ne_unit, &Ne_unit, sizeof(double)));
 	if(hslope > 0)
-	cudaMemcpyToSymbol(d_hslope, &hslope,sizeof(double));
+		gpuErrchk(cudaMemcpyToSymbol(d_hslope, &hslope,sizeof(double)));
 	
-	cudaMemcpyToSymbol(d_startx, &startx, NDIM * sizeof(double));
-	cudaMemcpyToSymbol(d_stopx, &stopx, NDIM * sizeof(double));
-	cudaMemcpyToSymbol(d_thetae_unit, &Thetae_unit, sizeof(double));
-	cudaMemcpyToSymbol(d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_F, &F, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_nint, &nint, (NINT + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_K2, &K2, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
-	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
-	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
-	cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
-	cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
-	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
+	gpuErrchk(cudaMemcpyToSymbol(d_startx, &startx, NDIM * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_stopx, &stopx, NDIM * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_thetae_unit, &Thetae_unit, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_F, &F, (N_ESAMP + 1) * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_nint, &nint, (NINT + 1) * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_K2, &K2, (N_ESAMP + 1) * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_N1, &N1, sizeof(int)));
+	gpuErrchk(cudaMemcpyToSymbol(d_N2, &N2, sizeof(int)));
+	gpuErrchk(cudaMemcpyToSymbol(d_N3, &N3, sizeof(int)));
 
 
-	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
-	cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int));
-	cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int));
+	gpuErrchk(cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int)));
+	gpuErrchk(cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int)));
+	gpuErrchk(cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int)));
 
 	double h_bias_guess[MAX_LAYER_SCA];
 
@@ -114,34 +117,54 @@ __host__ void transferParams() {
 		h_bias_guess[i] = params.bias_guess;
 	}
 
-	cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double));
-	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
-	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
-	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
-	cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double));
-	cudaMemcpyToSymbol(d_tp_over_te, &(params.tp_over_te), sizeof(double));
-	cudaMemcpyToSymbol(d_bhspin, &bhspin, sizeof(double));
+	gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_tp_over_te, &(params.tp_over_te), sizeof(double)));
+	gpuErrchk(cudaMemcpyToSymbol(d_bhspin, &bhspin, sizeof(double)));
+
+	#ifdef IHARM
+		gpuErrchk(cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int)));
+  		gpuErrchk(cudaMemcpyToSymbol(d_gam, &gam, sizeof(double)));
+		gpuErrchk(cudaMemcpyToSymbol(d_game, &game, sizeof(double)));
+		gpuErrchk(cudaMemcpyToSymbol(d_gamp, &gamp, sizeof(double)));
+		gpuErrchk(cudaMemcpyToSymbol(d_with_electrons, &with_electrons, sizeof(int)));
+
+		if(METRIC == METRIC_MKS3){
+			gpuErrchk(cudaMemcpyToSymbol(d_mks3R0, &mks3R0, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_mks3H0, &mks3H0, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_mks3MY1, &mks3MY1, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_mks3MY2, &mks3MY2, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_mks3MP0, &mks3MP0, sizeof(double)));
+		}else if(METRIC == METRIC_FMKS){
+			gpuErrchk(cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double)));
+			gpuErrchk(cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double)));
+		}
+
+	#endif
 }
 
 __host__ int setMaxBlocks(){
 	int device_id;
     cudaGetDevice(&device_id);  
-	int maxThreadsPerBlock;
 	int maxBlocksPerMultiprocessor;
 	int numSMs;
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, device_id); 
-	maxThreadsPerBlock = prop.maxThreadsPerBlock;
 	maxBlocksPerMultiprocessor = prop.maxBlocksPerMultiProcessor;
 	numSMs = prop.multiProcessorCount;
 	int max_block_number = maxBlocksPerMultiprocessor * numSMs;
-    printf("Current GPU in use: %s\n", prop.name);  // Print the GPU name
-	printf("Max number of threads per block: %d\n", maxThreadsPerBlock);
-	printf("Max number of blocks per SM: %d\n",maxBlocksPerMultiprocessor);
-	printf("number of SMs: %d\n", numSMs);
-	printf("Max number of threads per multiprocessor = %d\n", prop.maxThreadsPerMultiProcessor);
+    // printf("Current GPU in use: %s\n", prop.name);  // Print the GPU name
+	// printf("Max number of threads per block: %d\n", maxThreadsPerBlock);
+	// printf("Max number of blocks per SM: %d\n",maxBlocksPerMultiprocessor);
+	// printf("number of SMs: %d\n", numSMs);
+	// printf("Max number of threads per multiprocessor = %d\n", prop.maxThreadsPerMultiProcessor);
 
-	printf("Therefore, total number of blocks:%d\n", max_block_number );
+	// printf("Therefore, total number of blocks:%d\n", max_block_number );
 	if(fmod(prop.maxThreadsPerMultiProcessor, N_THREADS) != 0){
 		printf("WARNING: fmod(maxThreadsPerBlock, N_THREADS) != 0\n");
 		printf("The number of threads per block is not a multiple of the number of threads per multiprocessor\n");

@@ -55,10 +55,10 @@ __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth; // mmks
 //MKS3
 __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0; // mks3
 
-static int with_electrons;
+int with_electrons;
 static int with_radiation;
 
-static double game, gamp, gam;
+double game, gamp, gam;
 __device__ double d_game, d_gamp, d_gam;
 
 static double MBH;
@@ -110,20 +110,16 @@ void init_data()
         fprintf(stderr, "using MKS3 metric...\n");
         fprintf(stderr, "MKS3 hasn't been tested against igrmonty yet, so use with caution!\n");
         METRIC= METRIC_MKS3;
-        cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
       }else{
         fprintf(stderr, "using Exponential Kerr-Schild metric\n");
         METRIC = METRIC_eKS;
-        cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
       }
   }else if (FMKS) {
     fprintf(stderr, "using Funky-Modified Kerr-Schild metric\n");
     METRIC = METRIC_FMKS;
-    cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
   } else {
     fprintf(stderr, "using Modified Kerr-Schild metric\n");
     METRIC = METRIC_MKS;
-    cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int));
   }
   
 
@@ -132,7 +128,6 @@ void init_data()
   hdf5_read_single_val(&N2, "n2", H5T_STD_I32LE);
   hdf5_read_single_val(&N3, "n3", H5T_STD_I32LE);
   hdf5_read_single_val(&gam, "gam", H5T_IEEE_F64LE);
-  cudaMemcpyToSymbol(d_gam, &gam, sizeof(double));
 
   printf("Resolution = %d x %d x %d, nprims = %d\n", N1, N2, N3, (int)nprims);
 
@@ -147,9 +142,6 @@ void init_data()
   }else{
     fprintf(stderr, "no electron model loaded, assuming single fluid...\n");
   }
-
-  cudaMemcpyToSymbol(d_game, &game, sizeof(double));
-  cudaMemcpyToSymbol(d_gamp, &gamp, sizeof(double));
 
   if (!USE_FIXED_TPTE && !USE_MIXED_TPTE) {
     if (with_electrons != 1) {
@@ -171,7 +163,6 @@ void init_data()
     fprintf(stderr, "! please change electron model in model/iharm.c\n");
     exit(-3);
   }
-  cudaMemcpyToSymbol(d_with_electrons, &with_electrons, sizeof(int));
 
   if (with_radiation) {
     fprintf(stderr, "custom radiation field tracking information loaded...\n");
@@ -212,12 +203,6 @@ void init_data()
     hdf5_read_single_val(&mks3MY1, "MY1", H5T_IEEE_F64LE);
     hdf5_read_single_val(&mks3MY2, "MY2", H5T_IEEE_F64LE);
     hdf5_read_single_val(&mks3MP0, "MP0", H5T_IEEE_F64LE);
-
-    cudaMemcpyToSymbol(d_mks3R0, &mks3R0, sizeof(double));
-    cudaMemcpyToSymbol(d_mks3H0, &mks3H0, sizeof(double));
-    cudaMemcpyToSymbol(d_mks3MY1, &mks3MY1, sizeof(double));
-    cudaMemcpyToSymbol(d_mks3MY2, &mks3MY2, sizeof(double));
-    cudaMemcpyToSymbol(d_mks3MP0, &mks3MP0, sizeof(double));
     Rout = 100.;
   } else {
     hdf5_read_single_val(&bhspin, "a", H5T_IEEE_F64LE);
@@ -235,10 +220,6 @@ void init_data()
       hdf5_read_single_val(&mks_smooth, "mks_smooth", H5T_IEEE_F64LE);
       poly_norm = 0.5*M_PI*1./(1. + 1./(poly_alpha + 1.)*1./pow(poly_xt, poly_alpha));
       printf("Using FMKS with poly_norm = %g, poly_xt = %g, poly_alpha = %g, mks_smooth = %g\n", poly_norm, poly_xt, poly_alpha, mks_smooth);
-      gpuErrchk(cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double)));
-      gpuErrchk(cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double)));
-      gpuErrchk(cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double)));
-      gpuErrchk(cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double)));
     }
   }
 

@@ -35,6 +35,7 @@
 __host__ void CreateCUDAStartStop(cudaEvent_t * start, cudaEvent_t * stop){
 	cudaEventCreate(start);
 	cudaEventCreate(stop);
+    cudaEventRecord(*start, 0);
 }
 
 __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char * kernel_name){
@@ -45,8 +46,12 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename)
+__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename, int gpu_id)
 {
+	// Have each GPU has its own stream
+	cudaStream_t local_stream;
+	gpuErrchk(cudaStreamCreate(&local_stream));
+
 	cudaEvent_t start, stop;
 	CreateCUDAStartStop(&start, &stop);
 	float milliseconds = 0;
@@ -60,15 +65,19 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
 	int ideal_nblocks;
+
 	FILE *log_file = fopen(log_filename, "w");
-	fprintf(log_file, "Log for GPU number %d\n", omp_get_thread_num());
+	fprintf(log_file, "Log for GPU number %d\n", gpu_id);
+	setvbuf(log_file, NULL, _IONBF, 0); // Disables buffering
 	//d_spect is the local structure to each GPU where we are going to save the spectrum properties of the photons. 
 	//We will have one of these per GPU and then we will merge them at the end of the process.
 	struct of_spectrum* d_spect;
     gpuErrchk(cudaMalloc((void**)&d_spect, N_TYPEBINS * N_THBINS * N_EBINS * sizeof(struct of_spectrum)));
+
 	while(instant_partition <= batch_divisions){
 		fprintf(log_file, "\n\n\033[1m===========================================\033[0m\n");
 		fprintf(log_file, "\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
+
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
 			offset = photons_per_gpu % batch_divisions;
@@ -96,13 +105,13 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 		fprintf(log_file, "\nSampling the photons!\n");
 		cudaEventRecord(start, 0);
 		if(ideal_nblocks > max_block_number){
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS, 0, local_stream>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, gpu_id);
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			sample_photons_batch<<<N_BLOCKS,N_THREADS>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk);
+			sample_photons_batch<<<N_BLOCKS,N_THREADS, 0, local_stream>>>(initial_photon_states, d_geom, d_p, generated_photons_arr, dnmax_arr, instant_photon_number, photons_processed, d_index_to_ijk, gpu_id);
 		}
-		cudaDeviceSynchronize();
+		cudaStreamSynchronize(local_stream);
 
 		cudaEventRecord(stop);
 		cudaEventSynchronize(stop); 
@@ -140,25 +149,26 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 		double SuperiorAcceptance = 1.2 * params.targetRatio;
 		int BiasTuning_index = 0;
 		double PreviousRatio = 0;
+
 		do{
 			cudaEventRecord(start, 0);
 			if(ideal_nblocks > max_block_number){
 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+					track<<<max_block_number,N_THREADS, 0, local_stream>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#else
-					track<<<max_block_number,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+					track<<<max_block_number,N_THREADS, 0, local_stream>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#endif
 			}else{
 				if (ideal_nblocks == 0)
 				ideal_nblocks = 1;
 				#ifdef DO_NOT_USE_TEXTURE_MEMORY
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
+					track<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(initial_photon_states, d_p, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#else
-					track<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
+					track<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(initial_photon_states, dPTableTexObj, d_table_ptr, scat_ofphoton, instant_photon_number);
 				#endif
 			}		
 
-			cudaDeviceSynchronize();
+			cudaStreamSynchronize(local_stream);
 			cudaEventRecord(stop);
 			cudaEventSynchronize(stop); 
 			cudaEventElapsedTime(&milliseconds, start, stop);
@@ -206,11 +216,11 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 
 
 		if(ideal_nblocks > max_block_number){
-			record<<<max_block_number,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
+			record<<<max_block_number,N_THREADS, 0, local_stream>>>(initial_photon_states, d_spect, instant_photon_number, max_block_number);
 		}else{
 			if (ideal_nblocks == 0)
 			ideal_nblocks = 1;
-			record<<<ideal_nblocks,N_THREADS>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
+			record<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(initial_photon_states, d_spect, instant_photon_number, ideal_nblocks);
 		}			
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
@@ -231,13 +241,16 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 		}
 
 
-		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj);
+		scattering_flow_control(num_scat_phs, scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj, local_stream);
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
 	}
 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
+	cudaStreamDestroy(local_stream);
+	fclose(log_file);
+
 }
 
 __host__ void CummulativePhotonsPerZonePerGPU(
@@ -294,12 +307,18 @@ __host__ void mainFlowControl(time_t time, double * p){
     //Figure out how many gpus we have available for us.
     int num_gpus;
     gpuErrchk(cudaGetDeviceCount(&num_gpus));
+	num_gpus = 1;
     // Total number of cells
     int num_zones = N1 * N2 * N3;
 
-    printf("\n\n \033[1mUsing %d GPUs available...\033[0m\n\n", num_gpus);
+	printf("\n\n \033[1mUsing %d GPUs available...\033[0m\n\n", num_gpus);
+	for (int i = 0; i < num_gpus; i++) {
+		cudaDeviceProp prop;
+		cudaGetDeviceProperties(&prop, i);
+		unsigned long long memory_gb = prop.totalGlobalMem / (1024ULL * 1024ULL * 1024ULL);
+		printf("GPU %d is: %s with memory %llu GB\n", i, prop.name, memory_gb);
+	}
 
-    cudaSetDevice(0);
 
     //Transfer from CPU to GPU the global variables that are needed for the photon generation process.
     //Transfer the geom array that stores gdet, gcov, gcon for each zone
@@ -323,12 +342,14 @@ __host__ void mainFlowControl(time_t time, double * p){
     // This function transfer the GRMHD simulation header parameters to GPU memory
     transferParams(); 
 
+	//Initialize RNG states for photons generations on GPU 0;
+	InitializeRNGStates<<<N_BLOCKS, N_THREADS>>>(time, 0);
     //In GPU 0, generate the total number of photons that will be generated in each zone.
     {
         cudaEvent_t start, stop;
         CreateCUDAStartStop(&start, &stop);
         printf("Generating photons on GPU 0!\n");
-        generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom_gen, d_p_gen, time, d_generated_photons_gen, d_dnmax_gen);  
+        generate_photons<<<N_BLOCKS,N_THREADS>>>(d_geom_gen, d_p_gen, d_generated_photons_gen, d_dnmax_gen);  
         gpuErrchk(cudaDeviceSynchronize());
         DiagnosticRunTime(start, stop, "Photon Generation");
         cudaEventDestroy(start);
@@ -336,6 +357,12 @@ __host__ void mainFlowControl(time_t time, double * p){
         unsigned long long gen_superph = 0;
         gpuErrchk(cudaMemcpyFromSymbol(&gen_superph, photon_count, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost));
         fprintf(stderr, "Number of generated superphotons: %llu\n", gen_superph);
+		cudaError_t cudaStatus;
+		cudaStatus = cudaGetLastError();
+		if(cudaStatus != cudaSuccess) {
+			fprintf(stderr, "Error in generate_photons function on GPU %d: %s\n", 0, cudaGetErrorString(cudaStatus));
+			exit(1);
+		}
     }
 
     //Here, we are pulling back results to host and cleaning GPU 0`s memory.
@@ -352,7 +379,7 @@ __host__ void mainFlowControl(time_t time, double * p){
     cudaFree(d_dnmax_gen);
 
     //Create one array of spectra for each GPU, since we can't write to the same array from different GPUs, we will have to merge them at the end of the process.
-    struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
+    //struct of_spectrum all_spectra[num_gpus][N_THBINS][N_EBINS];
     
     //After generating the photons, we need to do a cumulative sum of the number of photons generated in each zone so
     //we can know the index of the first photon generated in each zone. This will be used in the sampling process.
@@ -369,13 +396,17 @@ __host__ void mainFlowControl(time_t time, double * p){
     for (int i = 0; i < num_gpus; i++) {
         
         //Lock this CPU thread to the specific GPU with the same id.
-        cudaSetDevice(i);
+        gpuErrchk(cudaSetDevice(i));
+
+		// Initialize RNG states for each GPU thread with a unique seed, don't initialize for GPU 0 because it has been initialized already to generate the superphotons.
+		if(i > 0)
+		InitializeRNGStates<<<N_BLOCKS, N_THREADS>>>(time, i);
+
         
         // Ensure simulation parameters are in local GPU's global memory
         // This sets the grid/grmhd parameters to device memory
         transferParams(); 
 
-        printf("Thread %d handling GPU %d with %llu photons\n", omp_get_thread_num(), i, h_totals_per_gpu[i]);
         char log_filename[256];
         sprintf(log_filename, "./log_GPU%d.txt", i);
 
@@ -419,7 +450,7 @@ __host__ void mainFlowControl(time_t time, double * p){
         printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
         // Pass the GPU local pointers to the GPU Worker
-        GPUWorker(my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename);
+        GPUWorker(my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i);
         
         //Sure, after the main loop, we can free all the CUDA variables that we created here.
         cudaFree(local_d_geom);
@@ -744,14 +775,18 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 // }
 
+__global__ void InitializeRNGStates(const time_t time, int GPUindex) {
+	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
+	int seed = GPUindex * (139 * global_index + time + GPUindex);
+	init_monty_rand(seed);
+}
+
 __launch_bounds__(N_THREADS)
-__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const time_t time, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr){
+__global__ void generate_photons(const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, unsigned long long * __restrict__  generated_photons_arr, double * __restrict__ dnmax_arr){
 	unsigned long long generated_photons;
 	double dnmax;
 	int i, j, k;
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = 139 * global_index + time;
-	init_monty_rand(seed);
 	curandState localState = my_curand_state[global_index]; 
 	
 	/*This is how we'll split things between blocks and threads*/
@@ -878,7 +913,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 
 __launch_bounds__(N_THREADS)
 __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct of_geom * __restrict__  d_geom, const double * __restrict__  d_p, const unsigned long long * __restrict__  generated_photons_arr, const double * __restrict__ dnmax_arr, const int max_partition_ph, 
-	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk){
+	const unsigned long long photons_processed_sofar, const unsigned long long * __restrict__  index_to_ijk, int GPU_id){
 		int i,j,k;
 		unsigned long long photon_index = 0;
 		const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -893,13 +928,14 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 			}
 	
 			zone_index = findPhotonIndex(index_to_ijk, d_N1 * d_N2 * d_N3, photons_processed_sofar +photon_index);
+
 			k = zone_index % d_N3;
 			j = (zone_index/d_N3) % d_N2;
 			i = (zone_index/(d_N2 * d_N3));
 
 
 			/*Sample all the photons generated in init_zone*/
-			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState);
+			sample_zone_photon(i,j,k, dnmax_arr[zone_index], ph_init, d_geom, d_p, (past_zone == zone_index? 0 : 1), photon_index, Econ, Ecov, &localState, GPU_id);
 			past_zone = zone_index;
 			
 		}
@@ -909,7 +945,7 @@ __global__ void sample_photons_batch(struct of_photonSOA ph_init, const struct o
 __device__ void sample_zone_photon(const int i, const int j, const int k, const double dnmax, 
     struct of_photonSOA ph, const struct of_geom *  d_geom, 
     const double *  d_p, const int zone_flag, const unsigned long long ph_arr_index,
-    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState)
+    double (*Econ)[NDIM], double (*Ecov)[NDIM], curandState *  localState, int GPU_id)
 {
     double nu, weight;
     
@@ -933,7 +969,6 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		Ne = 0.;
 		Bmag = 0.;
 	#endif
-    
     // Scope 3: Sample frequency
     {
         const double lnu_min = log(NUMIN);
@@ -942,11 +977,10 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-        //} while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
-    
+
     // Scope 4: Sample angles  
     double cth;
     {
@@ -962,7 +996,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		ph.ratio_brems[ph_arr_index] = jnu_ratio_brems(nu, Ne, Thetae, Bmag, th, K2);
 
     } // jmax, th, j_th go out of scope
-    
+
     // Reuse arrays - use one array for both K_tetrad and final storage
     double K_data[NDIM]; // This will serve as both K_tetrad and tmpK
     

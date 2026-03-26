@@ -32,7 +32,8 @@
  * @param d_table_ptr Device pointer to the table.
  * @param d_p Device pointer to the plasma properties
  * @param dPTableTexObj The texture object for the plasma table values.
+ * @param local_stream The CUDA stream to be used for the scattering kernel launches.
  * @returns void
  */
-void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj);
+void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream);
 #endif
