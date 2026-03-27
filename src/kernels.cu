@@ -46,7 +46,7 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename, int gpu_id)
+__host__ void GPUWorker(unsigned long long photons_per_batch, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename, int gpu_id)
 {
 	// Have each GPU has its own stream
 	cudaStream_t local_stream;
@@ -80,10 +80,10 @@ __host__ void GPUWorker(unsigned long long photons_per_gpu, int batch_divisions,
 
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
-			offset = photons_per_gpu % batch_divisions;
+			offset = photons_per_batch % batch_divisions;
 			fprintf(log_file, "Last partition with an offset of =%d\n", offset);
 		}
-		instant_photon_number = (unsigned long long)(photons_per_gpu + offset);
+		instant_photon_number = (unsigned long long)(photons_per_batch + offset);
 		fprintf(log_file, "Superphotons processed so far %llu. Superphotons to be processed in this batch %llu\n", photons_processed, instant_photon_number);
 		ideal_nblocks = (int)ceil((double) instant_photon_number / (double) N_THREADS);
 
@@ -307,7 +307,6 @@ __host__ void mainFlowControl(time_t time, double * p){
     //Figure out how many gpus we have available for us.
     int num_gpus;
     gpuErrchk(cudaGetDeviceCount(&num_gpus));
-	num_gpus = 1;
     // Total number of cells
     int num_zones = N1 * N2 * N3;
 
@@ -450,7 +449,7 @@ __host__ void mainFlowControl(time_t time, double * p){
         printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
         // Pass the GPU local pointers to the GPU Worker
-        GPUWorker(my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i);
+        GPUWorker(photons_per_batch, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i);
         
         //Sure, after the main loop, we can free all the CUDA variables that we created here.
         cudaFree(local_d_geom);

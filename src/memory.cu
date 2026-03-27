@@ -202,7 +202,7 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 		printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
 	}
     size_t required_mem ;
-	required_mem = tot_nph * sizeof(struct of_photon);
+	required_mem = 1.2 * tot_nph * sizeof(struct of_photon);
 	if(params.fitBias){
 		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
 		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
@@ -228,7 +228,15 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 		}
 		*batch_divisions = *batch_divisions + 1;
 	}
-	printf("\033[1;34mRequired partitions: %d\033[0m. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
+	// Print GPU name and required memory in the printf statement, and the number of photons per batch
+	int current_device;
+	cudaGetDevice(&current_device);
+
+	cudaDeviceProp prop;
+	cudaGetDeviceProperties(&prop, current_device);
+	
+	printf("\033[1;34mRequired partitions: %d\033[0m for GPU %d (%s) with free memory: %.2lf GB. Number of photons per partition: %d will require %.2lf GB\n", *batch_divisions, current_device, prop.name, free_mem / 1e9, (int)(tot_nph/(*batch_divisions)), required_mem / 1e9);
+	fflush(stdout);
 	return (unsigned long long)(tot_nph/(*batch_divisions));
 }
 

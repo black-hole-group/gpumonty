@@ -72,8 +72,19 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 {
     if (code != cudaSuccess)
     {
-        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-        
+		int current_device;
+		cudaGetDevice(&current_device);
+
+		cudaDeviceProp prop;
+		cudaGetDeviceProperties(&prop, current_device);
+
+		// 3. Print the error with the GPU ID and Name
+		fprintf(stderr, "GPUassert: Device %d (%s) - Error: %s in %s at line %d\n", 
+				current_device, 
+				prop.name, 
+				cudaGetErrorString(code), 
+				file, 
+				line);	
         // --- PRINT BACKTRACE ---
         fprintf(stderr, "\n--- Host Call Stack (Backtrace) ---\n");
         void* callstack[128];
