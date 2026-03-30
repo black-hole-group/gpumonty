@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e6
+Ns 1e5
 
 #path to the GRMHD data file
 

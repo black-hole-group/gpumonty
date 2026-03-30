@@ -21,15 +21,8 @@
 #include "kernels.h"
 #include "memory.h"
 
-// __global__ void check(struct of_photonSOA ph_old, struct of_photonSOA ph_new){
-// 	unsigned long long test = 39283;
-// 	printf("ph_old.K1[photon_index], ph_new.K1[photon_index] = %le, %le\n", ph_old.K1[test], ph_new.K1[test]);
-// }
 
-// __global__ void checkbias(){
-// 	printf("dbias[0], dbias[1], dbias[2] = %g, %g, %g\n", d_bias_guess[0], d_bias_guess[1], d_bias_guess[2]);
-// }
-__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream){
+__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA *scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream){
 	/*Perform scattering loop*/
 		int n = 1;
 		bool quit_flag_sca = false;
@@ -37,12 +30,13 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
         cudaEvent_t start, stop;
         cudaEventCreate(&start);
         cudaEventCreate(&stop);
+		bool current_layer_freed = false;
 
 		struct of_photonSOA CurrentLayerScattering;
 		allocatePhotonData(&CurrentLayerScattering, num_scat_phs[n-1]);
 		// Transfer how much was scattered in the first round to CurrentLayerScattering
-		transferPhotonDataDevtoDev(CurrentLayerScattering, scat_ofphoton, num_scat_phs[n-1]);
-		freePhotonData(&scat_ofphoton);
+		transferPhotonDataDevtoDev(CurrentLayerScattering, *scat_ofphoton, num_scat_phs[n-1]);
+		freePhotonData(scat_ofphoton);
 		
 		while(quit_flag_sca == false && n < MAX_LAYER_SCA){
 			struct of_photonSOA NextLayerScattering;
@@ -54,6 +48,9 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			}
 
 			if(!params.scattering){
+				freePhotonData(&NextLayerScattering);
+				freePhotonData(&CurrentLayerScattering);
+				current_layer_freed = true;
 				break;
 			}
 			printf("\nStarting round %d\n", n);
@@ -74,21 +71,13 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			double PreviousRatio = 0;
 			do{
 				cudaEventRecord(start, 0);
-				if(ideal_nblocks > max_block_number){
+				track_scat<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(CurrentLayerScattering,
 					#ifdef DO_NOT_USE_TEXTURE_MEMORY
-						track_scat<<<max_block_number,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
+					 d_p,
 					#else
-						track_scat<<<max_block_number,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
+					 dPTableTexObj,
 					#endif
-				}else{
-					if (ideal_nblocks == 0)
-						ideal_nblocks = 1;
-					#ifdef DO_NOT_USE_TEXTURE_MEMORY
-						track_scat<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_p, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
-					#else
-						track_scat<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, dPTableTexObj, d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
-					#endif
-				}
+					d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
 				cudaStreamSynchronize(local_stream);
 				cudaEventRecord(stop);
 				cudaEventSynchronize(stop); 
@@ -138,14 +127,7 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			
 			if(params.fitBias) freePhotonData(&ScatteredPhotonStateCheckPoint);
 
-			
-			if(ideal_nblocks > max_block_number){
-				record_scattering<<<max_block_number,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_spect, instant_photon_number, max_block_number, n);
-			}else{
-				if (ideal_nblocks == 0)
-				ideal_nblocks = 1;
-				record_scattering<<<ideal_nblocks,N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_spect, instant_photon_number, ideal_nblocks, n);
-			}			
+			record_scattering<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_spect, instant_photon_number, max(ideal_nblocks, max_block_number), n);		
 			Flag("the recording_scattering kernel");
 
 
@@ -165,7 +147,8 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long));
 			n++;
 		}
-		if(n >= MAX_LAYER_SCA && num_scat_phs[n] > 0){
+
+		if(n >= MAX_LAYER_SCA && num_scat_phs[n - 1] > 0){
 			printf("WARNING: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
 		}
 
@@ -177,7 +160,8 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
         cudaEventDestroy(start);
         cudaEventDestroy(stop);
         
-		freePhotonData(&CurrentLayerScattering);
+		if(!current_layer_freed)
+			freePhotonData(&CurrentLayerScattering);
+		
         memset(num_scat_phs, 0, MAX_LAYER_SCA * sizeof(unsigned long long));
-        gpuErrchk(cudaMemcpyToSymbol(d_num_scat_phs, num_scat_phs, MAX_LAYER_SCA * sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
 }

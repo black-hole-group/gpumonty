@@ -79,73 +79,84 @@ __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cuda
 	return;
 }
 
+void symbolToDevice(const void* symbol, const void* src, size_t size, cudaStream_t stream) {
+    void* ptr = NULL;
+    gpuErrchk(cudaGetSymbolAddress(&ptr, symbol));
+    gpuErrchk(cudaMemcpyAsync(ptr, src, size, cudaMemcpyHostToDevice, stream));
+}
 
-__host__ void transferParams() {
-	int Ns_int = (int) params.Ns;
-    gpuErrchk(cudaMemcpyToSymbol(d_Ns, &Ns_int, sizeof(int)));
-    gpuErrchk(cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_L_unit, &L_unit, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_MBH, &params.MBH_par, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_B_unit, &B_unit, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_Ne_unit, &Ne_unit, sizeof(double)));
-	if(hslope > 0)
-		gpuErrchk(cudaMemcpyToSymbol(d_hslope, &hslope,sizeof(double)));
-	
-	gpuErrchk(cudaMemcpyToSymbol(d_startx, &startx, NDIM * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_stopx, &stopx, NDIM * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_thetae_unit, &Thetae_unit, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_F, &F, (N_ESAMP + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_nint, &nint, (NINT + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_K2, &K2, (N_ESAMP + 1) * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_N1, &N1, sizeof(int)));
-	gpuErrchk(cudaMemcpyToSymbol(d_N2, &N2, sizeof(int)));
-	gpuErrchk(cudaMemcpyToSymbol(d_N3, &N3, sizeof(int)));
+void symbolFromDevice(void* dst, const void* symbol, size_t size, cudaStream_t stream) {
+    void* ptr = NULL;
+    gpuErrchk(cudaGetSymbolAddress(&ptr, symbol));
+    gpuErrchk(cudaMemcpyAsync(dst, ptr, size, cudaMemcpyDeviceToHost, stream));
+    cudaStreamSynchronize(stream);
+}
 
+__host__ void transferParams(cudaStream_t stream) {
+    int Ns_int = (int) params.Ns;
+    symbolToDevice(&d_Ns, &Ns_int, sizeof(int), stream);
+    symbolToDevice(&d_dx, &dx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_L_unit, &L_unit, sizeof(double), stream);
+    symbolToDevice(&d_MBH, &params.MBH_par, sizeof(double), stream);
+    symbolToDevice(&d_B_unit, &B_unit, sizeof(double), stream);
+    symbolToDevice(&d_Ne_unit, &Ne_unit, sizeof(double), stream);
+    if(hslope > 0)
+        symbolToDevice(&d_hslope, &hslope, sizeof(double), stream);
 
-	gpuErrchk(cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int)));
-	gpuErrchk(cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int)));
-	gpuErrchk(cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int)));
+    symbolToDevice(&d_startx, &startx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_stopx, &stopx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_thetae_unit, &Thetae_unit, sizeof(double), stream);
+    symbolToDevice(&d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_nint, &nint, (NINT + 1) * sizeof(double), stream);
+    symbolToDevice(&d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double), stream);
+    symbolToDevice(&d_K2, &K2, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_bias_norm, &bias_norm, sizeof(double), stream);
+    symbolToDevice(&d_max_tau_scatt, &max_tau_scatt, sizeof(double), stream);
+    symbolToDevice(&d_Rh, &Rh, sizeof(double), stream);
+    symbolToDevice(&d_N1, &N1, sizeof(int), stream);
+    symbolToDevice(&d_N2, &N2, sizeof(int), stream);
+    symbolToDevice(&d_N3, &N3, sizeof(int), stream);
 
-	double h_bias_guess[MAX_LAYER_SCA];
+    symbolToDevice(&d_scattering, &(params.scattering), sizeof(int), stream);
+    symbolToDevice(&d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int), stream);
+    symbolToDevice(&d_synchrotron, &(params.synchrotron), sizeof(int), stream);
 
-	for (int i = 0; i < MAX_LAYER_SCA; i++) {
-		h_bias_guess[i] = params.bias_guess;
-	}
+    double h_bias_guess[MAX_LAYER_SCA];
+    for (int i = 0; i < MAX_LAYER_SCA; i++) {
+        h_bias_guess[i] = params.bias_guess;
+    }
+    symbolToDevice(&d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double), stream);
 
-	gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_tp_over_te, &(params.tp_over_te), sizeof(double)));
-	gpuErrchk(cudaMemcpyToSymbol(d_bhspin, &bhspin, sizeof(double)));
+    symbolToDevice(&d_trat_small, &(params.trat_small), sizeof(double), stream);
+    symbolToDevice(&d_trat_large, &(params.trat_large), sizeof(double), stream);
+    symbolToDevice(&d_beta_crit, &(params.beta_crit), sizeof(double), stream);
+    symbolToDevice(&d_thetae_max, &(params.Thetae_max), sizeof(double), stream);
+    symbolToDevice(&d_tp_over_te, &(params.tp_over_te), sizeof(double), stream);
+    symbolToDevice(&d_bhspin, &bhspin, sizeof(double), stream);
 
-	#ifdef IHARM
-		gpuErrchk(cudaMemcpyToSymbol(d_METRIC, &METRIC, sizeof(int)));
-  		gpuErrchk(cudaMemcpyToSymbol(d_gam, &gam, sizeof(double)));
-		gpuErrchk(cudaMemcpyToSymbol(d_game, &game, sizeof(double)));
-		gpuErrchk(cudaMemcpyToSymbol(d_gamp, &gamp, sizeof(double)));
-		gpuErrchk(cudaMemcpyToSymbol(d_with_electrons, &with_electrons, sizeof(int)));
+    #ifdef IHARM
+        symbolToDevice(&d_METRIC, &METRIC, sizeof(int), stream);
+        symbolToDevice(&d_gam, &gam, sizeof(double), stream);
+        symbolToDevice(&d_game, &game, sizeof(double), stream);
+        symbolToDevice(&d_gamp, &gamp, sizeof(double), stream);
+        symbolToDevice(&d_with_electrons, &with_electrons, sizeof(int), stream);
 
-		if(METRIC == METRIC_MKS3){
-			gpuErrchk(cudaMemcpyToSymbol(d_mks3R0, &mks3R0, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_mks3H0, &mks3H0, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_mks3MY1, &mks3MY1, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_mks3MY2, &mks3MY2, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_mks3MP0, &mks3MP0, sizeof(double)));
-		}else if(METRIC == METRIC_FMKS){
-			gpuErrchk(cudaMemcpyToSymbol(d_poly_norm, &poly_norm, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_poly_xt, &poly_xt, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_poly_alpha, &poly_alpha, sizeof(double)));
-			gpuErrchk(cudaMemcpyToSymbol(d_mks_smooth, &mks_smooth, sizeof(double)));
-		}
+        if(METRIC == METRIC_MKS3){
+            symbolToDevice(&d_mks3R0, &mks3R0, sizeof(double), stream);
+            symbolToDevice(&d_mks3H0, &mks3H0, sizeof(double), stream);
+            symbolToDevice(&d_mks3MY1, &mks3MY1, sizeof(double), stream);
+            symbolToDevice(&d_mks3MY2, &mks3MY2, sizeof(double), stream);
+            symbolToDevice(&d_mks3MP0, &mks3MP0, sizeof(double), stream);
+        } else if(METRIC == METRIC_FMKS){
+            symbolToDevice(&d_poly_norm, &poly_norm, sizeof(double), stream);
+            symbolToDevice(&d_poly_xt, &poly_xt, sizeof(double), stream);
+            symbolToDevice(&d_poly_alpha, &poly_alpha, sizeof(double), stream);
+            symbolToDevice(&d_mks_smooth, &mks_smooth, sizeof(double), stream);
+        }
+    #endif
 
-	#endif
+    cudaStreamSynchronize(stream);
 }
 
 __host__ int setMaxBlocks(){
