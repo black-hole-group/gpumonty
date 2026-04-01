@@ -22,7 +22,7 @@
 #include "memory.h"
 
 
-__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA *scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream){
+__host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA *scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double * d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream, double *local_bias_guess, FILE *log_file){
 	/*Perform scattering loop*/
 		int n = 1;
 		bool quit_flag_sca = false;
@@ -53,15 +53,15 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 				current_layer_freed = true;
 				break;
 			}
-			printf("\nStarting round %d\n", n);
+			fprintf(log_file, "\nStarting round %d\n", n);
 			int ideal_nblocks = (int)ceil((double) num_scat_phs[n-1] / (double) N_THREADS);
 
 			struct of_photonSOA ScatteredPhotonStateCheckPoint;
 			if(params.fitBias){
 				allocatePhotonData(&ScatteredPhotonStateCheckPoint, num_scat_phs[n-1]);
 				transferPhotonDataDevtoDev(ScatteredPhotonStateCheckPoint, CurrentLayerScattering, num_scat_phs[n-1]);
-				gpuErrchk(cudaMemcpyFromSymbol(&(params.bias_guess), d_bias_guess, sizeof(double), n * sizeof(double)));
-				printf("Using bias_guess parameter %.3e for the scattering round %d\n", params.bias_guess, n);
+				gpuErrchk(cudaMemcpyFromSymbol(local_bias_guess, d_bias_guess, sizeof(double), n * sizeof(double)));
+				fprintf(log_file, "Using bias_guess parameter %.3e for the scattering round %d\n", *local_bias_guess, n);
 			}
 			
 			int RedoTuning = 1;
@@ -77,7 +77,7 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 					#else
 					 dPTableTexObj,
 					#endif
-					d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1]);
+					d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1], BiasTuning_index);
 				cudaStreamSynchronize(local_stream);
 				cudaEventRecord(stop);
 				cudaEventSynchronize(stop); 
@@ -85,9 +85,10 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 				cudaEventElapsedTime(&milliseconds, start, stop);
 				Flag("the track_scat kernel");
 
-				printf("Scattering kernel, round %d, execution time: %f s\n", n,milliseconds/1000.);
+				fprintf(log_file, "Scattering kernel, round %d, execution time: %f s\n", n,milliseconds/1000.);
 				cudaMemcpyFromSymbol(&num_scat_phs[n], d_num_scat_phs, sizeof(unsigned long long), n * sizeof(unsigned long long), cudaMemcpyDeviceToHost);
-				printf("number of scattered photons generated = %llu in round %d\n", num_scat_phs[n], n);
+				fprintf(log_file, "number of scattered photons generated = %llu in round %d\n", num_scat_phs[n], n);
+				#pragma omp atomic
 				N_scatt += num_scat_phs[n];
 
 				if(params.fitBias){
@@ -98,13 +99,13 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 					BiasTuning_index++;
 					if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
 
-						printf("\033[1;31mIn round %d, Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", n, Ratio, InferiorAcceptance, SuperiorAcceptance);
+						fprintf(log_file, "\033[1;31mIn round %d, Ratio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", n, Ratio, InferiorAcceptance, SuperiorAcceptance);
 						if(Ratio == 0.){
 							Ratio = 2e-1; // To avoid division by zero, multiply bias factor by 2 times the target ratio
 						}
-						params.bias_guess *= params.targetRatio/Ratio;
-						printf("\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
-						gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), n * sizeof(double)));
+						*local_bias_guess *= params.targetRatio/Ratio;
+						fprintf(log_file, "\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", *local_bias_guess);
+						gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, local_bias_guess, sizeof(double), n * sizeof(double)));
 						// Turn scattering_counter to zero, since we are going to retrack the same photons with a different bias parameter
 						unsigned long long reset = 0;
 						gpuErrchk(cudaMemcpyToSymbol(scattering_counter, &reset, sizeof(unsigned long long)));
@@ -112,13 +113,11 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 					}else{
 						RedoTuning = 0;
 						if(RelativeImprovement <= 0.1){
-							printf("\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
-							//params.bias_guess = 1.;
-							//gpuErrchk(cudaMemcpyToSymbol(d_bias_guess, &(params.bias_guess), sizeof(double), n * sizeof(double)));
+							fprintf(log_file, "\033[1;33mNo improvement found by enhancing the biasguess, medium is too optically thin \033[0m\n");
 						}else if(BiasTuning_index < MAXITER_BIASTUNING){
-							printf("\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
+							fprintf(log_file, "\033[1;32mBias Found! Ratio of Scattering/Created is %.3e, Relative Improvement: %.3e\033[0m\n",  Ratio, RelativeImprovement);
 						}else{
-							printf("\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
+							fprintf(log_file, "\033[1;33mBias Tuning limit reached! Latest Ratio is going to be considered.\033[0m\n");
 						}
 					}
 					PreviousRatio = Ratio;
@@ -140,7 +139,7 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			
 			cudaMemcpyFromSymbol(&scatterings_performed, scattering_counter, sizeof(unsigned long long), 0, cudaMemcpyDeviceToHost);
             if(num_scat_phs[n] == 0){
-				printf("Quit flag reached in round %d!\n", n);
+				fprintf(log_file, "Quit flag reached in round %d!\n", n);
 				quit_flag_sca = true;
 			}
             unsigned long long reset = 0;
@@ -149,12 +148,12 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 		}
 
 		if(n >= MAX_LAYER_SCA && num_scat_phs[n - 1] > 0){
-			printf("WARNING: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
+			fprintf(log_file, "WARNING: Maximum number of scattering layers reached. Some photons may not have been accounted for.\n");
 		}
 
 		cudaError_t cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "in scattering kernerls %s\n", cudaGetErrorString(cudaStatus));
+			fprintf(log_file, "in scattering kernerls %s\n", cudaGetErrorString(cudaStatus));
 			exit(1);
 		}
         cudaEventDestroy(start);

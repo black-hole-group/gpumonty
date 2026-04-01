@@ -220,6 +220,7 @@ __global__ void track(
  * @param n Current scattering layer index.
  * @param round_num_scat_init The starting global photon index for this scattering batch.
  * @param round_num_scat_end The ending global photon index for this scattering batch.
+ * @param bias_tuning_step The current bias tuning step index, used to adjust the bias guess for the scattering kernel launches. This variable is for printing purposes only.
  * @return void
  */
 __global__ void track_scat(struct of_photonSOA ph, 
@@ -228,7 +229,7 @@ __global__ void track_scat(struct of_photonSOA ph,
     #else
         cudaTextureObject_t d_p,
     #endif
-    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end);
+    const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end, const int bias_tuning_step);
 
 
 /**

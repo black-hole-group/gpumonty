@@ -212,8 +212,17 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	if (err != cudaSuccess) {
 		printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
 	}
+	if(params.targetRatio > 5){
+		int device_id;
+		cudaGetDevice(&device_id);
+		if (device_id == 0) {
+			printf("\033[1;31mWARNING: Target ratio is set to %.1f, which is quite high. This may lead to very large memory usage during bias tuning, especially in the deepest scattering layers. Consider reducing the target ratio to avoid out-of-memory errors.\033[0m\n", params.targetRatio);
+			printf("\033[1:31m Turning targetRatio down to 5.0 for safety. If you want to use a higher target ratio, please make sure to monitor GPU memory usage closely and be prepared for potential OOM errors during bias tuning.\033[0m\n");
+		}
+		params.targetRatio = 5;
+	}
     size_t required_mem ;
-	required_mem = 1.2 * tot_nph * sizeof(struct of_photon);
+	required_mem = tot_nph * sizeof(struct of_photon);
 	if(params.fitBias){
 		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
 		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
@@ -250,8 +259,6 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * ba
 	fflush(stdout);
 	return (unsigned long long)(tot_nph/(*batch_divisions));
 }
-
-
 
 
 __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long size) {

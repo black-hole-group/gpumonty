@@ -62,6 +62,11 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 	unsigned long long photons_processed =0;
 	int ideal_nblocks;
 
+	// When doing bias tuning, this will be necessary
+	// We are gonna assign different bias for each GPU. The way we are dividing is within zone cells
+	// That way, theoretically, they are sampling just lower resolution runs...
+	double local_bias_guess = params.bias_guess;
+
 	// Each GPU should write to its own file to avoid write conflicts and make debugging easier.
 	FILE *log_file = fopen(log_filename, "w");
 	fprintf(log_file, "Log for GPU number %d\n", gpu_id);
@@ -73,7 +78,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 
 		fprintf(log_file, "\n\n\033[1m===========================================\033[0m\n");
 		fprintf(log_file, "\033[1;34mStarting partition %d out of %d\033[0m\n", instant_partition, batch_divisions);
-
+		printf("\033[1;34m GPU %d Starting partition %d out of %d\033[0m\n", gpu_id, instant_partition, batch_divisions);
 		// instant_photon_number is the number of photons getting processed in this batch/partition.
 		instant_photon_number = (unsigned long long)(photons_per_batch);
 		//If in the last partition and there is an offset, just do it;
@@ -132,9 +137,9 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 		if(params.fitBias){
 			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
 			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
-			// Turn params.bias_guess to the last value used for bias tuning
-			symbolToDevice(&d_bias_guess, &(params.bias_guess), sizeof(double), local_stream);
-			fprintf(log_file, "Using bias_guess parameter %.3e for the tracking\n", params.bias_guess);
+			// Turn params.bias_guess (local_bias_guess) to the last value used for bias tuning
+			symbolToDevice(&d_bias_guess, &(local_bias_guess), sizeof(double), local_stream);
+			fprintf(log_file, "Using bias_guess parameter %.3e for the tracking\n", local_bias_guess);
 		}
 
 		//Parameters for bias tuning, we allow 20% wobble around the target ratio, and we also check if there is a significant improvement in the ratio to continue tuning, if not, we just stop, since we might be in a optically thin medium where bias tuning doesn't help that much.
@@ -187,12 +192,12 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
 
 					// The new guess is evolved as following
-					params.bias_guess *= params.targetRatio/Ratio;
+					local_bias_guess *= params.targetRatio/Ratio;
 					fprintf(log_file, "\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
-					fprintf(log_file, "\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", params.bias_guess);
+					fprintf(log_file, "\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", local_bias_guess);
 
 					// Update the bias guess in the device symbol
-					symbolToDevice(&d_bias_guess, &(params.bias_guess), sizeof(double), local_stream);
+					symbolToDevice(&d_bias_guess, &(local_bias_guess), sizeof(double), local_stream);
 					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
 					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
 
@@ -238,6 +243,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 
 		if(params.scattering){
 			fprintf(log_file, "number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
+			#pragma omp atomic
 			N_scatt += num_scat_phs[0];
 			fprintf(log_file, "\nSolving the scattered photons...\n");
 			fprintf(log_file, "Code is programed to handle up to %d layers of scattering\n", MAX_LAYER_SCA - 1);
@@ -245,7 +251,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 
 
 		//In here we deal with te different scattering layers
-		scattering_flow_control(num_scat_phs, &scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj, local_stream);
+		scattering_flow_control(num_scat_phs, &scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj, local_stream, &local_bias_guess, log_file);
 		
 		//Advance one partition and add the ammount of photons processed in this batch
 		instant_partition +=1;
@@ -477,10 +483,8 @@ __host__ void mainFlowControl(time_t time, double * p){
 
         //Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
         unsigned long long my_num = h_totals_per_gpu[i];
-		printf("my_num and gen_superph for GPU %d: %llu, %llu\n", i, my_num, gen_superph);
         int batch_divisions = 1;
         unsigned long long photons_per_batch = photonsPerBatch(my_num, &batch_divisions);
-        printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
         // Pass the GPU local pointers to the GPU Worker
         GPUWorker(photons_per_batch, my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i, local_stream, gpu_spect_ptrs[i]);
@@ -832,12 +836,9 @@ __global__ void track(struct of_photonSOA ph,
 	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const unsigned long long max_partition_ph){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned long long photon_index = 0;
-	int n = 1;
+	//int n = 1;
 	curandState localState = my_curand_state[global_index];
 	/*track each photon we created along its geodesic*/
-
-	if(global_index == 0)
-		printf("d_max_tau_scatt = %le for round %d\n", d_max_tau_scatt, n);
     while (true) {
         // Each thread grabs the next available photon index atomically
         photon_index = (atomicAdd(&tracking_counter, 1) - 1);
@@ -848,20 +849,20 @@ __global__ void track(struct of_photonSOA ph,
 		// Track the photon
         track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState);
 
-        // Progress indicator
-        if (global_index == 0) {
-            float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
-            if (percentage >= n * 5.0f) {
-				printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-				n++;
-            }
-        }
+        // // Progress indicator
+        // if (global_index == 0) {
+        //     float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
+        //     if (percentage >= n * 5.0f) {
+		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
+		// 		n++;
+        //     }
+        // }
 	}
 
-	/*Set to 100%*/
-	if(global_index == 0){
-		printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	}
+	// /*Set to 100%*/
+	// if(global_index == 0){
+	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
+	// }
 	if(global_index > N_BLOCKS * N_THREADS){
 		printf("Warning! Too many threads! Some threads are not being used!\n");
 	}
@@ -887,18 +888,20 @@ __global__ void track_scat(struct of_photonSOA ph,
 	#else
 	 cudaTextureObject_t d_p,
 	#endif
-	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end){
+	const double * __restrict__ d_table_ptr, struct of_photonSOA scat_ofphoton, const int n, unsigned long long round_num_scat_init, unsigned long long round_num_scat_end, const int bias_tuning_step){
 	const int global_index = blockIdx.x * blockDim.x + threadIdx.x;
 	curandState localState = my_curand_state[global_index];
 	double Ne, Thetae, B;
 	double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 	unsigned long long scattering_counter_local = round_num_scat_init - 1;
-	int n_progress = 1;
+	//int n_progress = 1;
 	
 
 	/*track each photon we created along its geodesic*/
 	if(global_index == 0){
-		printf("Interval going from %llu to %llu in round! %d\n", round_num_scat_init, round_num_scat_end, n);
+		int deviceId;
+		cudaGetDevice(&deviceId);
+		printf("In GPU %d: Interval going from %llu to %llu in round! %d in Bias Tuning step: %d\n", deviceId, round_num_scat_init, round_num_scat_end, n, bias_tuning_step);
 	}
 	
 	while(true){
@@ -920,18 +923,18 @@ __global__ void track_scat(struct of_photonSOA ph,
 		}
 		track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState);
         // Progress indicator
-		if (global_index == 0) {		
-			float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);
-			if (percentage >= n_progress * 5.0f) {
-				printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-				n_progress++;
-            }
-		}
+		// if (global_index == 0) {		
+		// 	float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);
+		// 	if (percentage >= n_progress * 5.0f) {
+		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
+		// 		n_progress++;
+        //     }
+		// }
 	}
 	/*Set to 100%*/
-	if(global_index == 0){
-		printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	}
+	// if(global_index == 0){
+	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
+	// }
 	my_curand_state[global_index] = localState;
 }
 
