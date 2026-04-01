@@ -5,10 +5,7 @@ Ns 1e5
 
 #Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
 dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
-#dump ../torus.out0.05400.h5
 
-#Use this path when testing harm_model
-#dump ./data/dump019
 
 #Name of the spectrum file generated
 spectrum spec_1e5.h5
@@ -29,8 +26,8 @@ Thetae_max 1.e100
 
 # Whether or not to have scattering activated
 scattering 1
-fit_bias 0
-ratio 2
+fit_bias 1
+ratio 3
 bias_guess 0.1
 
 #emissions

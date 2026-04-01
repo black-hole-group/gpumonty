@@ -127,7 +127,7 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
 			
 			if(params.fitBias) freePhotonData(&ScatteredPhotonStateCheckPoint);
 
-			record_scattering<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_spect, instant_photon_number, max(ideal_nblocks, max_block_number), n);		
+			record_scattering<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(CurrentLayerScattering, d_spect, instant_photon_number, min(ideal_nblocks, max_block_number), n);		
 			Flag("the recording_scattering kernel");
 
 

@@ -46,7 +46,7 @@ __host__ void DiagnosticRunTime(cudaEvent_t start, cudaEvent_t stop, const char 
 	printf("%s kernel execution time: %f s\n", kernel_name, milliseconds/1000.);
 }
 
-__host__ void GPUWorker(unsigned long long photons_per_batch, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename, int gpu_id, cudaStream_t local_stream, struct of_spectrum* d_spect)
+__host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long totph_per_GPU, int batch_divisions, struct of_geom *d_geom, double *d_p, unsigned long long * generated_photons_arr, double * dnmax_arr, unsigned long long * d_index_to_ijk, double *d_table_ptr, cudaTextureObject_t dPTableTexObj, char * log_filename, int gpu_id, cudaStream_t local_stream, struct of_spectrum* d_spect)
 {
 	cudaEvent_t start, stop;
 	CreateCUDAStartStop(&start, &stop);
@@ -78,8 +78,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, int batch_division
 		instant_photon_number = (unsigned long long)(photons_per_batch);
 		//If in the last partition and there is an offset, just do it;
 		if(instant_partition == batch_divisions){
-			offset = photons_per_batch % batch_divisions;
-			fprintf(log_file, "Last partition with an offset of =%d\n", offset);
+			offset = totph_per_GPU % batch_divisions;
 			instant_photon_number += offset;
 		}
 		
@@ -224,7 +223,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, int batch_division
 
 
 		//Record the superphotons tracked in this batch, we do it after bias tuning, since we want to record the photons with the best bias parameter we found.
-		record<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(initial_photon_states, d_spect, instant_photon_number, max(ideal_nblocks, max_block_number));		
+		record<<<min(ideal_nblocks, max_block_number),N_THREADS, 0, local_stream>>>(initial_photon_states, d_spect, instant_photon_number, min(ideal_nblocks, max_block_number));		
 		cudaStatus = cudaGetLastError();
 		if (cudaStatus != cudaSuccess) {
 			fprintf(log_file, "in record %s\n", cudaGetErrorString(cudaStatus));
@@ -478,13 +477,15 @@ __host__ void mainFlowControl(time_t time, double * p){
 
         //Now we know how many photons we have and therefore, we are gonna run the analysis to see how many superphotons we can take per batch per GPU.
         unsigned long long my_num = h_totals_per_gpu[i];
+		printf("my_num and gen_superph for GPU %d: %llu, %llu\n", i, my_num, gen_superph);
         int batch_divisions = 1;
         unsigned long long photons_per_batch = photonsPerBatch(my_num, &batch_divisions);
         printf("In GPU %d, total photons = %llu, photons per batch = %llu, batch divisions = %d\n", i, my_num, photons_per_batch, batch_divisions);
 
         // Pass the GPU local pointers to the GPU Worker
-        GPUWorker(photons_per_batch, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i, local_stream, gpu_spect_ptrs[i]);
-        
+        GPUWorker(photons_per_batch, my_num, batch_divisions, local_d_geom, local_d_p, local_generated_photons_arr, local_dnmax_arr, local_d_index_to_ijk, local_d_table_ptr, local_dPTableTexObj, log_filename, i, local_stream, gpu_spect_ptrs[i]);
+		gpuErrchk(cudaStreamSynchronize(local_stream));
+		
         //Sure, after the main loop, we can free all the CUDA variables that we created here.
         cudaFree(local_d_geom);
         cudaFree(local_d_p);
