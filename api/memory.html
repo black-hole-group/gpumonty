@@ -321,12 +321,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="kernels.html">kernels.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="kernels.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv416generate_photonsPK7of_geomPKdPyPd"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv419InitializeRNGStatesK6time_ti"><code class="docutils literal notranslate"><span class="pre">InitializeRNGStates()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKyi"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandStatei"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyyKi"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv46record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">record()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">record_scattering()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
@@ -347,14 +348,16 @@
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">memory.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv414transferParams12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv414symbolToDevicePKvPKv6size_t12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">symbolToDevice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv416symbolFromDevicePvPKv6size_t12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">symbolFromDevice()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
@@ -567,6 +570,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../continuous_integration.html#local-git-hook-setup">Local Git Hook Setup</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../multi_gpus.html">Multi-GPU Acceleration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../multi_gpus.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multi_gpus.html#execution-flow">Execution Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multi_gpus.html#architecture-diagram">Architecture Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multi_gpus.html#memory-management-and-batching">Memory Management and Batching</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -602,13 +612,16 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv414transferParamsv">
-<span id="_CPPv314transferParamsv"></span><span id="_CPPv214transferParamsv"></span><span id="transferParams"></span><span class="target" id="memory_8h_1ac8b381d2158fb0e199370c836a9e56a7"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transferParams</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414transferParamsv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv414transferParams12cudaStream_t">
+<span id="_CPPv314transferParams12cudaStream_t"></span><span id="_CPPv214transferParams12cudaStream_t"></span><span id="transferParams__cudaStream_t"></span><span class="target" id="memory_8h_1a9777064882a4340371e728c30c5dcdb0"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transferParams</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414transferParams12cudaStream_t" title="Link to this definition"></a><br /></dt>
 <dd><p>Synchronizes global host simulation parameters with device memory symbols. </p>
 <p>Copies physics constants, grid dimensions, lookup tables and model-specific parameters from the host to the device using <code class="docutils literal notranslate"><span class="pre">cudaMemcpyToSymbol</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>void </p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stream</strong> – CUDA stream to perform asynchronous memory transfers, allowing overlap with kernel execution for improved performance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>void </p>
 </dd>
 </dl>
 </dd></dl>
@@ -642,6 +655,16 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414symbolToDevicePKvPKv6size_t12cudaStream_t">
+<span id="_CPPv314symbolToDevicePKvPKv6size_t12cudaStream_t"></span><span id="_CPPv214symbolToDevicePKvPKv6size_t12cudaStream_t"></span><span id="symbolToDevice__voidCP.voidCP.s.cudaStream_t"></span><span class="target" id="memory_8h_1aa44f7744d83560742c67995f09d4ab05"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">symbolToDevice</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">symbol</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414symbolToDevicePKvPKv6size_t12cudaStream_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416symbolFromDevicePvPKv6size_t12cudaStream_t">
+<span id="_CPPv316symbolFromDevicePvPKv6size_t12cudaStream_t"></span><span id="_CPPv216symbolFromDevicePvPKv6size_t12cudaStream_t"></span><span id="symbolFromDevice__voidP.voidCP.s.cudaStream_t"></span><span class="target" id="memory_8h_1a9b803a04e89b8061c8785c5804155a57"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">symbolFromDevice</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dst</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">symbol</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416symbolFromDevicePvPKv6size_t12cudaStream_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv415photonsPerBatchyPi">
@@ -712,8 +735,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy">
-<span id="_CPPv326transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"></span><span id="_CPPv226transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"></span><span id="transferPhotonDataDevtoDev__of_photonSOA.of_photonSOA.unsigned-l-l"></span><span class="target" id="memory_8h_1adb66824b4eeb7c704275c4256e249357"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transferPhotonDataDevtoDev</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t">
+<span id="_CPPv326transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t"></span><span id="_CPPv226transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t"></span><span id="transferPhotonDataDevtoDev__of_photonSOA.of_photonSOA.unsigned-l-l.cudaStream_t"></span><span class="target" id="memory_8h_1a5e1a797da05a982be3a2eb8a73d4d666"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transferPhotonDataDevtoDev</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">of_photonSOA</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">cudaStream_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t" title="Link to this definition"></a><br /></dt>
 <dd><p>Function to transfer of_photonSoA structures between two different device structures. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -721,6 +744,7 @@
 <li><p><strong>from</strong> – Pointer from where the memory is being transferred from. </p></li>
 <li><p><strong>to</strong> – Pointer to where the memory is being transferred to. </p></li>
 <li><p><strong>size</strong> – size of the arrays of the SoA </p></li>
+<li><p><strong>stream</strong> – CUDA stream to perform asynchronous memory transfers, allowing overlap with kernel execution for improved performance. </p></li>
 </ul>
 </dd>
 </dl>

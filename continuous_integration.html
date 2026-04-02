@@ -20,6 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Multi-GPU Acceleration" href="multi_gpus.html" />
     <link rel="prev" title="Scattering Bias-Tuning" href="bias_tuning.html" /> 
 </head>
 
@@ -320,12 +321,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/kernels.html">kernels.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/kernels.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv416generate_photonsPK7of_geomPKdK6time_tPyPd"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv416generate_photonsPK7of_geomPKdPyPd"><code class="docutils literal notranslate"><span class="pre">generate_photons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv419InitializeRNGStatesK6time_ti"><code class="docutils literal notranslate"><span class="pre">InitializeRNGStates()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv49init_zoneKiKiKiPyPdPK7of_geomPKdKiP11curandState"><code class="docutils literal notranslate"><span class="pre">init_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKy"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandState"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv420sample_photons_batch12of_photonSOAPK7of_geomPKdPKyPKdKiKyPKyi"><code class="docutils literal notranslate"><span class="pre">sample_photons_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv418sample_zone_photonKiKiKiKd12of_photonSOAPK7of_geomPKdKiKyPA4NDIM_dPA4NDIM_dP11curandStatei"><code class="docutils literal notranslate"><span class="pre">sample_zone_photon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv45track12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKy"><code class="docutils literal notranslate"><span class="pre">track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyy"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv410track_scat12of_photonSOA19cudaTextureObject_tPKd12of_photonSOAKiyyKi"><code class="docutils literal notranslate"><span class="pre">track_scat()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv46record12of_photonSOAP11of_spectrumKyKi"><code class="docutils literal notranslate"><span class="pre">record()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv417record_scattering12of_photonSOAP11of_spectrumKyKiKi"><code class="docutils literal notranslate"><span class="pre">record_scattering()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/kernels.html#_CPPv415mainFlowControl6time_tPd"><code class="docutils literal notranslate"><span class="pre">mainFlowControl()</span></code></a></li>
@@ -346,14 +348,16 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/memory.html">memory.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/memory.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414transferParamsv"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414transferParams12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">transferParams()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv412setMaxBlocksv"><code class="docutils literal notranslate"><span class="pre">setMaxBlocks()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv425cummulativePhotonsPerZonePyPy"><code class="docutils literal notranslate"><span class="pre">cummulativePhotonsPerZone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414symbolToDevicePKvPKv6size_t12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">symbolToDevice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv416symbolFromDevicePvPKv6size_t12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">symbolFromDevice()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv415photonsPerBatchyPi"><code class="docutils literal notranslate"><span class="pre">photonsPerBatch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418allocatePhotonDataP12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">allocatePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv414freePhotonDataP12of_photonSOA"><code class="docutils literal notranslate"><span class="pre">freePhotonData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv418createdPTextureObjP19cudaTextureObject_tPdP11cudaArray_t"><code class="docutils literal notranslate"><span class="pre">createdPTextureObj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv426transferPhotonDataDevtoDev12of_photonSOA12of_photonSOAy12cudaStream_t"><code class="docutils literal notranslate"><span class="pre">transferPhotonDataDevtoDev()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv419Malloc3D_Contiguousiii"><code class="docutils literal notranslate"><span class="pre">Malloc3D_Contiguous()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/memory.html#_CPPv417Free3D_ContiguousPPP11of_spectrumi"><code class="docutils literal notranslate"><span class="pre">Free3D_Contiguous()</span></code></a></li>
 </ul>
@@ -566,6 +570,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#local-git-hook-setup">Local Git Hook Setup</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="multi_gpus.html">Multi-GPU Acceleration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#execution-flow">Execution Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#architecture-diagram">Architecture Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#memory-management-and-batching">Memory Management and Batching</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -730,6 +741,7 @@ chmod<span class="w"> </span>+x<span class="w"> </span>.git/hooks/pre-push
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="bias_tuning.html" class="btn btn-neutral float-left" title="Scattering Bias-Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multi_gpus.html" class="btn btn-neutral float-right" title="Multi-GPU Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

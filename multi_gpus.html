@@ -3,25 +3,24 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search &mdash; GPUmonty 1.0 documentation</title>
+  <title>Multi-GPU Acceleration &mdash; GPUmonty 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=0ef53e4c" />
 
   
-    
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=f2a433a1"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
-    <script src="_static/searchtools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Continuous Integration Testing" href="continuous_integration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -36,14 +35,14 @@
             GPUmonty
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/compton.html">compton.cu</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/compton.html#functions">Functions</a><ul>
@@ -570,11 +569,11 @@
 <li class="toctree-l2"><a class="reference internal" href="continuous_integration.html#local-git-hook-setup">Local Git Hook Setup</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi_gpus.html">Multi-GPU Acceleration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#execution-flow">Execution Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#architecture-diagram">Architecture Diagram</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi_gpus.html#memory-management-and-batching">Memory Management and Batching</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multi-GPU Acceleration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-flow">Execution Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-diagram">Architecture Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memory-management-and-batching">Memory Management and Batching</a></li>
 </ul>
 </li>
 </ul>
@@ -593,8 +592,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Search</li>
+      <li class="breadcrumb-item active">Multi-GPU Acceleration</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="_sources/multi_gpus.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -602,22 +602,116 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search functionality.
-    </p>
-  </div>
-  </noscript>
+  <section id="multi-gpu-acceleration">
+<h1>Multi-GPU Acceleration<a class="headerlink" href="#multi-gpu-acceleration" title="Link to this heading"></a></h1>
+<p>GPUmonty now uses multi-GPU acceleration to distribute the computational load of tracking millions of superphotons across multiple devices. By utilizing OpenMP for host-side threading and dedicated CUDA streams for device-side execution, the code scales efficiently with the number of available GPUs on a single node.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The multi-GPU implementation is built around a data-parallel architecture where each GPU operates almost entirely independently until the final data reduction phase, since we assume
+the superphotons batches need no communcation during the tracking and scattering phases. The key features of this architecture include:</p>
+<ul class="simple">
+<li><p><strong>Basic Idea</strong>: Each CPU thread locks to a specific device using <code class="docutils literal notranslate"><span class="pre">cudaSetDevice()</span></code> and manages its own independent CUDA stream (<code class="docutils literal notranslate"><span class="pre">local_stream</span></code>).</p></li>
+<li><p><strong>Workload Partitioning</strong>: The total pool of generated superphotons is divided among the GPUs. Each GPU processes its assigned subset, tracks geodesics, and resolves the scattering events.</p></li>
+<li><p><strong>Spectrum Merging</strong>: After all tracking is complete, the individual emission spectra from each GPU are reduced and merged on GPU 0 before being transferred back to the host.</p></li>
+</ul>
+</section>
+<section id="execution-flow">
+<h2>Execution Flow<a class="headerlink" href="#execution-flow" title="Link to this heading"></a></h2>
+<p>The simulation follows</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 20.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Phase</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Initialization</p></td>
+<td><p>GPU 0 computes the total number of superphotons to be spawned in the whole grid dimension.</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Partitioning</p></td>
+<td><p>The host computes cumulative totals across zones and determines the exact slice of photons each GPU is responsible for tracking. The division occur within each cell to reduce load imbalance. If we divided photons from different locations to different gpus, we would have some gpus tracking photons from the inner region of the grid, which are more likely to scatter and thus require more time to track, while other gpus would be tracking photons from the outer region of the grid, which are less likely to scatter and thus require less time to track.</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Parallel Tracking</p></td>
+<td><p>OpenMP spawns threads. Each thread copies the global grid/primitive variables to its assigned GPU’s local VRAM, initializes random number generator states, and executes the main tracking and scattering kernels via asynchronous streams.</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Reduction</p></td>
+<td><p>Local spectra arrays are copied peer-to-peer (<code class="docutils literal notranslate"><span class="pre">cudaMemcpyPeer</span></code>) to GPU 0, where a master accumulation kernel merges them into a single global spectrum.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="architecture-diagram">
+<h2>Architecture Diagram<a class="headerlink" href="#architecture-diagram" title="Link to this heading"></a></h2>
+<p>The following diagram illustrates the thread execution and memory architecture during the main simulation loop:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Host (CPU) - OpenMP Master Thread
+      │
+      ├─ Calculates total superphotons
+      ├─ Partitions workload via Cumulative Arrays
+      │
+      ▼
+#pragma omp parallel for num_threads(num_gpus)
+      │
+      ├─────────────────────────────────────────┐
+      ▼                                         ▼
+CPU Thread 0                              CPU Thread 1 (up to N)
+[cudaSetDevice(0)]                        [cudaSetDevice(1)]
+      │                                         │
+      ├─ Allocates local VRAM                   ├─ Allocates local VRAM
+      ├─ Copies Grid &amp; Primitives               ├─ Copies Grid &amp; Primitives
+      │                                         │
+      ▼                                         ▼
+GPU 0 Stream                              GPU 1 Stream
+      │                                         │
+      ├─ sample_photons_batch&lt;&lt;&lt;&gt;&gt;&gt;             ├─ sample_photons_batch&lt;&lt;&lt;&gt;&gt;&gt;
+      ├─ track&lt;&lt;&lt;&gt;&gt;&gt;                            ├─ track&lt;&lt;&lt;&gt;&gt;&gt;
+      ├─ track_scat&lt;&lt;&lt;&gt;&gt;&gt;                       ├─ track_scat&lt;&lt;&lt;&gt;&gt;&gt;
+      ├─ record&lt;&lt;&lt;&gt;&gt;&gt;                           ├─ record&lt;&lt;&lt;&gt;&gt;&gt;
+      │                                         │
+      ▼                                         ▼
+Local Spectrum 0                          Local Spectrum 1
+      │                                         │
+      └───────────────────┬─────────────────────┘
+                          ▼
+              cudaMemcpyPeer to GPU 0
+                          │
+                          ▼
+            AccumulateSpectrum&lt;&lt;&lt;&gt;&gt;&gt; (GPU 0)
+                          │
+                          ▼
+                 Host (Final Output)
+</pre></div>
+</div>
+</section>
+<section id="memory-management-and-batching">
+<h2>Memory Management and Batching<a class="headerlink" href="#memory-management-and-batching" title="Link to this heading"></a></h2>
+<p>The memory algorithm remains the same from the single-gpu version. If a GPU’s assigned workload exceeds its safe memory limits, the host thread automatically divides the GPU’s slice into smaller, manageable partitions (<code class="docutils literal notranslate"><span class="pre">batch_divisions</span></code>). The GPU will fully process one partition, including all of its scattering layers, before freeing the memory and moving on to the next. This prevents out-of-memory (OOM) errors.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When modifying the core tracking loops, developers must ensure that host-side variables used inside the OpenMP region (such as dynamic bias tuning parameters or global scattering counters) are either strictly <strong>thread-local</strong> or protected by <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">atomic</span></code> directives. Unintentionally modifying shared global state from multiple CPU threads simultaneously will result in race conditions and catastrophic data.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Multi-GPU scaling is currently limited to a single machine/node utilizing unified memory spaces and peer-to-peer transfers. Distributed computing across multiple nodes via MPI is not supported in this pipeline and to be honest, I, personally, don’t see using MPI as being a great enhancement to the current version.</p>
+</div>
+</section>
+</section>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="continuous_integration.html" class="btn btn-neutral float-left" title="Continuous Integration Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
@@ -639,14 +733,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-  <script>
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script id="searchindexloader"></script>
-   
-
+  </script> 
 
 </body>
 </html>
