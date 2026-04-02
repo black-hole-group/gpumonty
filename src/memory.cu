@@ -203,63 +203,79 @@ __host__ void cummulativePhotonsPerZone(unsigned long long * generated_photons_a
 
 }
 
-
-
-__host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * batch_divisions)
-{
-	size_t free_mem, total_mem;
-	cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
-	if (err != cudaSuccess) {
-		printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
-	}
-	if(params.targetRatio > 5){
-		int device_id;
-		cudaGetDevice(&device_id);
-		if (device_id == 0) {
-			printf("\033[1;31mWARNING: Target ratio is set to %.1f, which is quite high. This may lead to very large memory usage during bias tuning, especially in the deepest scattering layers. Consider reducing the target ratio to avoid out-of-memory errors.\033[0m\n", params.targetRatio);
-			printf("\033[1:31m Turning targetRatio down to 5.0 for safety. If you want to use a higher target ratio, please make sure to monitor GPU memory usage closely and be prepared for potential OOM errors during bias tuning.\033[0m\n");
-		}
-		params.targetRatio = 5;
-	}
-    size_t required_mem ;
-	required_mem = tot_nph * sizeof(struct of_photon);
-	if(params.fitBias){
-		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
-		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
-	}else{
-		required_mem += SCATTERINGS_PER_PHOTON * tot_nph * sizeof(struct of_photon);
-	}
-	if (required_mem > free_mem) {
-		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
-		printf("Beginning equipartion of photons...\n");
-    }
-	unsigned long long superph_per_batch = tot_nph;
-	*batch_divisions = 1;
-
-	
-	while (required_mem > free_mem) {
-		superph_per_batch = tot_nph/(*batch_divisions);
-		required_mem = superph_per_batch * sizeof(struct of_photon);
-		if(params.fitBias){
-			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
-			required_mem += MAX_LAYER_SCA * ScatteringDynamicalSize * superph_per_batch * sizeof(struct of_photon);
-		}else{
-			required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
-		}
-		*batch_divisions = *batch_divisions + 1;
-	}
-	// Print GPU name and required memory in the printf statement, and the number of photons per batch
-	int current_device;
-	cudaGetDevice(&current_device);
-
-	cudaDeviceProp prop;
-	cudaGetDeviceProperties(&prop, current_device);
-	
-	printf("\033[1;34mRequired partitions: %d\033[0m for GPU %d (%s) with free memory: %.2lf GB. Number of photons per partition: %d will require %.2lf GB\n", *batch_divisions, current_device, prop.name, free_mem / 1e9, (int)(tot_nph/(*batch_divisions)), required_mem / 1e9);
-	fflush(stdout);
-	return (unsigned long long)(tot_nph/(*batch_divisions));
+__host__ size_t photonSOASize(unsigned long long n_photons) {
+    return n_photons * (20 * sizeof(double) + sizeof(int)); // X0,X1,X2,X3, K0,K1,K2,K3, dKdlam0-3, w,E,X1i,X2i, tau_abs,tau_scatt, E0,E0s, ratio_brems, (int) nscatt
 }
+__host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *batch_divisions)
+{
+    size_t free_mem, total_mem;
+    cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
+    if (err != cudaSuccess) {
+        printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
+    }
 
+    if (params.targetRatio > 5) {
+        int device_id;
+        cudaGetDevice(&device_id);
+        if (device_id == 0)
+            printf("\033[1;31mWARNING: Target ratio is set to %.1f, clamping to 5.\033[0m\n", params.targetRatio);
+        params.targetRatio = 5;
+    }
+
+    double ScatteringDynamicalSize = params.fitBias
+        ? max(2.0 * params.targetRatio, (double)SCATTERINGS_PER_PHOTON)
+        : (double)SCATTERINGS_PER_PHOTON;
+
+    *batch_divisions = 1;
+
+    while (true) {
+        unsigned long long superph_per_batch = tot_nph / (*batch_divisions);
+        unsigned long long scat_buf_size = (unsigned long long)(ScatteringDynamicalSize * superph_per_batch);
+
+        size_t required_mem = 0;
+
+        // --- GPUWorker allocations ---
+        required_mem += photonSOASize(superph_per_batch);          // initial_photon_states
+        required_mem += photonSOASize(scat_buf_size);              // scat_ofphoton
+        if (params.fitBias)
+            required_mem += photonSOASize(superph_per_batch);      // PhotonStateCheckPoint
+
+        // --- scattering_flow_control peak allocation ---
+        // CurrentLayerScattering and NextLayerScattering are alive simultaneously
+        // before the old current is freed. Worst case is at layer n=1 where
+        // both are sized off the initial scatter count.
+        required_mem += photonSOASize(scat_buf_size);              // CurrentLayerScattering
+        required_mem += photonSOASize(scat_buf_size);              // NextLayerScattering
+        if (params.fitBias)
+            required_mem += photonSOASize(scat_buf_size);          // ScatteredPhotonStateCheckPoint
+
+        // Add a safety margin (e.g. 10%) for CUDA runtime overhead, texture memory, etc.
+        size_t required_with_margin = (size_t)(required_mem * 1.10);
+
+        if (*batch_divisions == 1 && required_with_margin > free_mem) {
+            printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",
+                   required_with_margin / (1024.0*1024.0*1024.0),
+                   free_mem / (1024.0*1024.0*1024.0));
+        }
+
+        if (required_with_margin <= free_mem) {
+            int current_device;
+            cudaGetDevice(&current_device);
+            cudaDeviceProp prop;
+            cudaGetDeviceProperties(&prop, current_device);
+            printf("\033[1;34mPartitions: %d\033[0m | GPU %d (%s) | Free: %.2f GB | "
+                   "Photons/partition: %llu | Est. usage: %.2f GB\n",
+                   *batch_divisions, current_device, prop.name,
+                   free_mem / (1024.0*1024.0*1024.0),
+                   superph_per_batch,
+                   required_with_margin / (1024.0*1024.0*1024.0));
+            fflush(stdout);
+            return superph_per_batch;
+        }
+
+        (*batch_divisions)++;
+    }
+}
 
 __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long size) {
     gpuErrchk(cudaMalloc(&(ph->X0), size * sizeof(double)));
@@ -291,33 +307,32 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
 	gpuErrchk(cudaMalloc(&(ph->ratio_brems), size * sizeof(double)));
 }
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size, cudaStream_t stream){
+    gpuErrchk(cudaMemcpyAsync((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X2), (from.X2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X3), (from.X3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size){
-	gpuErrchk(cudaMemcpy((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X2), (from.X2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X3), (from.X3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.K0), (from.K0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K1), (from.K1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K2), (from.K2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K3), (from.K3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.K0), (from.K0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K1), (from.K1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K2), (from.K2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K3), (from.K3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam0), (from.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam1), (from.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam2), (from.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam3), (from.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.dKdlam0), (from.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam1), (from.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam2), (from.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam3), (from.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.w), (from.w), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.E), (from.E), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X1i), (from.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X2i), (from.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.tau_abs), (from.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.tau_scatt), (from.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.w), (from.w), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.E), (from.E), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X1i), (from.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X2i), (from.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.tau_abs), (from.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.tau_scatt), (from.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice));
-
-	gpuErrchk(cudaMemcpy((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice, stream));
 }
 
 __host__ void freePhotonData(struct of_photonSOA * ph){

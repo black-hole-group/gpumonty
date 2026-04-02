@@ -136,7 +136,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 		struct of_photonSOA PhotonStateCheckPoint;
 		if(params.fitBias){
 			allocatePhotonData(&PhotonStateCheckPoint, instant_photon_number);
-			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number);
+			transferPhotonDataDevtoDev(PhotonStateCheckPoint, initial_photon_states, instant_photon_number, local_stream);
 			// Turn params.bias_guess (local_bias_guess) to the last value used for bias tuning
 			symbolToDevice(&d_bias_guess, &(local_bias_guess), sizeof(double), local_stream);
 			fprintf(log_file, "Using bias_guess parameter %.3e for the tracking\n", local_bias_guess);
@@ -199,7 +199,7 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 					// Update the bias guess in the device symbol
 					symbolToDevice(&d_bias_guess, &(local_bias_guess), sizeof(double), local_stream);
 					//Transfer from the checkpoint to the initial_photon_states, since we want to retrack the same photons with a different bias parameter
-					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number);
+					transferPhotonDataDevtoDev(initial_photon_states, PhotonStateCheckPoint, instant_photon_number, local_stream);
 
 					//Resetting all the arrays and global variables that keep track of progress
 					unsigned long long reset = 0;

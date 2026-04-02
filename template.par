@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e5
+Ns 2e5
 
 #path to the GRMHD data file
 
@@ -8,7 +8,7 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 
 #Name of the spectrum file generated
-spectrum spec_1e5_ratio0.001.h5
+spectrum spec_8e5_ratio2.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -27,7 +27,7 @@ Thetae_max 1.e100
 # Whether or not to have scattering activated
 scattering 1
 fit_bias 1
-ratio 0.001
+ratio 2
 bias_guess 0.1
 
 #emissions
