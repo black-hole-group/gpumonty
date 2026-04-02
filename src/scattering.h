@@ -37,5 +37,5 @@
  * @param log_file The file pointer for logging each GPU (Each GPU will write to its own log file).
  * @returns void
  */
-void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA * scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream, double *local_bias_guess, FILE *log_file);
+void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_SCA], struct of_photonSOA * scat_ofphoton, struct of_spectrum *d_spect, unsigned long long instant_photon_number, int max_block_number, double *d_table_ptr, double *d_p, cudaTextureObject_t dPTableTexObj, cudaStream_t local_stream, double *saved_scat_bias, FILE *log_file);
 #endif

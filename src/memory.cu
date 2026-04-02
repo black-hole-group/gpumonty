@@ -249,8 +249,8 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *bat
         if (params.fitBias)
             required_mem += photonSOASize(scat_buf_size);          // ScatteredPhotonStateCheckPoint
 
-        // Add a safety margin (e.g. 10%) for CUDA runtime overhead, texture memory, etc.
-        size_t required_with_margin = (size_t)(required_mem * 1.10);
+        // Add a safety margin (e.g. 50%) for CUDA runtime overhead, texture memory, etc.
+        size_t required_with_margin = (size_t)(required_mem * 1.5);
 
         if (*batch_divisions == 1 && required_with_margin > free_mem) {
             printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",
@@ -307,6 +307,7 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
     gpuErrchk(cudaMalloc(&(ph->nscatt), size * sizeof(int)));
 	gpuErrchk(cudaMalloc(&(ph->ratio_brems), size * sizeof(double)));
 }
+
 __host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size, cudaStream_t stream){
     gpuErrchk(cudaMemcpyAsync((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
     gpuErrchk(cudaMemcpyAsync((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
@@ -333,6 +334,7 @@ __host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photo
     gpuErrchk(cudaMemcpyAsync((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
     gpuErrchk(cudaMemcpyAsync((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
     gpuErrchk(cudaMemcpyAsync((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice, stream));
+	gpuErrchk(cudaMemcpyAsync((to.ratio_brems), (from.ratio_brems), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 }
 
 __host__ void freePhotonData(struct of_photonSOA * ph){
@@ -363,4 +365,5 @@ __host__ void freePhotonData(struct of_photonSOA * ph){
 	gpuErrchk(cudaFree(ph->E0s));
 	
 	gpuErrchk(cudaFree(ph->nscatt));
+	gpuErrchk(cudaFree(ph->ratio_brems));
 }

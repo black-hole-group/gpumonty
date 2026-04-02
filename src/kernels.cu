@@ -61,6 +61,11 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 	unsigned long long instant_photon_number = 0;
 	unsigned long long photons_processed =0;
 	int ideal_nblocks;
+	double saved_tracking_bias = params.bias_guess;
+	double saved_scat_bias[MAX_LAYER_SCA];
+	for(int k = 0; k < MAX_LAYER_SCA; k++)
+    	saved_scat_bias[k] = params.bias_guess;
+
 
 	// When doing bias tuning, this will be necessary
 	// We are gonna assign different bias for each GPU. The way we are dividing is within zone cells
@@ -190,10 +195,9 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 				if((Ratio < InferiorAcceptance || Ratio > SuperiorAcceptance) && BiasTuning_index < MAXITER_BIASTUNING && RelativeImprovement > 0.1){
 					//Don't allow division by 0 (in case no scattered superphoton has been generated)
 					if (Ratio == 0) Ratio = 1e-5; //Don't allow division by 0.
-
+					fprintf(log_file, "\033[1;31mWith previous bias_guess parameter %.3e, Ratio of Scattering/Created is %.3e, which is out of the acceptance interval [%.3e, %.3e]. \033[0m\n", local_bias_guess, Ratio, InferiorAcceptance, SuperiorAcceptance);
 					// The new guess is evolved as following
 					local_bias_guess *= params.targetRatio/Ratio;
-					fprintf(log_file, "\033[1;31mRatio of Scattering/Created is %.3e, should be in the interval[%.3e, %.3e] \033[0m\n", Ratio, InferiorAcceptance, SuperiorAcceptance);
 					fprintf(log_file, "\033[1;31mTrying new BiasTuning parameter %.3e \033[0m\n", local_bias_guess);
 
 					// Update the bias guess in the device symbol
@@ -238,8 +242,11 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 		
 		if(params.fitBias)
 			freePhotonData(&PhotonStateCheckPoint);
+		
+		// Save the converged tracking bias
+		saved_tracking_bias = local_bias_guess;
 
-		gpuErrchk(cudaMemcpyToSymbol(tracking_counter, &reset, sizeof(unsigned long long), 0, cudaMemcpyHostToDevice));
+		symbolToDevice(&tracking_counter, &reset, sizeof(unsigned long long), local_stream);	
 
 		if(params.scattering){
 			fprintf(log_file, "number of scattered photons generated = %llu in round 0\n", num_scat_phs[0]);
@@ -251,8 +258,9 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 
 
 		//In here we deal with te different scattering layers
-		scattering_flow_control(num_scat_phs, &scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj, local_stream, &local_bias_guess, log_file);
-		
+		scattering_flow_control(num_scat_phs, &scat_ofphoton, d_spect, instant_photon_number, max_block_number, d_table_ptr, d_p, dPTableTexObj, local_stream, saved_scat_bias, log_file);
+		local_bias_guess = saved_tracking_bias;
+
 		//Advance one partition and add the ammount of photons processed in this batch
 		instant_partition +=1;
 		photons_processed += instant_photon_number;
