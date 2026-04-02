@@ -79,69 +79,103 @@ __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cuda
 	return;
 }
 
+void symbolToDevice(const void* symbol, const void* src, size_t size, cudaStream_t stream) {
+    void* ptr = NULL;
+    gpuErrchk(cudaGetSymbolAddress(&ptr, symbol));
+    gpuErrchk(cudaMemcpyAsync(ptr, src, size, cudaMemcpyHostToDevice, stream));
+}
 
-__host__ void transferParams() {
-	int Ns_int = (int) params.Ns;
-    cudaMemcpyToSymbol(d_Ns, &Ns_int, sizeof(int));
-    cudaMemcpyToSymbol(d_dx, &dx, NDIM * sizeof(double));
+void symbolFromDevice(void* dst, const void* symbol, size_t size, cudaStream_t stream) {
+    void* ptr = NULL;
+    gpuErrchk(cudaGetSymbolAddress(&ptr, symbol));
+    gpuErrchk(cudaMemcpyAsync(dst, ptr, size, cudaMemcpyDeviceToHost, stream));
+    cudaStreamSynchronize(stream);
+}
 
-	if(hslope > 0)
-	cudaMemcpyToSymbol(d_hslope, &hslope,sizeof(double));
-	
-	cudaMemcpyToSymbol(d_startx, &startx, NDIM * sizeof(double));
-	cudaMemcpyToSymbol(d_stopx, &stopx, NDIM * sizeof(double));
-	cudaMemcpyToSymbol(d_thetae_unit, &Thetae_unit, sizeof(double));
-	cudaMemcpyToSymbol(d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_F, &F, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_nint, &nint, (NINT + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_K2, &K2, (N_ESAMP + 1) * sizeof(double));
-	cudaMemcpyToSymbol(d_bias_norm, &bias_norm, sizeof(double));
-	cudaMemcpyToSymbol(d_max_tau_scatt, &max_tau_scatt, sizeof(double));
-	cudaMemcpyToSymbol(d_Rh, &Rh, sizeof(double));
-	cudaMemcpyToSymbol(d_N1, &N1, sizeof(int));
-	cudaMemcpyToSymbol(d_N2, &N2, sizeof(int));
-	cudaMemcpyToSymbol(d_N3, &N3, sizeof(int));
+__host__ void transferParams(cudaStream_t stream) {
+    int Ns_int = (int) params.Ns;
+    symbolToDevice(&d_Ns, &Ns_int, sizeof(int), stream);
+    symbolToDevice(&d_dx, &dx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_L_unit, &L_unit, sizeof(double), stream);
+    symbolToDevice(&d_MBH, &params.MBH_par, sizeof(double), stream);
+    symbolToDevice(&d_B_unit, &B_unit, sizeof(double), stream);
+    symbolToDevice(&d_Ne_unit, &Ne_unit, sizeof(double), stream);
+    if(hslope > 0)
+        symbolToDevice(&d_hslope, &hslope, sizeof(double), stream);
 
+    symbolToDevice(&d_startx, &startx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_stopx, &stopx, NDIM * sizeof(double), stream);
+    symbolToDevice(&d_thetae_unit, &Thetae_unit, sizeof(double), stream);
+    symbolToDevice(&d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_nint, &nint, (NINT + 1) * sizeof(double), stream);
+    symbolToDevice(&d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double), stream);
+    symbolToDevice(&d_K2, &K2, (N_ESAMP + 1) * sizeof(double), stream);
+    symbolToDevice(&d_bias_norm, &bias_norm, sizeof(double), stream);
+    symbolToDevice(&d_max_tau_scatt, &max_tau_scatt, sizeof(double), stream);
+    symbolToDevice(&d_Rh, &Rh, sizeof(double), stream);
+    symbolToDevice(&d_N1, &N1, sizeof(int), stream);
+    symbolToDevice(&d_N2, &N2, sizeof(int), stream);
+    symbolToDevice(&d_N3, &N3, sizeof(int), stream);
 
-	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
-	cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int));
-	cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int));
+    symbolToDevice(&d_scattering, &(params.scattering), sizeof(int), stream);
+    symbolToDevice(&d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int), stream);
+    symbolToDevice(&d_synchrotron, &(params.synchrotron), sizeof(int), stream);
 
-	double h_bias_guess[MAX_LAYER_SCA];
+    double h_bias_guess[MAX_LAYER_SCA];
+    for (int i = 0; i < MAX_LAYER_SCA; i++) {
+        h_bias_guess[i] = params.bias_guess;
+    }
+    symbolToDevice(&d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double), stream);
 
-	for (int i = 0; i < MAX_LAYER_SCA; i++) {
-		h_bias_guess[i] = params.bias_guess;
-	}
+    symbolToDevice(&d_trat_small, &(params.trat_small), sizeof(double), stream);
+    symbolToDevice(&d_trat_large, &(params.trat_large), sizeof(double), stream);
+    symbolToDevice(&d_beta_crit, &(params.beta_crit), sizeof(double), stream);
+    symbolToDevice(&d_thetae_max, &(params.Thetae_max), sizeof(double), stream);
+    symbolToDevice(&d_tp_over_te, &(params.tp_over_te), sizeof(double), stream);
+    symbolToDevice(&d_bhspin, &bhspin, sizeof(double), stream);
 
-	cudaMemcpyToSymbol(d_bias_guess, h_bias_guess, MAX_LAYER_SCA * sizeof(double));
-	cudaMemcpyToSymbol(d_trat_small, &(params.trat_small), sizeof(double));
-	cudaMemcpyToSymbol(d_trat_large, &(params.trat_large), sizeof(double));
-	cudaMemcpyToSymbol(d_beta_crit, &(params.beta_crit), sizeof(double));
-	cudaMemcpyToSymbol(d_thetae_max, &(params.Thetae_max), sizeof(double));
-	cudaMemcpyToSymbol(d_tp_over_te, &(params.tp_over_te), sizeof(double));
-	cudaMemcpyToSymbol(d_bhspin, &bhspin, sizeof(double));
+    #ifdef IHARM
+        symbolToDevice(&d_METRIC, &METRIC, sizeof(int), stream);
+        symbolToDevice(&d_gam, &gam, sizeof(double), stream);
+        symbolToDevice(&d_game, &game, sizeof(double), stream);
+        symbolToDevice(&d_gamp, &gamp, sizeof(double), stream);
+        symbolToDevice(&d_with_electrons, &with_electrons, sizeof(int), stream);
+
+        if(METRIC == METRIC_MKS3){
+            symbolToDevice(&d_mks3R0, &mks3R0, sizeof(double), stream);
+            symbolToDevice(&d_mks3H0, &mks3H0, sizeof(double), stream);
+            symbolToDevice(&d_mks3MY1, &mks3MY1, sizeof(double), stream);
+            symbolToDevice(&d_mks3MY2, &mks3MY2, sizeof(double), stream);
+            symbolToDevice(&d_mks3MP0, &mks3MP0, sizeof(double), stream);
+        } else if(METRIC == METRIC_FMKS){
+            symbolToDevice(&d_poly_norm, &poly_norm, sizeof(double), stream);
+            symbolToDevice(&d_poly_xt, &poly_xt, sizeof(double), stream);
+            symbolToDevice(&d_poly_alpha, &poly_alpha, sizeof(double), stream);
+            symbolToDevice(&d_mks_smooth, &mks_smooth, sizeof(double), stream);
+        }
+    #endif
+
+    cudaStreamSynchronize(stream);
 }
 
 __host__ int setMaxBlocks(){
 	int device_id;
     cudaGetDevice(&device_id);  
-	int maxThreadsPerBlock;
 	int maxBlocksPerMultiprocessor;
 	int numSMs;
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, device_id); 
-	maxThreadsPerBlock = prop.maxThreadsPerBlock;
 	maxBlocksPerMultiprocessor = prop.maxBlocksPerMultiProcessor;
 	numSMs = prop.multiProcessorCount;
 	int max_block_number = maxBlocksPerMultiprocessor * numSMs;
-    printf("Current GPU in use: %s\n", prop.name);  // Print the GPU name
-	printf("Max number of threads per block: %d\n", maxThreadsPerBlock);
-	printf("Max number of blocks per SM: %d\n",maxBlocksPerMultiprocessor);
-	printf("number of SMs: %d\n", numSMs);
-	printf("Max number of threads per multiprocessor = %d\n", prop.maxThreadsPerMultiProcessor);
+    // printf("Current GPU in use: %s\n", prop.name);  // Print the GPU name
+	// printf("Max number of threads per block: %d\n", maxThreadsPerBlock);
+	// printf("Max number of blocks per SM: %d\n",maxBlocksPerMultiprocessor);
+	// printf("number of SMs: %d\n", numSMs);
+	// printf("Max number of threads per multiprocessor = %d\n", prop.maxThreadsPerMultiProcessor);
 
-	printf("Therefore, total number of blocks:%d\n", max_block_number );
+	// printf("Therefore, total number of blocks:%d\n", max_block_number );
 	if(fmod(prop.maxThreadsPerMultiProcessor, N_THREADS) != 0){
 		printf("WARNING: fmod(maxThreadsPerBlock, N_THREADS) != 0\n");
 		printf("The number of threads per block is not a multiple of the number of threads per multiprocessor\n");
@@ -169,48 +203,79 @@ __host__ void cummulativePhotonsPerZone(unsigned long long * generated_photons_a
 
 }
 
-
-
-__host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int * batch_divisions)
-{
-	size_t free_mem, total_mem;
-	cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
-	if (err != cudaSuccess) {
-		printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
-	}
-    size_t required_mem ;
-	required_mem = tot_nph * sizeof(struct of_photon);
-	if(params.fitBias){
-		double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
-		required_mem += ScatteringDynamicalSize * tot_nph * sizeof(struct of_photon);
-	}else{
-		required_mem += SCATTERINGS_PER_PHOTON * tot_nph * sizeof(struct of_photon);
-	}
-	if (required_mem > free_mem) {
-		printf("Not enough memory to allocate %.2lf GB for photon states. Available memory: %.2lf GB\n", required_mem / 1e9, free_mem / 1e9);
-		printf("Beginning equipartion of photons...\n");
-    }
-	unsigned long long superph_per_batch = tot_nph;
-	*batch_divisions = 1;
-
-	
-	while (required_mem > free_mem) {
-		superph_per_batch = tot_nph/(*batch_divisions);
-		required_mem = superph_per_batch * sizeof(struct of_photon);
-		if(params.fitBias){
-			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
-			required_mem += MAX_LAYER_SCA * ScatteringDynamicalSize * superph_per_batch * sizeof(struct of_photon);
-		}else{
-			required_mem += MAX_LAYER_SCA * SCATTERINGS_PER_PHOTON * superph_per_batch * sizeof(struct of_photon);
-		}
-		*batch_divisions = *batch_divisions + 1;
-	}
-	printf("\033[1;34mRequired partitions: %d\033[0m. Number of photons per partition: %d\n", *batch_divisions, (int)(tot_nph/(*batch_divisions)));
-	return (unsigned long long)(tot_nph/(*batch_divisions));
+__host__ size_t photonSOASize(unsigned long long n_photons) {
+    return n_photons * (20 * sizeof(double) + sizeof(int)); // X0,X1,X2,X3, K0,K1,K2,K3, dKdlam0-3, w,E,X1i,X2i, tau_abs,tau_scatt, E0,E0s, ratio_brems, (int) nscatt
 }
+__host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *batch_divisions)
+{
+    size_t free_mem, total_mem;
+    cudaError_t err = cudaMemGetInfo(&free_mem, &total_mem);
+    if (err != cudaSuccess) {
+        printf("Failed to get GPU memory info: %s\n", cudaGetErrorString(err));
+    }
 
+    if (params.targetRatio > 5) {
+        int device_id;
+        cudaGetDevice(&device_id);
+        if (device_id == 0)
+            printf("\033[1;31mWARNING: Target ratio is set to %.1f, clamping to 5.\033[0m\n", params.targetRatio);
+        params.targetRatio = 5;
+    }
 
+    double ScatteringDynamicalSize = params.fitBias
+        ? max(2.0 * params.targetRatio, (double)SCATTERINGS_PER_PHOTON)
+        : (double)SCATTERINGS_PER_PHOTON;
 
+    *batch_divisions = 1;
+
+    while (true) {
+        unsigned long long superph_per_batch = tot_nph / (*batch_divisions);
+        unsigned long long scat_buf_size = (unsigned long long)(ScatteringDynamicalSize * superph_per_batch);
+
+        size_t required_mem = 0;
+
+        // --- GPUWorker allocations ---
+        required_mem += photonSOASize(superph_per_batch);          // initial_photon_states
+        required_mem += photonSOASize(scat_buf_size);              // scat_ofphoton
+        if (params.fitBias)
+            required_mem += photonSOASize(superph_per_batch);      // PhotonStateCheckPoint
+
+        // --- scattering_flow_control peak allocation ---
+        // CurrentLayerScattering and NextLayerScattering are alive simultaneously
+        // before the old current is freed. Worst case is at layer n=1 where
+        // both are sized off the initial scatter count.
+        required_mem += photonSOASize(scat_buf_size);              // CurrentLayerScattering
+        required_mem += photonSOASize(scat_buf_size);              // NextLayerScattering
+        if (params.fitBias)
+            required_mem += photonSOASize(scat_buf_size);          // ScatteredPhotonStateCheckPoint
+
+        // Add a safety margin (e.g. 50%) for CUDA runtime overhead, texture memory, etc.
+        size_t required_with_margin = (size_t)(required_mem * 1.5);
+
+        if (*batch_divisions == 1 && required_with_margin > free_mem) {
+            printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",
+                   required_with_margin / (1024.0*1024.0*1024.0),
+                   free_mem / (1024.0*1024.0*1024.0));
+        }
+
+        if (required_with_margin <= free_mem) {
+            int current_device;
+            cudaGetDevice(&current_device);
+            cudaDeviceProp prop;
+            cudaGetDeviceProperties(&prop, current_device);
+            printf("\033[1;34mPartitions: %d\033[0m | GPU %d (%s) | Free: %.2f GB | "
+                   "Photons/partition: %llu | Est. usage: %.2f GB\n",
+                   *batch_divisions, current_device, prop.name,
+                   free_mem / (1024.0*1024.0*1024.0),
+                   superph_per_batch,
+                   required_with_margin / (1024.0*1024.0*1024.0));
+            fflush(stdout);
+            return superph_per_batch;
+        }
+
+        (*batch_divisions)++;
+    }
+}
 
 __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long size) {
     gpuErrchk(cudaMalloc(&(ph->X0), size * sizeof(double)));
@@ -243,32 +308,33 @@ __host__ void allocatePhotonData(struct of_photonSOA *ph, unsigned long long siz
 	gpuErrchk(cudaMalloc(&(ph->ratio_brems), size * sizeof(double)));
 }
 
-__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size){
-	gpuErrchk(cudaMemcpy((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X2), (from.X2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X3), (from.X3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size, cudaStream_t stream){
+    gpuErrchk(cudaMemcpyAsync((to.X0), (from.X0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X1), (from.X1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X2), (from.X2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X3), (from.X3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.K0), (from.K0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K1), (from.K1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K2), (from.K2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.K3), (from.K3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.K0), (from.K0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K1), (from.K1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K2), (from.K2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.K3), (from.K3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.dKdlam0), (from.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam1), (from.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam2), (from.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.dKdlam3), (from.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam0), (from.dKdlam0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam1), (from.dKdlam1), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam2), (from.dKdlam2), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.dKdlam3), (from.dKdlam3), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.w), (from.w), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.E), (from.E), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X1i), (from.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.X2i), (from.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.tau_abs), (from.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.tau_scatt), (from.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.w), (from.w), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.E), (from.E), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X1i), (from.X1i), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.X2i), (from.X2i), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.tau_abs), (from.tau_abs), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.tau_scatt), (from.tau_scatt), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 
-	gpuErrchk(cudaMemcpy((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice));
-	gpuErrchk(cudaMemcpy((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice));
+    gpuErrchk(cudaMemcpyAsync((to.E0), (from.E0), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.E0s), (from.E0s), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
+    gpuErrchk(cudaMemcpyAsync((to.nscatt), (from.nscatt), size * sizeof(int), cudaMemcpyDeviceToDevice, stream));
+	gpuErrchk(cudaMemcpyAsync((to.ratio_brems), (from.ratio_brems), size * sizeof(double), cudaMemcpyDeviceToDevice, stream));
 }
 
 __host__ void freePhotonData(struct of_photonSOA * ph){
@@ -299,4 +365,5 @@ __host__ void freePhotonData(struct of_photonSOA * ph){
 	gpuErrchk(cudaFree(ph->E0s));
 	
 	gpuErrchk(cudaFree(ph->nscatt));
+	gpuErrchk(cudaFree(ph->ratio_brems));
 }

@@ -71,12 +71,6 @@ __host__ void set_units(Params params)
 	U_unit = Rho_unit * CL * CL; /*UNITy of energy density*/
 	B_unit = CL * sqrt(4. * M_PI * Rho_unit); /*Unit of magnetig field*/
 	Ne_unit = Rho_unit/(MP + ME); /*Unit of electron density*/
-
-	/*Set global variables for device*/
-	cudaMemcpyToSymbol(d_L_unit, &L_unit, sizeof(double));
-	cudaMemcpyToSymbol(d_MBH, &params.MBH_par, sizeof(double));
-	cudaMemcpyToSymbol(d_B_unit, &B_unit, sizeof(double));
-	cudaMemcpyToSymbol(d_Ne_unit, &Ne_unit, sizeof(double));
 }
 
 __host__ void init_model(char *args[])

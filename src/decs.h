@@ -72,8 +72,19 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 {
     if (code != cudaSuccess)
     {
-        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-        
+		int current_device;
+		cudaGetDevice(&current_device);
+
+		cudaDeviceProp prop;
+		cudaGetDeviceProperties(&prop, current_device);
+
+		// 3. Print the error with the GPU ID and Name
+		fprintf(stderr, "GPUassert: Device %d (%s) - Error: %s in %s at line %d\n", 
+				current_device, 
+				prop.name, 
+				cudaGetErrorString(code), 
+				file, 
+				line);	
         // --- PRINT BACKTRACE ---
         fprintf(stderr, "\n--- Host Call Stack (Backtrace) ---\n");
         void* callstack[128];
@@ -93,12 +104,13 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 inline void flag(const char *message, const char *file, int line) {
     cudaError_t cudaStatus = cudaGetLastError();
     if (cudaStatus != cudaSuccess) {
-        // 3. Print the passed-in 'file' and 'line' instead of the macros
-        fprintf(stderr, "Error in %s at line %d in: %s: ERROR: %s\n", file, line, message, cudaGetErrorString(cudaStatus));
+        int device_id;
+        cudaGetDevice(&device_id);
+        fprintf(stderr, "Error in %s at line %d on device %d in: %s: ERROR: %s\n", 
+                file, line, device_id, message, cudaGetErrorString(cudaStatus));
         exit(1);
     }
 }
-
 // Function to handle CUDA memory copies and check for errors
 inline void cudaMemcpyCheck(void *dst, const void *src, size_t count, cudaMemcpyKind kind,
                             const char *file, int line)

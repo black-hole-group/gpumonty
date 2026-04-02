@@ -29,9 +29,11 @@ Declaration of the memory.cu functions
  * Copies physics constants, grid dimensions, lookup tables and model-specific parameters from the 
  * host to the device using `cudaMemcpyToSymbol`.
  *
+ * @param stream CUDA stream to perform asynchronous memory transfers, allowing overlap with kernel execution for improved performance.
+ *
  * @return void
  */
-__host__ void transferParams();
+__host__ void transferParams(cudaStream_t stream);
 
 /**
  * @brief Configures the optimal number of blocks to be used by CUDA kernels and generates GPU diagnostics.
@@ -55,6 +57,13 @@ __host__ int setMaxBlocks();
  * @return void
  */
 __host__ void cummulativePhotonsPerZone(unsigned long long * generated_photons_arr, unsigned long long * d_index_to_ijk);
+
+/**
+ * @brief 
+ */
+void symbolToDevice(const void* symbol, const void* src, size_t size, cudaStream_t stream);
+
+void symbolFromDevice(void* dst, const void* symbol, size_t size, cudaStream_t stream);
 
 /**
  * @brief Calculates the batch size for GPU photon processing.
@@ -119,8 +128,9 @@ __host__ void createdPTextureObj(cudaTextureObject_t * texObj, double * dP, cuda
  * @param from Pointer from where the memory is being transferred from.
  * @param to Pointer to where the memory is being transferred to.
  * @param size size of the arrays of the SoA
+* @param stream CUDA stream to perform asynchronous memory transfers, allowing overlap with kernel execution for improved performance.
  */
-__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size);
+__host__ void transferPhotonDataDevtoDev(struct of_photonSOA to, struct of_photonSOA from, unsigned long long size, cudaStream_t stream);
 
 
 

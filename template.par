@@ -1,17 +1,14 @@
 #input super photons parameter
-Ns 1e5
+Ns 1e6
 
 #path to the GRMHD data file
 
 #Use this path when testing iharm_model, remember to download the file. For the download link, look at the quick_start section of the guide.
-dump data/sample_dump_SANE_a+0.94_MKS_0900.h5
-#dump ../torus.out0.05400.h5
+dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
-#Use this path when testing harm_model
-#dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum spec_1e5.h5
+spectrum spec_8e5_ratio2.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -29,7 +26,7 @@ Thetae_max 1.e100
 
 # Whether or not to have scattering activated
 scattering 1
-fit_bias 0
+fit_bias 1
 ratio 2
 bias_guess 0.1
 

@@ -36,21 +36,21 @@ CUDA_PATH ?= $(shell \
 	fi)
 
 # GSL auto-detection: derive GSL root from gsl-config or fallback paths
-GSL_HOME ?= $(strip $(shell \
-	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
-		echo $$GSL_HOME; \
-	elif command -v gsl-config >/dev/null 2>&1; then \
-		gsl-config --prefix; \
-	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
-		echo $$HOME/gsl; \
-	elif [ -d /usr/local/include/gsl ]; then \
-		echo /usr/local; \
-	elif [ -d /usr/include/gsl ]; then \
-		echo /usr; \
-	else \
-		echo ""; \
-	fi))
-
+# GSL_HOME ?= $(strip $(shell \
+# 	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
+# 		echo $$GSL_HOME; \
+# 	elif command -v gsl-config >/dev/null 2>&1; then \
+# 		gsl-config --prefix; \
+# 	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
+# 		echo $$HOME/gsl; \
+# 	elif [ -d /usr/local/include/gsl ]; then \
+# 		echo /usr/local; \
+# 	elif [ -d /usr/include/gsl ]; then \
+# 		echo /usr; \
+# 	else \
+# 		echo ""; \
+# 	fi))
+GSL_HOME = /home/pedro/gsl
 GSL_PATH ?= $(GSL_HOME)
 
 #GSL setup
