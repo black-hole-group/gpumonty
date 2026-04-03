@@ -20,85 +20,6 @@
 #include "utils.h"
 
 
-
-
-__device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double Thetae, double B,double theta) {
-    double nuc, sth, Xs, factor;
-    double Js;
-    double p = 3.;
-    double gmin = 25.;
-    double gmax = 1.e7;
-
-    sth = sin(theta);
-    nuc = EE * B / (2. * M_PI * ME * CL);
-    factor = (Ne * pow(EE, 2.) * nuc) / CL;
-
-    if (Thetae < THETAE_MIN || sth < 1e-150)
-        return 0.;
-    if (nu > 1.e8 * nuc)
-        return (0.);
-
-    Xs = nu / (nuc * sth);
-
-    Js = pow(3., p / 2.) * (p - 1) * sth /
-         (2 * (p + 1) * (pow(gmin, 1 - p) - pow(gmax, 1 - p)));
-    Js *= cuda_sf_gamma((3 * p - 1) / 12.) * cuda_sf_gamma((3 * p + 19) / 12.) *
-          pow(Xs, -(p - 1) / 2.);
-
-    return Js * factor;
-}
-
-/**
- * should I add these to the params file? I don't think so. 
- * It is unnecessary to keep adding dynamic variables if we don't even change them. 
- * I'll keep it here for now, maybe I should ask Abhishek about this.
- */
-
-#define KAPPA_SYNCH 4.0
-#define NU_CUTOFF 5.e33
-__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B, double theta) 
-{
-    // emissivity for the kappa distribution function, see Pandya et al. 2016
-    double nuc, sth, nus, x, w, X_kappa, factor;
-    double J_low, J_high, J_s;
-    double kappa = KAPPA_SYNCH;
-    w = (kappa - 3.) / kappa * Thetae;
-    nuc = EE * B / (2. * M_PI * ME * CL);
-    sth = sin(theta);
-
-    factor = (Ne * pow(EE, 2.) * nuc * sth) / CL;
-
-    nus = nuc * sth * (w * kappa) * (w * kappa);
-
-
-    X_kappa = nu / nus;
-
-
-    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
-            (pow(3., 7. / 3.) * tgamma(kappa - 2.));
-
-    J_high = pow(X_kappa, -(kappa - 2.) / 2.) * pow(3., (kappa - 1.) / 2.) *
-             (kappa - 2.) * (kappa - 1.) / 4. * tgamma(kappa / 4. - 1. / 3.) *
-             tgamma(kappa / 4. + 4. / 3.);
-
-    x = 3. * pow(kappa, -3. / 2.);
-
-    J_s = pow((pow(J_low, -x) + pow(J_high, -x)), -1. / x);
-
-    return (J_s * factor) * exp(-nu / NU_CUTOFF);
-}
-/* 
-
-"mixed" emissivity formula 
-
-interpolates between Petrosian limit and
-classical thermal synchrotron limit
-
-good for Thetae > 1
-
-*/
-
-
 __device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
 	double j = 0;
 
@@ -177,25 +98,6 @@ __host__ __device__  double jnu_bremss(const double nu, const double Ne, const d
 }
 #undef BREMS_FAC
 
-#define JCST (EE * EE * EE /(2 * M_PI * ME * CL * CL))
-double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu) {
-    /* Returns energy per unit time at *
-     * frequency nu in cgs
-     */
-    int ACCZONE = 0;
-    double F_eval(double Thetae, double B, double nu, int ACCZONE);
-
-    if (Thetae < THETAE_MIN) {
-        return 0.;
-    }
-
-    return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, ACCZONE);
-}
-#undef JCST
-
-
-
-
 __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2)
 {
 	#ifdef __CUDA_ARCH__
@@ -229,7 +131,7 @@ __host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, doubl
  * frequency nu in cgs										*/
 
 	double j_fac;
-	double F_eval(const double Thetae, const double B, const double nu);
+	double F_eval(const double Thetae, const double B, const double nu, int ACCZONE);
 
 
 	if (Thetae < THETAE_MIN)
@@ -241,7 +143,7 @@ __host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, doubl
 		return 0.;
 
 	j_fac = Ne * Bmag * Thetae * Thetae / K2;
-	return JCST * j_fac * F_eval(Thetae, Bmag, nu);
+	return JCST * j_fac * F_eval(Thetae, Bmag, nu, 0);
 }
 
 #undef JCST
@@ -265,7 +167,6 @@ double jnu_integrand(double th, void *params)
 	return sth * sth * pow(sqrt(x) + CST * pow(x, 1. / 6.),
 			       2.) * exp(-pow(x, 1. / 3.));
 }
-
 #undef CST
 
 
@@ -333,29 +234,6 @@ __host__ __device__ double K2_eval(const double Thetae)
 	return linear_interp_K2(Thetae);
 }
 
-__host__ __device__ double linear_interp_F_nth(double K) {
-
-    int i;
-    double di, lK;
-	double lK_min = log(KMIN);
-	double dlK = log(KMAX / KMIN) / (N_ESAMP);
-	#ifdef __CUDA_ARCH__
-	double * local_F_nth;
-	local_F_nth = d_F_nth;
-	#else
-	double * local_F_nth;
-	local_F_nth = F_nth;
-	#endif
-
-
-    lK = log(K);
-
-    di = (lK - lK_min) * dlK;
-    i = (int)di;
-    di = di - i;
-
-    return exp((1. - di) * local_F_nth[i] + di * local_F_nth[i + 1]);
-}
 
 
 __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, const double nu)
@@ -373,43 +251,6 @@ __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, con
 		return linear_interp_F_th(K);
 	}
 }
-
-
-__host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
-
-    double K;
-    double linear_interp_F_nth(double);
-
-    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
-    double kappa = KAPPA_SYNCH;
-    double w = (kappa - 3.) / kappa * Thetae;
-    double nus = nuc * pow(w * kappa, 2.);
-
-    K = nu / nus;
-    if (K > KMAX)
-        return 0.;
-    if (K < KMIN) {
-        return (0);
-    }
-    double F_value = linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
-    return F_value;
-}
-
-__host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu) {
-
-    double K;
-    double linear_interp_F_nth(double);
-    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
-
-    K = nu / nuc;
-    if (K > KMAX)
-        return 0.;
-    if (K < KMIN)
-        return 0.;
-    return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
-}
-#undef NU_CUTOFF
-#undef KAPPA_SYNCH
 
 
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu, int ACCZONE)
@@ -486,6 +327,81 @@ __host__ __device__ double linear_interp_K2(const double Thetae)
 
 
 
+//Nonthermal part
+
+
+/**
+ * should I add these to the params file? I don't think so. 
+ * It is unnecessary to keep adding dynamic variables if we don't even change them. 
+ * I'll keep it here for now, maybe I should ask Abhishek about this.
+ */
+
+#define KAPPA_SYNCH 4.0
+#define NU_CUTOFF 5.e33
+#include <gsl/gsl_sf_gamma.h>
+
+
+__host__ double jnu_integrand_powerlaw(double th, void *params) {
+    double K = *(double *)params;
+    double sth = sin(th);
+    double x = K / sth;
+
+    double factor;
+    double Js;
+    double p = 3.;
+    double gmin = 25.;
+    double gmax = 1.e7;
+
+    // if (sth < 1.e-150 || x > 1.e8)
+    //    return 0.;
+
+    factor = sth;
+
+    Js = pow(3., p / 2.) * (p - 1) * sth /
+         (2 * (p + 1) * (pow(gmin, 1 - p) - pow(gmax, 1 - p)));
+    Js *= gsl_sf_gamma((3 * p - 1) / 12.) * gsl_sf_gamma((3 * p + 19) / 12.) *
+          pow(x, -(p - 1) / 2.);
+
+    return Js * factor;
+}
+
+
+
+__host__  double jnu_integrand_kappa(double th, void *params) {
+
+    double jnu;
+    double K = *(double *)params;
+    double sth = sin(th);
+    double X_kappa = K / sth;
+    double x, factor;
+    double J_low, J_high, J_s;
+    double kappa = KAPPA_SYNCH;
+
+    sth = sin(th);
+    if (X_kappa > 2.e8)
+        return 0.;
+    //        if (sth < 1.e-40) //|| x > 2.e12)
+    // if(th<1e-2)
+    //	return 0;
+    factor = (sth * sth);
+
+    // X_kappa = x;
+
+    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
+            (pow(3., 7. / 3.) * tgamma(kappa - 2.));
+
+    J_high = pow(X_kappa, -(kappa - 2.) / 2.) * pow(3., (kappa - 1.) / 2.) *
+             (kappa - 2.) * (kappa - 1.) / 4. * tgamma(kappa / 4. - 1. / 3.) *
+             tgamma(kappa / 4. + 4. / 3.);
+    x = 3. * pow(kappa, -3. / 2.);
+
+    J_s = pow((pow(J_low, -x) + pow(J_high, -x)), -1. / x);
+
+    jnu = J_s * factor; // *exp(-X_kappa/1.e7);
+    return jnu;
+}
+
+
 
 
 #define HYPMIN (1e-5)
@@ -497,7 +413,7 @@ __host__ __device__ double linear_interp_K2(const double Thetae)
 #define dkappa (0.1)
 
 double hypergeom[N_k][N_HYP];
-void init_emiss_tables_nth(void) {
+__host__ void init_emiss_tables_nth(void) {
 
     int k;
     double result, err, K;
@@ -541,11 +457,16 @@ void init_emiss_tables_nth(void) {
     double dummy;
     for (int j = 0; j < N_HYP; j++) {
         for (int i = 0; i < N_k; i++) {
-            fscanf(input, "%lf", &dummy);
+            // Check if fscanf successfully read exactly 1 item
+            if (fscanf(input, "%lf", &dummy) != 1) {
+                fprintf(stderr, "Error: Failed to read expected data from hyper2f1.txt at j=%d, i=%d\n", j, i);
+                fclose(input);
+                exit(1); 
+            }
             hypergeom[i][j] = (dummy);
         }
     }
-
+	fclose(input);
     /* Avoid doing divisions later */
     dlK = 1. / dlK;
     dlT = 1. / dlT;
@@ -561,3 +482,142 @@ void init_emiss_tables_nth(void) {
 #undef kappa_max
 #undef N_k
 #undef dkappa
+
+
+
+__host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
+
+    double K;
+    double linear_interp_F_nth(double);
+
+    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
+    double kappa = KAPPA_SYNCH;
+    double w = (kappa - 3.) / kappa * Thetae;
+    double nus = nuc * pow(w * kappa, 2.);
+
+    K = nu / nus;
+    if (K > KMAX)
+        return 0.;
+    if (K < KMIN) {
+        return (0);
+    }
+    double F_value = linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
+    return F_value;
+}
+
+
+
+
+__device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double Thetae, double B,double theta) {
+    double nuc, sth, Xs, factor;
+    double Js;
+    double p = 3.;
+    double gmin = 25.;
+    double gmax = 1.e7;
+
+    sth = sin(theta);
+    nuc = EE * B / (2. * M_PI * ME * CL);
+    factor = (Ne * pow(EE, 2.) * nuc) / CL;
+
+    if (Thetae < THETAE_MIN || sth < 1e-150)
+        return 0.;
+    if (nu > 1.e8 * nuc)
+        return (0.);
+
+    Xs = nu / (nuc * sth);
+
+    Js = pow(3., p / 2.) * (p - 1) * sth /
+         (2 * (p + 1) * (pow(gmin, 1 - p) - pow(gmax, 1 - p)));
+    Js *= cuda_sf_gamma((3 * p - 1) / 12.) * cuda_sf_gamma((3 * p + 19) / 12.) *
+          pow(Xs, -(p - 1) / 2.);
+
+    return Js * factor;
+}
+
+__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B, double theta) 
+{
+    // emissivity for the kappa distribution function, see Pandya et al. 2016
+    double nuc, sth, nus, x, w, X_kappa, factor;
+    double J_low, J_high, J_s;
+    double kappa = KAPPA_SYNCH;
+    w = (kappa - 3.) / kappa * Thetae;
+    nuc = EE * B / (2. * M_PI * ME * CL);
+    sth = sin(theta);
+
+    factor = (Ne * pow(EE, 2.) * nuc * sth) / CL;
+
+    nus = nuc * sth * (w * kappa) * (w * kappa);
+
+
+    X_kappa = nu / nus;
+
+
+    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
+            (pow(3., 7. / 3.) * tgamma(kappa - 2.));
+
+    J_high = pow(X_kappa, -(kappa - 2.) / 2.) * pow(3., (kappa - 1.) / 2.) *
+             (kappa - 2.) * (kappa - 1.) / 4. * tgamma(kappa / 4. - 1. / 3.) *
+             tgamma(kappa / 4. + 4. / 3.);
+
+    x = 3. * pow(kappa, -3. / 2.);
+
+    J_s = pow((pow(J_low, -x) + pow(J_high, -x)), -1. / x);
+
+    return (J_s * factor) * exp(-nu / NU_CUTOFF);
+}
+
+#define JCST (EE * EE * EE /(2 * M_PI * ME * CL * CL))
+__host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu) {
+    /* Returns energy per unit time at *
+     * frequency nu in cgs
+     */
+    int ACCZONE = 0;
+    double F_eval(double Thetae, double B, double nu, int ACCZONE);
+
+    if (Thetae < THETAE_MIN) {
+        return 0.;
+    }
+
+    return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, ACCZONE);
+}
+#undef JCST
+__host__ __device__ double linear_interp_F_nth(double K) {
+
+    int i;
+    double di, lK;
+	double lK_min = log(KMIN);
+	double dlK = log(KMAX / KMIN) / (N_ESAMP);
+	#ifdef __CUDA_ARCH__
+	double * local_F_nth;
+	local_F_nth = d_F_nth;
+	#else
+	double * local_F_nth;
+	local_F_nth = F_nth;
+	#endif
+
+
+    lK = log(K);
+
+    di = (lK - lK_min) * dlK;
+    i = (int)di;
+    di = di - i;
+
+    return exp((1. - di) * local_F_nth[i] + di * local_F_nth[i + 1]);
+}
+
+
+__host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu) {
+
+    double K;
+    double linear_interp_F_nth(double);
+    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
+
+    K = nu / nuc;
+    if (K > KMAX)
+        return 0.;
+    if (K < KMIN)
+        return 0.;
+    return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
+}
+#undef NU_CUTOFF
+#undef KAPPA_SYNCH

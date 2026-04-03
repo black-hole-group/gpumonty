@@ -146,10 +146,11 @@ __host__ __device__ double K2_eval(const double Thetae);
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
  * @param Bmag Magnetic field strength \f$ B \f$.
  * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param ACCZONE Integer flag indicating whether the evaluation is for an acceleration zone (1) or not (0), which may affect the choice of approximation.
  * 
  * @return The value of the integrated emissivity function \f$ F \f$.
  */
-__host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu);
+__host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu, int ACCZONE);
 
 /** 
  * @brief Performs linear interpolation on the precomputed emissivity function for thermal synchrotron \f$ F(K) \f$.
@@ -223,4 +224,110 @@ __host__ __device__ double int_jnu_bremss(const double Ne, const double Thetae, 
  */
 __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2);
 
+
+// Nonthermal declarations
+
+/**
+ * @brief Provides the integrand for calculating the angle-integrated synchrotron emissivity for a kappa distribution of electrons.
+ * 
+ * This function is used by the GSL integrator to evaluate the integral over solid angles
+ * 
+ * @param th The angle \f$ \theta \f$ between the magnetic field and the photon wave vector.
+ * @param params A pointer to the dimensionless frequency parameter \f$ K \f$ for the kappa distribution.
+ * 
+ * @return The value of the integrand at the given angle for the kappa distribution.
+ * 
+ */
+__host__ double jnu_integrand_kappa(double th, void *params);
+
+/**
+ * @brief Initializes lookup tables for the angle-integrated emissivity function \f$ F \f$ for a kappa distribution of electrons.
+ * 
+ * Precomputes \f$ F(K) \f$ by integrating the angular dependence of synchrotron emission over the solid angle using GSL integration and stores the results in log-space for rapid retrieval during the simulation.
+ * 
+ * @return void
+ */
+__host__ void init_emiss_tables_nth(void);
+
+/**
+ * @brief Evaluates the frequency-dependent component \f$ F(K) \f$ of the angle-integrated emissivity for a kappa distribution of electrons.
+ * 
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param Bmag Magnetic field strength \f$ B \f$.
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * 
+ * @return The value of the integrated emissivity function \f$ F \f$ for a kappa distribution of electrons.
+ */
+__host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu);
+
+/**
+ * @brief Provides the emissivity \f$ j_\nu \f$ for a powerlaw distribution of electrons.
+ * 
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param Ne Electron number density \f$ n_e \f$.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param B Magnetic field strength \f$ B \f$.
+ * @param theta Angle between the magnetic field and the wave vector \f$ \theta \f$.
+ * 
+ * @return The value of the emissivity \f$ j_\nu \f$ for a powerlaw distribution of electrons.
+ */
+__device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double Thetae, double B,double theta);
+
+/**
+ * @brief Provides the emissivity \f$ j_\nu \f$ for a kappa distribution of electrons.
+ * 
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param Ne Electron number density \f$ n_e \f$.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param B Magnetic field strength \f$ B \f$.
+ * @param theta Angle between the magnetic field and the wave vector \f$ \theta \f$.
+ * 
+ * @return The value of the emissivity \f$ j_\nu \f$ for a kappa distribution of electrons.
+
+ */
+__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B, double theta);
+
+/**
+ * @brief Calculates the angle-integrated emissivity \f$ J_\nu \f$ for both a kappa and a power-law distribution of electrons based on F_eval function.
+ * 
+ * @param Ne Electron number density \f$ n_e \f$.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param Bmag Magnetic field strength \f$ B \f$.
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * 
+ * @return The value of the angle-integrated emissivity \f$ J_\nu \f$ for a kappa or power-law distribution of electrons.
+ */
+__host__ __device__  double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu);
+
+
+
+/**
+ * @brief Performs linear interpolation on the precomputed emissivity function for non-thermal synchrotron \f$ F(K) \f$.
+ * 
+ * @param K Dimensionless frequency parameter \f$ K \f$.
+ * 
+ * @return The interpolated value of \f$ F(K) \f$ for non-thermal synchrotron emission.
+ */
+__host__ __device__ double linear_interp_F_nth(double K);
+
+/**
+ * @brief Evaluates the frequency-dependent component \f$ F(K) \f$ of the angle-integrated emissivity for a powerlaw distribution of electrons.
+ * 
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param Bmag Magnetic field strength \f$ B \f$.
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * 
+ * @return The value of the integrated emissivity function \f$ F \f$ for a powerlaw distribution of electrons.
+ */
+__host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu);
+
+/**
+ * @brief Provides the integrand for calculating the angle-integrated synchrotron emissivity for a power-law distribution of electrons.
+ * 
+ * @param th The angle \f$ \theta \f$ between the magnetic field and the photon wave vector.
+ * @param params A pointer to the dimensionless frequency parameter \f$ K \f$ for the power-law distribution.
+ * 
+ * @return The value of the integrand at the given angle for the power-law distribution.
+ */
+__host__ double jnu_integrand_powerlaw(double th, void *params);
 #endif

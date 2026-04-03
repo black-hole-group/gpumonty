@@ -20,77 +20,6 @@
 #include "weights.h"
 #include "jnu_mixed.h"
 #include "utils.h"
-//#define JCST	(M_SQRT2*EE*EE*EE/(27*ME*CL*CL))
-// #define JCST (7.089473804413026e-24) /* √2·e³/(27·mₑ·c²) [CGS] */
-// __host__ void init_weight_table()
-// {
-// 	int k;
-// 	int i, j, l, lstart, lend, myid, nthreads;
-// 	double Ne, Thetae, B;
-// 	//double K2;
-// 	double sum[N_ESAMP + 1], nu[N_ESAMP + 1];
-// 	double fac, sfac;
-// 	double Ucon[NDIM], Bcon[NDIM];
-
-// 	fprintf(stderr, "Building table for superphoton weights\n");
-// 	fflush(stderr);
-
-// 	/*      Set up interpolation */
-// 	double lnu_min = log(NUMIN);
-// 	double lnu_max = log(NUMAX);
-// 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
-
-// #pragma omp parallel for schedule(static) private(i)
-// 	for (i = 0; i <= N_ESAMP; i++) {
-// 		sum[i] = 0.;
-// 		nu[i] = exp(i * dlnu + lnu_min);
-// 	}
-
-// 	sfac = dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit;
-
-// #pragma omp parallel private(i,j,k,Thetae, K2, Ne, B, fac, l, lstart, lend,myid,nthreads,Ucon,Bcon)
-// 	{
-// 		nthreads = omp_get_num_threads();
-// 		myid = omp_get_thread_num();
-// 		lstart = myid * (N_ESAMP / nthreads);
-// 		lend = (myid + 1) * (N_ESAMP / nthreads);
-// 		if (myid == nthreads - 1)
-// 			lend = N_ESAMP + 1;
-
-// 		for (i = 0; i < N1; i++)
-// 			for (j = 0; j < N2; j++)
-// 				for (k = 0; k < N3; k++){
-// 						get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
-// 						if (Ne == 0. || Thetae < THETAE_MIN)
-// 							continue;
-// 						// K2 = K2_eval(Thetae);
-// 						// fac =
-// 						// 	(JCST * Ne * B * Thetae * Thetae /
-// 						// 	K2) * sfac * geom[SPATIAL_INDEX2D(i,j)].g;
-// 						fac = sfac * geom[SPATIAL_INDEX2D(i,j)].g;
-						
-// 						for (l = lstart; l < lend; l++){
-// 							// sum[l] +=
-// 							// 	fac * F_eval(Thetae, B, nu[l]);
-// 							sum[l] += int_jnu_total(Ne, Thetae, B, nu[l]) * fac;
-// 						}
-// 			}
-// #pragma omp barrier
-// 	}
-// #pragma omp parallel for schedule(static) private(i)
-// 	for (i = 0; i <= N_ESAMP; i++){
-// 		wgt[i] = log(sum[i] / (HPL * (int) params.Ns) + WEIGHT_MIN);
-// 	}
-
-	
-// 	fprintf(stderr, "done.\n\n");
-// 	fflush(stderr);
-// // Their equivalent for sum is int_jnu * fac * gdet = (JCST * Ne * B * Thetae * Thetae /K2) * F_eval * sfac * geom[SPATIAL_INDEX2D(i,j)].g
-// // So int_jnu = (JCST * Ne * B * Thetae * Thetae /K2) * F_eval
-// 	return;
-// }
-
-// #undef JCST
 
 __host__ void init_weight_table()
 {
@@ -174,7 +103,7 @@ __host__ void init_nint_table(void)
 		for (j = 0; j < N_ESAMP; j++) {
 			dn = F_eval(1., Bmag,
 				    exp(j * dlnu +
-					lnu_min)) / (exp(wgt[j]) +
+					lnu_min), 0) / (exp(wgt[j]) +
 						     1.e-100);
 			if (dn > dndlnu_max[i])
 				dndlnu_max[i] = dn;

@@ -545,7 +545,6 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-        //} while (curand_uniform_double(localState) > (F_eval(Thetae, Bmag, nu) / (weight + 1.e-100)) / dnmax);
 		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
