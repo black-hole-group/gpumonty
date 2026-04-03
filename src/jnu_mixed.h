@@ -23,6 +23,34 @@ Declaration of the functions in the jnu_mixed.cu file
 #ifndef JNU_MIXED_H
 #define JNU_MIXED_H
 
+
+/**
+ * @brief Kappa electron distribution function for synchrotron emissivity calculations.
+ * 
+ * @param nu Photon frequency in the plasma frame.
+ * @param Ne Electron number density (\f$n_{\rm e}\f$).
+ * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
+ * @param B Magnetic field strength.
+ * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
+ * 
+ * @note Equation taken from \f$\kappa\f$-monty [Davelaar et al.(2023)](https://arxiv.org/pdf/2303.15522)
+ * 
+ * @return The value of the synchrotron emissivity for a kappa distribution of electrons.
+ */
+__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B,double theta);
+
+/**
+ * @brief Power-law electron distribution function for synchrotron emissivity calculations.
+ * 
+ * @param nu Photon frequency in the plasma frame.
+ * @param Ne Electron number density (\f$n_{\rm e}\f$).
+ * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
+ * @param B Magnetic field strength.
+ * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
+ * 
+ * @note Equation taken from \f$\kappa\f$-monty [Davelaar et al.(2023)](https://arxiv.org/pdf/2303.15522), [Pandya et al. 2016](https://iopscience.iop.org/article/10.3847/0004-637X/822/1/34) 
+ */
+__device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double Thetae, double B, double theta);
 /**
  * @brief Calculates the thermal synchrotron emissivity \f$j_\nu(\nu, \theta)\f$ following [Leung et al.(2011)](https://iopscience.iop.org/article/10.1088/0004-637X/737/1/21/pdf).
  * 
@@ -124,13 +152,15 @@ __host__ __device__ double K2_eval(const double Thetae);
 __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu);
 
 /** 
- * @brief Performs linear interpolation on the precomputed emissivity function \f$ F(K) \f$.
+ * @brief Performs linear interpolation on the precomputed emissivity function for thermal synchrotron \f$ F(K) \f$.
  * 
  * @param K Dimensionless frequency parameter \f$ K \f$.
  *
  * @return The interpolated value of \f$ F(K) \f$.
  */
-__host__ __device__ double linear_interp_F(const double K);
+__host__ __device__ double linear_interp_F_th(const double K);
+
+
 
 /** 
  * @brief Performs linear interpolation on the precomputed modified Bessel function \f$ K_2(1/\Theta_e) \f$.

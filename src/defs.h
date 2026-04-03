@@ -32,7 +32,7 @@ gsl_integration_workspace *w;
 
 
 double F[N_ESAMP + 1], /**< Global host data array of precomputed emissivity values binned by frequency. */
-       wgt[N_ESAMP + 1]; /**< Global host data array containing precomputed superphotons weights binned by frequency. */
+       wgt[N_ESAMP + 1], F_nth[N_ESAMP + 1]; /**< Global host data array containing precomputed superphotons weights binned by frequency. */
 
 
 /**
@@ -278,6 +278,12 @@ __device__ double d_wgt[N_ESAMP + 1];
 __device__ double d_F[N_ESAMP + 1];
 
 /**
+ * Global device array of precomputed emissivity values for non-thermal synchrotron binned by frequency.
+ * It's the same as the host array F_nth but accessible on the GPU.
+ */
+__device__ double d_F_nth[N_ESAMP + 1];
+
+/**
  * Global device array for the precomputed modified Bessel function values binned by frequency.
  * It's the same as the host array K2 but accessible on the GPU.
  */
@@ -417,9 +423,19 @@ __device__ int d_scattering;
 __device__ int d_bremsstrahlung;
 
 /**
- * Global device variable that controls whether synchrotron emission is enabled (1) or disabled (0) in the simulation.
+ * Global device variable that controls whether thermal synchrotron emission is enabled (1) or disabled (0) in the simulation.
  */
-__device__ int d_synchrotron;
+__device__ int d_thermal_synch;
+
+/**
+ * Global device variable that controls whether kappa synchrotron emission is enabled (1) or disabled (0) in the simulation.
+ */
+__device__ int d_kappa_synch;
+
+/**
+ * Global device variable that controls whether power-law synchrotron emission is enabled (1) or disabled (0) in the simulation.
+ */
+__device__ int d_powerlaw_synch;
 
 /**
  * Global device variable that scales bias to match desired ratio.
@@ -512,7 +528,9 @@ typedef struct params_t {
 
   //emissions
   int bremsstrahlung;
-  int synchrotron;
+  int thermal_synch;
+  int kappa_synch;
+  int powerlaw_synch;
 
   char loaded;
 } Params;

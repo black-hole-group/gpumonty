@@ -35,4 +35,9 @@ bias_guess 0.1
 
 #emissions
 bremsstrahlung 1
-synchrotron 1
+thermal_synch 1
+
+
+#nonthermal distribution
+kappa_synch 0
+powerlaw_synch 0

@@ -6,6 +6,8 @@
 # Ignore the entire build directory
 build/
 
+tests/
+
 data/*.h5
 gpumonty
 

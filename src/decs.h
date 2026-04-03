@@ -42,8 +42,10 @@ typedef struct params_t {
 
   //emissions
   int bremsstrahlung;
-  int synchrotron;
+  int thermal_synch;
   int scattering;
+  int kappa_synch;
+  int powerlaw_synch;
   
   char loaded;
 } Params;
@@ -162,7 +164,7 @@ struct of_spectrum {
 	extern __device__ unsigned long long d_N_superph_recorded;
 	extern __device__ int d_Ns;
 	extern __device__ double d_thetae_unit, d_startx[NDIM], d_dx[NDIM], d_wgt[N_ESAMP + 1], d_F[N_ESAMP + 1], d_K2[N_ESAMP + 1], d_bias_norm, d_stopx[NDIM], d_Rh, d_max_tau_scatt;
-
+	extern __device__ double d_F_nth[N_ESAMP + 1];
 
 	extern __device__ unsigned long long scattering_counter;
 	extern __device__ unsigned long long d_num_scat_phs[MAX_LAYER_SCA];
@@ -174,7 +176,8 @@ struct of_spectrum {
 	extern __device__ unsigned long long tracking_counter_sampling;
 	extern __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 	extern __device__ int d_N1, d_N2, d_N3;
-	extern __device__ int d_scattering, d_bremsstrahlung, d_synchrotron;
+	extern __device__ int d_scattering, d_bremsstrahlung, d_thermal_synch;
+	extern __device__ int d_kappa_synch, d_powerlaw_synch;
 	extern __device__ double d_bias_guess[MAX_LAYER_SCA];
 	extern __device__ double d_trat_small, d_trat_large, d_beta_crit, d_thetae_max, d_tp_over_te;
 	extern __device__ double d_MBH, d_L_unit, d_B_unit, d_Ne_unit;
@@ -196,6 +199,7 @@ struct of_spectrum {
 
 	extern struct of_geom *geom;
 	extern double F[N_ESAMP + 1], wgt[N_ESAMP + 1];
+	extern double F_nth[N_ESAMP + 1];
 	extern double table[NW + 1][NT + 1];
 
 	extern unsigned long long N_scatt;

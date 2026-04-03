@@ -106,7 +106,9 @@ __host__ void transferParams() {
 
 	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
 	cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int));
-	cudaMemcpyToSymbol(d_synchrotron, &(params.synchrotron), sizeof(int));
+	cudaMemcpyToSymbol(d_thermal_synch, &(params.thermal_synch), sizeof(int));
+	cudaMemcpyToSymbol(d_kappa_synch, &(params.kappa_synch), sizeof(int));
+	cudaMemcpyToSymbol(d_powerlaw_synch, &(params.powerlaw_synch), sizeof(int));
 
 	double h_bias_guess[MAX_LAYER_SCA];
 
