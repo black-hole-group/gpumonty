@@ -274,6 +274,7 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
                                           double Ucov[NDIM], double Bcon[NDIM],
                                           double Bcov[NDIM]) {
     
+    
     double local_dx[4] = {0.};
 
     #ifdef __CUDA_ARCH__
@@ -287,6 +288,10 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
         }
         double local_L_unit = d_L_unit;
         double local_B_unit = d_B_unit;
+        int is_kappa_sync = d_kappa_synch;
+        int is_powerlaw_sync = d_powerlaw_synch;
+
+        double tp_over_te = d_tp_over_te;
     #else
         // Host Globals
         local_dx[1] = dx[1];
@@ -298,6 +303,9 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
         }
         double local_L_unit = L_unit;
         double local_B_unit = B_unit;
+        int is_kappa_sync = params.kappa_synch;
+        int is_powerlaw_sync = params.powerlaw_synch;
+        double tp_over_te = params.tp_over_te;
     #endif
 
     // Sub-sampling for Anti-Aliasing
@@ -343,9 +351,19 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     bl_coord(X, &r, &th);
 
     // Apply Volume Fraction Scaling
-    *Ne = NE_VALUE * vol_frac;       
-    *B  = B_VALUE * vol_frac;        
-    *Thetae = THETAE_VALUE * vol_frac;          
+  
+    if(is_kappa_sync || is_powerlaw_sync){
+        double gam = 13./9;
+        double custom_thetae_unit = MP/ME * (gam - 1.)/(1. + tp_over_te);
+
+        *Ne = MODEL_TAU0/SIGMA_THOMSON/SPHERE_RADIUS/local_L_unit * vol_frac;
+        *Thetae = THETAE_VALUE * vol_frac;
+        *B = CL* sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(*Ne * *Thetae)/sqrt(custom_thetae_unit) * vol_frac;
+    }else{
+        *Ne = NE_VALUE * vol_frac;       
+        *B  = B_VALUE * vol_frac/local_B_unit;        
+        *Thetae = THETAE_VALUE * vol_frac;  
+    }
 
     Ucon[0] = 1.;
     Ucon[1] = 0.;
@@ -353,8 +371,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     Ucon[3] = 0.;
 
     Bcon[0] = 0.;
-    Bcon[1] = (*B) * cos(th) / local_B_unit; 
-    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8) / local_B_unit;
+    Bcon[1] = (*B) * cos(th); 
+    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8);
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)

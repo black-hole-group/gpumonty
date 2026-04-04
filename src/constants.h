@@ -96,3 +96,4 @@
 #define CST             1.88774862536 
 /** Factor used for synchrotron emissivity calculation */
 #define KFAC            (9*M_PI*ME*CL/EE)
+
