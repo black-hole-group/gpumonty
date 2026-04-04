@@ -20,6 +20,19 @@
 #include "utils.h"
 
 
+__device__ double jnu_ratio_brems(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
+	double synch = 0;
+	double bremss = 0;
+	if(d_synchrotron == 1.)
+		synch = jnu_synch(nu, Ne, Thetae, B, theta, K2);
+	if(d_bremsstrahlung == 1.)
+		bremss = jnu_bremss(nu, Ne, Thetae);
+
+	if(synch + bremss == 0) return 0.;
+
+	return bremss/(synch + bremss);
+}
+
 __device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
 	double j = 0;
 
@@ -32,9 +45,6 @@ __device__ double jnu_total(const double nu, const double Ne, const double Theta
 		j += jnu_synch_nonthermal_powerlaw(nu, Ne, Thetae, B, theta);
 	if(d_bremsstrahlung)
 		j += jnu_bremss(nu, Ne, Thetae);
-
-	
-	
 	return j;
 }
 

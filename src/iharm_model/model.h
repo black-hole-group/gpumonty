@@ -325,22 +325,6 @@
      */
     __device__ double bias_func(double Te, double w, int round_scatt);
 
-    /**
-     * @brief Records a photon's final properties into the global spectrum array.
-     * This function maps a photon's energy and polar exit angle to a specific energy and angular
-     * bin in the spectrum. Because many threads may try to update the same 
-     * bin simultaneously, it uses CUDA atomic operations to ensure thread safety.
-     * 
-     * @note Energy is binned logarithmically: \f$ i_E \approx \frac{\ln(E) - \ln(E_0)}{\Delta \ln E} \f$.
-     * @note Polar angle \f$ \theta \f$ is binned into angular zones, mirrored across the equator.
-     *
-     * @param ph The Structure of Arrays (SOA) containing all photon data.
-     * @param d_spect Pointer to the global spectrum structure array.
-     * @param photon_index The specific index of the photon being recorded.
-     * 
-     * @return void
-     */
-    __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* d_spect, unsigned long long photon_index);
 
     /**
      * @brief Performs the calculation of the stepsize \f$ d\lambda \f$ for the geodesic integration.
@@ -439,6 +423,13 @@
     extern __device__ double d_mks3R0, d_mks3H0, d_mks3MY1, d_mks3MY2, d_mks3MP0;
     extern __device__ double d_poly_norm, d_poly_xt, d_poly_alpha, d_mks_smooth;
     extern __device__ int d_METRIC;
+    extern double poly_norm, poly_xt, poly_alpha, mks_smooth;
+    extern double game, gam, gamp;
+    extern int METRIC;
+    extern __device__ double d_game, d_gamp, d_gam;
+    extern int with_electrons;
+    extern __device__ int d_with_electrons;
+
 
 
     #define METRIC_eKS 0

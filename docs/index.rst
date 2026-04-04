@@ -46,3 +46,4 @@ email for contact: pedronaethemotta@usp.br
    docs_guidelines
    bias_tuning
    continuous_integration
+   multi_gpus

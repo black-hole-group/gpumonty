@@ -49,6 +49,11 @@
 #define N_THREADS 256
 
 /**
+ * This flag defines whether to store the output in an hdf5 file. Currently working for iharm and 
+ */
+#define HDF5_OUTPUT (1)
+
+/**
  * Number of compton scatterings tracked in the spectrum. e.g., once, twice, >twice
  */
 #define N_COMPTBINS (3)
@@ -327,7 +332,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (3)
+#define MAX_LAYER_SCA (5)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.

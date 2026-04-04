@@ -377,3 +377,18 @@ __host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu
  */
 __host__ double jnu_integrand_powerlaw(double th, void *params);
 #endif
+/**
+ * @brief Calculates the ratio of bremsstrahlung to total emissivity. It serves to realocate it in the correct bins when saving the final spectrum.
+ * 
+ * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+ * @param Ne Electron density.
+ * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
+ * @param B Magnetic field strength \f$ B \f$.
+ * @param theta Angle between the magnetic field and the line of sight.
+ * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
+ * 
+ * @return The ratio of bremsstrahlung to total emissivity.
+ */
+__device__ double jnu_ratio_brems(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2);
+
+#endif

@@ -25,14 +25,55 @@ MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
+<<<<<<< HEAD
 CUDA_PATH ?=/usr/local/cuda-12.3/
+=======
+# CUDA auto-detection: derive CUDA root from nvcc location on PATH
+CUDA_PATH ?= $(shell \
+	if command -v nvcc >/dev/null 2>&1; then \
+		dirname $$(dirname $$(command -v nvcc)); \
+	elif [ -d /usr/local/cuda ]; then \
+		echo /usr/local/cuda; \
+	else \
+		echo ""; \
+	fi)
+
+# GSL auto-detection: derive GSL root from gsl-config or fallback paths
+# GSL_HOME ?= $(strip $(shell \
+# 	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
+# 		echo $$GSL_HOME; \
+# 	elif command -v gsl-config >/dev/null 2>&1; then \
+# 		gsl-config --prefix; \
+# 	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
+# 		echo $$HOME/gsl; \
+# 	elif [ -d /usr/local/include/gsl ]; then \
+# 		echo /usr/local; \
+# 	elif [ -d /usr/include/gsl ]; then \
+# 		echo /usr; \
+# 	else \
+# 		echo ""; \
+# 	fi))
+GSL_HOME = /home/pedro/gsl
+GSL_PATH ?= $(GSL_HOME)
+>>>>>>> main
 
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)
 
-# HDF5 setup
-HDF5_INCLUDE = -I/usr/include/hdf5/serial
-HDF5_LIB = -L/usr/lib/x86_64-linux-gnu/hdf5/serial
+# HDF5 auto-detection: try pkg-config, then h5cc, then common paths
+HDF5_INCLUDE ?= $(shell \
+	pkg-config --cflags hdf5 2>/dev/null \
+	|| (command -v h5cc >/dev/null 2>&1 && h5cc -show 2>/dev/null | tr ' ' '\n' | grep '^-I' | tr '\n' ' ') \
+	|| ([ -d /usr/include/hdf5/serial ] && echo "-I/usr/include/hdf5/serial") \
+	|| ([ -d /usr/local/include ] && echo "-I/usr/local/include") \
+	|| echo "")
+
+HDF5_LIB ?= $(shell \
+	pkg-config --libs-only-L hdf5 2>/dev/null \
+	|| (command -v h5cc >/dev/null 2>&1 && h5cc -show 2>/dev/null | tr ' ' '\n' | grep '^-L' | tr '\n' ' ') \
+	|| ([ -d /usr/lib/x86_64-linux-gnu/hdf5/serial ] && echo "-L/usr/lib/x86_64-linux-gnu/hdf5/serial") \
+	|| ([ -d /usr/local/lib ] && echo "-L/usr/local/lib") \
+	|| echo "")
 
 
 
@@ -41,9 +82,28 @@ AUTO_CC ?= 1
 NVIDIA_SMI ?= nvidia-smi
 
 ifneq ($(MAKECMDGOALS),clean)
+
+ifeq ($(CUDA_PATH),)
+$(error CUDA not found. Install the CUDA toolkit or set CUDA_PATH manually.)
+endif
+$(info [DETECT] CUDA_PATH    = $(CUDA_PATH))
+$(info [DETECT] GSL_PATH     = $(GSL_PATH))
+$(info [DETECT] HDF5_INCLUDE = $(HDF5_INCLUDE))
+$(info [DETECT] HDF5_LIB     = $(HDF5_LIB))
+ifeq ($(HDF5_INCLUDE),)
+$(warning [DETECT] HDF5 include path not found. Build may fail. Set HDF5_INCLUDE manually if needed.)
+endif
+
 ifeq ($(AUTO_CC),1)
 GPU_CC := $(shell \
 	$(NVIDIA_SMI) --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -n 1)
+
+# Fallback: if 6.1, force 6.0
+# This has been added due to weird compatibility issues with 6.1 archtecture specifically for the terminator machine
+# I personally haven't tested if it happens for other machines with 6.1 archtecture, might be a driver specific issue for this machine.
+ifeq ($(GPU_CC),6.1)
+GPU_CC := 6.0
+endif
 
 GPU_CC_NODOT := $(subst .,,$(GPU_CC))
 
@@ -71,7 +131,13 @@ BUILD_DIR = build
 # CUDA setup
 NVCC = $(CUDA_PATH)/bin/nvcc
 CUDA_INCLUDE = -I$(CUDA_PATH)/include
-CUDA_LIB = -L$(CUDA_PATH)/lib64
+CUDA_LIB_DIR := $(shell \
+	if [ -d "$(CUDA_PATH)/lib64" ]; then \
+		echo "$(CUDA_PATH)/lib64"; \
+	else \
+		echo "$(CUDA_PATH)/lib"; \
+	fi)
+CUDA_LIB = -L$(CUDA_LIB_DIR)
 
 # Debug and release flags
 DEBUG_FLAGS = -g -code=$(CODE)

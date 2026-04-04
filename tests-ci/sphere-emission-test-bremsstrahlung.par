@@ -2,7 +2,7 @@
 Ns 1e6
 
 #Name of the spectrum file generated
-spectrum test_sphere_emissivity_bremsstrahlung.spec
+spectrum test_sphere_emissivity_bremsstrahlung.h5
 
 # T_p/T_e
 tp_over_te 3.
