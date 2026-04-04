@@ -43,7 +43,7 @@ __device__ double jnu_inv(const double nu, const double Thetae, const double Ne,
 	double j;
 	double K2 = K2_eval(Thetae);
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta, K2);
+	j = jnu_total(nu, Ne, Thetae, B, theta, K2);
 
 	return (j / (nu * nu));
 }
