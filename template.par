@@ -11,7 +11,7 @@ dump ../sample_dump_SANE_a+0.94_MKS_0900.h5
 #dump ./data/dump019
 
 #Name of the spectrum file generated
-spectrum bremss_synch_sphere_1e5.h5
+spectrum dump_sane_thermal.h5
 
 # T_p/T_e
 tp_over_te 3.
@@ -34,7 +34,7 @@ ratio 2
 bias_guess 0.1
 
 #emissions
-bremsstrahlung 1
+bremsstrahlung 0
 thermal_synch 1
 
 
