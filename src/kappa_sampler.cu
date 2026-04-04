@@ -17,9 +17,8 @@
  */
 
 #include "decs.h"
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_roots.h>
+#include "utils.h"
+#include "jnu_mixed.h"
 // rewrite this
 
 struct f_params {
@@ -113,7 +112,7 @@ __device__ double brent_find_root(double (*f)(double, void*), void* params,
 __device__ double find_y(double u, double (*df)(double), double (*f)(double, void *), double w) {
     double low = 1e-6; 
     double high = 1e6; 
-    double tol = 1e-9;
+    double tol = 1e-10;
     int max_steps = 1000;
     struct f_params params = {u};
     return brent_find_root(f, &params, low, high, tol, max_steps);
@@ -122,11 +121,10 @@ __device__ double find_y(double u, double (*df)(double), double (*f)(double, voi
 __device__ double dF3(double y) {
     double value, denom, num;
     double y2 = y * y;
-    double kappa = kappa_synch;
 
-    num = 4. * y2 * pow((kappa + y2) / (kappa), -kappa - 1.) *
-          cuda_sf_gamma(kappa);
-    denom = sqrt(M_PI) * sqrt(kappa) * cuda_sf_gamma(kappa - 1. / 2.);
+    num = 4. * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.) *
+          cuda_sf_gamma(KAPPA_SYNCH);
+    denom = sqrt(M_PI) * sqrt(KAPPA_SYNCH) * cuda_sf_gamma(KAPPA_SYNCH - 1. / 2.);
     value = num / denom;
 
     return value;
@@ -135,10 +133,9 @@ __device__ double dF3(double y) {
 __device__ double dF4(double y) {
     double value, denom, num;
     double y2 = y * y;
-    double kappa = kappa_synch;
 
-    num = 2. * (kappa - 1) * y2 * y * pow((kappa + y2) / (kappa), -kappa - 1.);
-    denom = kappa;
+    num = 2. * (KAPPA_SYNCH - 1) * y2 * y * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.);
+    denom = KAPPA_SYNCH;
     value = num / denom;
 
     return value;
@@ -147,12 +144,11 @@ __device__ double dF4(double y) {
 __device__ double dF5(double y) {
     double value, denom, num;
     double y2 = y * y;
-    double kappa = kappa_synch;
 
-    num = 8 * y2 * y2 * pow((kappa + y2) / (kappa), -kappa - 1) *
-          cuda_sf_gamma(kappa);
+    num = 8 * y2 * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1) *
+          cuda_sf_gamma(KAPPA_SYNCH);
     denom =
-        3 * sqrt(M_PI) * pow(kappa, 3. / 2.) * cuda_sf_gamma(kappa - 3. / 2.);
+        3 * sqrt(M_PI) * pow(KAPPA_SYNCH, 3. / 2.) * cuda_sf_gamma(KAPPA_SYNCH - 3. / 2.);
     value = num / denom;
 
     return value;
@@ -161,11 +157,10 @@ __device__ double dF5(double y) {
 __device__ double dF6(double y) {
     double value, denom, num;
     double y2 = y * y;
-    double kappa = kappa_synch;
 
-    num = (kappa * kappa - 3. * kappa + 2) * pow(y, 5.) *
-          pow((kappa + y2) / (kappa), -kappa - 1);
-    denom = kappa * kappa;
+    num = (KAPPA_SYNCH * KAPPA_SYNCH - 3. * KAPPA_SYNCH + 2) * pow(y, 5.) *
+          pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1);
+    denom = KAPPA_SYNCH * KAPPA_SYNCH;
     value = num / denom;
     return value;
 }
@@ -174,17 +169,16 @@ __device__ double F3(double y, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
     double value, denom, num, hyp2F1;
-    double kappa = kappa_synch;
 
     double y2 = y * y;
-    double z = -y2 / kappa;
+    double z = -y2 / KAPPA_SYNCH;
 
     hyp2F1 = hypergeom_eval(-z);
 
-    num = -sqrt(kappa) * pow(((y2 + kappa) / kappa), -kappa) *
-          cuda_sf_gamma(kappa) *
-          (-kappa * hyp2F1 + y2 * (2 * kappa + 1) + kappa);
-    denom = y * sqrt(M_PI) * cuda_sf_gamma(3. / 2. + kappa);
+    num = -sqrt(KAPPA_SYNCH) * pow(((y2 + KAPPA_SYNCH) / KAPPA_SYNCH), -KAPPA_SYNCH) *
+          cuda_sf_gamma(KAPPA_SYNCH) *
+          (-KAPPA_SYNCH * hyp2F1 + y2 * (2 * KAPPA_SYNCH + 1) + KAPPA_SYNCH);
+    denom = y * sqrt(M_PI) * cuda_sf_gamma(3. / 2. + KAPPA_SYNCH);
 
     value = num / denom - u;
 
@@ -196,9 +190,8 @@ __device__ double F4(double y, void *params) {
     double u = p->u;
     double value, denom, num;
     double y2 = y * y;
-    double kappa = kappa_synch;
 
-    num = 1 - (1 + y2) * pow((kappa + y2) / (kappa), -kappa);
+    num = 1 - (1 + y2) * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH);
     denom = 1;
 
     value = num / denom - u;
@@ -211,19 +204,18 @@ __device__ double F5(double y, void *params) {
     double u = p->u;
 
     double value, denom, num, hyp2F1;
-    double kappa = kappa_synch;
 
     double y2 = y * y;
-    double z = -y2 / kappa;
+    double z = -y2 / KAPPA_SYNCH;
 
     hyp2F1 = hypergeom_eval(-z);
 
-    num = pow((y2 + kappa) / kappa, -kappa) * cuda_sf_gamma(kappa) *
-          (3 * kappa * kappa * (hyp2F1 - 1) +
-           (1. - 4. * kappa * kappa) * y2 * y2 -
-           3. * kappa * (2. * kappa + 1.) * y2);
-    denom = 3. * pow(kappa, 1. / 2.) * y * sqrt(M_PI) *
-            cuda_sf_gamma(3. / 2. + kappa);
+    num = pow((y2 + KAPPA_SYNCH) / KAPPA_SYNCH, -KAPPA_SYNCH) * cuda_sf_gamma(KAPPA_SYNCH) *
+          (3 * KAPPA_SYNCH * KAPPA_SYNCH * (hyp2F1 - 1) +
+           (1. - 4. * KAPPA_SYNCH * KAPPA_SYNCH) * y2 * y2 -
+           3. * KAPPA_SYNCH * (2. * KAPPA_SYNCH + 1.) * y2);
+    denom = 3. * pow(KAPPA_SYNCH, 1. / 2.) * y * sqrt(M_PI) *
+            cuda_sf_gamma(3. / 2. + KAPPA_SYNCH);
     value = num / denom - u;
 
     return value;
@@ -236,7 +228,7 @@ __device__ double F6(double y, void *params) {
     double value, denom, num;
     double y2 = y * y;
     double y4 = y2 * y2;
-    double kappa = kappa_synch;
+    double kappa = KAPPA_SYNCH;
 
     num = (y4 - (y4 + 2. * y2 + 2.) * kappa) *
           pow((kappa + y2) / (kappa), -kappa);
@@ -246,21 +238,18 @@ __device__ double F6(double y, void *params) {
     return value;
 }
 
-__device__ double sample_y_distr_nth(double Thetae) {
-    double w = (kappa_synch - 3.) / kappa_synch * Thetae;
+__device__ double sample_y_distr_nth(double Thetae, curandState * localState) {
+    double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * Thetae;
     double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
     double num, den;
-    double kappa = kappa_synch;
-    yhigh = sqrt((10 * gamma_max - 1) / w);
-    // gsl_set_error_handler_off();
 
-    pi_3 = sqrt(kappa) * sqrt(M_PI) * cuda_sf_gamma(-1. / 2. + kappa) /
-           (4. * cuda_sf_gamma(kappa));
-    pi_4 = kappa / (2. * kappa - 2.) * sqrt(0.5 * w);
-    pi_5 = 3. * pow(kappa, 3. / 2.) * sqrt(M_PI) *
-           cuda_sf_gamma(-3. / 2. + kappa) / (8. * cuda_sf_gamma(kappa)) * w;
+    pi_3 = sqrt(KAPPA_SYNCH) * sqrt(M_PI) * cuda_sf_gamma(-1. / 2. + KAPPA_SYNCH) /
+           (4. * cuda_sf_gamma(KAPPA_SYNCH));
+    pi_4 = KAPPA_SYNCH / (2. * KAPPA_SYNCH - 2.) * sqrt(0.5 * w);
+    pi_5 = 3. * pow(KAPPA_SYNCH, 3. / 2.) * sqrt(M_PI) *
+           cuda_sf_gamma(-3. / 2. + KAPPA_SYNCH) / (8. * cuda_sf_gamma(KAPPA_SYNCH)) * w;
     pi_6 =
-        kappa * kappa / (2. - 3. * kappa + kappa * kappa) * w * sqrt(0.5 * w);
+        KAPPA_SYNCH * KAPPA_SYNCH / (2. - 3. * KAPPA_SYNCH + KAPPA_SYNCH * KAPPA_SYNCH) * w * sqrt(0.5 * w);
 
     S_3 = pi_3 + pi_4 + pi_5 + pi_6;
 
@@ -270,8 +259,8 @@ __device__ double sample_y_distr_nth(double Thetae) {
     pi_6 /= S_3;
 
     do {
-        x1 = monty_rand();
-        double u = monty_rand();
+        x1 = curand_uniform_double(localState);
+        double u = curand_uniform_double(localState);
         if (x1 < pi_3) {
             y = find_y(u, dF3, F3, w);
         } else if (x1 < pi_3 + pi_4) {
@@ -282,10 +271,10 @@ __device__ double sample_y_distr_nth(double Thetae) {
             y = find_y(u, dF6, F6, w);
         }
 
-        x2 = monty_rand();
+        x2 = curand_uniform_double(localState);
         num = sqrt(1. + 0.5 * w * y * y);
         den = (1. + y * sqrt(0.5 * w));
-        prob = (num / den) * exp(-(w * y * y) / gamma_max); //* w*sqrt(2*w)/S_3;
+        prob = (num / den) * exp(-(w * y * y) / GAMMA_MAX);
         if (y != y)
             prob = 0;
 

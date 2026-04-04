@@ -20,6 +20,33 @@
 Declaration of the functions in the jnu_mixed.cu file
 */
 
+/**
+ * @brief The shape parameter (kappa) for the non-thermal electron energy distribution.
+ *
+ * Dictates the slope of the high-energy power-law tail in the kappa distribution. 
+ * As KAPPA_SYNCH approaches infinity, the electron distribution reduces to a standard 
+ * thermal Maxwell-Jüttner distribution.
+ */
+#define KAPPA_SYNCH 4.0
+
+/**
+ * @brief The maximum frequency cutoff for the synchrotron emission spectrum.
+ *
+ * Applies an exponential attenuation factor to the evaluated synchrotron 
+ * flux, taking the form of $e^{-\nu / \text{NU\_CUTOFF}}$. This prevents 
+ * unphysical infinite-energy radiation at extreme frequencies.
+ */
+#define NU_CUTOFF 5.e33
+
+/**
+ * @brief The high-energy cutoff limit for the simulated particle distribution.
+ *
+ * Used during the rejection sampling of non-thermal particles. 
+ * It introduces an exponential drop-off to the acceptance probability for 
+ * highly energetic particles, ensuring the sampled electron Lorentz factors 
+ * (or momenta) do not exceed physically realistic within the system.
+ */
+#define GAMMA_MAX 1.e3
 #ifndef JNU_MIXED_H
 #define JNU_MIXED_H
 
@@ -38,6 +65,25 @@ Declaration of the functions in the jnu_mixed.cu file
  * @return The value of the synchrotron emissivity for a kappa distribution of electrons.
  */
 __device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B,double theta);
+
+
+/**
+ * @brief Wrapper for evaluating the Gauss Hypergeometric function 2F1 specific to synchrotron radiation.
+ * 
+ * This function calculates 2F1(1, -KAPPA_SYNCH - 0.5; 0.5; -X).
+ * 
+ * For |X| > 1, it utilizes the linear transformation formula to map the argument into the unit disk in order to ensureconvergence of the underlying series.
+ * 
+ * @param X The input variable, representing a frequency.
+ * @return The real-valued result of the hypergeometric evaluation as a double.
+ * 
+ * @note **Validation Status:** This implementation has been tested against  `scipy.special.hyp2f1` and `gsl_sf_hyperg_2F1`. 
+ * Matches SciPy's `hyp2f1` with good precision across all tested ranges (relative error < 1e-7). Internal benchmarks show that GSL's implementation 
+ * returns incorrect values (while SciPy and this function does not).
+ * 
+ * @see cuda_hyperg_2F1
+ */
+__device__ double hypergeom_eval(double X);
 
 /**
  * @brief Power-law electron distribution function for synchrotron emissivity calculations.

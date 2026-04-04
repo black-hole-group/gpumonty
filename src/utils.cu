@@ -59,6 +59,25 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
 }
 
 
+__device__ double cuda_hyperg_2F1(double a, double b, double c, double z) {
+    if (z == 0.0) return 1.0;
+    double term = 1.0;
+    double sum = 1.0;
+    double n = 0.0;
+    double tol = 1e-10;     
+    int max_iter = 1000;    
+
+    for (int i = 1; i <= max_iter; i++) {
+        term *= ((a + n) * (b + n)) / ((c + n) * (n + 1.0)) * z;
+        sum += term;
+        n += 1.0;
+        if (fabs(term) < tol * fabs(sum)) {
+            break;
+        }
+    }
+    return sum;
+}
+
 __device__ double cuda_sf_gamma(double z) {
     const double p[] = {
         0.99999999999980993,

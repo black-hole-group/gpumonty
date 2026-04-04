@@ -19,6 +19,8 @@
 #include"compton.h"
 #include "tetrads.h"
 #include "curand.h"
+#include "kappa_sampler.h"
+#include "jnu_mixed.h"
 
 __device__ void scatter_super_photon(
     struct of_photonSOA ph,
@@ -328,9 +330,7 @@ __device__ void sample_electron_distr_p(
     double Thetae,
     curandState *s)
 {
-    /* ===============================
-       1. Sample electron velocity
-       =============================== */
+    // Sampling Electron Velocity
 
     double beta_e, gamma_e, mu;
 
@@ -379,11 +379,9 @@ __device__ void sample_electron_distr_p(
         }
     }
 
-    /* ===============================
-       2. Construct orthonormal basis
-       =============================== */
+    //Constructing the orthonormal basis
 
-    /* v0: direction of photon */
+    // v0: direction of photon
     double v0x = k[1], v0y = k[2], v0z = k[3];
     {
         const double invv0 =
@@ -393,7 +391,7 @@ __device__ void sample_electron_distr_p(
         v0z *= invv0;
     }
 
-    /* v1: perpendicular direction */
+    // v1: perpendicular direction
     double v1x, v1y, v1z;
     {
         double n0x, n0y, n0z;
@@ -413,9 +411,7 @@ __device__ void sample_electron_distr_p(
         v1z *= invv1;
     }
 
-    /* ===============================
-       3. Momentum direction
-       =============================== */
+    // Momentum Direction
 
     double sphi, cphi;
     {
@@ -459,7 +455,7 @@ __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e
     }
 
 	/* checked */
-	*gamma_e = y * y * Thetae + 1.;
+	*gamma_e = y * y * w + 1.;
 	*beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
 
 	return;

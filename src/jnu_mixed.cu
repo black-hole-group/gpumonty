@@ -329,15 +329,31 @@ __host__ __device__ double linear_interp_K2(const double Thetae)
 
 //Nonthermal part
 
+__device__ double hypergeom_eval(double X) {
+    double a = 1.;
+    double b = - KAPPA_SYNCH - 1. / 2.;
+    double c = 1. / 2.;
 
-/**
- * should I add these to the params file? I don't think so. 
- * It is unnecessary to keep adding dynamic variables if we don't even change them. 
- * I'll keep it here for now, maybe I should ask Abhishek about this.
- */
+    if (fabs(X) > 1) {
+        double z = -X;
+        double hyp2F1 = pow(1. - z, -a) * cuda_sf_gamma(c) * cuda_sf_gamma(b - a) /
+                     (cuda_sf_gamma(b) * cuda_sf_gamma(c - a)) *
+                     cuda_hyperg_2F1(a, c - b, a - b + 1., 1. / (1. - z)) +
+                 pow(1. - z, -b) * cuda_sf_gamma(c) * cuda_sf_gamma(a - b) /
+                     (cuda_sf_gamma(a) * cuda_sf_gamma(c - b)) *
+                     cuda_hyperg_2F1(b, c - a, b - a + 1., 1. / (1. - z));
+        return hyp2F1;
+    } else {
+        return cuda_hyperg_2F1(a, b, c, -X);
+    }
 
-#define KAPPA_SYNCH 4.0
-#define NU_CUTOFF 5.e33
+    return 0;
+}
+
+
+
+
+
 #include <gsl/gsl_sf_gamma.h>
 
 
@@ -380,12 +396,9 @@ __host__  double jnu_integrand_kappa(double th, void *params) {
     sth = sin(th);
     if (X_kappa > 2.e8)
         return 0.;
-    //        if (sth < 1.e-40) //|| x > 2.e12)
-    // if(th<1e-2)
-    //	return 0;
+
     factor = (sth * sth);
 
-    // X_kappa = x;
 
     J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
             (pow(3., 7. / 3.) * tgamma(kappa - 2.));
@@ -619,5 +632,3 @@ __host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu
         return 0.;
     return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
 }
-#undef NU_CUTOFF
-#undef KAPPA_SYNCH
