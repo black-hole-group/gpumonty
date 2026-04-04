@@ -125,7 +125,6 @@ __host__ void transferParams(cudaStream_t stream) {
 	cudaMemcpyToSymbol(d_powerlaw_synch, &(params.powerlaw_synch), sizeof(int));
     symbolToDevice(&d_scattering, &(params.scattering), sizeof(int), stream);
     symbolToDevice(&d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int), stream);
-    symbolToDevice(&d_synchrotron, &(params.synchrotron), sizeof(int), stream);
 
     double h_bias_guess[MAX_LAYER_SCA];
     for (int i = 0; i < MAX_LAYER_SCA; i++) {

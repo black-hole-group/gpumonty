@@ -479,13 +479,13 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
   h5io_add_data_dbl(fid, "/params/U_unit", U_unit);
   h5io_add_data_dbl(fid, "/params/Thetae_unit", Thetae_unit);
   h5io_add_data_dbl(fid, "/params/MBH", params.MBH_par);
-//   h5io_add_data_dbl(fid, "/params/a", bhspin);
   h5io_add_data_dbl(fid, "/params/Rin", Rin);
   h5io_add_data_dbl(fid, "/params/Rout", Rout);
-  // h5io_add_data_dbl(fid, "/params/bias", bias_guess);
 
-  h5io_add_data_int(fid, "/params/SYNCHROTRON", params.synchrotron);
-  h5io_add_data_int(fid, "/params/BREMSSTRAHLUNG", params.bremsstrahlung);
+  h5io_add_data_int(fid, "/params/THERMAL_SYNCHROTRON", params.thermal_synch);
+  h5io_add_data_int(fid, "/params/POWERLAW_SYNCHROTRON", params.powerlaw_synch);
+  h5io_add_data_int(fid, "/params/KAPPA_SYNCHROTRON", params.kappa_synch);
+ h5io_add_data_int(fid, "/params/BREMSSTRAHLUNG", params.bremsstrahlung);
   h5io_add_data_int(fid, "/params/COMPTON", params.scattering);
   // h5io_add_data_int(fid, "/params/DIST_KAPPA", MODEL_EDF==EDF_KAPPA_FIXED?1:0);
   h5io_add_data_int(fid, "/params/N_ESAMP", N_ESAMP);

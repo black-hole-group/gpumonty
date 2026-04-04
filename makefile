@@ -25,9 +25,7 @@ MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
 
-<<<<<<< HEAD
-CUDA_PATH ?=/usr/local/cuda-12.3/
-=======
+
 # CUDA auto-detection: derive CUDA root from nvcc location on PATH
 CUDA_PATH ?= $(shell \
 	if command -v nvcc >/dev/null 2>&1; then \
@@ -37,25 +35,22 @@ CUDA_PATH ?= $(shell \
 	else \
 		echo ""; \
 	fi)
-
+CUDA_PATH ?=/usr/local/cuda-12.3/
 # GSL auto-detection: derive GSL root from gsl-config or fallback paths
-# GSL_HOME ?= $(strip $(shell \
-# 	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
-# 		echo $$GSL_HOME; \
-# 	elif command -v gsl-config >/dev/null 2>&1; then \
-# 		gsl-config --prefix; \
-# 	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
-# 		echo $$HOME/gsl; \
-# 	elif [ -d /usr/local/include/gsl ]; then \
-# 		echo /usr/local; \
-# 	elif [ -d /usr/include/gsl ]; then \
-# 		echo /usr; \
-# 	else \
-# 		echo ""; \
-# 	fi))
-GSL_HOME = /home/pedro/gsl
-GSL_PATH ?= $(GSL_HOME)
->>>>>>> main
+GSL_HOME ?= $(strip $(shell \
+	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
+		echo $$GSL_HOME; \
+	elif command -v gsl-config >/dev/null 2>&1; then \
+		gsl-config --prefix; \
+	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
+		echo $$HOME/gsl; \
+	elif [ -d /usr/local/include/gsl ]; then \
+		echo /usr/local; \
+	elif [ -d /usr/include/gsl ]; then \
+		echo /usr; \
+	else \
+		echo ""; \
+	fi))
 
 #GSL setup
 GSL_PATH ?= $(GSL_HOME)
