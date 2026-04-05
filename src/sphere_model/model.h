@@ -57,7 +57,7 @@
 
     //This is only used for nonthermal emission models
     #define BETA0 (20.)
-    #define MODEL_TAU0 (1e-5)
+    #define MODEL_TAU0 (1e-1)
 
     /**
      * Size of the energy bin in logarithmic scale for the spectral output binning.

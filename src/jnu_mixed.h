@@ -47,10 +47,31 @@ Declaration of the functions in the jnu_mixed.cu file
  * (or momenta) do not exceed physically realistic within the system.
  */
 #define GAMMA_MAX 1.e3
-    #ifndef JNU_MIXED_H
-    #define JNU_MIXED_H
 
 
+/**
+ * @brief The powerlaw slope for the non-thermal powerlaw electron distribution.
+ * 
+ * Used when calculating the emissivity an2d also during scattering sampling of the electron.
+ */
+#define POWERLAW_SLOPE 3.0
+
+/**
+ * @brief The minimum Lorentz factor for the powerlaw distribution of electrons.
+ * 
+ * Used when calculating the emissivity and also during scattering sampling of the electron.
+ */
+#define POWERLAW_GAMMA_MIN 25
+
+/**
+ * @brief The maximum Lorentz factor for the powerlaw distribution of electrons.
+ * 
+ * Used when calculating the emissivity and also during scattering sampling of the electron.
+ */
+#define POWERLAW_GAMMA_MAX 1.e7
+
+#ifndef JNU_MIXED_H
+#define JNU_MIXED_H
     /**
      * @brief Kappa electron distribution function for synchrotron emissivity calculations.
      * 

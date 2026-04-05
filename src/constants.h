@@ -94,6 +94,4 @@
 #define THREEPI_TWO     (4.7123889803846898577) 
 /** Constant defined as \f$ 2^{11/12} \f$ */
 #define CST             1.88774862536 
-/** Factor used for synchrotron emissivity calculation */
-#define KFAC            (9*M_PI*ME*CL/EE)
 

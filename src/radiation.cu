@@ -62,7 +62,7 @@ __device__ double alpha_inv_abs(const double nu, const double Thetae, const doub
 	if (d_kappa_synch){
 		return (nu * anu_synch_kappa(nu, Ne, Thetae, B, theta)) * exp(-nu / NU_CUTOFF);
 	}else if (d_powerlaw_synch){
-		return (nu * anu_synch_powerlaw(nu, Ne, B, theta)) * exp(-nu / NU_CUTOFF);
+		return (nu * anu_synch_powerlaw(nu, Ne, B, theta));
 	}else{
 		//Fallback in case only bremsstrahlung, only thermal synchrotron or bremsstrahlung + thermal synchrotron active. 
 		return alpha_inv_abs_thermal(nu, Thetae, Ne, B, theta);
@@ -76,20 +76,16 @@ __device__ double anu_synch_powerlaw(double nu, double Ne, double B, double thet
         return 0.0;
     }
 
-    const double p = 3.0;
-    const double gmin = 25.0;
-    const double gmax = 1.e7;
-
     double nuc = (EE * B) / (2.0 * M_PI * ME * CL);
     double X = nu / (nuc * sth);
 
-    double norm_num = pow(3.0, (p + 1.0) / 2.0) * (p - 1.0);
-    double norm_den = 4.0 * (pow(gmin, 1.0 - p) - pow(gmax, 1.0 - p));
+    double norm_num = pow(3.0, (POWERLAW_SLOPE + 1.0) / 2.0) * (POWERLAW_SLOPE - 1.0);
+    double norm_den = 4.0 * (pow(POWERLAW_GAMMA_MIN, 1.0 - POWERLAW_SLOPE) - pow(POWERLAW_GAMMA_MAX, 1.0 - POWERLAW_SLOPE));
     
-    double gamma_term1 = tgamma((3.0 * p + 2.0) / 12.0);
-    double gamma_term2 = tgamma((3.0 * p + 22.0) / 12.0);
+    double gamma_term1 = tgamma((3.0 * POWERLAW_SLOPE + 2.0) / 12.0);
+    double gamma_term2 = tgamma((3.0 * POWERLAW_SLOPE + 22.0) / 12.0);
 
-    double As = (norm_num / norm_den) * gamma_term1 * gamma_term2 * pow(X, -(p + 2.0) / 2.0);
+    double As = (norm_num / norm_den) * gamma_term1 * gamma_term2 * pow(X, -(POWERLAW_SLOPE + 2.0) / 2.0);
 
     double factor = (Ne * (EE * EE)) / (nu * ME * CL);
 

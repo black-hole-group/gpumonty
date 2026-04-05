@@ -440,27 +440,29 @@ __device__ void sample_electron_distr_p(
 
 
 
-
-
 __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState)
 {
-	/* checked */
-    double w, y;
-    if(d_thermal_synch) {
-	    y = sample_y_distr( Thetae, localState);
-        w = Thetae;
-    } else if(d_kappa_synch) {
-        y = sample_y_distr_nth(Thetae, localState);
-        w = (KAPPA_SYNCH - 3.)/ KAPPA_SYNCH * Thetae;
+    if (d_thermal_synch) {
+        double y = sample_y_distr(Thetae, localState);
+        double w = Thetae;
+        *gamma_e = y * y * w + 1.;
+        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+        
+    } else if (d_kappa_synch) {
+        double y = sample_y_distr_nth(Thetae, localState);
+        double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * Thetae;
+        *gamma_e = y * y * w + 1.;
+        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+        
+    } else if (d_powerlaw_synch) {
+        double x = curand_uniform_double(localState);
+        // Inverse transform sampling for bounded power-law
+        *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
+        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
     }
-
-	/* checked */
-	*gamma_e = y * y * w + 1.;
-	*beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
-
-	return;
-
 }
+
+
 
 #define SQRT_MPI_OVER4 (0.443113462726379) // sqrt(M_PI) / 4
 #define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)

@@ -722,7 +722,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 {
     double nu, weight;
     
-    // Scope 1: Initial setup and coordinate transformation
+    // Initial setup and coordinate transformation
     {
         double Xarray[NDIM];
         coord(i, j, k, Xarray);
@@ -733,7 +733,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         ph.X3[ph_arr_index] = Xarray[3];
     } // Xarray goes out of scope here
     
-    // Scope 2: Get fluid properties
+    // Get fluid properties
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
 	#ifdef __CUDA_ARCH__
     	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
@@ -742,7 +742,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		Ne = 0.;
 		Bmag = 0.;
 	#endif
-    // Scope 3: Sample frequency
+    // Sample frequency
     {
         const double lnu_min = log(NUMIN);
         const double Nln = log(NUMAX) - lnu_min;
@@ -754,7 +754,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
 
-    // Scope 4: Sample angles  
+    // Sample angles  
     double cth;
     {
 		const double K2 = K2_eval(Thetae);
@@ -773,7 +773,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     // Reuse arrays - use one array for both K_tetrad and final storage
     double K_data[NDIM]; // This will serve as both K_tetrad and tmpK
     
-    // Scope 5: Build momentum vector
+    // Build momentum vector
     {
         const double sth = sqrt(1. - cth * cth);
         const double phi = 2. * M_PI * curand_uniform_double(localState);
@@ -785,7 +785,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         K_data[3] = E * sin(phi) * sth;
     } // sth, phi, E go out of scope, cphi/sphi never created
     
-    // Scope 6: Handle tetrad if needed
+    // Handle tetrad if needed
     if (zone_flag) {
         double bhat[NDIM];
         if (Bmag > 0.) {
@@ -800,7 +800,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
     }
     
-    // Scope 7: Final transformations - reuse K_data array
+    // reuse K_data array
     {
         double Karray[4]; // Temporary for coordinate transformation
         tetrad_to_coordinate(Econ, K_data, Karray);
@@ -818,7 +818,6 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         ph.K3[ph_arr_index] = Karray[3];
     }
     
-    // Store final values
     ph.tau_scatt[ph_arr_index] = 0.;
     ph.tau_abs[ph_arr_index] = 0.;
     ph.X1i[ph_arr_index] = ph.X1[ph_arr_index];
@@ -848,21 +847,9 @@ __global__ void track(struct of_photonSOA ph,
         
 		// Track the photon
         track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState);
-
-        // // Progress indicator
-        // if (global_index == 0) {
-        //     float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
-        //     if (percentage >= n * 5.0f) {
-		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-		// 		n++;
-        //     }
-        // }
 	}
 
-	// /*Set to 100%*/
-	// if(global_index == 0){
-	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	// }
+
 	if(global_index > N_BLOCKS * N_THREADS){
 		printf("Warning! Too many threads! Some threads are not being used!\n");
 	}
@@ -922,19 +909,7 @@ __global__ void track_scat(struct of_photonSOA ph,
 			continue;
 		}
 		track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState);
-        // Progress indicator
-		// if (global_index == 0) {		
-		// 	float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);
-		// 	if (percentage >= n_progress * 5.0f) {
-		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-		// 		n_progress++;
-        //     }
-		// }
 	}
-	/*Set to 100%*/
-	// if(global_index == 0){
-	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	// }
 	my_curand_state[global_index] = localState;
 }
 
@@ -945,7 +920,7 @@ __global__ void record_scattering(struct of_photonSOA ph, struct of_spectrum * _
 	/*track each photon we created along its geodesic*/
 
 	for(unsigned long long a = global_index; a < d_num_scat_phs[n-1]; (a += nblocks * N_THREADS)){
-
+		
 		if(record_criterion(ph.X1[a]))
 		record_super_photon(ph, d_spect, a);
 	}

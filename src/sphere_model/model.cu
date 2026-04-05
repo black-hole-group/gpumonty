@@ -386,8 +386,8 @@ __device__ double bias_func(double Te, double w, int round_scatt)
     #if(0)
 		double max;
         max = 0.5 * w / WEIGHT_MIN;
-        //bias = Te * Te /(5. *d_max_tau_scatt);
-        bias = fmax(1., d_bias_norm * Te * Te/d_max_tau_scatt);
+        bias = Te * Te /(5. *d_max_tau_scatt);
+        //bias = fmax(1., d_bias_norm * Te * Te/d_max_tau_scatt);
 
         if (bias > max){
         bias = max;
@@ -395,9 +395,8 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
         return bias;
     #elif (1)
-        
         bias = (MODEL_TAU0 > 1.0) ? (MODEL_TAU0) : 1.0;
-        return bias;
+        return bias * d_bias_guess[round_scatt];
     #else
 		double avg_num_scatt, max;
         //return 1;

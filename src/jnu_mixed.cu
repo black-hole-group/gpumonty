@@ -243,7 +243,8 @@ __host__ __device__ double K2_eval(const double Thetae)
 }
 
 
-
+/** Factor used for synchrotron emissivity calculation */
+#define KFAC  (9*M_PI*ME*CL/EE)
 __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, const double nu)
 {
 	double K, x;
@@ -259,7 +260,7 @@ __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, con
 		return linear_interp_F_th(K);
 	}
 }
-
+#undef KFAC
 
 __host__ __device__ double F_eval(double Thetae, double Bmag, double nu, int ACCZONE)
 {
@@ -307,8 +308,6 @@ __host__ __device__ double linear_interp_F_th(const double K)
 	i = (int) di;
 	di = di - i;
 	result = exp((1. - di) * Ftable[i] + di * Ftable[i + 1]);
-	//result =  exp(tex1D<float>(FTexObj, di + 0.5f));
-	//printf("Manual Linear Interp = %le, Tex Linear interp = %le, i = %d, di = %le\n", result,  exp(tex1D<float>(FTexObj, (lK - lK_min) * dlK + 0.5f)), i, (lK - lK_min) * dlK);
 	return result;
 }
 __host__ __device__ double linear_interp_K2(const double Thetae)
@@ -372,19 +371,16 @@ __host__ double jnu_integrand_powerlaw(double th, void *params) {
 
     double factor;
     double Js;
-    double p = 3.;
-    double gmin = 25.;
-    double gmax = 1.e7;
 
     // if (sth < 1.e-150 || x > 1.e8)
     //    return 0.;
 
     factor = sth;
 
-    Js = pow(3., p / 2.) * (p - 1) * sth /
-         (2 * (p + 1) * (pow(gmin, 1 - p) - pow(gmax, 1 - p)));
-    Js *= gsl_sf_gamma((3 * p - 1) / 12.) * gsl_sf_gamma((3 * p + 19) / 12.) *
-          pow(x, -(p - 1) / 2.);
+    Js = pow(3., POWERLAW_SLOPE / 2.) * (POWERLAW_SLOPE - 1) * sth /
+         (2 * (POWERLAW_SLOPE + 1) * (pow(POWERLAW_GAMMA_MIN, 1 - POWERLAW_SLOPE) - pow(POWERLAW_GAMMA_MAX, 1 - POWERLAW_SLOPE)));
+    Js *= gsl_sf_gamma((3 * POWERLAW_SLOPE - 1) / 12.) * gsl_sf_gamma((3 * POWERLAW_SLOPE + 19) / 12.) *
+          pow(x, -(POWERLAW_SLOPE - 1) / 2.);
 
     return Js * factor;
 }
@@ -499,9 +495,9 @@ __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
 __device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double Thetae, double B,double theta) {
     double nuc, sth, Xs, factor;
     double Js;
-    double p = 3.;
-    double gmin = 25.;
-    double gmax = 1.e7;
+    double p = POWERLAW_SLOPE;
+    double gmin = POWERLAW_GAMMA_MIN;
+    double gmax = POWERLAW_GAMMA_MAX;
 
     sth = sin(theta);
     nuc = EE * B / (2. * M_PI * ME * CL);
@@ -592,17 +588,20 @@ __host__ __device__ double linear_interp_F_nth(double K) {
     return exp((1. - di) * local_F_nth[i] + di * local_F_nth[i + 1]);
 }
 
-
+//#define POWERLAW_FACTOR (EE/(2. * M_PI * ME * CL))
+#define POWERLAW_FACTOR (2.799250542245160e+06) /* e/(2π·mₑ·c) [CGS] */
 __host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu) {
 
     double K;
     double linear_interp_F_nth(double);
-    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
+    double nuc = POWERLAW_FACTOR * Bmag;
 
     K = nu / nuc;
     if (K > KMAX)
         return 0.;
     if (K < KMIN)
         return 0.;
-    return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
+	
+    return linear_interp_F_nth(K);
 }
+#undef POWERLAW_FACTOR
