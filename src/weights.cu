@@ -58,8 +58,9 @@ __host__ void init_weight_table()
 			double fac = sfac * geom[SPATIAL_INDEX2D(i, j)].g;
 			double K2 = K2_eval(Thetae);
 
-			for (int l = 0; l <= N_ESAMP; l++)
-				sum_local[l] += int_jnu_total(Ne, Thetae, B, nu[l],K2 ) * fac;
+			for (int l = 0; l <= N_ESAMP; l++){
+				sum_local[l] += int_jnu_total(Ne, Thetae, B, nu[l],K2) * fac;
+			}
 		}
 
 		for (int l = 0; l <= N_ESAMP; l++)
@@ -69,8 +70,9 @@ __host__ void init_weight_table()
 
 	}
 
-	for (int i = 0; i <= N_ESAMP; i++)
+	for (int i = 0; i <= N_ESAMP; i++){
 		wgt[i] = log(sum[i] / (HPL * (int) params.Ns) + WEIGHT_MIN);
+	}
 
 	fprintf(stderr, "done.\n");
 	fflush(stderr);

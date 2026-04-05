@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 	
 	// load parameters from command line
   	load_par_from_argv(argc, argv, &params);
-
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
@@ -105,7 +104,13 @@ __host__ void init_model(char *args[])
 	init_hotcross();
 
 	/* make table for solid angle integrated emissivity and K2 */
-	init_emiss_tables();
+
+	if(params.kappa_synch || params.powerlaw_synch){
+		init_emiss_tables_nth();
+	}else{
+		//Case with thermal synchrotron + bremsstrahlung or just bremsstrahlung or just thermal synchrotron
+		init_emiss_tables();
+	}
 
 	/* make table for superphoton weights */
 	double start = omp_get_wtime();
@@ -130,8 +135,6 @@ __host__ void init_geometry()
 			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
 			geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
 			gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
-
-		
 		}
 	}
 }

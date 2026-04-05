@@ -123,8 +123,8 @@ __device__ double dF3(double y) {
     double y2 = y * y;
 
     num = 4. * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.) *
-          cuda_sf_gamma(KAPPA_SYNCH);
-    denom = sqrt(M_PI) * sqrt(KAPPA_SYNCH) * cuda_sf_gamma(KAPPA_SYNCH - 1. / 2.);
+          tgamma(KAPPA_SYNCH);
+    denom = sqrt(M_PI) * sqrt(KAPPA_SYNCH) * tgamma(KAPPA_SYNCH - 1. / 2.);
     value = num / denom;
 
     return value;
@@ -146,9 +146,9 @@ __device__ double dF5(double y) {
     double y2 = y * y;
 
     num = 8 * y2 * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1) *
-          cuda_sf_gamma(KAPPA_SYNCH);
+          tgamma(KAPPA_SYNCH);
     denom =
-        3 * sqrt(M_PI) * pow(KAPPA_SYNCH, 3. / 2.) * cuda_sf_gamma(KAPPA_SYNCH - 3. / 2.);
+        3 * sqrt(M_PI) * pow(KAPPA_SYNCH, 3. / 2.) * tgamma(KAPPA_SYNCH - 3. / 2.);
     value = num / denom;
 
     return value;
@@ -176,9 +176,9 @@ __device__ double F3(double y, void *params) {
     hyp2F1 = hypergeom_eval(-z);
 
     num = -sqrt(KAPPA_SYNCH) * pow(((y2 + KAPPA_SYNCH) / KAPPA_SYNCH), -KAPPA_SYNCH) *
-          cuda_sf_gamma(KAPPA_SYNCH) *
+          tgamma(KAPPA_SYNCH) *
           (-KAPPA_SYNCH * hyp2F1 + y2 * (2 * KAPPA_SYNCH + 1) + KAPPA_SYNCH);
-    denom = y * sqrt(M_PI) * cuda_sf_gamma(3. / 2. + KAPPA_SYNCH);
+    denom = y * sqrt(M_PI) * tgamma(3. / 2. + KAPPA_SYNCH);
 
     value = num / denom - u;
 
@@ -210,12 +210,12 @@ __device__ double F5(double y, void *params) {
 
     hyp2F1 = hypergeom_eval(-z);
 
-    num = pow((y2 + KAPPA_SYNCH) / KAPPA_SYNCH, -KAPPA_SYNCH) * cuda_sf_gamma(KAPPA_SYNCH) *
+    num = pow((y2 + KAPPA_SYNCH) / KAPPA_SYNCH, -KAPPA_SYNCH) * tgamma(KAPPA_SYNCH) *
           (3 * KAPPA_SYNCH * KAPPA_SYNCH * (hyp2F1 - 1) +
            (1. - 4. * KAPPA_SYNCH * KAPPA_SYNCH) * y2 * y2 -
            3. * KAPPA_SYNCH * (2. * KAPPA_SYNCH + 1.) * y2);
     denom = 3. * pow(KAPPA_SYNCH, 1. / 2.) * y * sqrt(M_PI) *
-            cuda_sf_gamma(3. / 2. + KAPPA_SYNCH);
+            tgamma(3. / 2. + KAPPA_SYNCH);
     value = num / denom - u;
 
     return value;
@@ -243,11 +243,11 @@ __device__ double sample_y_distr_nth(double Thetae, curandState * localState) {
     double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
     double num, den;
 
-    pi_3 = sqrt(KAPPA_SYNCH) * sqrt(M_PI) * cuda_sf_gamma(-1. / 2. + KAPPA_SYNCH) /
-           (4. * cuda_sf_gamma(KAPPA_SYNCH));
+    pi_3 = sqrt(KAPPA_SYNCH) * sqrt(M_PI) * tgamma(-1. / 2. + KAPPA_SYNCH) /
+           (4. * tgamma(KAPPA_SYNCH));
     pi_4 = KAPPA_SYNCH / (2. * KAPPA_SYNCH - 2.) * sqrt(0.5 * w);
     pi_5 = 3. * pow(KAPPA_SYNCH, 3. / 2.) * sqrt(M_PI) *
-           cuda_sf_gamma(-3. / 2. + KAPPA_SYNCH) / (8. * cuda_sf_gamma(KAPPA_SYNCH)) * w;
+           tgamma(-3. / 2. + KAPPA_SYNCH) / (8. * tgamma(KAPPA_SYNCH)) * w;
     pi_6 =
         KAPPA_SYNCH * KAPPA_SYNCH / (2. - 3. * KAPPA_SYNCH + KAPPA_SYNCH * KAPPA_SYNCH) * w * sqrt(0.5 * w);
 

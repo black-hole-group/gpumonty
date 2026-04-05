@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e6
+Ns 1e5
 
 #path to the GRMHD data file
 
@@ -8,14 +8,15 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 
 #Name of the spectrum file generated
-spectrum dump_sane_powerlaw_scattering.h5
-
+#spectrum 1e5sphere_powerlaw_nosc.h5
+spectrum 1e5sphere_kappa_nosc.h5
+#spectrum 1e5sphere_thermal_nosc.h5
 # T_p/T_e
 tp_over_te 3.
 
 #Black hole mass and mass unit to translate accretion rate to physical units
-MBH 4.14e6
-M_unit 1.e16
+MBH 4.1e6
+M_unit 1.
 
 
 #IHARM Rhigh and Rlow model parameters
@@ -25,7 +26,7 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 1
+scattering 0
 fit_bias 0
 ratio 2
 bias_guess 0.1
@@ -36,5 +37,5 @@ thermal_synch 0
 
 
 #nonthermal distribution
-kappa_synch 0
-powerlaw_synch 1
+kappa_synch 1
+powerlaw_synch 0

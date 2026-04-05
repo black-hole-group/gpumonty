@@ -25,6 +25,7 @@ __device__ double jnu_ratio_brems(const double nu, const double Ne, const double
 	double bremss = 0;
 	if(d_thermal_synch == 1.)
 		synch = jnu_synch(nu, Ne, Thetae, B, theta, K2);
+
 	if(d_bremsstrahlung == 1.)
 		bremss = jnu_bremss(nu, Ne, Thetae);
 
@@ -47,6 +48,7 @@ __device__ double jnu_total(const double nu, const double Ne, const double Theta
 		j += jnu_bremss(nu, Ne, Thetae);
 	return j;
 }
+
 
 #define CST 1.88774862536	/* 2^{11/12} */
 #define SYNCH_FAC (1.139685508680628e-29) /* √2·π·e²/(3·c) [CGS] */
@@ -222,10 +224,6 @@ __host__ void init_emiss_tables(void)
 		K2[k] = log(gsl_sf_bessel_Kn(2, 1. / T));
 
 	}
-	
-	/* Avoid doing divisions later */
-	dlK = 1. / dlK;
-	dlT = 1. / dlT;
 
 	fprintf(stderr, "done.\n\n");
 
@@ -346,11 +344,11 @@ __device__ double hypergeom_eval(double X) {
 
     if (fabs(X) > 1) {
         double z = -X;
-        double hyp2F1 = pow(1. - z, -a) * cuda_sf_gamma(c) * cuda_sf_gamma(b - a) /
-                     (cuda_sf_gamma(b) * cuda_sf_gamma(c - a)) *
+        double hyp2F1 = pow(1. - z, -a) * tgamma(c) * tgamma(b - a) /
+                     (tgamma(b) * tgamma(c - a)) *
                      cuda_hyperg_2F1(a, c - b, a - b + 1., 1. / (1. - z)) +
-                 pow(1. - z, -b) * cuda_sf_gamma(c) * cuda_sf_gamma(a - b) /
-                     (cuda_sf_gamma(a) * cuda_sf_gamma(c - b)) *
+                 pow(1. - z, -b) * tgamma(c) * tgamma(a - b) /
+                     (tgamma(a) * tgamma(c - b)) *
                      cuda_hyperg_2F1(b, c - a, b - a + 1., 1. / (1. - z));
         return hyp2F1;
     } else {
@@ -401,7 +399,6 @@ __host__  double jnu_integrand_kappa(double th, void *params) {
     double X_kappa = K / sth;
     double x, factor;
     double J_low, J_high, J_s;
-    double kappa = KAPPA_SYNCH;
 
     sth = sin(th);
     if (X_kappa > 2.e8)
@@ -410,13 +407,13 @@ __host__  double jnu_integrand_kappa(double th, void *params) {
     factor = (sth * sth);
 
 
-    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
-            (pow(3., 7. / 3.) * tgamma(kappa - 2.));
+    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(KAPPA_SYNCH - 4. / 3.) /
+            (pow(3., 7. / 3.) * tgamma(KAPPA_SYNCH - 2.));
 
-    J_high = pow(X_kappa, -(kappa - 2.) / 2.) * pow(3., (kappa - 1.) / 2.) *
-             (kappa - 2.) * (kappa - 1.) / 4. * tgamma(kappa / 4. - 1. / 3.) *
-             tgamma(kappa / 4. + 4. / 3.);
-    x = 3. * pow(kappa, -3. / 2.);
+    J_high = pow(X_kappa, -(KAPPA_SYNCH - 2.) / 2.) * pow(3., (KAPPA_SYNCH - 1.) / 2.) *
+             (KAPPA_SYNCH - 2.) * (KAPPA_SYNCH - 1.) / 4. * tgamma(KAPPA_SYNCH / 4. - 1. / 3.) *
+             tgamma(KAPPA_SYNCH / 4. + 4. / 3.);
+    x = 3. * pow(KAPPA_SYNCH, -3. / 2.);
 
     J_s = pow((pow(J_low, -x) + pow(J_high, -x)), -1. / x);
 
@@ -455,45 +452,14 @@ __host__ void init_emiss_tables_nth(void) {
 
     double lT_min = log(TMIN);
     double dlT = log(TMAX / TMIN) / (N_ESAMP);
-
-    /*  build table for F(K) where F(K) is given by
-       \int_0^\pi ( (K/\sin\theta)^{1/2} + 2^{11/12}(K/\sin\theta)^{1/6})^2
-       \exp[-(K/\sin\theta)^{1/3}]
-       so that J_{\nu} = const.*F(K)
-     */
     w = gsl_integration_workspace_alloc(5000);
     for (k = 0; k <= N_ESAMP; k++) {
         K = exp(k * dlK + lK_min);
         gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL, 5000,
                             GSL_INTEG_GAUSS61, w, &result, &err);
-        //   gsl_integration_qags(&func, 0.01*M_PI/2., 0.99*M_PI/2. , EPSABS,
-        //   EPSREL, 10000,
-        //                       w, &result, &err);
-        //	fprintf(stderr,"results %e err %e rel err
-        //%e\n",result,err,err/result);
         F_nth[k] = log(4. * M_PI * result);
     }
     gsl_integration_workspace_free(w);
-
-    FILE *input;
-    input = fopen("hyper2f1.txt", "r");
-    double dummy;
-    for (int j = 0; j < N_HYP; j++) {
-        for (int i = 0; i < N_k; i++) {
-            // Check if fscanf successfully read exactly 1 item
-            if (fscanf(input, "%lf", &dummy) != 1) {
-                fprintf(stderr, "Error: Failed to read expected data from hyper2f1.txt at j=%d, i=%d\n", j, i);
-                fclose(input);
-                exit(1); 
-            }
-            hypergeom[i][j] = (dummy);
-        }
-    }
-	fclose(input);
-    /* Avoid doing divisions later */
-    dlK = 1. / dlK;
-    dlT = 1. / dlT;
-    fprintf(stderr, "done reading hypergeom2F1.\n\n");
 
     return;
 }
@@ -506,17 +472,17 @@ __host__ void init_emiss_tables_nth(void) {
 #undef N_k
 #undef dkappa
 
-
-
+//#define KFAC_KAPPA (EE/(2. * M_PI * ME * CL))
+#define KFAC_KAPPA (2.799250542245160e+06) /* e/(2π·mₑ·c) [CGS] */
 __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
 
     double K;
     double linear_interp_F_nth(double);
 
-    double nuc = EE * Bmag / (2. * M_PI * ME * CL);
+    double nuc = KFAC_KAPPA * Bmag;
     double kappa = KAPPA_SYNCH;
-    double w = (kappa - 3.) / kappa * Thetae;
-    double nus = nuc * pow(w * kappa, 2.);
+    double wkap = (kappa - 3.) * Thetae; // w = (kappa - 3)/Kappa * Thetae. so wkap = w * kappa = (kappa - 3) * Thetae
+    double nus = nuc * (wkap) * (wkap);
 
     K = nu / nus;
     if (K > KMAX)
@@ -524,10 +490,9 @@ __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
     if (K < KMIN) {
         return (0);
     }
-    double F_value = linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
-    return F_value;
+    return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
 }
-
+#undef KFAC_KAPPA
 
 
 
@@ -551,7 +516,7 @@ __device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double The
 
     Js = pow(3., p / 2.) * (p - 1) * sth /
          (2 * (p + 1) * (pow(gmin, 1 - p) - pow(gmax, 1 - p)));
-    Js *= cuda_sf_gamma((3 * p - 1) / 12.) * cuda_sf_gamma((3 * p + 19) / 12.) *
+    Js *= tgamma((3 * p - 1) / 12.) * tgamma((3 * p + 19) / 12.) *
           pow(Xs, -(p - 1) / 2.);
 
     return Js * factor;
@@ -589,21 +554,21 @@ __device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae
     return (J_s * factor) * exp(-nu / NU_CUTOFF);
 }
 
-#define JCST (EE * EE * EE /(2 * M_PI * ME * CL * CL))
+//#define JCST (EE * EE * EE /(2 * M_PI * ME * CL * CL))
+#define JCST (2.154188181456520e-23) /* e³/(2π·mₑ·c²) [CGS] */
 __host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu) {
     /* Returns energy per unit time at *
      * frequency nu in cgs
      */
     int ACCZONE = 0;
     double F_eval(double Thetae, double B, double nu, int ACCZONE);
-
     if (Thetae < THETAE_MIN) {
         return 0.;
     }
-
     return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, ACCZONE);
 }
 #undef JCST
+
 __host__ __device__ double linear_interp_F_nth(double K) {
 
     int i;
@@ -621,10 +586,9 @@ __host__ __device__ double linear_interp_F_nth(double K) {
 
     lK = log(K);
 
-    di = (lK - lK_min) * dlK;
+    di = (lK - lK_min)/dlK;
     i = (int)di;
     di = di - i;
-
     return exp((1. - di) * local_F_nth[i] + di * local_F_nth[i + 1]);
 }
 

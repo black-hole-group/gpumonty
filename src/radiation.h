@@ -148,8 +148,20 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
  *
  * @note A small epsilon (\f$ 10^{-100} \f$) is added to the denominator to prevent division by zero.
  */
-__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta);
+__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B, double theta);
 
+
+/**
+ * @brief Wrapper to calculate the total invariant absorption coefficient, including both thermal and non-thermal contributions.
+ * 
+ * @param nu Photon frequency in the fluid frame (Hz).
+ * @param Thetae Dimensionless electron temperature \f$\Theta_\rm{e} \f$.
+ * @param Ne Electron number density \f$N_e\f$ (cm\f$^{-3}\f$).
+ * @param B Magnetic field strength (Gauss).
+ * @param theta Pitch angle between photon and magnetic field.
+ * @return The total invariant absorption coefficient \f$\nu \alpha_{a}\f$ [units: Hz \f$ \rm{cm}^{-1} \f$], including contributions from both thermal and non-thermal processes.
+ */
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta);
 
 /**
  * @brief Calculates the pitch angle between the photon wavevector and the magnetic field.
@@ -169,4 +181,40 @@ __device__ double alpha_inv_abs(const double nu, const double Thetae, const doub
  * @return The pitch angle \f$\theta\f$ in radians \f$[0, \pi]\f$.
  */
 __device__ double get_bk_angle(const double X[NDIM], const double K[NDIM] , const double Ucov[NDIM] , const double Bcov[NDIM], const double B);
+
+
+/**
+ * @brief Computes the synchrotron absorption coefficient for a kappa electron distribution.
+ *
+ * This function calculates the synchrotron absorption based on the analytical 
+ * approximations provided in Pandya et al. (2016).
+ *
+ * @param nu      The frequency of the incident photon [Hz].
+ * @param Ne      The electron number density [cm^-3].
+ * @param Thetae  The dimensionless electron temperature (kT_e / m_e c^2).
+ * @param B       The local magnetic field strength [Gauss].
+ * @param theta   The pitch angle between the photon wavevector and the magnetic field [radians].
+ *
+ * @return The synchrotron absorption coefficient. Returns 0.0 if the pitch angle 
+ * is practically zero, the temperature is below THETAE_MIN, or if the 
+ * normalized frequency (X_kappa) exceeds physically relevant bounds.
+ */
+__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta);
+
+/**
+ * @brief Computes the synchrotron absorption coefficient for a power-law electron distribution.
+ *
+ * This function calculates the synchrotron absorption for a non-thermal, 
+ * pure power-law electron energy distribution. 
+ * 
+ *
+ * @param nu      The frequency of the incident photon [Hz].
+ * @param Ne      The electron number density [cm^-3].
+ * @param B       The local magnetic field strength [Gauss].
+ * @param theta   The pitch angle between the photon wavevector and the magnetic field [radians].
+ *
+ * @return The synchrotron absorption coefficient. Returns 0.0 if the pitch 
+ * angle is practically zero to prevent division by zero or NaN values.
+ */
+__device__ double anu_synch_powerlaw(double nu, double Ne, double B, double theta);
 #endif

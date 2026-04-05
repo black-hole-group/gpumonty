@@ -89,6 +89,47 @@ __host__ void CheckConfigErrors(Params *params) {
         fprintf(stderr, RED "! ERROR: No emission mechanism enabled! Please update your .par file to enable at least one of 'synchrotron', 'kappa_synch', 'powerlaw_synch', or 'bremsstrahlung'.\n" RESET);
         exit(EXIT_FAILURE);
     }
+    // If bremsstrahlung active with kappa or powerlaw, launch error, bremsstrahlung should only be active with thermal synchrotron
+    if(params->bremsstrahlung && (params->kappa_synch || params->powerlaw_synch)){
+        fprintf(stderr, RED "! ERROR: 'bremsstrahlung' cannot be enabled with 'kappa_synch' or 'powerlaw_synch' yet! Please update your .par file to enable 'bremsstrahlung' only with 'thermal_synch'.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+
+    // //Ensure proper KMAX, KMIN, TMIN and TMAX values for the synchrotron emissivity table depending on the emission mechanism.
+    // if(params->kappa_synch || params->powerlaw_synch){
+    //   if (KMIN != 1e-7){
+    //     fprintf(stderr, RED "! ERROR: KMIN must be set to 1e-7 for nonthermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e10, Kmin = 1e-7 and Thetamin = 0.002 for nonthermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+    //   if (KMAX != 1e10){
+    //     fprintf(stderr, RED "! ERROR: KMAX must be set to 1e10 for nonthermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e10, Kmin = 1e-7 and Thetamin = 0.002 for nonthermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+    //   if(THETAE_MIN != 0.002){
+    //     fprintf(stderr, RED "! ERROR: THETAE_MIN must be set to 0.002 for nonthermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e10, Kmin = 1e-7 and Thetamin = 0.002 for nonthermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+
+    // }else if (params->thermal_synch){
+    //   if (KMIN != 0.002){
+    //     fprintf(stderr, RED "! ERROR: KMIN must be set to 0.002 for thermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e7, Kmin = 0.002 and Thetamin = 0.3 for thermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+    //   if (KMAX != 1e7){
+    //     fprintf(stderr, RED "! ERROR: KMAX must be set to 1e7 for thermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e7, Kmin = 0.002 and Thetamin = 0.3 for thermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+    //   if(THETAE_MIN != 0.3){
+    //     fprintf(stderr, RED "! ERROR: THETAE_MIN must be set to 0.3 for thermal synchrotron! Please update your config.h file.\n" RESET);
+    //     fprintf(stderr, RED "Please use Kmax = 1e7, Kmin = 0.002 and Thetamin = 0.3 for thermal synchrotron.\n" RESET);
+    //     exit(EXIT_FAILURE);
+    //   }
+    // }
 
 }
 __host__ void load_par (const char *fname, Params *params) {
@@ -204,6 +245,7 @@ __host__ void load_par (const char *fname, Params *params) {
     #endif
     printf("\033[1m================================\033[0m\n");
     params->loaded = 1;
+
 }
 #undef RESET
 #undef RED

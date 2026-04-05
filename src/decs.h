@@ -19,35 +19,35 @@
 
 
 typedef struct params_t {
-  int seed;
+	int seed;
 
-  double Ns;
-  double MBH_par;
-  double M_unit;
-  char dump[256];
-  char spectrum[256];
+	double Ns;
+	double MBH_par;
+	double M_unit;
+	char dump[256];
+	char spectrum[256];
 
-  // bias
-  double bias_guess;
-  int    fitBias;
-  double fitBiasNs;
-  double targetRatio;
+	// bias
+	int scattering;
+	double bias_guess;
+	int    fitBias;
+	double fitBiasNs;
+	double targetRatio;
 
-  // electron temperature models
-  double tp_over_te;
-  double beta_crit;
-  double trat_small;
-  double trat_large;
-  double Thetae_max;
+	// electron temperature models
+	double tp_over_te;
+	double beta_crit;
+	double trat_small;
+	double trat_large;
+	double Thetae_max;
 
-  //emissions
-  int bremsstrahlung;
-  int thermal_synch;
-  int scattering;
-  int kappa_synch;
-  int powerlaw_synch;
-  
-  char loaded;
+	//emissions
+	int bremsstrahlung;
+	int thermal_synch;
+	int kappa_synch;
+	int powerlaw_synch;
+
+	char loaded;
 } Params;
 
 #include "model.h"

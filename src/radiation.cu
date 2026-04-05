@@ -15,10 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
+
 #include "decs.h"
 #include "radiation.h"
 #include "jnu_mixed.h"
 #include "hotcross.h"
+#include "utils.h"
 
 
 __device__ double Bnu_inv(const double nu, const double Thetae)
@@ -43,7 +45,7 @@ __device__ double jnu_inv(const double nu, const double Thetae, const double Ne,
 	double j;
 	double K2 = K2_eval(Thetae);
 
-	j = jnu_synch(nu, Ne, Thetae, B, theta, K2);
+	j = jnu_total(nu, Ne, Thetae, B, theta, K2);
 
 	return (j / (nu * nu));
 }
@@ -53,9 +55,112 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
 {
 	return (nu * kappa_es(nu, Thetae, d_table_ptr) * Ne * MP);
 }
+
 /* return Lorentz invariant absorption opacity */
-__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B,
-		    double theta)
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta)
+{
+	if (d_kappa_synch){
+		return (nu * anu_synch_kappa(nu, Ne, Thetae, B, theta)) * exp(-nu / NU_CUTOFF);
+	}else if (d_powerlaw_synch){
+		return (nu * anu_synch_powerlaw(nu, Ne, B, theta)) * exp(-nu / NU_CUTOFF);
+	}else{
+		//Fallback in case only bremsstrahlung, only thermal synchrotron or bremsstrahlung + thermal synchrotron active. 
+		return alpha_inv_abs_thermal(nu, Thetae, Ne, B, theta);
+	}
+}
+
+
+__device__ double anu_synch_powerlaw(double nu, double Ne, double B, double theta) {
+    double sth = sin(theta);
+    if (sth < 1e-150) {
+        return 0.0;
+    }
+
+    const double p = 3.0;
+    const double gmin = 25.0;
+    const double gmax = 1.e7;
+
+    double nuc = (EE * B) / (2.0 * M_PI * ME * CL);
+    double X = nu / (nuc * sth);
+
+    double norm_num = pow(3.0, (p + 1.0) / 2.0) * (p - 1.0);
+    double norm_den = 4.0 * (pow(gmin, 1.0 - p) - pow(gmax, 1.0 - p));
+    
+    double gamma_term1 = tgamma((3.0 * p + 2.0) / 12.0);
+    double gamma_term2 = tgamma((3.0 * p + 22.0) / 12.0);
+
+    double As = (norm_num / norm_den) * gamma_term1 * gamma_term2 * pow(X, -(p + 2.0) / 2.0);
+
+    double factor = (Ne * (EE * EE)) / (nu * ME * CL);
+
+    return As * factor;
+}
+
+__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta) {
+    if (Thetae < THETAE_MIN) {
+        return 0.0;
+    }
+
+    double sth = sin(theta);
+    if (sth < 1e-150) {
+        return 0.0;
+    }
+
+    double w = (KAPPA_SYNCH - 3.0) / KAPPA_SYNCH * Thetae;
+    double z = -KAPPA_SYNCH * w;
+
+    if (fabs(z) == 1.0) {
+        return 0.0;
+    }
+
+
+    double w_kappa = w * KAPPA_SYNCH; 
+    
+    double nuc = EE * B / (2.0 * M_PI * ME * CL);
+    double nus = nuc * sth * (w_kappa * w_kappa); 
+    double X_kappa = nu / nus;
+
+    if (X_kappa > 1e10) {
+        return 0.0;
+    }
+
+    double hyp2F1;
+    double a = KAPPA_SYNCH - 1.0 / 3.0;
+    double b = KAPPA_SYNCH + 1.0;
+    double c = KAPPA_SYNCH + 2.0 / 3.0;
+
+    if (fabs(z) < 1.0) {
+        hyp2F1 = cuda_hyperg_2F1(a, b, c, z);
+    } else {
+        double inv_one_minus_z = 1.0 / (1.0 - z); 
+        hyp2F1 = pow(1.0 - z, -a) * tgamma(c) * tgamma(b - a) /
+                     (tgamma(b) * tgamma(c - a)) *
+                     cuda_hyperg_2F1(a, c - b, a - b + 1.0, inv_one_minus_z) +
+                 pow(1.0 - z, -b) * tgamma(c) * tgamma(a - b) /
+                     (tgamma(a) * tgamma(c - b)) *
+                     cuda_hyperg_2F1(b, c - a, b - a + 1.0, inv_one_minus_z);
+    }
+
+    double k_term = (KAPPA_SYNCH - 2.0) * (KAPPA_SYNCH - 1.0) * KAPPA_SYNCH;
+    
+    double A_low = pow(X_kappa, -5.0 / 3.0) * pow(3.0, 1.0 / 6.0) * (10.0 / 41.0) *
+                   (4.0 * M_PI * M_PI) / pow(w_kappa, 16.0 / 3.0 - KAPPA_SYNCH) * k_term / (3.0 * KAPPA_SYNCH - 1.0) * tgamma(5.0 / 3.0) * hyp2F1;
+
+    double A_high = pow(X_kappa, -(3.0 + KAPPA_SYNCH) / 2.0) * (2.0 * pow(M_PI, 5.0 / 2.0) / 3.0) *
+                    (k_term / pow(w_kappa, 5.0)) *
+                    (2.0 * tgamma(2.0 + KAPPA_SYNCH / 2.0) / (2.0 + KAPPA_SYNCH) - 1.0) *
+                    (pow(3.0 / KAPPA_SYNCH, 19.0 / 4.0) + 0.6);
+
+    double x = pow(-1.75 + 1.6 * KAPPA_SYNCH, -0.86);
+    double A_s = pow((pow(A_low, -x) + pow(A_high, -x)), -1.0 / x);
+
+    double factor = (Ne * EE) / (B * sth);
+
+    return factor * A_s;
+}
+
+/* return Lorentz invariant absorption opacity for thermal synchrotron */
+__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B,double theta)
 {
 	double j, bnu;
 	j = jnu_inv(nu, Thetae, Ne, B, theta);

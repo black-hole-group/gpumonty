@@ -190,10 +190,7 @@ $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 	@echo "Build type: $(BUILD_TYPE)."
 	@echo "------------------------------------------------"
 
-### ADDED: Dependency on configuration ###
-# Before compiling any .o file, run the configure_gpu_blocks target
-$(OBJS): configure_gpu_blocks
-##########################################
+
 
 
 # Compile rule for CUDA files in both folders
@@ -215,4 +212,4 @@ clean:
 	rm -rf $(BUILD_DIR) $(EXECUTABLE)
 
 # Phony targets
-.PHONY: clean configure_gpu_blocks
+.PHONY: clean

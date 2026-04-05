@@ -36,7 +36,7 @@ Declaration of the functions in the jnu_mixed.cu file
  * flux, taking the form of $e^{-\nu / \text{NU\_CUTOFF}}$. This prevents 
  * unphysical infinite-energy radiation at extreme frequencies.
  */
-#define NU_CUTOFF 5.e33
+#define NU_CUTOFF 5.e13
 
 /**
  * @brief The high-energy cutoff limit for the simulated particle distribution.

@@ -45,6 +45,12 @@ __host__ void init_data()
 	double two_temp_gam;
 	double sphere_radius = SPHERE_RADIUS/L_unit;
 
+    if(params.kappa_synch || params.powerlaw_synch){
+        Rin *= L_unit;
+        Rout *= L_unit;
+        sphere_radius *= L_unit;
+    }
+
 	double gam = 13./9.;
 
 	/*Setting the resolution*/
@@ -106,7 +112,11 @@ __device__ int record_criterion(double X1)
 	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-	if (r > R_RECORD/d_L_unit){
+    double r_record = R_RECORD/d_L_unit;
+    if (d_kappa_synch || d_powerlaw_synch){
+        r_record = R_RECORD;
+    }
+	if (r > r_record){
 		return (1);
     }else{
         return (0);
@@ -131,7 +141,15 @@ __device__ int stop_criterion(double X1, double * w, curandState * localState)
             return 1;
         }
     }
-	if (r < RMIN/d_L_unit || r > R_RECORD/d_L_unit){
+    double r_min = RMIN/d_L_unit;
+    double r_record = R_RECORD/d_L_unit;
+
+    if(d_kappa_synch || d_powerlaw_synch){
+        r_min = RMIN;
+        r_record = R_RECORD;
+    }
+    
+	if (r < r_min || r > r_record){
 		return 1;
     }
 
@@ -319,6 +337,10 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     // Calculate target radius once
     double target_radius = SPHERE_RADIUS / local_L_unit;
 
+    if(is_kappa_sync || is_powerlaw_sync){
+        target_radius = SPHERE_RADIUS;
+    }
+
     // Loop over sub-grid in X1 (radial) and X2 (theta)
     for (int s1 = 0; s1 < n_sub; s1++) {
         for (int s2 = 0; s2 < n_sub; s2++) {
@@ -363,7 +385,7 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
         *B = CL* sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(*Ne * *Thetae)/sqrt(custom_thetae_unit) * vol_frac;
     }else{
         *Ne = NE_VALUE * vol_frac;       
-        *B  = B_VALUE * vol_frac/local_B_unit;        
+        *B  = B_VALUE * vol_frac;        
         *Thetae = THETAE_VALUE * vol_frac;  
     }
 
@@ -373,8 +395,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     Ucon[3] = 0.;
 
     Bcon[0] = 0.;
-    Bcon[1] = (*B) * cos(th); 
-    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8);
+    Bcon[1] = (*B) * cos(th)/local_B_unit; 
+    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8)/local_B_unit;
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)
@@ -386,6 +408,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     lower(Ucon, gcov, Ucov);
     lower(Bcon, gcov, Bcov);
 }
+
+
 
 __device__ double bias_func(double Te, double w, int round_scatt)
 {

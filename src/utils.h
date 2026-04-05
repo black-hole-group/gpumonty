@@ -72,24 +72,24 @@ __device__ double interp_scalar(cudaTextureObject_t var, const int mmenemonics, 
  */
 __device__ double cuda_hyperg_2F1(double a, double b, double c, double z);
 
-/**
- * @brief Computes the Gamma function, \f$\Gamma(z)\f$, for GPU device code.
- *
- * @details This function serves as a CUDA `__device__` substitute for `gsl_sf_gamma`. 
- * It calculates the double-precision Gamma function using the [https://en.wikipedia.org/wiki/Lanczos_approximation](Lanczos approximation) 
- * (with \f$g = 7\f$). It implements Euler's reflection formula to accurately handle 
- * inputs where \f$z < 0.5\f$ (including negative numbers) and uses logarithmic 
- * exponentiation to prevent intermediate floating-point overflow for large inputs.
- *
- * @param z The real-valued input for which to compute the Gamma function.
- * @return The computed value of \f$\Gamma(z)\f$.
- *
- * @note Because the Gamma function grows factorially, inputs strictly greater 
- * than 171.624 will overflow the IEEE 64-bit double limit and return `inf`.
- * 
- * @note This function has been tested against `gsl_sf_gamma` for a range of inputs, including negative values, and shows near truncation value agreements.
- */
-__device__ double cuda_sf_gamma(double z);
+// /**
+//  * @brief Computes the Gamma function, \f$\Gamma(z)\f$, for GPU device code.
+//  *
+//  * @details This function serves as a CUDA `__device__` substitute for `gsl_sf_gamma`. 
+//  * It calculates the double-precision Gamma function using the [https://en.wikipedia.org/wiki/Lanczos_approximation](Lanczos approximation) 
+//  * (with \f$g = 7\f$). It implements Euler's reflection formula to accurately handle 
+//  * inputs where \f$z < 0.5\f$ (including negative numbers) and uses logarithmic 
+//  * exponentiation to prevent intermediate floating-point overflow for large inputs.
+//  *
+//  * @param z The real-valued input for which to compute the Gamma function.
+//  * @return The computed value of \f$\Gamma(z)\f$.
+//  *
+//  * @note Because the Gamma function grows factorially, inputs strictly greater 
+//  * than 171.624 will overflow the IEEE 64-bit double limit and return `inf`.
+//  * 
+//  * @note This function has been tested against `gsl_sf_gamma` for a range of inputs, including negative values, and shows near truncation value agreements.
+//  */
+// __device__ double cuda_sf_gamma(double z);
 
 /**
  * @brief Maps a global photon ID to a specific grid cell or source index using binary search.

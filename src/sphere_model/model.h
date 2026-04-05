@@ -20,38 +20,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
  
-#define EXP_COORDS (1)
-/* Range of superphoton frequencies */
-#define NUMIN 1.e8
-#define NUMAX 1.e24
-
-/*This indicates the minimum of thetae = kTe/(mec^2)*/
-#define THETAE_MIN 0.3
-#define THETAE_MAX 1000.
-
-/*Ratio of proton temperature to electron temperature*/
-#define TP_OVER_TE (3.)
-
-/*Define the minimum weight of the superphoton to be considered*/
-#define WEIGHT_MIN (0.)
-
-/*for stop criterium*/
-#define RMAX (10000.)
-#define ROULETTE 1.e4
-#define R_RECORD (3000.)
-//RMIN for sphere model only
-#define RMIN (0.01)
-
-#define BHSPIN 0
-
-#define NE_VALUE (1.e13)
-#define B_VALUE (1.)
-#define THETAE_VALUE (100.)
-#define SPHERE_RADIUS (1.)
-
-//This is only used for nonthermal emission models
-#define BETA0 (20.)
-#define MODEL_TAU0 (1e-5)
 
 #ifndef MODEL_H
 #define MODEL_H
@@ -72,12 +40,12 @@
     #define TP_OVER_TE (3.)
 
     /*Define the minimum weight of the superphoton to be considered*/
-    #define WEIGHT_MIN (0.)
+    #define WEIGHT_MIN (1.e28)
 
     /*for stop criterium*/
-    #define RMAX (10000.)
+    #define RMAX (120.)
     #define ROULETTE 1.e4
-    #define R_RECORD (3000.)
+    #define R_RECORD (10000.)
     //RMIN for sphere model only
     #define RMIN (0.01)
 
@@ -85,13 +53,17 @@
 
     #define NE_VALUE (1.e13)
     #define B_VALUE (1.)
-    #define THETAE_VALUE (100.)
-    #define SPHERE_RADIUS (1.)
+    #define THETAE_VALUE (10.)
+    #define SPHERE_RADIUS (100.)
+
+    //This is only used for nonthermal emission models
+    #define BETA0 (20.)
+    #define MODEL_TAU0 (1e-5)
 
     /**
      * Size of the energy bin in logarithmic scale for the spectral output binning.
      */
-    #define	dlE (0.015) //Size of the energy bin
+    #define	dlE (0.25) //Size of the energy bin
 
     /**
      * Minimum energy of the energy bin in logarithmic scale.
@@ -101,12 +73,12 @@
     /**
      * Number of energy samples for the emissivity and weight tables.
      */
-    #define N_ESAMP 2500
+    #define N_ESAMP 200
 
     /**
      * Number of energy bins for the spectral output.
      */
-    #define N_EBINS 2500
+    #define N_EBINS 200
 
     /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 
