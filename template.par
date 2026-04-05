@@ -9,8 +9,8 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 #Name of the spectrum file generated
 #spectrum 1e5sphere_powerlaw_nosc.h5
-spectrum 1e5sphere_kappa_nosc.h5
-#spectrum 1e5sphere_thermal_nosc.h5
+#spectrum 1e5sphere_kappa_nosc.h5
+spectrum 1e5sphere_thermal_nosc.h5
 # T_p/T_e
 tp_over_te 3.
 
@@ -33,9 +33,9 @@ bias_guess 0.1
 
 #emissions
 bremsstrahlung 0
-thermal_synch 0
+thermal_synch 1
 
 
 #nonthermal distribution
-kappa_synch 1
+kappa_synch 0
 powerlaw_synch 0

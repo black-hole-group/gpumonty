@@ -37,19 +37,12 @@ __device__ double stepsize(const double X[NDIM], const double K[NDIM])
 
 __host__ void init_data()
 {
-	double Rin = RMIN/L_unit;
-	double Rout = RMAX/L_unit;
+	double Rin = RMIN;
+	double Rout = RMAX;
 
 	double th_in = 0.;
 	double th_out = M_PI;
 	double two_temp_gam;
-	double sphere_radius = SPHERE_RADIUS/L_unit;
-
-    if(params.kappa_synch || params.powerlaw_synch){
-        Rin *= L_unit;
-        Rout *= L_unit;
-        sphere_radius *= L_unit;
-    }
 
 	double gam = 13./9.;
 
@@ -112,11 +105,7 @@ __device__ int record_criterion(double X1)
 	#endif
 	/* this is coordinate and simulation
 	   specific: stop at large distance */
-    double r_record = R_RECORD/d_L_unit;
-    if (d_kappa_synch || d_powerlaw_synch){
-        r_record = R_RECORD;
-    }
-	if (r > r_record){
+	if (r > R_RECORD){
 		return (1);
     }else{
         return (0);
@@ -141,15 +130,8 @@ __device__ int stop_criterion(double X1, double * w, curandState * localState)
             return 1;
         }
     }
-    double r_min = RMIN/d_L_unit;
-    double r_record = R_RECORD/d_L_unit;
-
-    if(d_kappa_synch || d_powerlaw_synch){
-        r_min = RMIN;
-        r_record = R_RECORD;
-    }
     
-	if (r < r_min || r > r_record){
+	if (r < RMIN || r > R_RECORD){
 		return 1;
     }
 
@@ -308,8 +290,6 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
         }
         double local_L_unit = d_L_unit;
         double local_B_unit = d_B_unit;
-        int is_kappa_sync = d_kappa_synch;
-        int is_powerlaw_sync = d_powerlaw_synch;
 
         double tp_over_te = d_tp_over_te;
     #else
@@ -323,8 +303,6 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
         }
         double local_L_unit = L_unit;
         double local_B_unit = B_unit;
-        int is_kappa_sync = params.kappa_synch;
-        int is_powerlaw_sync = params.powerlaw_synch;
         double tp_over_te = params.tp_over_te;
     #endif
 
@@ -335,11 +313,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     double r_sub, th_sub;
     
     // Calculate target radius once
-    double target_radius = SPHERE_RADIUS / local_L_unit;
+    double target_radius = SPHERE_RADIUS;
 
-    if(is_kappa_sync || is_powerlaw_sync){
-        target_radius = SPHERE_RADIUS;
-    }
 
     // Loop over sub-grid in X1 (radial) and X2 (theta)
     for (int s1 = 0; s1 < n_sub; s1++) {
@@ -376,18 +351,12 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
 
     // Apply Volume Fraction Scaling
   
-    if(is_kappa_sync || is_powerlaw_sync){
-        double gam = 13./9;
-        double custom_thetae_unit = MP/ME * (gam - 1.)/(1. + tp_over_te);
 
-        *Ne = MODEL_TAU0/SIGMA_THOMSON/SPHERE_RADIUS/local_L_unit * vol_frac;
-        *Thetae = THETAE_VALUE * vol_frac;
-        *B = CL* sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(*Ne * *Thetae)/sqrt(custom_thetae_unit) * vol_frac;
-    }else{
-        *Ne = NE_VALUE * vol_frac;       
-        *B  = B_VALUE * vol_frac;        
-        *Thetae = THETAE_VALUE * vol_frac;  
-    }
+    double gam = 13./9;
+    double custom_thetae_unit = MP/ME * (gam - 1.)/(1. + tp_over_te);
+    *Ne = MODEL_TAU0/SIGMA_THOMSON/SPHERE_RADIUS/local_L_unit * vol_frac;
+    *Thetae = THETAE_VALUE * vol_frac;  
+    *B = CL* sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(*Ne * *Thetae)/sqrt(custom_thetae_unit) * vol_frac;
 
     Ucon[0] = 1.;
     Ucon[1] = 0.;
@@ -426,8 +395,8 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
         return bias;
     #elif (1)
-        double model_tau_0 = NE_VALUE * SIGMA_THOMSON * 1 * d_L_unit;
-        bias = (model_tau_0 > 1.0) ? (model_tau_0) : 1.0;
+        
+        bias = (MODEL_TAU0 > 1.0) ? (MODEL_TAU0) : 1.0;
         return bias;
     #else
 		double avg_num_scatt, max;

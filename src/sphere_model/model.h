@@ -51,7 +51,6 @@
 
     #define BHSPIN 0
 
-    #define NE_VALUE (1.e13)
     #define B_VALUE (1.)
     #define THETAE_VALUE (10.)
     #define SPHERE_RADIUS (100.)
