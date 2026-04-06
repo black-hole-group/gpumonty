@@ -131,14 +131,10 @@ __device__ double dF3(double y) {
 }
 
 __device__ double dF4(double y) {
-    double value, denom, num;
     double y2 = y * y;
+    double num = 2. * (KAPPA_SYNCH - 1) * y2 * y * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.);
 
-    num = 2. * (KAPPA_SYNCH - 1) * y2 * y * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.);
-    denom = KAPPA_SYNCH;
-    value = num / denom;
-
-    return value;
+    return num / KAPPA_SYNCH;
 }
 
 __device__ double dF5(double y) {

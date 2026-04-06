@@ -8,9 +8,9 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 
 #Name of the spectrum file generated
-spectrum 1e5sphere_powerlaw.h5
-#spectrum 1e5sphere_kappa.h5
-#spectrum 1e5sphere_thermal.h5
+#spectrum 1e5sphere_powerlaw_nosc_tau1em8.h5
+#spectrum 1e5sphere_kappa_nosc_tau1em8.h5
+spectrum 1e5sphere_thermal_nosc_tau1em8.h5
 # T_p/T_e
 tp_over_te 3.
 
@@ -26,18 +26,18 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 1
+scattering 0
 fit_bias 0
 ratio 2
 bias_guess 20.
 
 #emissions
 bremsstrahlung 0
-thermal_synch 0
+thermal_synch 1
 
 
 #nonthermal distribution
 #for the kappa distribution, change NU_CUTOFF or KAPPA value in jnu_mixed.h
 kappa_synch 0
 #for the powerlaw distribution change the parameters POWERLAW_SLOPE, POWERLAW_GAMMA_MIN, POWERLAW_GAMMA_MAX in jnu_mixed.h
-powerlaw_synch 1
+powerlaw_synch 0
