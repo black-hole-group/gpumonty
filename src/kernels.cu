@@ -340,6 +340,7 @@ __host__ void mainFlowControl(time_t time, double * p){
     //Figure out how many gpus we have available for us.
     int num_gpus;
     gpuErrchk(cudaGetDeviceCount(&num_gpus));
+	num_gpus = 1;
     // Total number of cells
     int num_zones = N1 * N2 * N3;
 

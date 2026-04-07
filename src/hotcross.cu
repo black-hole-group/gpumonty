@@ -18,6 +18,7 @@
 
 #include "decs.h"
 #include "hotcross.h"
+#include "jnu_mixed.h"
 /* 
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -39,67 +40,120 @@
 
 __host__ void init_hotcross(void)
 {
-	int i, j, nread;
-	double lw, lT;
-	FILE *fp;
+    int i, j, nread;
+    double lw, lT;
+    FILE *fp;
 
-	double dlw = log10(MAXW / MINW) / NW;
-	double dlT = log10(MAXT / MINT) / NT;
-	double lminw = log10(MINW);
-	double lmint = log10(MINT);
-	fp = fopen(HOTCROSS, "r");
-	if (fp == NULL) {
-		fprintf(stderr, "file %s not found.\n", HOTCROSS);
-		fprintf(stderr,
-			"making lookup table for compton cross section...\n");
+    double dlw = log10(MAXW / MINW) / NW;
+    double dlT = log10(MAXT / MINT) / NT;
+    double lminw = log10(MINW);
+    double lmint = log10(MINT);
+
+	// Just assume we have to generate a new table at first
+    int generate_table = 1; 
+	// Check the first num_tests entries of the table, if they're all the same, assume the table we have is correct
+    const int num_tests = 20;
+
+    fp = fopen(HOTCROSS, "r");
+    if (fp != NULL) {
+        fprintf(stderr, "Checking existing hot cross section data in %s...\n", HOTCROSS);
+        int match_count = 0;
+        double read_val;
+
+        // Read and test the first 'num_tests' entries in the file
+        for (int test_idx = 0; test_idx < num_tests; test_idx++) {
+            int test_i = test_idx / (NT + 1);
+            int test_j = test_idx % (NT + 1);
+
+            nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &read_val);
+            if (nread == 1) {
+                double lw_test = lminw + test_i * dlw;
+                double lT_test = lmint + test_j * dlT;
+                
+                double w_val = pow(10., lw_test);
+                double thetae = pow(10., lT_test);
+                
+                double norm = getnorm_dNdgammae(thetae); 
+                double expected_val = log10(total_compton_cross_num(w_val, thetae, norm));
+
+                // Use a small tolerance (1e-5) to account for float vs string precision quirks
+                if (fabs(read_val - expected_val) < 1e-14) {
+                    match_count++;
+                } else {
+                    fprintf(stderr, "Mismatch at i=%d, j=%d. Expected %.15e, file has %.15e, absolute error is %.15e.\n", 
+                            test_i, test_j, expected_val, read_val, fabs(read_val - expected_val));
+                    break;
+                }
+            } else {
+                break; // EOF reached prematurely
+            }
+        }
+
+        // If all checked entries match our new physics, keep the file!
+        if (match_count == num_tests) {
+            fprintf(stderr, "Existing table passed validation. Skipping generation.\n");
+            generate_table = 0;
+            rewind(fp); // Reset file pointer to the very beginning so we can read the whole thing
+        } else {
+            fprintf(stderr, "Table is outdated (probably due to changing EDF). Rebuilding...\n");
+            fclose(fp);
+            fp = NULL; // Clear pointer so we open it in "w" mode later
+        }
+    }
+
+    if (generate_table) {
+        fprintf(stderr, "making lookup table for compton cross section...\n");
 #pragma omp parallel for private(i,j,lw,lT)
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
-				table[i][j] =
-				    log10(total_compton_cross_num
-					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
-						j, lw, lT);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-		fprintf(stderr, "writing to file...\n");
-		fp = fopen(HOTCROSS, "w");
-		if (fp == NULL) {
-			fprintf(stderr, "couldn't write to file\n");
-			exit(0);
-		}
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
-				fprintf(fp, "%d %d %g %g %.15e\n", i, j,
-					lw, lT, table[i][j]);
-			}
-		fprintf(stderr, "done.\n\n");
-	} else {
-		fprintf(stderr,
-			"reading hot cross section data from %s...\n",
-			HOTCROSS);
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				// Since we are suppressing, remove the length modifier on the suppressed items
-				nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
-					fprintf(stderr, "error on table read: %d %d\n", i, j);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-	}
+        for (i = 0; i <= NW; i++) {
+            for (j = 0; j <= NT; j++) {
+                lw = lminw + i * dlw;
+                lT = lmint + j * dlT;
+                
+                double w_val = pow(10., lw);
+                double thetae = pow(10., lT);
+                double norm = getnorm_dNdgammae(thetae); // Apply the Kappa distribution norm
 
-	fclose(fp);
+                table[i][j] = log10(total_compton_cross_num(w_val, thetae, norm));
+                
+                if (isnan(table[i][j])) {
+                    fprintf(stderr, "NaN generated at %d %d %g %g\n", i, j, lw, lT);
+                    exit(0);
+                }
+            }
+        }
+        fprintf(stderr, "done.\n\n");
 
-	return;
+        fprintf(stderr, "writing to file...\n");
+        fp = fopen(HOTCROSS, "w");
+        if (fp == NULL) {
+            fprintf(stderr, "couldn't write to file\n");
+            exit(0);
+        }
+        for (i = 0; i <= NW; i++) {
+            for (j = 0; j <= NT; j++) {
+                lw = lminw + i * dlw;
+                lT = lmint + j * dlT;
+                fprintf(fp, "%d %d %g %g %.15e\n", i, j, lw, lT, table[i][j]);
+            }
+        }
+        fprintf(stderr, "done.\n\n");
+        fclose(fp);
+    } else {
+        fprintf(stderr, "reading hot cross section data from %s...\n", HOTCROSS);
+        for (i = 0; i <= NW; i++) {
+            for (j = 0; j <= NT; j++) {
+                nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &table[i][j]);
+                if (isnan(table[i][j]) || nread != 1) {
+                    fprintf(stderr, "error on table read: %d %d\n", i, j);
+                    exit(0);
+                }
+            }
+        }
+        fprintf(stderr, "done.\n\n");
+        fclose(fp);
+    }
+
+    return;
 }
 
 
@@ -142,12 +196,12 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
 	}
 	printf("out of bounds: %g %g\n", w, thetae);
 	
-	return (total_compton_cross_num(w, thetae));
+	return (total_compton_cross_num(w, thetae, getnorm_dNdgammae(thetae)));
 
 }
 
 
-__host__ __device__ double total_compton_cross_num(double w, double thetae)
+__host__ __device__ double total_compton_cross_num(double w, double thetae, double norm)
 {
 
 	if (isnan(w)) {
@@ -171,7 +225,7 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae)
 		for (double gammae = 1. + 0.5 * dgammae;
 		    gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
 
-			double f = 0.5 * dNdgammae(thetae, gammae);
+			double f = 0.5 * norm * dNdgammae(thetae, gammae);
 
 			cross +=
 			    DMUE * dgammae * boostcross(w, mue,
@@ -189,8 +243,109 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae)
 	return (cross * SIGMA_THOMSON);
 }
 
+__host__ __device__ double getnorm_dNdgammae(double thetae){
+	#ifdef __CUDA_ARCH__
+		const int is_kappa_synch = d_kappa_synch;
+		const int is_thermal_synch = d_thermal_synch;
+		const int is_powerlaw_synch = d_powerlaw_synch;
+	#else
+		const int is_kappa_synch = params.kappa_synch;
+		const int is_thermal_synch = params.thermal_synch;
+		const int is_powerlaw_synch = params.powerlaw_synch;
+	#endif
 
-__host__ __device__ double dNdgammae(double thetae, double gammae)
+	if(is_kappa_synch){
+		return dNdgammae_kappa_norm(thetae);
+	}
+	if(is_powerlaw_synch){
+		return 1.0; // powerlaw is already normalized by construction
+	}
+	if(is_thermal_synch){
+		return 1.0; // thermal is already normalized by construction
+	}
+	return 0.0;
+}
+
+__host__ __device__ double dNdgammae(double thetae, double gammae) {
+    #ifdef __CUDA_ARCH__
+		const int is_kappa_synch = d_kappa_synch;
+		const int is_thermal_synch = d_thermal_synch;
+		const int is_powerlaw_synch = d_powerlaw_synch;
+	#else
+		const int is_kappa_synch = params.kappa_synch;
+		const int is_thermal_synch = params.thermal_synch;
+		const int is_powerlaw_synch = params.powerlaw_synch;
+	#endif
+
+	if(is_kappa_synch){
+		return dNdgammae_kappa(thetae, gammae);
+	}
+	if(is_powerlaw_synch){
+		return dNdgammae_powerlaw(thetae, gammae);
+	}
+	if(is_thermal_synch){
+		return dNdgammae_th(thetae, gammae);
+	}
+	return 0.0;
+}
+
+__host__ __device__ double kappa_integrand(double beta, double thetae) {
+    double gamma = exp(beta);
+    double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * thetae;
+
+    return gamma * gamma * sqrt(gamma * gamma - 1.) *
+           pow((1. + (gamma - 1.) / (KAPPA_SYNCH * w)), -(KAPPA_SYNCH + 1.)) *
+           exp(-gamma / GAMMA_MAX);
+}
+
+// Transformed Integrand over 'u' where u = sqrt(gamma - 1)
+__host__ __device__ double kappa_integrand_u(double u, double thetae) {
+    double u2 = u * u;
+    double gamma = 1.0 + u2;
+    double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * thetae;
+
+    return 2.0 * u2 * gamma * sqrt(2.0 + u2) *
+           pow(1.0 + u2 / (KAPPA_SYNCH * w), -(KAPPA_SYNCH + 1.0)) *
+           exp(-gamma / GAMMA_MAX);
+}
+
+
+__device__ double simpsons_rule_u(double a, double b, int N, double thetae) {
+    double h = (b - a) / N;
+    double sum1 = 0.0;
+    double sum2 = 0.0;
+
+    for (int i = 1; i < N; i += 2) {
+        sum1 += kappa_integrand_u(a + i * h, thetae);
+    }
+    for (int i = 2; i < N - 1; i += 2) {
+        sum2 += kappa_integrand_u(a + i * h, thetae);
+    }
+
+    double result = kappa_integrand_u(a, thetae) + 
+                    kappa_integrand_u(b, thetae) + 
+                    4.0 * sum1 + 
+                    2.0 * sum2;
+    
+    return result * h / 3.0;
+}
+
+__device__ double dNdgammae_kappa_norm(double thetae) {
+    const int N = 500; 
+    
+    double a = 0.0;
+    
+    // Original upper bound for beta was log(1. + 1000.*thetae)
+    // gamma max was roughly 1 + 1000 * thetae
+    // So the new upper bound for u = sqrt(gamma - 1) is:
+    double b = sqrt(1000.0 * thetae); 
+    
+    double integral = simpsons_rule_u(a, b, N, thetae);
+
+    return 1.0 / integral;
+}
+
+__host__ __device__ double dNdgammae_th(double thetae, double gammae)
 {
 	double K2f;
 
@@ -204,6 +359,27 @@ __host__ __device__ double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
+__host__ __device__ double dNdgammae_kappa(double thetae, double gammae) {
+    double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * thetae;
+    // This is not yet normalized!
+    double dNdgam = gammae * sqrt(gammae * gammae - 1.) *
+                    pow((1 + (gammae - 1) / (KAPPA_SYNCH * w)), -(KAPPA_SYNCH + 1)) *
+                    exp(-gammae / GAMMA_MAX);
+    return dNdgam;
+}
+
+__host__ __device__ double dNdgammae_powerlaw(double thetae, double gammae)
+{
+//    double exp_cutoff = exp(-gammae / GAMMA_MAX);
+//    (void)exp_cutoff;
+
+   if (gammae < POWERLAW_GAMMA_MIN || POWERLAW_GAMMA_MAX < gammae) return 0.;
+
+  // note no exponential cutoff. this means we're not using powerlaw_gamma_cut
+  // or gamma_max. this choice makes normalization easier and seems consistent
+  // with the symphony emissivity formula
+  return (POWERLAW_SLOPE -1.) * pow(gammae, -POWERLAW_SLOPE) / ( pow(POWERLAW_GAMMA_MIN, 1-POWERLAW_SLOPE) - pow(POWERLAW_GAMMA_MAX, 1-POWERLAW_SLOPE) );
+}
 
 __host__ __device__ double boostcross(double w, double mue, double gammae)
 {
