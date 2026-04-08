@@ -215,7 +215,6 @@ __host__ void init_emiss_tables(void)
 		
 		//if(k < 10)
 	}
-
 	gsl_integration_workspace_free(w);
 
 	/*  build table for quick evaluation of the bessel function K2 for emissivity */

@@ -18,7 +18,7 @@
 
 
 # Model name ( harm_model, sphere_model, iharm_model)
-MODEL = sphere
+MODEL = iharm
 MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 
@@ -53,6 +53,7 @@ GSL_HOME ?= $(strip $(shell \
 	fi))
 
 #GSL setup
+GSL_HOME = /home/pedro/gsl
 GSL_PATH ?= $(GSL_HOME)
 
 # HDF5 auto-detection: try pkg-config, then h5cc, then common paths
@@ -135,7 +136,7 @@ CUDA_LIB_DIR := $(shell \
 CUDA_LIB = -L$(CUDA_LIB_DIR)
 
 # Debug and release flags
-DEBUG_FLAGS = -g -code=$(CODE)
+DEBUG_FLAGS = -g -G -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
 NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\

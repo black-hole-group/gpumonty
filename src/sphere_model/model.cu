@@ -416,17 +416,6 @@ __device__ double bias_func(double Te, double w, int round_scatt)
     #endif
 }
 
-__device__ __forceinline__ double atomicMaxdouble(double *address, double val)
-{
-    unsigned long long ret = __double_as_longlong(*address);
-    while(val > __longlong_as_double(ret))
-    {
-        unsigned long long old = ret;
-        if((ret = atomicCAS((unsigned long long *)address, old, __double_as_longlong(val))) == old)
-            break;
-    }
-    return __longlong_as_double(ret);
-}
 
 
 __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename)

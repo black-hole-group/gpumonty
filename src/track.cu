@@ -146,6 +146,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					
 				} else {
 					double alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 					alpha_scatti = alpha_scattf;
 

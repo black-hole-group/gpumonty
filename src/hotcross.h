@@ -31,15 +31,6 @@ Declaration of the functions in the hotcross.cu file
  * as a function of dimensionless photon frequency (w) and electron 
  * temperature (Theta_e), now accounting for the kappa distribution normalization.
  * 
- * * **Routine**:
- * 1. Attempts to open the file specified by `HOTCROSS`.
- * 2. If the file is found, it reads the first 20 entries and cross-checks them 
- * against dynamically computed, normalized values to verify data integrity.
- * 3. If these 20 entries match within tolerance, it assumes the file is up-to-date 
- * and loads the remaining precomputed values into memory.
- * 4. If the file is missing, or if the validation fails (indicating outdated data),
- * it triggers a complete numerical recalculation of the table, applies the new 
- * normalization, and generates a fresh file.
  * 
  * @note The table is stored in log10-log10 space.
  * 
@@ -236,68 +227,4 @@ __host__ __device__ double boostcross(double w, double mue, double gammae);
  * @return The total cross-section normalized by the Thomson cross-section.
  */
 __host__ __device__ double hc_klein_nishina(double we);
-
-/**
- * @brief Modified Bessel function of the first kind, order zero: \f$ I_0(x) \f$.
- * 
- * Uses polynomial approximations and asymptotic expansions for numerical stability.
- * 
- * @see [Numerical Recipes in C](https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract)
-
- * @param xbess The input value \f$ x \f$.
-
- * @return The value of \f$ I_0(x) \f$.
- */
-__host__ __device__ double bessi0(double xbess);
-
-/**
- * @brief Modified Bessel function of the first kind, order one: \f$ I_1(x) \f$.
- * 
- * Implemented using polynomial fits for small \f$ x \f$ and asymptotic forms for large \f$ x \f$.
- * 
- * @see [Numerical Recipes in C](https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract)
- *
- * @param xbess The input value \f$ x \f$.
- * 
- * @return The value of \f$ I_1(x) \f$.
- */
-__host__ __device__ double bessi1(double xbess);
-
-/**
- * @brief Modified Bessel function of the second kind, order zero: \f$ K_0(x) \f$.
- * Evaluated via log-polynomial approximations for \f$ x \le 2 \f$ and exponential-asymptotic forms for \f$ x > 2 \f$.
- * 
- * @see [Numerical Recipes in C](https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract)
- *
- * @param xbess The input value \f$ x \f$.
- * 
- * @return The value of \f$ K_0(x) \f$.
- */
-__host__ __device__ double bessk0(double xbess);
-
-/**
- * @brief Modified Bessel function of the second kind, order one: \f$ K_1(x) \f$.
- * Employs rational approximations and asymptotic expansions to maintain precision across scales.
- * 
- * @see [Numerical Recipes in C](https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract)
-*
- * @param xbess The input value \f$ x \f$.
- * 
- * @return The value of \f$ K_1(x) \f$.
- */
-__host__ __device__ double bessk1(double xbess);
-
-/**
- * @brief Modified Bessel function of the second kind, order two: \f$ K_2(x) \f$.
- * 
- * Computed using the recurrence relation: \f$ K_{n+1}(x) = K_{n-1}(x) + \frac{2n}{x}K_n(x) \f$,
- * starting from the values of \f$ K_0 \f$ and \f$ K_1 \f$.
- * 
- * @see [Numerical Recipes in C](https://ui.adsabs.harvard.edu/abs/1992nrca.book.....P/abstract)
- *
- * @param xbess The input value \f$ x \f$.
- * 
- * @return The value of \f$ K_2(x) \f$.
- */
-__host__ __device__ double bessk2(double xbess);
 #endif

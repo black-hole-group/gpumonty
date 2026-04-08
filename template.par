@@ -8,15 +8,16 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 
 #Name of the spectrum file generated
-#spectrum 1e5sphere_powerlaw_nosc_tau1em8.h5
-#spectrum 1e5sphere_kappa_nosc_tau1em8.h5
-spectrum 1e5sphere_thermal_nosc_tau1em8.h5
+#spectrum 1e5sphere_powerlaw_sc.h5
+#spectrum 1e5sphere_kappa_sc.h5
+#spectrum sane_thermal_sc.h5
+spectrum sane_powerlaw_sc.h5
 # T_p/T_e
 tp_over_te 3.
 
 #Black hole mass and mass unit to translate accretion rate to physical units
 MBH 4.1e6
-M_unit 1.
+M_unit 10.e16
 
 
 #IHARM Rhigh and Rlow model parameters
@@ -26,18 +27,18 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 0
+scattering 1
 fit_bias 0
 ratio 2
-bias_guess 20.
+bias_guess 1.0
 
 #emissions
 bremsstrahlung 0
-thermal_synch 1
-
+thermal_synch 0
 
 #nonthermal distribution
 #for the kappa distribution, change NU_CUTOFF or KAPPA value in jnu_mixed.h
 kappa_synch 0
+
 #for the powerlaw distribution change the parameters POWERLAW_SLOPE, POWERLAW_GAMMA_MIN, POWERLAW_GAMMA_MAX in jnu_mixed.h
-powerlaw_synch 0
+powerlaw_synch 1

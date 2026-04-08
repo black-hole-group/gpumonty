@@ -37,121 +37,38 @@
 
 
 
+#include <gsl/gsl_sf_bessel.h>
 
 __host__ void init_hotcross(void)
 {
-    int i, j, nread;
+    int i, j;
     double lw, lT;
-    FILE *fp;
 
     double dlw = log10(MAXW / MINW) / NW;
     double dlT = log10(MAXT / MINT) / NT;
     double lminw = log10(MINW);
     double lmint = log10(MINT);
 
-	// Just assume we have to generate a new table at first
-    int generate_table = 1; 
-	// Check the first num_tests entries of the table, if they're all the same, assume the table we have is correct
-    const int num_tests = 20;
+    fprintf(stderr, "making lookup table for compton cross section...\n");
+    #pragma omp parallel for private(i,j,lw,lT)
+    for (i = 0; i <= NW; i++) {
+        for (j = 0; j <= NT; j++) {
+            lw = lminw + i * dlw;
+            lT = lmint + j * dlT;
+            
+            double w_val = pow(10., lw);
+            double thetae = pow(10., lT);
+            double norm = getnorm_dNdgammae(thetae); // Apply the Kappa distribution norm
 
-    fp = fopen(HOTCROSS, "r");
-    if (fp != NULL) {
-        fprintf(stderr, "Checking existing hot cross section data in %s...\n", HOTCROSS);
-        int match_count = 0;
-        double read_val;
-
-        // Read and test the first 'num_tests' entries in the file
-        for (int test_idx = 0; test_idx < num_tests; test_idx++) {
-            int test_i = test_idx / (NT + 1);
-            int test_j = test_idx % (NT + 1);
-
-            nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &read_val);
-            if (nread == 1) {
-                double lw_test = lminw + test_i * dlw;
-                double lT_test = lmint + test_j * dlT;
-                
-                double w_val = pow(10., lw_test);
-                double thetae = pow(10., lT_test);
-                
-                double norm = getnorm_dNdgammae(thetae); 
-                double expected_val = log10(total_compton_cross_num(w_val, thetae, norm));
-
-                // Use a small tolerance (1e-5) to account for float vs string precision quirks
-                if (fabs(read_val - expected_val) < 1e-14) {
-                    match_count++;
-                } else {
-                    fprintf(stderr, "Mismatch at i=%d, j=%d. Expected %.15e, file has %.15e, absolute error is %.15e.\n", 
-                            test_i, test_j, expected_val, read_val, fabs(read_val - expected_val));
-                    break;
-                }
-            } else {
-                break; // EOF reached prematurely
+            table[i][j] = log10(total_compton_cross_num(w_val, thetae, norm));
+            
+            if (isnan(table[i][j])) {
+                fprintf(stderr, "NaN generated at %d %d %g %g\n", i, j, lw, lT);
+                exit(0);
             }
-        }
-
-        // If all checked entries match our new physics, keep the file!
-        if (match_count == num_tests) {
-            fprintf(stderr, "Existing table passed validation. Skipping generation.\n");
-            generate_table = 0;
-            rewind(fp); // Reset file pointer to the very beginning so we can read the whole thing
-        } else {
-            fprintf(stderr, "Table is outdated (probably due to changing EDF). Rebuilding...\n");
-            fclose(fp);
-            fp = NULL; // Clear pointer so we open it in "w" mode later
         }
     }
-
-    if (generate_table) {
-        fprintf(stderr, "making lookup table for compton cross section...\n");
-#pragma omp parallel for private(i,j,lw,lT)
-        for (i = 0; i <= NW; i++) {
-            for (j = 0; j <= NT; j++) {
-                lw = lminw + i * dlw;
-                lT = lmint + j * dlT;
-                
-                double w_val = pow(10., lw);
-                double thetae = pow(10., lT);
-                double norm = getnorm_dNdgammae(thetae); // Apply the Kappa distribution norm
-
-                table[i][j] = log10(total_compton_cross_num(w_val, thetae, norm));
-                
-                if (isnan(table[i][j])) {
-                    fprintf(stderr, "NaN generated at %d %d %g %g\n", i, j, lw, lT);
-                    exit(0);
-                }
-            }
-        }
-        fprintf(stderr, "done.\n\n");
-
-        fprintf(stderr, "writing to file...\n");
-        fp = fopen(HOTCROSS, "w");
-        if (fp == NULL) {
-            fprintf(stderr, "couldn't write to file\n");
-            exit(0);
-        }
-        for (i = 0; i <= NW; i++) {
-            for (j = 0; j <= NT; j++) {
-                lw = lminw + i * dlw;
-                lT = lmint + j * dlT;
-                fprintf(fp, "%d %d %g %g %.15e\n", i, j, lw, lT, table[i][j]);
-            }
-        }
-        fprintf(stderr, "done.\n\n");
-        fclose(fp);
-    } else {
-        fprintf(stderr, "reading hot cross section data from %s...\n", HOTCROSS);
-        for (i = 0; i <= NW; i++) {
-            for (j = 0; j <= NT; j++) {
-                nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &table[i][j]);
-                if (isnan(table[i][j]) || nread != 1) {
-                    fprintf(stderr, "error on table read: %d %d\n", i, j);
-                    exit(0);
-                }
-            }
-        }
-        fprintf(stderr, "done.\n\n");
-        fclose(fp);
-    }
+    fprintf(stderr, "done.\n\n");
 
     return;
 }
@@ -350,7 +267,11 @@ __host__ __device__ double dNdgammae_th(double thetae, double gammae)
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		K2f = bessk2(1. / thetae) * exp(1. / thetae);
+        #ifdef __CUDA_ARCH__
+            K2f = K2_eval(thetae)  * exp(1. / thetae);
+        #else
+            K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
+        #endif
 	} else {
 		K2f = sqrt(M_PI * thetae / 2.);
 	}
@@ -358,6 +279,20 @@ __host__ __device__ double dNdgammae_th(double thetae, double gammae)
 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
 		exp(-(gammae - 1.) / thetae));
 }
+
+// __host__ __device__ double dNdgammae_th(double thetae, double gammae)
+// {
+// 	double K2f;
+
+// 	if (thetae > 1.e-2) {
+// 		K2f = bessk2(1. / thetae) * exp(1. / thetae);
+// 	} else {
+// 		K2f = sqrt(M_PI * thetae / 2.);
+// 	}
+
+// 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
+// 		exp(-(gammae - 1.) / thetae));
+// }
 
 __host__ __device__ double dNdgammae_kappa(double thetae, double gammae) {
     double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * thetae;
@@ -424,118 +359,4 @@ __host__ __device__ double hc_klein_nishina(double we)
 
 	return (sigma);
 
-}
-
-
-/*Bessel0 function defined as Numerical Recipes book*/
-__host__ __device__ double bessi0(double xbess)
-{
-    double ax, ans;
-    double y;
-    if ((ax = fabs(xbess)) < 3.75)
-    {
-        y = xbess / 3.75;
-        y *= y;
-        ans = 1.0 + y * (3.5156229 + y * (3.0899424 + y * (1.2067492 + y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
-    }
-    else
-    {
-        y = 3.75 / ax;
-        ans = (exp(ax) / sqrt(ax)) * (0.39894228 + y * (0.1328592e-1 + y * (0.225319e-2 + y * (-0.157565e-2 + y * (0.916281e-2 + y *
-                                                                                                                                     (-0.2057706e-1 +
-                                                                                                                                      y *
-                                                                                                                                          (0.2635537e-1 +
-                                                                                                                                           y *
-                                                                                                                                               (-0.1647633e-1 + y *
-                                                                                                                                                                    0.392377e-2))))))));
-    }
-    return ans;
-}
-/*Bessel1 function defined as Numerical Recipes book*/
-__host__ __device__ double bessi1(double xbess)
-{
-    double ax, ans;
-    double y;
-    if ((ax = fabs(xbess)) < 3.75)
-    {
-        y = xbess / 3.75;
-        y *= y;
-        ans = ax * (0.5 + y * (0.87890594 + y * (0.51498869 + y * (0.15084934 + y * (0.2658733e-1 +
-                                                                                     y * (0.301532e-2 + y * 0.32411e-3))))));
-    }
-    else
-    {
-        y = 3.75 / ax;
-        ans = 0.2282967e-1 + y * (-0.2895312e-1 + y * (0.1787654e-1 - y * 0.420059e-2));
-        ans = 0.39894228 + y * (-0.3988024e-1 + y * (-0.362018e-2 + y * (0.163801e-2 + y * (-0.1031555e-1 + y * ans))));
-        ans *= (exp(ax) / sqrt(ax));
-    }
-    return xbess < 0.0 ? -ans : ans;
-}
-/*Modified bessel0 function defined as Numerical Recipes book*/
-
-__host__ __device__ double bessk0(double xbess)
-{
-    double y, ans;
-    if (xbess <= 2.0)
-    {
-        y = xbess * xbess / 4.0;
-        ans = (-log(xbess / 2.0) * bessi0(xbess)) + (-0.57721566 + y * (0.42278420 + y * (0.23069756 +
-                                                                                          y * (0.3488590e-1 + y * (0.262698e-2 + y *
-                                                                                                                                     (0.10750e-3 +
-                                                                                                                                      y *
-                                                                                                                                          0.74e-5))))));
-    }
-    else
-    {
-        y = 2.0 / xbess;
-        ans = (exp(-xbess) / sqrt(xbess)) * (1.25331414 + y * (-0.7832358e-1 +
-                                                               y * (0.2189568e-1 + y * (-0.1062446e-1 + y * (0.587872e-2 + y *
-                                                                                                                               (-0.251540e-2 +
-                                                                                                                                y *
-                                                                                                                                    0.53208e-3))))));
-    }
-    return ans;
-}
-/*Modified bessel1 function defined as Numerical Recipes book*/
-__host__ __device__ double bessk1(double xbess)
-{
-    double y, ans;
-    if (xbess <= 2.0)
-    {
-        y = xbess * xbess / 4.0;
-        ans = (log(xbess / 2.0) * bessi1(xbess)) + (1.0 / xbess) * (1.0 + y * (0.15443144 + y * (-0.67278579 + y * (-0.18156897 +
-                                                                                                                    y *
-                                                                                                                        (-0.1919402e-1 + y *
-                                                                                                                                             (-0.110404e-2 +
-                                                                                                                                              y *
-                                                                                                                                                  (-0.4686e-4)))))));
-    }
-    else
-    {
-        y = 2.0 / xbess;
-        ans = (exp(-xbess) / sqrt(xbess)) * (1.25331414 + y * (0.23498619 + y *
-                                                                                (-0.3655620e-1 + y * (0.1504268e-1 + y * (-0.780353e-2 + y *
-                                                                                                                                             (0.325614e-2 +
-                                                                                                                                              y *
-                                                                                                                                                  (-0.68245e-3)))))));
-    }
-    return ans;
-}
-/*Modified bessel2 function defined as Numerical Recipes book*/
-__host__ __device__ double bessk2(double xbess)
-{
-    int n, j;
-    double bk, bkm, bkp, tox;
-    n = 2;
-    tox = 2.0 / xbess;
-    bkm = bessk0(xbess);
-    bk = bessk1(xbess);
-    for (j = 1; j < n; j++)
-    {
-        bkp = bkm + j * tox * bk;
-        bkm = bk;
-        bk = bkp;
-    }
-    return bk;
 }

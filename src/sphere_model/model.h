@@ -57,12 +57,12 @@
 
     //This is only used for nonthermal emission models
     #define BETA0 (20.)
-    #define MODEL_TAU0 (1e-8)
+    #define MODEL_TAU0 (1e-1)
 
     /**
      * Size of the energy bin in logarithmic scale for the spectral output binning.
      */
-    #define	dlE (0.015) //Size of the energy bin
+    #define	dlE (0.25) //Size of the energy bin
 
     /**
      * Minimum energy of the energy bin in logarithmic scale.
@@ -72,12 +72,12 @@
     /**
      * Number of energy samples for the emissivity and weight tables.
      */
-    #define N_ESAMP 2500
+    #define N_ESAMP 200
 
     /**
      * Number of energy bins for the spectral output.
      */
-    #define N_EBINS 2500
+    #define N_EBINS 200
 
     /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 

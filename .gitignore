@@ -5,7 +5,7 @@
 
 # Ignore the entire build directory
 build/
-
+table/
 tests/
 #Ignore documentation stuff
 docs/_build/

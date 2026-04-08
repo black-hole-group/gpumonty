@@ -87,11 +87,11 @@ __host__ void scattering_flow_control(unsigned long long num_scat_phs[MAX_LAYER_
                     d_table_ptr, NextLayerScattering, n, 0, num_scat_phs[n-1], BiasTuning_index);
                 
                 cudaEventRecord(stop, local_stream); // Updated to local_stream
-                
+                cudaStreamSynchronize(local_stream); 
+                gpuErrchk(cudaPeekAtLastError());
                 // ASYNC FETCH: Get the number of scattered photons
                 gpuErrchk(cudaGetSymbolAddress(&sym_ptr, d_num_scat_phs));
                 gpuErrchk(cudaMemcpyAsync(&num_scat_phs[n], (char*)sym_ptr + n * sizeof(unsigned long long), sizeof(unsigned long long), cudaMemcpyDeviceToHost, local_stream));
-                cudaStreamSynchronize(local_stream); // Must sync before calculating Ratio and printing
 
                 cudaEventSynchronize(stop); 
                 float milliseconds = 0;
