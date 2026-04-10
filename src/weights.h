@@ -34,19 +34,6 @@ Declaration of the functions used in weights.cu file
  */
 __host__ void init_weight_table();
 
-/**
- * @brief Precomputes lookup tables for the expected superphoton count and rejection sampling envelopes.
- * This function integrates the ratio of local emissivity \f$j_\nu\f$ to the precomputed superphoton 
- * weights \f$\omega_\nu\f$ across all frequency bins for a range of magnetic field strengths.
- * * Implements the integrated photon density:
- * 
- * \f$ N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega \f$
- * 
- * - `nint[i]`: Stores globally the log of the total number of superphotons to be generated per unit volume.
- * - `dndlnu_max[i]`: Stores globally the log of the maximum value of \f$dn/d\ln\nu\f$, used as the proposal 
- * distribution envelope for frequency sampling.
- */
-__host__ void init_nint_table(void);
 
 /**
  * @brief Computes the linear interpolation weight for a given frequency.

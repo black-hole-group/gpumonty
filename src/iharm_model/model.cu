@@ -32,7 +32,8 @@ static double t;
 __host__ void init_storage(void)
 {
 
-    p = (double *) malloc(NPRIM * N1 * N2 * N3 * sizeof(double *));
+    // These + 2 comes from getting beta_array and sigma_array into the p structure
+    p = (double *) malloc((NPRIM) * N1 * N2 * N3 * sizeof(double *));
     geom = (struct of_geom *) malloc(N1* N2* sizeof(struct of_geom));
     return;
 }
@@ -66,6 +67,7 @@ static double MBH;
 double TP_OVER_TE;
 
 __device__ int d_with_electrons, d_with_radiation;
+
 void init_data()
 {
   double dV, V;
@@ -283,43 +285,44 @@ if (with_electrons == 1) {
   V = dMact = Ladv = 0.;
   dV = dx[1]*dx[2]*dx[3];
 
- #pragma omp parallel for collapse(2) default(none) \
-    shared(N1, N2, N3, dV, geom, p, dx) \
+#pragma omp parallel for collapse(2) default(none) \
+    shared(N1, N2, N3, dV, geom, p, dx, B_unit, Ne_unit, gam) \
     reduction(+:V, bias_norm, dMact, Ladv)
-for (int i = 0; i < N1; i++) {
-    for (int j = 0; j < N2; j++) {
-        
-        int ij_idx = SPATIAL_INDEX2D(i, j);
-        double g_det = geom[ij_idx].g;
-        
-        
-        V += dV * g_det * N3; 
+  for (int i = 0; i < N1; i++) {
+      for (int j = 0; j < N2; j++) {
+          
+          int ij_idx = SPATIAL_INDEX2D(i, j);
+          double g_det = geom[ij_idx].g;
+          
+          V += dV * g_det * N3; 
 
-        
-        int in_active_region = (10 <= i && i <= 20);
-        double flux_base = 0.0;
-        if (in_active_region) {
-            flux_base = g_det * dx[2] * dx[3];
-        }
+          int in_active_region = (10 <= i && i <= 20);
+          double flux_base = 0.0;
+          if (in_active_region) {
+              flux_base = g_det * dx[2] * dx[3];
+          }
 
-        
-        for (int k = 0; k < N3; k++) {
-            double Ne, Thetae, Bmag, Ucon[NDIM], Ucov[NDIM], Bcon[NDIM];
-            
-            get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, geom, p);
-            
-            bias_norm += dV * g_det * Thetae * Thetae;
-            
-            if (in_active_region) {
-                lower(Ucon, geom[ij_idx].gcov, Ucov);
-                
-                double flux_factor = flux_base * Ucon[1];
-                dMact += flux_factor * p[NPRIM_INDEX3D(KRHO, i, j, k)];
-                Ladv  += flux_factor * p[NPRIM_INDEX3D(UU, i, j, k)] * Ucov[0];
-            }
-        }
-    }
-}
+          for (int k = 0; k < N3; k++) {
+              double Ne, Thetae, Bmag, Ucon[NDIM], Ucov[NDIM], Bcon[NDIM];
+              
+              get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, geom, p);
+              
+              bias_norm += dV * g_det * Thetae * Thetae;
+
+              double bsq = Bmag * Bmag/(B_unit * B_unit);
+              p[NPRIM_INDEX3D(SIGMA, i,j,k)] = bsq/(Ne/Ne_unit);
+              p[NPRIM_INDEX3D(BETA, i,j,k)] = p[NPRIM_INDEX3D(UU, i, j, k)] * (gam - 1.) * 2./bsq;
+              
+              if (in_active_region) {
+                  lower(Ucon, geom[ij_idx].gcov, Ucov);
+                  
+                  double flux_factor = flux_base * Ucon[1];
+                  dMact += flux_factor * p[NPRIM_INDEX3D(KRHO, i, j, k)];
+                  Ladv  += flux_factor * p[NPRIM_INDEX3D(UU, i, j, k)] * Ucov[0];
+              }
+          }
+      }
+  }
 
   dMact /= 11.;
   Ladv /= 1.;
@@ -396,21 +399,112 @@ __device__ int stop_criterion(double X1, double * w, curandState * localState)
 	return (0);
 }
 
+// /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
+// __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+// {
+//   double phi;
+//   double XG[NDIM];
+//   if (d_METRIC == METRIC_eKS) {
+//     // the geodesics are evolved in eKS so invert through KS -> zone coordinates
+//     double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
+//     for (int mu = 0; mu < NDIM; mu++) XG[mu] = Xks[mu];
+//   }else if (d_METRIC == METRIC_MKS3) {
+//     double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
+//     double H0 = d_mks3H0, MY1 = d_mks3MY1, MY2 = d_mks3MY2, MP0 = d_mks3MP0;
+//     double KSx1 = Xks[1], KSx2 = Xks[2];
+//     XG[0] = Xks[0];
+//     XG[1] = log(Xks[1] - d_mks3R0);
+//     XG[2] = (-(H0*pow(KSx1,MP0)*M_PI) - pow(2.,1. + MP0)*H0*MY1*M_PI + 
+//       2.*H0*pow(KSx1,MP0)*MY1*M_PI + pow(2.,1. + MP0)*H0*MY2*M_PI + 
+//       2.*pow(KSx1,MP0)*atan(((-2.*KSx2 + M_PI)*tan((H0*M_PI)/2.))/M_PI))/(2.*
+//       H0*(-pow(KSx1,MP0) - pow(2.,1 + MP0)*MY1 + 2.*pow(KSx1,MP0)*MY1 + 
+//         pow(2.,1. + MP0)*MY2)*M_PI);
+//     XG[3] = Xks[3];
+//   } else {
+//     for (int mu = 0; mu < NDIM; mu++) XG[mu] = X[mu];
+//   }
+//   phi = fmod(X[3], d_stopx[3]);
+//   if (phi < 0.0) phi = d_stopx[3]+phi;
+
+// 	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000.) - 1000;
+// 	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000.) - 1000;
+//   *k = (int) ((phi  - d_startx[3]) / d_dx[3] - 0.5 + 1000) - 1000;  
+//  // don't allow "center zone" to be outside of [0,N*-1]. this will often fire
+//   // for exotic corodinate systems and occasionally for normal ones. wrap x3.
+//   if (*i < 0) *i = 0;
+//   if (*j < 0) *j = 0;
+//   if (*k < 0) *k = 0;
+//   if (*i > d_N1-2) *i = d_N1-2; 
+//   if (*j > d_N2-2) *j = d_N2-2; 
+//   if (*k > d_N3-1) *k = d_N3-1; 
+
+//   // now construct del
+//   del[1] = (XG[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
+//   del[2] = (XG[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2];
+//   del[3] = (phi - ((*k + 0.5) * d_dx[3] + d_startx[3])) / d_dx[3];
+
+//   // finally enforce limits on del
+//   if (del[1] > 1.) del[1] = 1.;
+//   if (del[1] < 0.) del[1] = 0.;
+//   if (del[2] > 1.) del[2] = 1.;
+//   if (del[2] < 0.) del[2] = 0.;
+//   if (del[3] > 1.) del[3] = 1.;
+//   if (del[3] < 0.) {
+//     int oldk = *k;
+//     *k = d_N3-1;
+//     del[3] += 1.;
+//     if (del[3] < 0) {
+//       printf(" ! unable to resolve X[3] coordinate to zone %d %d %g %g\n", oldk, *k, del[3], XG[3]);
+//     }
+//   }
+// 	return;
+// }
+
+
 /*Given internal coordinates, X[1], X[2], X[3], we can figure out cell indexes: (i, j, k)*/
-__device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
+__host__ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM])
 {
+  // Route to the correct global variables depending on the compilation pass
+#ifdef __CUDA_ARCH__
+  const int local_METRIC = d_METRIC;
+  const double local_mks3H0 = d_mks3H0;
+  const double local_mks3MY1 = d_mks3MY1;
+  const double local_mks3MY2 = d_mks3MY2;
+  const double local_mks3MP0 = d_mks3MP0;
+  const double local_mks3R0 = d_mks3R0;
+  const double *local_stopx = d_stopx;
+  const double *local_startx = d_startx;
+  const double *local_dx = d_dx;
+  const int local_N1 = d_N1;
+  const int local_N2 = d_N2;
+  const int local_N3 = d_N3;
+#else
+  const int local_METRIC = METRIC;
+  const double local_mks3H0 = mks3H0;
+  const double local_mks3MY1 = mks3MY1;
+  const double local_mks3MY2 = mks3MY2;
+  const double local_mks3MP0 = mks3MP0;
+  const double local_mks3R0 = mks3R0;
+  const double *local_stopx = stopx;
+  const double *local_startx = startx;
+  const double *local_dx = dx;
+  const int local_N1 = N1;
+  const int local_N2 = N2;
+  const int local_N3 = N3;
+#endif
+
   double phi;
   double XG[NDIM];
-  if (d_METRIC == METRIC_eKS) {
+  if (local_METRIC == METRIC_eKS) {
     // the geodesics are evolved in eKS so invert through KS -> zone coordinates
     double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
     for (int mu = 0; mu < NDIM; mu++) XG[mu] = Xks[mu];
-  }else if (d_METRIC == METRIC_MKS3) {
+  } else if (local_METRIC == METRIC_MKS3) {
     double Xks[4] = { X[0], exp(X[1]), M_PI*X[2], X[3] };
-    double H0 = d_mks3H0, MY1 = d_mks3MY1, MY2 = d_mks3MY2, MP0 = d_mks3MP0;
+    double H0 = local_mks3H0, MY1 = local_mks3MY1, MY2 = local_mks3MY2, MP0 = local_mks3MP0;
     double KSx1 = Xks[1], KSx2 = Xks[2];
     XG[0] = Xks[0];
-    XG[1] = log(Xks[1] - d_mks3R0);
+    XG[1] = log(Xks[1] - local_mks3R0);
     XG[2] = (-(H0*pow(KSx1,MP0)*M_PI) - pow(2.,1. + MP0)*H0*MY1*M_PI + 
       2.*H0*pow(KSx1,MP0)*MY1*M_PI + pow(2.,1. + MP0)*H0*MY2*M_PI + 
       2.*pow(KSx1,MP0)*atan(((-2.*KSx2 + M_PI)*tan((H0*M_PI)/2.))/M_PI))/(2.*
@@ -420,25 +514,27 @@ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[
   } else {
     for (int mu = 0; mu < NDIM; mu++) XG[mu] = X[mu];
   }
-  phi = fmod(X[3], d_stopx[3]);
-  if (phi < 0.0) phi = d_stopx[3]+phi;
+  
+  phi = fmod(X[3], local_stopx[3]);
+  if (phi < 0.0) phi = local_stopx[3] + phi;
 
-	*i = (int) ((X[1] - d_startx[1]) / d_dx[1] - 0.5 + 1000.) - 1000;
-	*j = (int) ((X[2] - d_startx[2]) / d_dx[2] - 0.5 + 1000.) - 1000;
-  *k = (int) ((phi  - d_startx[3]) / d_dx[3] - 0.5 + 1000) - 1000;  
- // don't allow "center zone" to be outside of [0,N*-1]. this will often fire
+  *i = (int) ((X[1] - local_startx[1]) / local_dx[1] - 0.5 + 1000.) - 1000;
+  *j = (int) ((X[2] - local_startx[2]) / local_dx[2] - 0.5 + 1000.) - 1000;
+  *k = (int) ((phi  - local_startx[3]) / local_dx[3] - 0.5 + 1000) - 1000;  
+  
+  // don't allow "center zone" to be outside of [0,N*-1]. this will often fire
   // for exotic corodinate systems and occasionally for normal ones. wrap x3.
   if (*i < 0) *i = 0;
   if (*j < 0) *j = 0;
   if (*k < 0) *k = 0;
-  if (*i > d_N1-2) *i = d_N1-2; 
-  if (*j > d_N2-2) *j = d_N2-2; 
-  if (*k > d_N3-1) *k = d_N3-1; 
+  if (*i > local_N1-2) *i = local_N1-2; 
+  if (*j > local_N2-2) *j = local_N2-2; 
+  if (*k > local_N3-1) *k = local_N3-1; 
 
   // now construct del
-  del[1] = (XG[1] - ((*i + 0.5) * d_dx[1] + d_startx[1])) / d_dx[1];
-  del[2] = (XG[2] - ((*j + 0.5) * d_dx[2] + d_startx[2])) / d_dx[2];
-  del[3] = (phi - ((*k + 0.5) * d_dx[3] + d_startx[3])) / d_dx[3];
+  del[1] = (XG[1] - ((*i + 0.5) * local_dx[1] + local_startx[1])) / local_dx[1];
+  del[2] = (XG[2] - ((*j + 0.5) * local_dx[2] + local_startx[2])) / local_dx[2];
+  del[3] = (phi - ((*k + 0.5) * local_dx[3] + local_startx[3])) / local_dx[3];
 
   // finally enforce limits on del
   if (del[1] > 1.) del[1] = 1.;
@@ -448,15 +544,15 @@ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[
   if (del[3] > 1.) del[3] = 1.;
   if (del[3] < 0.) {
     int oldk = *k;
-    *k = d_N3-1;
+    *k = local_N3-1;
     del[3] += 1.;
     if (del[3] < 0) {
       printf(" ! unable to resolve X[3] coordinate to zone %d %d %g %g\n", oldk, *k, del[3], XG[3]);
     }
   }
-	return;
-}
 
+  return;
+}
 
 
 /*Given cell indexes i and j, we can figure out internal coordinates X[1], X[2], X[3]*/
@@ -940,7 +1036,27 @@ __device__ double bias_func(double Te, double w, int round_scatt)
   return bias * 30. * 1./2. * d_bias_guess[round_scatt];
 }
 
-
+__host__ __device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma)
+{
+  int i,j,k;
+  double coeff[8];
+  {
+    // Finds out i and j index as well as fraction displacement del from the coordinates X[1], X[2], X[3]
+    double del[NDIM];
+    Xtoijk(X, &i, &j, &k, del);
+    //Calculate the coeficient of displacement
+    coeff[0] = (1. - del[1]) * (1. - del[2]) * (1. - del[3]);
+    coeff[1] = (1. - del[1]) * (1. - del[2]) * del[3];
+    coeff[2] = (1. - del[1]) * del[2] * del[3];
+    coeff[3] = del[1] * del[2] * del[3];
+    coeff[4] = (1. - del[1]) * del[2] * (1. - del[3]);
+    coeff[5] = del[1] * (1. - del[2]) * (1. - del[3]);
+    coeff[6] = del[1] * (1. - del[2]) * del[3];
+    coeff[7] = del[1] * del[2] * (1. - del[3]);
+  }
+  *beta = interp_scalar_pointer(d_p, SIGMA, i, j, k, coeff);
+  *sigma = interp_scalar_pointer(d_p, BETA, i, j, k, coeff);
+}
 
 
 __host__ __device__ double thetae_func(double uu, double rho, double B, double kel)

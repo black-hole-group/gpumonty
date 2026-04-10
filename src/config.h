@@ -191,6 +191,16 @@
  */
 #define KTOT    9
 
+/**
+ * Mmnemonics for the plasma beta (\f$ \beta \f$) array index.
+ */
+#define BETA 10
+
+/**
+ * Mmnemonics for the plasma magnetization (\f$ \sigma \f$) array index.
+ */
+#define SIGMA 11
+
 
 /**
  * Small number to avoid division by zero or logarithm of zero.
@@ -366,6 +376,34 @@
  */
 #define MAXITER_BIASTUNING 5
 
+/**
+ * Whether to use VARIABLE_KAPPA or FIXED_KAPPA EDFs.
+ * This will only be used if params.kappa_synch is active.
+ */
+#define VARIABLE_KAPPA (1)
+
+/**
+ * Minimum value of the kappa parameter for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_MIN (3.1)
+/**
+ * Maximum value of the kappa parameter for the kappa distribution when using variable kappa EDFs when making the tables and weights.
+ */
+#define KAPPA_MAX_DISTR (80.1)
+
+/**
+ * Maximum value of the kappa parameter for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_MAX (7.0)
+/**
+ * Number of samples for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_NSAMP (770)
+
+/**
+ * Step size for the kappa distribution sampling when using variable kappa EDFs.
+ */
+#define DKAPPA (((double)KAPPA_MAX_DISTR - (double)KAPPA_MIN) / KAPPA_NSAMP)
 
 /**
  * Two-level macro stringification: expands `s` first, then converts the result

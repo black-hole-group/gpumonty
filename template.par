@@ -12,9 +12,9 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 #spectrum 1e5sphere_kappa_sc.h5
 #spectrum sane_thermal_sc.h5
 #spectrum sane_powerlaw_sc.h5
-spectrum sane_kappa.h5
+#spectrum sane_kappa.h5
 #spectrum sane_kappa_sc.h5
-
+spectrum sane_kappa_var.h5
 # T_p/T_e
 tp_over_te 3.
 

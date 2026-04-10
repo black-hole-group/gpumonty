@@ -31,6 +31,7 @@ __device__ void scatter_super_photon(
     double Ucon[NDIM],
     double Bcon[NDIM],
     double Gcov[NDIM][NDIM],
+    double kappa,
     curandState *s,
     unsigned long long photon_index)
 {
@@ -92,7 +93,7 @@ __device__ void scatter_super_photon(
     {
         double P[NDIM];
 
-        sample_electron_distr_p(Ktet, P, Thetae, s);
+        sample_electron_distr_p(Ktet, P, Thetae, kappa, s);
 
         if (isnan(P[1]) || isnan(P[2]) || isnan(P[3])) {
             ph.w[photon_index] = 0.0;
@@ -327,7 +328,7 @@ __device__  double klein_nishina(const double a, const double ap)
 __device__ void sample_electron_distr_p(
     double k[4],
     double p[4],
-    double Thetae,
+    double Thetae, double kappa,
     curandState *s)
 {
     // Sampling Electron Velocity
@@ -339,7 +340,7 @@ __device__ void sample_electron_distr_p(
 
         while (true) {
 
-            sample_beta_distr(Thetae, &gamma_e, &beta_e, s);
+            sample_beta_distr(Thetae, &gamma_e, &beta_e, kappa, s);
 
             /* sample mu safely */
             {
@@ -440,7 +441,7 @@ __device__ void sample_electron_distr_p(
 
 
 
-__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState)
+__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * localState)
 {
     if (d_thermal_synch) {
         double y = sample_y_distr(Thetae, localState);
@@ -449,8 +450,8 @@ __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e
         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
         
     } else if (d_kappa_synch) {
-        double y = sample_y_distr_nth(Thetae, localState);
-        double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * Thetae;
+        double y = sample_y_distr_nth(Thetae, kappa, localState);
+        double w = (kappa - 3.) / kappa * Thetae;
         *gamma_e = y * y * w + 1.;
         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
         

@@ -80,12 +80,12 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param Thetae Dimensionless electron temperature (\f$\Theta_{\rm e}\f$).
      * @param B Magnetic field strength.
      * @param theta Angle between the magnetic field and the wave vector (\f$\theta\f$).
-     * 
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * @note Equation taken from \f$\kappa\f$-monty [Davelaar et al.(2023)](https://arxiv.org/pdf/2303.15522)
      * 
      * @return The value of the synchrotron emissivity for a kappa distribution of electrons.
      */
-    __device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B,double theta);
+    __device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B,double theta, double kappa);
 
 
     /**
@@ -96,6 +96,7 @@ Declaration of the functions in the jnu_mixed.cu file
      * For |X| > 1, it utilizes the linear transformation formula to map the argument into the unit disk in order to ensureconvergence of the underlying series.
      * 
      * @param X The input variable, representing a frequency.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * @return The real-valued result of the hypergeometric evaluation as a double.
      * 
      * @note **Validation Status:** This implementation has been tested against  `scipy.special.hyp2f1` and `gsl_sf_hyperg_2F1`. 
@@ -104,7 +105,7 @@ Declaration of the functions in the jnu_mixed.cu file
      * 
      * @see cuda_hyperg_2F1
      */
-    __device__ double hypergeom_eval(double X);
+    __device__ double hypergeom_eval(double X, double kappa);
 
     /**
      * @brief Power-law electron distribution function for synchrotron emissivity calculations.
@@ -213,11 +214,12 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
      * @param Bmag Magnetic field strength \f$ B \f$.
      * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * @param ACCZONE Integer flag indicating whether the evaluation is for an acceleration zone (1) or not (0), which may affect the choice of approximation.
      * 
      * @return The value of the integrated emissivity function \f$ F \f$.
      */
-    __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu, int ACCZONE);
+    __host__ __device__ double F_eval(const double Thetae, const double Bmag, const double nu, double kappa, int ACCZONE);
 
     /** 
      * @brief Performs linear interpolation on the precomputed emissivity function for thermal synchrotron \f$ F(K) \f$.
@@ -261,10 +263,11 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param B Magnetic field strength \f$ B \f$.
      * @param theta Angle between the magnetic field and the line of sight.
      * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * 
      * @return The value of the total emissivity \f$ j_\nu \f$.
      */
-    __device__  double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2);
+    __device__  double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2, const double kappa);
 
     /**
      * @brief Calculates the angle-integrated thermal bremsstrahlung emissivity \f$ J_\nu \f$ for a Maxwellian distribution of electrons.
@@ -286,10 +289,11 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param B Magnetic field strength \f$ B \f$.
      * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
      * @param K2 Precomputed value of the modified Bessel function \f$ K_2(1/\Theta_e) \f$ for efficiency.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * 
      * @return The value of the total angle-integrated emissivity \f$ J_\nu \f$.
      */
-    __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2);
+    __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2, const double kappa);
 
 
     // Nonthermal declarations
@@ -300,12 +304,13 @@ Declaration of the functions in the jnu_mixed.cu file
      * This function is used by the GSL integrator to evaluate the integral over solid angles
      * 
      * @param th The angle \f$ \theta \f$ between the magnetic field and the photon wave vector.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * @param params A pointer to the dimensionless frequency parameter \f$ K \f$ for the kappa distribution.
      * 
      * @return The value of the integrand at the given angle for the kappa distribution.
      * 
      */
-    __host__ double jnu_integrand_kappa(double th, void *params);
+    __host__ double jnu_integrand_kappa(double th, double kappa, void *params);
 
     /**
      * @brief Initializes lookup tables for the angle-integrated emissivity function \f$ F \f$ for a kappa distribution of electrons.
@@ -322,10 +327,11 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
      * @param Bmag Magnetic field strength \f$ B \f$.
      * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * 
      * @return The value of the integrated emissivity function \f$ F \f$ for a kappa distribution of electrons.
      */
-    __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu);
+    __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu, double kappa);
 
     /**
      * @brief Provides the emissivity \f$ j_\nu \f$ for a powerlaw distribution of electrons.
@@ -360,11 +366,12 @@ Declaration of the functions in the jnu_mixed.cu file
      * @param Ne Electron number density \f$ n_e \f$.
      * @param Thetae Dimensionless electron temperature \f$ \Theta_e \f$.
      * @param Bmag Magnetic field strength \f$ B \f$.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * @param nu Photon frequency \f$ \nu \f$ in the plasma frame.
      * 
      * @return The value of the angle-integrated emissivity \f$ J_\nu \f$ for a kappa or power-law distribution of electrons.
      */
-    __host__ __device__  double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu);
+    __host__ __device__  double int_jnu_nth(double Ne, double Thetae, double Bmag, double kappa, double nu);
 
 
 
@@ -372,10 +379,11 @@ Declaration of the functions in the jnu_mixed.cu file
      * @brief Performs linear interpolation on the precomputed emissivity function for non-thermal synchrotron \f$ F(K) \f$.
      * 
      * @param K Dimensionless frequency parameter \f$ K \f$.
+     * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
      * 
      * @return The interpolated value of \f$ F(K) \f$ for non-thermal synchrotron emission.
      */
-    __host__ __device__ double linear_interp_F_nth(double K);
+    __host__ __device__ double linear_interp_F_nth(double K, double kappa);
 
     /**
      * @brief Evaluates the frequency-dependent component \f$ F(K) \f$ of the angle-integrated emissivity for a powerlaw distribution of electrons.

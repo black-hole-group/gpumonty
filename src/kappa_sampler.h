@@ -32,11 +32,12 @@
      * @param x1        The other endpoint of the initial search interval.
      * @param tol       The desired absolute tolerance/accuracy for the converged root.
      * @param max_steps The maximum number of algorithm iterations allowed.
+     * @param kappa     The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is passed to the function f and can be used to evaluate the target function at different kappa values during the root-finding process.
      *
      * @return The estimated x-coordinate of the root. If the initial interval 
      * does not bracket a root, it issues a device printf warning and returns x1.
      */
-    __device__ double brent_find_root(double (*f)(double, void*), void* params, double x0, double x1, double tol, int max_steps);
+    __device__ double brent_find_root(double (*f)(double, double, void*), void* params, double x0, double x1, double tol, int max_steps, double kappa);
 
 
     /**
@@ -51,10 +52,11 @@
      * @param df Pointer to the derivative of the target function (unused by Brent's method, maintained for API compatibility).
      * @param f  Pointer to the target __device__ function whose root is being sought.
      * @param w  A weight or window parameter used to compute the dynamic lower and upper bounds of the search interval.
+     * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is passed to the function f and can be used to evaluate the target function at different kappa values during the root-finding process.
      *
      * @return The estimated x-coordinate (solution) where the target function evaluates to zero.
      */
-    __device__ double find_y(double u, double (*df)(double), double (*f)(double, void *), double w);
+   __device__ double find_y(double u, double (*df)(double, double), double (*f)(double, double, void *), double w, double kappa);
 
     /**
      * @brief Samples a value 'y' from a nonthermal (kappa) distribution using rejection sampling.
@@ -67,9 +69,10 @@
      * based on a calculated probability threshold.
      *
      * @param Thetae     Dimensionless electron temperature, used to calculate the scaling factor (w).
+     * @param kappa      The shape parameter of the kappa distribution, dictating the slope of the high-energy tail.
      * @param localState Pointer to the thread-local cuRAND state for generating uniform random numbers.
      *
      * @return A randomly sampled double-precision value 'y' conforming to the target non-thermal distribution.
      */
-    __device__ double sample_y_distr_nth(double Thetae, curandState * localState);
+    __device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * localState);
  #endif

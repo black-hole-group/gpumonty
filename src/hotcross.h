@@ -52,11 +52,12 @@ __host__ void init_hotcross(void);
  * 
  * @param w Dimensionless photon frequency.
  * @param thetae Dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * @param d_table_ptr Restrict-qualified pointer to the device lookup table.
  * 
  * @return The calculated Compton cross-section.
  */
-__device__ double total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr);
+__device__ double total_compton_cross_lkup(double w, double thetae, double kappa, const double * __restrict__ d_table_ptr);
 
 /**
  * @brief Performs numerical integration of the total Compton cross-section.
@@ -69,25 +70,10 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
  * @param w Dimensionless photon frequency.
  * @param thetae Dimensionless electron temperature.
  * @param norm Normalization constant for the electron distribution function when using non-thermal distributions like the kappa EDF.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * @return The numerically integrated cross-section normalized by \f$ \sigma_T \f$.
  */
-__host__ __device__ double total_compton_cross_num(double w, double thetae, double norm);
-
-
-/**
- * @brief Original integrand for the kappa distribution normalization over beta.
- *
- * Computes the un-normalized probability density for a given beta, where 
- * beta = ln(\f$ \gamma \f$). Note that this specific formulation exhibits an infinite 
- * derivative at the lower bound (beta = 0), making it poorly suited for 
- * uniform-grid numerical integration without a variable transformation.
- * 
- * @param beta The integration variable, defined as ln(gamma).
- * @param thetae The dimensionless electron temperature.
- * 
- * @return The value of the kappa distribution integrand at beta.
- */
-__host__ __device__ double kappa_integrand(double beta, double thetae);
+__host__ __device__ double total_compton_cross_num(double w, double thetae, double norm, double kappa);
 
 /**
  * @brief Transformed integrand for the kappa distribution normalization over u.
@@ -114,9 +100,11 @@ __host__ __device__ double kappa_integrand_u(double u, double thetae);
  * @param b The upper bound of integration.
  * @param N The number of subintervals (determines grid resolution).
  * @param thetae The dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
+ * 
  * @return The definite integral of d_kappa_function_int_u from a to b.
  */
-__host__ __device__ double simpsons_rule_u(double a, double b, int N, double thetae);
+__host__ __device__ double simpsons_rule_u(double a, double b, int N, double thetae, double kappa);
 
 /**
  * @brief Calculates the normalization constant for the kappa distribution on the GPU.
@@ -137,29 +125,32 @@ __host__ __device__ double simpsons_rule_u(double a, double b, int N, double the
  * but can be easily dialed up or down to control the exact performance-to-precision tradeoff.
  *
  * @param thetae The dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * @return The calculated normalization constant.
  */
-__host__ __device__ double dNdgammae_kappa_norm(double thetae);
+__host__ __device__ double dNdgammae_kappa_norm(double thetae, double kappa);
 
 
 /**
  * @brief Wrapper to select the appropriate normalization constant for the electron distribution function based on the simulation parameters.
  * 
  * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * 
  * @return The normalization constant for the selected distribution function. For power-law and thermal distributions, this returns 1.0 since they are already normalized by construction.
  */
-__host__ __device__ double getnorm_dNdgammae(double thetae);
+__host__ __device__ double getnorm_dNdgammae(double thetae, double kappa);
 
 /**
  * @brief Wrapper to select the appropriate electron distribution function based on the simulation parameters to calculate the electron distribution function for thermal or nonthermal electrons.
  * 
  * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
  * @param gammae Electron Lorentz factor \f$ \gamma_e \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * 
  * @return The value of \f$ dN/d\gamma_e \f$ for the selected distribution function.
  */
-__host__ __device__ double dNdgammae(double thetae, double gammae);
+__host__ __device__ double dNdgammae(double thetae, double gammae, double kappa);
 /**
  * @brief Calculates the kappa electron distribution function.
  *
@@ -167,10 +158,11 @@ __host__ __device__ double dNdgammae(double thetae, double gammae);
  *
  * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
  * @param gammae Electron Lorentz factor \f$ \gamma_e \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component.
  * 
  * @return The value of \f$ dN/d\gamma_e \f$ for a non-thermal distribution.
  */
-__host__ __device__ double dNdgammae_kappa(double thetae, double gammae);
+__host__ __device__ double dNdgammae_kappa(double thetae, double gammae, double kappa);
 
 /**
  * @brief Calculates the Maxwell-Jüttner electron distribution function.

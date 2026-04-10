@@ -26,12 +26,12 @@ struct f_params {
 };
 
 
-__device__ double brent_find_root(double (*f)(double, void*), void* params,
-                                  double x0, double x1, double tol, int max_steps) {
+__device__ double brent_find_root(double (*f)(double, double, void*), void* params,
+                                  double x0, double x1, double tol, int max_steps, double kappa) {
     
     double a = x0, b = x1, c = x0;
-    double fa = f(a, params);
-    double fb = f(b, params);
+    double fa = f(a, kappa, params);
+    double fb = f(b, kappa, params);
     double fc = fa;
     double d = b - a, e = d;
 
@@ -97,7 +97,7 @@ __device__ double brent_find_root(double (*f)(double, void*), void* params,
         if (fabs(d) > tol1) b += d;
         else b += (xm > 0.0 ? tol1 : -tol1);
 
-        fb = f(b, params);
+        fb = f(b, kappa, params);
 
         if ((fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0)) {
             c = a; 
@@ -109,85 +109,85 @@ __device__ double brent_find_root(double (*f)(double, void*), void* params,
 
     return b;
 }
-__device__ double find_y(double u, double (*df)(double), double (*f)(double, void *), double w) {
+__device__ double find_y(double u, double (*df)(double, double), double (*f)(double, double, void *), double w, double kappa) {
     double low = 1e-6; 
     double high = 1e6; 
     double tol = 1e-10;
     int max_steps = 1000;
     struct f_params params = {u};
-    return brent_find_root(f, &params, low, high, tol, max_steps);
+    return brent_find_root(f, &params, low, high, tol, max_steps, kappa);
 }
 
-__device__ double dF3(double y) {
+__device__ double dF3(double y, double kappa) {
     double value, denom, num;
     double y2 = y * y;
 
-    num = 4. * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.) *
-          tgamma(KAPPA_SYNCH);
-    denom = sqrt(M_PI) * sqrt(KAPPA_SYNCH) * tgamma(KAPPA_SYNCH - 1. / 2.);
+    num = 4. * y2 * pow((kappa + y2) / (kappa), -kappa - 1.) *
+          tgamma(kappa);
+    denom = sqrt(M_PI) * sqrt(kappa) * tgamma(kappa - 1. / 2.);
     value = num / denom;
 
     return value;
 }
 
-__device__ double dF4(double y) {
+__device__ double dF4(double y, double kappa) {
     double y2 = y * y;
-    double num = 2. * (KAPPA_SYNCH - 1) * y2 * y * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1.);
+    double num = 2. * (kappa - 1) * y2 * y * pow((kappa + y2) / (kappa), -kappa - 1.);
 
-    return num / KAPPA_SYNCH;
+    return num / kappa;
 }
 
-__device__ double dF5(double y) {
+__device__ double dF5(double y, double kappa) {
     double value, denom, num;
     double y2 = y * y;
 
-    num = 8 * y2 * y2 * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1) *
-          tgamma(KAPPA_SYNCH);
+    num = 8 * y2 * y2 * pow((kappa + y2) / (kappa), -kappa - 1) *
+          tgamma(kappa);
     denom =
-        3 * sqrt(M_PI) * pow(KAPPA_SYNCH, 3. / 2.) * tgamma(KAPPA_SYNCH - 3. / 2.);
+        3 * sqrt(M_PI) * pow(kappa, 3. / 2.) * tgamma(kappa - 3. / 2.);
     value = num / denom;
 
     return value;
 }
 
-__device__ double dF6(double y) {
+__device__ double dF6(double y, double kappa) {
     double value, denom, num;
     double y2 = y * y;
 
-    num = (KAPPA_SYNCH * KAPPA_SYNCH - 3. * KAPPA_SYNCH + 2) * pow(y, 5.) *
-          pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH - 1);
-    denom = KAPPA_SYNCH * KAPPA_SYNCH;
+    num = (kappa * kappa - 3. * kappa + 2) * pow(y, 5.) *
+          pow((kappa + y2) / (kappa), -kappa - 1);
+    denom = kappa * kappa;
     value = num / denom;
     return value;
 }
 
-__device__ double F3(double y, void *params) {
+__device__ double F3(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
     double value, denom, num, hyp2F1;
 
     double y2 = y * y;
-    double z = -y2 / KAPPA_SYNCH;
+    double z = -y2 / kappa;
 
-    hyp2F1 = hypergeom_eval(-z);
+    hyp2F1 = hypergeom_eval(-z, kappa);
 
-    num = -sqrt(KAPPA_SYNCH) * pow(((y2 + KAPPA_SYNCH) / KAPPA_SYNCH), -KAPPA_SYNCH) *
-          tgamma(KAPPA_SYNCH) *
-          (-KAPPA_SYNCH * hyp2F1 + y2 * (2 * KAPPA_SYNCH + 1) + KAPPA_SYNCH);
-    denom = y * sqrt(M_PI) * tgamma(3. / 2. + KAPPA_SYNCH);
+    num = -sqrt(kappa) * pow(((y2 + kappa) / kappa), -kappa) *
+          tgamma(kappa) *
+          (-kappa * hyp2F1 + y2 * (2 * kappa + 1) + kappa);
+    denom = y * sqrt(M_PI) * tgamma(3. / 2. + kappa);
 
     value = num / denom - u;
 
     return value;
 }
 
-__device__ double F4(double y, void *params) {
+__device__ double F4(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
     double value, denom, num;
     double y2 = y * y;
 
-    num = 1 - (1 + y2) * pow((KAPPA_SYNCH + y2) / (KAPPA_SYNCH), -KAPPA_SYNCH);
+    num = 1 - (1 + y2) * pow((kappa + y2) / (kappa), -kappa);
     denom = 1;
 
     value = num / denom - u;
@@ -195,36 +195,35 @@ __device__ double F4(double y, void *params) {
     return value;
 }
 
-__device__ double F5(double y, void *params) {
+__device__ double F5(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
 
     double value, denom, num, hyp2F1;
 
     double y2 = y * y;
-    double z = -y2 / KAPPA_SYNCH;
+    double z = -y2 / kappa;
 
-    hyp2F1 = hypergeom_eval(-z);
+    hyp2F1 = hypergeom_eval(-z, kappa);
 
-    num = pow((y2 + KAPPA_SYNCH) / KAPPA_SYNCH, -KAPPA_SYNCH) * tgamma(KAPPA_SYNCH) *
-          (3 * KAPPA_SYNCH * KAPPA_SYNCH * (hyp2F1 - 1) +
-           (1. - 4. * KAPPA_SYNCH * KAPPA_SYNCH) * y2 * y2 -
-           3. * KAPPA_SYNCH * (2. * KAPPA_SYNCH + 1.) * y2);
-    denom = 3. * pow(KAPPA_SYNCH, 1. / 2.) * y * sqrt(M_PI) *
-            tgamma(3. / 2. + KAPPA_SYNCH);
+    num = pow((y2 + kappa) / kappa, -kappa) * tgamma(kappa) *
+          (3 * kappa * kappa * (hyp2F1 - 1) +
+           (1. - 4. * kappa * kappa) * y2 * y2 -
+           3. * kappa * (2. * kappa + 1.) * y2);
+    denom = 3. * pow(kappa, 1. / 2.) * y * sqrt(M_PI) *
+            tgamma(3. / 2. + kappa);
     value = num / denom - u;
 
     return value;
 }
 
-__device__ double F6(double y, void *params) {
+__device__ double F6(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
 
     double value, denom, num;
     double y2 = y * y;
     double y4 = y2 * y2;
-    double kappa = KAPPA_SYNCH;
 
     num = (y4 - (y4 + 2. * y2 + 2.) * kappa) *
           pow((kappa + y2) / (kappa), -kappa);
@@ -234,18 +233,18 @@ __device__ double F6(double y, void *params) {
     return value;
 }
 
-__device__ double sample_y_distr_nth(double Thetae, curandState * localState) {
-    double w = (KAPPA_SYNCH - 3.) / KAPPA_SYNCH * Thetae;
+__device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * localState) {
+    double w = (kappa - 3.) / kappa * Thetae;
     double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
     double num, den;
 
-    pi_3 = sqrt(KAPPA_SYNCH) * sqrt(M_PI) * tgamma(-1. / 2. + KAPPA_SYNCH) /
-           (4. * tgamma(KAPPA_SYNCH));
-    pi_4 = KAPPA_SYNCH / (2. * KAPPA_SYNCH - 2.) * sqrt(0.5 * w);
-    pi_5 = 3. * pow(KAPPA_SYNCH, 3. / 2.) * sqrt(M_PI) *
-           tgamma(-3. / 2. + KAPPA_SYNCH) / (8. * tgamma(KAPPA_SYNCH)) * w;
+    pi_3 = sqrt(kappa) * sqrt(M_PI) * tgamma(-1. / 2. + kappa) /
+           (4. * tgamma(kappa));
+    pi_4 = kappa / (2. * kappa - 2.) * sqrt(0.5 * w);
+    pi_5 = 3. * pow(kappa, 3. / 2.) * sqrt(M_PI) *
+           tgamma(-3. / 2. + kappa) / (8. * tgamma(kappa)) * w;
     pi_6 =
-        KAPPA_SYNCH * KAPPA_SYNCH / (2. - 3. * KAPPA_SYNCH + KAPPA_SYNCH * KAPPA_SYNCH) * w * sqrt(0.5 * w);
+        kappa * kappa / (2. - 3. * kappa + kappa * kappa) * w * sqrt(0.5 * w);
 
     S_3 = pi_3 + pi_4 + pi_5 + pi_6;
 
@@ -258,13 +257,13 @@ __device__ double sample_y_distr_nth(double Thetae, curandState * localState) {
         x1 = curand_uniform_double(localState);
         double u = curand_uniform_double(localState);
         if (x1 < pi_3) {
-            y = find_y(u, dF3, F3, w);
+            y = find_y(u, dF3, F3, w, kappa);
         } else if (x1 < pi_3 + pi_4) {
-            y = find_y(u, dF4, F4, w);
+            y = find_y(u, dF4, F4, w, kappa);
         } else if (x1 < pi_3 + pi_4 + pi_5) {
-            y = find_y(u, dF5, F5, w);
+            y = find_y(u, dF5, F5, w, kappa);
         } else {
-            y = find_y(u, dF6, F6, w);
+            y = find_y(u, dF6, F6, w, kappa);
         }
 
         x2 = curand_uniform_double(localState);

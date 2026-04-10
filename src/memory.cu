@@ -108,7 +108,11 @@ __host__ void transferParams(cudaStream_t stream) {
     symbolToDevice(&d_thetae_unit, &Thetae_unit, sizeof(double), stream);
     symbolToDevice(&d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double), stream);
     if(params.kappa_synch || params.powerlaw_synch){
-        symbolToDevice(&d_F_nth, &F_nth, (N_ESAMP + 1) * sizeof(double), stream);
+        #if VARIABLE_KAPPA
+            symbolToDevice(&d_F_nth, &F_nth, (KAPPA_NSAMP) * (N_ESAMP + 1) * sizeof(double), stream);
+        #else
+            symbolToDevice(&d_F_nth, &F_nth, (N_ESAMP + 1) * sizeof(double), stream);
+        #endif
     }else{
         symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
     }
@@ -260,7 +264,7 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *bat
         }
 
         // Add a safety margin (e.g. 20%) for CUDA runtime overhead, texture memory, etc.
-        size_t required_with_margin = (size_t)(required_mem * 1.2);
+        size_t required_with_margin = (size_t)(required_mem * 1.5);
 
         if (*batch_divisions == 1 && required_with_margin > free_mem) {
             printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",

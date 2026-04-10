@@ -21,6 +21,7 @@
 #include "jnu_mixed.h"
 #include "hotcross.h"
 #include "utils.h"
+#include "model.h"
 
 
 __device__ double Bnu_inv(const double nu, const double Thetae)
@@ -39,33 +40,55 @@ __device__ double Bnu_inv(const double nu, const double Thetae)
 	}
 }
 
+__host__ __device__ double get_model_kappa(double X[NDIM], double * d_p)
+{
+	#if VARIABLE_KAPPA
+	double sigma, beta;
+	get_model_sigma_beta(X, d_p, &sigma, &beta);
+	double kappa = 2.8 + 0.7*pow(sigma,-0.5) + 3.7*pow(sigma,-0.19)*tanh(23.4*pow(sigma,0.26)*beta);
+	return fmax(KAPPA_MIN, kappa);  // Beware this clips kappa of NaN -> kappa_min as well
+	#else
+	return KAPPA_SYNCH;
+	#endif
+}
+__host__ __device__ double get_model_kappa_ijk(const int i, const int j, const int k, const double * d_p)
+{
+	#if VARIABLE_KAPPA
+	double sigma = d_p[NPRIM_INDEX3D(SIGMA, i,j,k)];
+	double beta = d_p[NPRIM_INDEX3D(BETA, i,j,k)];
+	double kappa = 2.8 + 0.7*pow(sigma,-0.5) + 3.7*pow(sigma,-0.19)*tanh(23.4*pow(sigma,0.26)*beta);
+	return fmax(KAPPA_MIN, kappa);  // Beware this clips kappa of NaN -> kappa_min as well
+	#else
+	return KAPPA_SYNCH;
+	#endif
+}
 
-__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta)
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa)
 {
 	double j;
 	double K2 = K2_eval(Thetae);
 
-	j = jnu_total(nu, Ne, Thetae, B, theta, K2);
+	j = jnu_total(nu, Ne, Thetae, B, theta, K2, kappa);
 
 	return (j / (nu * nu));
 }
 
 /* return Lorentz invariant scattering opacity */
-__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr)
+__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double kappa, const double * __restrict__ d_table_ptr)
 {
-	return (nu * kappa_es(nu, Thetae, d_table_ptr) * Ne * MP);
+	return (nu * kappa_es(nu, Thetae, d_table_ptr, kappa) * Ne * MP);
 }
 
 /* return Lorentz invariant absorption opacity */
-__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta)
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa)
 {
 	if (d_kappa_synch){
-		return (nu * anu_synch_kappa(nu, Ne, Thetae, B, theta)) * exp(-nu / NU_CUTOFF);
+		return (anu_synch_kappa(nu, Ne, Thetae, B, theta, kappa));
 	}else if (d_powerlaw_synch){
-		return (nu * anu_synch_powerlaw(nu, Ne, B, theta));
+		return (anu_synch_powerlaw(nu, Ne, B, theta));
 	}else{
 		//Fallback in case only bremsstrahlung, only thermal synchrotron or bremsstrahlung + thermal synchrotron active. 
-		return alpha_inv_abs_thermal(nu, Thetae, Ne, B, theta);
+		return alpha_inv_abs_thermal(nu, Thetae, Ne, B, theta, kappa);
 	}
 }
 
@@ -89,10 +112,15 @@ __device__ double anu_synch_powerlaw(double nu, double Ne, double B, double thet
 
     double factor = (Ne * (EE * EE)) / (nu * ME * CL);
 
-    return As * factor;
+    return nu * As * factor;
 }
 
-__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta) {
+__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta, const double kappa) {
+
+
+	if (kappa > KAPPA_MAX){
+		return alpha_inv_abs_thermal(nu, Thetae, Ne, B, theta, kappa);
+	}
     if (Thetae < THETAE_MIN) {
         return 0.0;
     }
@@ -102,15 +130,15 @@ __device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B,
         return 0.0;
     }
 
-    double w = (KAPPA_SYNCH - 3.0) / KAPPA_SYNCH * Thetae;
-    double z = -KAPPA_SYNCH * w;
+    double w = (kappa - 3.0) / kappa * Thetae;
+    double z = -kappa * w;
 
     if (fabs(z) == 1.0) {
         return 0.0;
     }
+	
 
-
-    double w_kappa = w * KAPPA_SYNCH; 
+    double w_kappa = w * kappa; 
     
     double nuc = EE * B / (2.0 * M_PI * ME * CL);
     double nus = nuc * sth * (w_kappa * w_kappa); 
@@ -121,9 +149,9 @@ __device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B,
     }
 
     double hyp2F1;
-    double a = KAPPA_SYNCH - 1.0 / 3.0;
-    double b = KAPPA_SYNCH + 1.0;
-    double c = KAPPA_SYNCH + 2.0 / 3.0;
+    double a = kappa - 1.0 / 3.0;
+    double b = kappa + 1.0;
+    double c = kappa + 2.0 / 3.0;
 
     if (fabs(z) < 1.0) {
         hyp2F1 = cuda_hyperg_2F1(a, b, c, z);
@@ -137,29 +165,29 @@ __device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B,
                      cuda_hyperg_2F1(b, c - a, b - a + 1.0, inv_one_minus_z);
     }
 
-    double k_term = (KAPPA_SYNCH - 2.0) * (KAPPA_SYNCH - 1.0) * KAPPA_SYNCH;
+    double k_term = (kappa - 2.0) * (kappa - 1.0) * kappa;
     
     double A_low = pow(X_kappa, -5.0 / 3.0) * pow(3.0, 1.0 / 6.0) * (10.0 / 41.0) *
-                   (4.0 * M_PI * M_PI) / pow(w_kappa, 16.0 / 3.0 - KAPPA_SYNCH) * k_term / (3.0 * KAPPA_SYNCH - 1.0) * tgamma(5.0 / 3.0) * hyp2F1;
+                   (4.0 * M_PI * M_PI) / pow(w_kappa, 16.0 / 3.0 - kappa) * k_term / (3.0 * kappa - 1.0) * tgamma(5.0 / 3.0) * hyp2F1;
 
-    double A_high = pow(X_kappa, -(3.0 + KAPPA_SYNCH) / 2.0) * (2.0 * pow(M_PI, 5.0 / 2.0) / 3.0) *
+    double A_high = pow(X_kappa, -(3.0 + kappa) / 2.0) * (2.0 * pow(M_PI, 5.0 / 2.0) / 3.0) *
                     (k_term / pow(w_kappa, 5.0)) *
-                    (2.0 * tgamma(2.0 + KAPPA_SYNCH / 2.0) / (2.0 + KAPPA_SYNCH) - 1.0) *
-                    (pow(3.0 / KAPPA_SYNCH, 19.0 / 4.0) + 0.6);
+                    (2.0 * tgamma(2.0 + kappa / 2.0) / (2.0 + kappa) - 1.0) *
+                    (pow(3.0 / kappa, 19.0 / 4.0) + 0.6);
 
-    double x = pow(-1.75 + 1.6 * KAPPA_SYNCH, -0.86);
+    double x = pow(-1.75 + 1.6 * kappa, -0.86);
     double A_s = pow((pow(A_low, -x) + pow(A_high, -x)), -1.0 / x);
 
     double factor = (Ne * EE) / (B * sth);
 
-    return factor * A_s;
+    return nu * factor * A_s * exp(-nu / NU_CUTOFF);
 }
 
 /* return Lorentz invariant absorption opacity for thermal synchrotron */
-__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B,double theta)
+__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa)
 {
 	double j, bnu;
-	j = jnu_inv(nu, Thetae, Ne, B, theta);
+	j = jnu_inv(nu, Thetae, Ne, B, theta, kappa);
 	bnu = Bnu_inv(nu, Thetae);
 	if (j > 0){
 		return (j / (bnu + 1.e-100));
@@ -169,16 +197,18 @@ __device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, co
 
 
 /* return electron scattering opacity, in cgs */
-__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr)
+//#define SCATTERING_OPACITY_CONSTANT (HPL/(ME * CL * CL))
+#define SCATTERING_OPACITY_CONSTANT (8.093299734781324e-21)/*h/(m_e c^2)*/
+__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr, const double kappa)
 {
 	double Eg;
 
 	/* assume pure hydrogen gas to 
 	   convert cross section to opacity */
-	Eg = HPL * nu / (ME * CL * CL);
-	double result = (total_compton_cross_lkup(Eg, Thetae, d_table_ptr) / MP);
+	Eg = SCATTERING_OPACITY_CONSTANT * nu;
+	double result = (total_compton_cross_lkup(Eg, Thetae, kappa, d_table_ptr) / MP);
 	if (isnan(result)){
-		printf("kappa_es is nan: %le, %le", nu, Thetae);
+		printf("kappa_es is nan: %le, %le\n", nu, Thetae);
 	}
 	return result;
 }

@@ -84,11 +84,11 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 		#else
 			get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 		#endif
-		
+		const double kappa = get_model_kappa(XArray, d_p);
 		theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 		nu = get_fluid_nu(XArray, KArray, Ucov);
-		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
-		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, kappa, d_table_ptr);
+		alpha_absi = alpha_inv_abs(nu, Thetae, Ne, B, theta, kappa);
 		bi = bias_func(Thetae, ph.w[photon_index], round_scat);
 	}
 	/* Initialize dK/dlam */
@@ -118,6 +118,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 			#else
 				get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
 			#endif
+			const double kappa = get_model_kappa(XArray, d_p);
 
 			
 
@@ -145,12 +146,12 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 					bi = 0.;
 					
 				} else {
-					double alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne, d_table_ptr);
+					double alpha_scattf = alpha_inv_scatt(nu, Thetae, Ne, kappa, d_table_ptr);
 
 					dtau_scatt = 0.5 * (alpha_scatti + alpha_scattf) * dtauK * dl;
 					alpha_scatti = alpha_scattf;
 
-					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta);
+					double alpha_absf = alpha_inv_abs(nu, Thetae, Ne, B, theta, kappa);
 					dtau_abs = 0.5 * (alpha_absi + alpha_absf) * dtauK * dl;
 					alpha_absi = alpha_absf;
 
@@ -209,7 +210,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 						#else
 							get_fluid_params(XArray, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
 						#endif
-						
+						const double kappa = get_model_kappa(XArray, d_p);
 						if (Ne_scat > 0.) {
 							if (ph.w[photon_index] < 1.e-100) {
 								return;
@@ -247,8 +248,8 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 						if (nu_scat < 0.) {
 							alpha_scatti = alpha_absi = 0.;
 						} else {
-							alpha_scatti = alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, d_table_ptr);
-							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat);
+							alpha_scatti = alpha_inv_scatt(nu_scat, Thetae_scat, Ne_scat, kappa, d_table_ptr);
+							alpha_absi = alpha_inv_abs(nu_scat, Thetae_scat, Ne_scat, B_scat, theta_scat, kappa);
 						}
 						bi = bias_func(Thetae_scat, ph.w[photon_index], round_scat);
 					}

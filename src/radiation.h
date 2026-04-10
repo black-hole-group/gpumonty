@@ -36,11 +36,34 @@ Declaration of the functions in radiation.cu file
  * @param Ne Electron number density \f$ N_e \f$ in cgs.
  * @param B Magnetic field strength \f$ B \f$ in Gauss.
  * @param theta Pitch angle \f$ \theta \f$ between the photon wavevector and the magnetic field.
+ * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
  *
  * @return The invariant emissivity \f$ j_\nu / \nu^2 \f$.
  */
-__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta);
+__device__ double jnu_inv(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa);
 
+/**
+ * @brief Retrieves the kappa parameter for the non-thermal electron distribution at a given position for VARIABLE_KAPPA model using Ball+2016 model.
+ * 
+ * @param X The 4-position of the photon.
+ * @param d_p Pointer to the device memory containing the primitive variables of the iharm model, including the plasma beta and magnetization that are used to calculate kappa.
+ * 
+ * @return The kappa parameter value at the given position. If VARIABLE_KAPPA is not defined, it returns a constant KAPPA_SYNCH.
+ */
+__host__ __device__ double get_model_kappa(double X[NDIM], double * d_p);
+
+
+/**
+ * @brief Retrieves the kappa parameter for the non-thermal electron distribution at a given cell-center for VARIABLE_KAPPA model using Ball+2016 model.
+ * 
+ * @param i The radial index of the cell.
+ * @param j The polar index of the cell.
+ * @param k The azimuthal index of the cell.
+ * @param d_p Pointer to the device memory containing the primitive variables of the iharm model, including the plasma beta and magnetization that are used to calculate kappa.
+ * 
+ * @return The kappa parameter value at the given cell. If VARIABLE_KAPPA is not defined, it returns a constant KAPPA_SYNCH.
+ */
+__host__ __device__ double get_model_kappa_ijk(const int i, const int j, const int k, const double * d_p);
 /**
  * @brief Calculates the invariant Planck source function for a thermal distribution.
  *
@@ -79,10 +102,11 @@ __device__ double Bnu_inv(const double nu, const double Thetae);
  * @param nu Photon frequency in the fluid frame (Hz).
  * @param Thetae Dimensionless electron temperature \f$ \Theta_{\rm e} \f$.
  * @param d_table_ptr Pointer to the GPU memory containing the precomputed cross-section lookup table.
+ * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
  * 
  * @return The electron scattering opacity in \f$ \text{cm}^2/\text{g} \f$.
  */
-__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr);
+__device__ double kappa_es(const double nu, const double Thetae, const double * __restrict__ d_table_ptr, const double kappa);
 
 /**
  * @brief Computes the photon frequency in the local fluid frame (Hz).
@@ -124,7 +148,7 @@ __device__ double get_fluid_nu(const double X[NDIM] , const double K[NDIM] , con
  * 
  * @return The invariant scattering coefficient \f$\nu \alpha_{s}\f$ [units: Hz \f$ \rm{cm}^{-1} \f$].
  */
-__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double * __restrict__ d_table_ptr);
+__device__ double alpha_inv_scatt(const double nu, const double Thetae, const double Ne, const double kappa, const double * __restrict__ d_table_ptr);
 
 
 /**
@@ -148,7 +172,7 @@ __device__ double alpha_inv_scatt(const double nu, const double Thetae, const do
  *
  * @note A small epsilon (\f$ 10^{-100} \f$) is added to the denominator to prevent division by zero.
  */
-__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B, double theta);
+__device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa);
 
 
 /**
@@ -159,9 +183,10 @@ __device__ double alpha_inv_abs_thermal(const double nu, const double Thetae, co
  * @param Ne Electron number density \f$N_e\f$ (cm\f$^{-3}\f$).
  * @param B Magnetic field strength (Gauss).
  * @param theta Pitch angle between photon and magnetic field.
+ * @param kappa The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
  * @return The total invariant absorption coefficient \f$\nu \alpha_{a}\f$ [units: Hz \f$ \rm{cm}^{-1} \f$], including contributions from both thermal and non-thermal processes.
  */
-__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, double theta);
+__device__ double alpha_inv_abs(const double nu, const double Thetae, const double Ne, const double B, const double theta, const double kappa);
 
 /**
  * @brief Calculates the pitch angle between the photon wavevector and the magnetic field.
@@ -194,12 +219,13 @@ __device__ double get_bk_angle(const double X[NDIM], const double K[NDIM] , cons
  * @param Thetae  The dimensionless electron temperature (kT_e / m_e c^2).
  * @param B       The local magnetic field strength [Gauss].
  * @param theta   The pitch angle between the photon wavevector and the magnetic field [radians].
+ * @param kappa  The shape parameter of the kappa distribution, which controls the slope of the non-thermal tail. This allows for flexibility in modeling different electron energy distributions.
  *
  * @return The synchrotron absorption coefficient. Returns 0.0 if the pitch angle 
  * is practically zero, the temperature is below THETAE_MIN, or if the 
  * normalized frequency (X_kappa) exceeds physically relevant bounds.
  */
-__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta);
+__device__ double anu_synch_kappa(double nu, double Ne, double Thetae, double B, double theta, const double kappa);
 
 /**
  * @brief Computes the synchrotron absorption coefficient for a power-law electron distribution.

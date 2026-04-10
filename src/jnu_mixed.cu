@@ -34,14 +34,14 @@ __device__ double jnu_ratio_brems(const double nu, const double Ne, const double
 	return bremss/(synch + bremss);
 }
 
-__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2){
+__device__ double jnu_total(const double nu, const double Ne, const double Thetae, const double B, const double theta, const double K2, const double kappa){
 	double j = 0;
 
 
 	if(d_thermal_synch)
 		j += jnu_synch(nu, Ne, Thetae, B, theta,K2 );
 	if(d_kappa_synch)
-		j += jnu_synch_nonthermal_kappa(nu, Ne, Thetae, B, theta);
+		j += jnu_synch_nonthermal_kappa(nu, Ne, Thetae, B, theta, kappa);
 	if(d_powerlaw_synch)
 		j += jnu_synch_nonthermal_powerlaw(nu, Ne, Thetae, B, theta);
 	if(d_bremsstrahlung)
@@ -110,7 +110,7 @@ __host__ __device__  double jnu_bremss(const double nu, const double Ne, const d
 }
 #undef BREMS_FAC
 
-__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2)
+__host__ __device__ double int_jnu_total(const double Ne, const double Thetae, const double Bmag, const double nu, const double K2, const double kappa)
 {
 	#ifdef __CUDA_ARCH__
 		int is_thermal_synch = d_thermal_synch;
@@ -128,7 +128,7 @@ __host__ __device__ double int_jnu_total(const double Ne, const double Thetae, c
 	if(is_thermal_synch)
 		intj += int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, K2);
 	if(is_kappa_synch || is_powerlaw_synch)
-		intj += int_jnu_nth(Ne, Thetae, Bmag, nu);
+		intj += int_jnu_nth(Ne, Thetae, Bmag, kappa, nu);
 	if(is_bremsstrahlung)
 		intj += int_jnu_bremss(Ne, Thetae, nu);
 	
@@ -143,7 +143,7 @@ __host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, doubl
  * frequency nu in cgs										*/
 
 	double j_fac;
-	double F_eval(const double Thetae, const double B, const double nu, int ACCZONE);
+	double F_eval(const double Thetae, const double B, const double nu, const double kappa, int ACCZONE);
 
 
 	if (Thetae < THETAE_MIN)
@@ -155,7 +155,9 @@ __host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, doubl
 		return 0.;
 
 	j_fac = Ne * Bmag * Thetae * Thetae / K2;
-	return JCST * j_fac * F_eval(Thetae, Bmag, nu, 0);
+	
+	// 0.0 here refers to variable kappa model, not used in thermal
+	return JCST * j_fac * F_eval(Thetae, Bmag, nu, 0.0, 0);
 }
 
 #undef JCST
@@ -261,7 +263,7 @@ __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, con
 }
 #undef KFAC
 
-__host__ __device__ double F_eval(double Thetae, double Bmag, double nu, int ACCZONE)
+__host__ __device__ double F_eval(double Thetae, double Bmag, double nu, double kappa, int ACCZONE)
 {
 	#ifdef __CUDA_ARCH__
 		int is_thermal_synch = d_thermal_synch;
@@ -277,7 +279,7 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu, int ACC
 	if (is_thermal_synch) {
 		F_eval = F_eval_th(Thetae, Bmag, nu);
 	} else if (is_kappa_synch) {
-		F_eval = F_eval_kappa(Thetae, Bmag, nu);
+		F_eval = F_eval_kappa(Thetae, Bmag, nu, kappa);
 	} else if (is_powerlaw_synch) {
 		F_eval = F_eval_powerlaw(Thetae, Bmag, nu);
 	}
@@ -335,9 +337,9 @@ __host__ __device__ double linear_interp_K2(const double Thetae)
 
 //Nonthermal part
 
-__device__ double hypergeom_eval(double X) {
+__device__ double hypergeom_eval(double X, double kappa) {
     double a = 1.;
-    double b = - KAPPA_SYNCH - 1. / 2.;
+    double b = - kappa - 1. / 2.;
     double c = 1. / 2.;
 
     if (fabs(X) > 1) {
@@ -384,12 +386,19 @@ __host__ double jnu_integrand_powerlaw(double th, void *params) {
     return Js * factor;
 }
 
+struct kappa_jnu_params {
+    double K;
+    double kappa;
+};
 
 
 __host__  double jnu_integrand_kappa(double th, void *params) {
 
     double jnu;
-    double K = *(double *)params;
+	struct kappa_jnu_params *p = (struct kappa_jnu_params *)params;
+    double K = p->K;
+    double kappa = p->kappa;
+    // double K = *(double *)params;
     double sth = sin(th);
     double X_kappa = K / sth;
     double x, factor;
@@ -402,13 +411,13 @@ __host__  double jnu_integrand_kappa(double th, void *params) {
     factor = (sth * sth);
 
 
-    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(KAPPA_SYNCH - 4. / 3.) /
-            (pow(3., 7. / 3.) * tgamma(KAPPA_SYNCH - 2.));
+    J_low = pow(X_kappa, 1. / 3.) * 4. * M_PI * tgamma(kappa - 4. / 3.) /
+            (pow(3., 7. / 3.) * tgamma(kappa - 2.));
 
-    J_high = pow(X_kappa, -(KAPPA_SYNCH - 2.) / 2.) * pow(3., (KAPPA_SYNCH - 1.) / 2.) *
-             (KAPPA_SYNCH - 2.) * (KAPPA_SYNCH - 1.) / 4. * tgamma(KAPPA_SYNCH / 4. - 1. / 3.) *
-             tgamma(KAPPA_SYNCH / 4. + 4. / 3.);
-    x = 3. * pow(KAPPA_SYNCH, -3. / 2.);
+    J_high = pow(X_kappa, -(kappa - 2.) / 2.) * pow(3., (kappa - 1.) / 2.) *
+             (kappa - 2.) * (kappa - 1.) / 4. * tgamma(kappa / 4. - 1. / 3.) *
+             tgamma(kappa / 4. + 4. / 3.);
+    x = 3. * pow(kappa, -3. / 2.);
 
     J_s = pow((pow(J_low, -x) + pow(J_high, -x)), -1. / x);
 
@@ -418,64 +427,75 @@ __host__  double jnu_integrand_kappa(double th, void *params) {
 
 
 
-
-#define HYPMIN (1e-5)
-#define HYPMAX (10000)
-#define N_HYP (9000)
-#define kappa_min (3.)
-#define kappa_max (10.)
-#define N_k (70)
-#define dkappa (0.1)
-
-double hypergeom[N_k][N_HYP];
 __host__ void init_emiss_tables_nth(void) {
-
     int k;
-    double result, err, K;
+    double result, err;
     gsl_function func;
-    gsl_integration_workspace *w;
-	if(params.kappa_synch){
-		func.function = &jnu_integrand_kappa;
-		func.params = &K;
-	} else if(params.powerlaw_synch){
-		func.function = &jnu_integrand_powerlaw;
-		func.params = &K;
-	}
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(5000);
 
     double lK_min = log(KMIN);
     double dlK = log(KMAX / KMIN) / (N_ESAMP);
 
-    double lT_min = log(TMIN);
-    double dlT = log(TMAX / TMIN) / (N_ESAMP);
-    w = gsl_integration_workspace_alloc(5000);
-    for (k = 0; k <= N_ESAMP; k++) {
-        K = exp(k * dlK + lK_min);
-        gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL, 5000,
-                            GSL_INTEG_GAUSS61, w, &result, &err);
-        F_nth[k] = log(4. * M_PI * result);
-    }
-    gsl_integration_workspace_free(w);
+    if (params.kappa_synch) {
+        func.function = &jnu_integrand_kappa;
+        
+        struct kappa_jnu_params p;
+        func.params = &p;
 
+#ifdef VARIABLE_KAPPA
+        for (int i = 0; i <= KAPPA_NSAMP; i++) {
+            p.kappa = KAPPA_MIN + i * DKAPPA;
+            
+            for (k = 0; k <= N_ESAMP; k++) {
+                p.K = exp(k * dlK + lK_min);
+                
+                gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL, 5000,
+                                    GSL_INTEG_GAUSS61, w, &result, &err);
+                
+                F_nth[i][k] = log(4. * M_PI * result);
+            }
+        }
+#else
+        p.kappa = KAPPA_SYNCH;
+        
+        for (k = 0; k <= N_ESAMP; k++) {
+            p.K = exp(k * dlK + lK_min);
+            
+            gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL, 5000,
+                                GSL_INTEG_GAUSS61, w, &result, &err);
+            
+            F_nth[k] = log(4. * M_PI * result);
+        }
+    } else if (params.powerlaw_synch) {
+        func.function = &jnu_integrand_powerlaw;
+        
+        double K;
+        func.params = &K;
+
+        for (k = 0; k <= N_ESAMP; k++) {
+            K = exp(k * dlK + lK_min);
+            
+            gsl_integration_qag(&func, 0., M_PI / 2., EPSABS, EPSREL, 5000,
+                                GSL_INTEG_GAUSS61, w, &result, &err);
+            
+            F_nth[k] = log(4. * M_PI * result);
+        }
+	#endif
+	}
+
+    gsl_integration_workspace_free(w);
     return;
 }
 
-#undef HYPMIN
-#undef HYPMAX
-#undef N_HYP
-#undef kappa_min
-#undef kappa_max
-#undef N_k
-#undef dkappa
 
 //#define KFAC_KAPPA (EE/(2. * M_PI * ME * CL))
 #define KFAC_KAPPA (2.799250542245160e+06) /* e/(2π·mₑ·c) [CGS] */
-__host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
+__host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu, double kappa) {
 
     double K;
-    double linear_interp_F_nth(double);
+    double linear_interp_F_nth(double, double);
 
     double nuc = KFAC_KAPPA * Bmag;
-    double kappa = KAPPA_SYNCH;
     double wkap = (kappa - 3.) * Thetae; // w = (kappa - 3)/Kappa * Thetae. so wkap = w * kappa = (kappa - 3) * Thetae
     double nus = nuc * (wkap) * (wkap);
 
@@ -485,7 +505,7 @@ __host__ __device__ double F_eval_kappa(double Thetae, double Bmag, double nu) {
     if (K < KMIN) {
         return (0);
     }
-    return linear_interp_F_nth(K) * exp(-nu / NU_CUTOFF);
+    return linear_interp_F_nth(K, kappa) * exp(-nu / NU_CUTOFF);
 }
 #undef KFAC_KAPPA
 
@@ -517,12 +537,16 @@ __device__ double jnu_synch_nonthermal_powerlaw(double nu, double Ne, double The
     return Js * factor;
 }
 
-__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B, double theta) 
+__device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae, double B, double theta, double kappa) 
 {
+	// Here we also "limit" kappa <= 7.0 (or configurable val), as the fits deteriorate higher
+  	// Instead, we transparently return the (much more accurate) thermal fitting results
+	if(kappa > KAPPA_MAX)
+		return jnu_synch(nu, Ne, Thetae, B, theta, K2_eval(Thetae));
+		
     // emissivity for the kappa distribution function, see Pandya et al. 2016
     double nuc, sth, nus, x, w, X_kappa, factor;
     double J_low, J_high, J_s;
-    double kappa = KAPPA_SYNCH;
     w = (kappa - 3.) / kappa * Thetae;
     nuc = EE * B / (2. * M_PI * ME * CL);
     sth = sin(theta);
@@ -551,40 +575,80 @@ __device__ double jnu_synch_nonthermal_kappa(double nu, double Ne, double Thetae
 
 //#define JCST (EE * EE * EE /(2 * M_PI * ME * CL * CL))
 #define JCST (2.154188181456520e-23) /* e³/(2π·mₑ·c²) [CGS] */
-__host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, double nu) {
-    /* Returns energy per unit time at *
-     * frequency nu in cgs
-     */
-    int ACCZONE = 0;
-    double F_eval(double Thetae, double B, double nu, int ACCZONE);
+__host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, double kappa, double nu) {
+    #ifdef __CUDA_ARCH__
+		int is_kappa_synch = d_kappa_synch;
+		int is_powerlaw_synch = d_powerlaw_synch;
+	#else
+		int is_kappa_synch = params.kappa_synch;
+		int is_powerlaw_synch = params.powerlaw_synch;
+	#endif
+	int ACCZONE = 0;
+    double F_eval(double Thetae, double B, double nu, double kappa, int ACCZONE);
     if (Thetae < THETAE_MIN) {
         return 0.;
     }
-    return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, ACCZONE);
+	if(is_kappa_synch){
+		#if (VARIABLE_KAPPA)
+			// Here we also "limit" kappa <= 7.0 (or configurable val), as the fits deteriorate higher.
+			// Instead, we transparently return the (much more accurate) thermal fitting results
+			if(kappa > KAPPA_MAX){
+				double K2 = K2_eval(Thetae);
+				return int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, 0.);
+			}
+			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, kappa, ACCZONE);
+		#else
+			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, KAPPA_SYNCH, ACCZONE);
+		#endif
+	}else if(is_powerlaw_synch){
+    	return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, 0.0, ACCZONE);
+	}
+	return 0.;
 }
 #undef JCST
 
-__host__ __device__ double linear_interp_F_nth(double K) {
-
+__host__ __device__ double linear_interp_F_nth(double K, double kappa) {
     int i;
     double di, lK;
-	double lK_min = log(KMIN);
-	double dlK = log(KMAX / KMIN) / (N_ESAMP);
-	#ifdef __CUDA_ARCH__
-	double * local_F_nth;
-	local_F_nth = d_F_nth;
-	#else
-	double * local_F_nth;
-	local_F_nth = F_nth;
-	#endif
-
-
+    double lK_min = log(KMIN);
+    double dlK = log(KMAX / KMIN) / (N_ESAMP);
+    
     lK = log(K);
-
     di = (lK - lK_min)/dlK;
     i = (int)di;
     di = di - i;
+
+#ifdef VARIABLE_KAPPA
+    double dj = (kappa - KAPPA_MIN) / DKAPPA;
+    int j = (int) dj;
+    dj = dj - j;
+
+    double v_below, v_above;
+
+    #ifdef __CUDA_ARCH__
+    // GPU: Explicit 1D flat array access -> index = row * width + col
+    int width = N_ESAMP + 1;
+    v_below = exp((1. - di) * d_F_nth[j * width + i]       + di * d_F_nth[j * width + (i + 1)]);
+    v_above = exp((1. - di) * d_F_nth[(j + 1) * width + i] + di * d_F_nth[(j + 1) * width + (i + 1)]);
+    
+    #else
+    // CPU: Standard 2D array access
+    double (*local_F_nth_kappa)[N_ESAMP + 1] = F_nth;
+    v_below = exp((1. - di) * local_F_nth_kappa[j][i]       + di * local_F_nth_kappa[j][i + 1]);
+    v_above = exp((1. - di) * local_F_nth_kappa[j + 1][i]   + di * local_F_nth_kappa[j + 1][i + 1]);
+    #endif
+
+    // Interpolate between the two kappa bins
+    return (1. - dj) * v_below + dj * v_above;
+#else
+    #ifdef __CUDA_ARCH__
+    const double * local_F_nth = d_F_nth;
+    #else
+    const double * local_F_nth = F_nth;
+    #endif
+
     return exp((1. - di) * local_F_nth[i] + di * local_F_nth[i + 1]);
+#endif
 }
 
 //#define POWERLAW_FACTOR (EE/(2. * M_PI * ME * CL))
@@ -592,7 +656,7 @@ __host__ __device__ double linear_interp_F_nth(double K) {
 __host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu) {
 
     double K;
-    double linear_interp_F_nth(double);
+    double linear_interp_F_nth(double, double);
     double nuc = POWERLAW_FACTOR * Bmag;
 
     K = nu / nuc;
@@ -600,7 +664,7 @@ __host__ __device__ double F_eval_powerlaw(double Thetae, double Bmag, double nu
         return 0.;
     if (K < KMIN)
         return 0.;
-	
-    return linear_interp_F_nth(K);
+	// 0.0 here is for variable kappa_model
+    return linear_interp_F_nth(K, 0.0);
 }
 #undef POWERLAW_FACTOR

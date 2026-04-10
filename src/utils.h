@@ -125,7 +125,7 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
  * @note The function assumes periodicity in the third dimension (\f$k\f$). If the 
  * index \f$k\f$ is at the grid boundary (\f$d\_N3 - 1\f$), it wraps around to index 0.
  */
-__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
+__host__ __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
 
 /**
  * @brief Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset.

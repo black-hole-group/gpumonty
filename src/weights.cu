@@ -20,7 +20,7 @@
 #include "weights.h"
 #include "jnu_mixed.h"
 #include "utils.h"
-
+#include "radiation.h"
 __host__ void init_weight_table()
 {
 	fprintf(stderr, "Building table for superphoton weights\n");
@@ -53,13 +53,14 @@ __host__ void init_weight_table()
 			double Ne, Thetae, B;
 			double Ucon[NDIM], Bcon[NDIM];
 			get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
+			const double kappa = get_model_kappa_ijk(i, j, k, p);
 			if (Ne == 0. || Thetae < THETAE_MIN)
 				continue;
 			double fac = sfac * geom[SPATIAL_INDEX2D(i, j)].g;
 			double K2 = K2_eval(Thetae);
 
 			for (int l = 0; l <= N_ESAMP; l++){
-				sum_local[l] += int_jnu_total(Ne, Thetae, B, nu[l],K2) * fac;
+				sum_local[l] += int_jnu_total(Ne, Thetae, B, nu[l],K2, kappa) * fac;
 			}
 		}
 
@@ -76,50 +77,6 @@ __host__ void init_weight_table()
 
 	fprintf(stderr, "done.\n");
 	fflush(stderr);
-}
-
-__host__ void init_nint_table(void)
-{
-	/*
-	This function represents the integral of the solid angle averaged emissivity
-	over frequency.
-	*/
-
-	int i, j;
-	double Bmag, dn;
-	static int firstc = 1;
-    double lb_min, dlb;
-    double lnu_min = log(NUMIN);
-	double lnu_max = log(NUMAX);
-	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
-	if (firstc) {
-		lb_min = log(BTHSQMIN);
-		dlb = log(BTHSQMAX / BTHSQMIN) / NINT;
-		firstc = 0;
-	}
-
-	for (i = 0; i <= NINT; i++) {
-		nint[i] = 0.;
-		Bmag = exp(i * dlb + lb_min);
-		dndlnu_max[i] = 0.;
-		for (j = 0; j < N_ESAMP; j++) {
-			dn = F_eval(1., Bmag,
-				    exp(j * dlnu +
-					lnu_min), 0) / (exp(wgt[j]) +
-						     1.e-100);
-			if (dn > dndlnu_max[i])
-				dndlnu_max[i] = dn;
-			nint[i] += dlnu * dn;
-		}
-		nint[i] *= dx[1] * dx[2] * dx[3] * L_unit * L_unit * L_unit
-		    * M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-		    * 1. / HPL;
-		nint[i] = log(nint[i]);
-		dndlnu_max[i] = log(dndlnu_max[i]);
-
-	}
-
-	return;
 }
 
 

@@ -119,8 +119,9 @@
 
     /** 
      * Number of primitive variables in the iharm model. This should match the value read from the HDF5 file.
+     * Here we also add +2 for the plasma beta and magnetization that we calculate and store in the arrays.
     */
-    #define NPRIM	10
+    #define NPRIM	12
 
     #ifndef MODEL_FUNCTIONS
     #define MODEL_FUNCTIONS
@@ -190,7 +191,7 @@
      * 
      * @return void
      */
-    __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
+    __host__ __device__ void Xtoijk(const double X[NDIM], int *i, int *j, int *k, double del[NDIM]);
 
 
     /**
@@ -369,6 +370,19 @@
      * @param filename Name of the output file (saved in the `./output/` directory).
      */
     __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
+
+
+    /**
+     * @brief Retrieves the plasma beta and magnetization at a given position for the iharm model.
+     * 
+     * @param X The 4-position of the photon.
+     * @param d_p Pointer to the device memory containing the primitive variables of the iharm model, including the plasma beta and magnetization that we calculate and store in the arrays.
+     * @param beta Output pointer for the plasma beta value at the given position.
+     * @param sigma Output pointer for the plasma magnetization value at the given position.
+     * 
+     * @return void
+     */
+    __host__ __device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma);
 
     #endif
 

@@ -18,12 +18,19 @@
 #include "decs.h"
 #include "utils.h"
 
-__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
+__host__ __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
     int kp1 = k + 1;
     int ip1 = i + 1;
     int jp1 = j + 1;
-    if (k == (d_N3 - 1)){
+
+    #ifdef __CUDA_ARCH__
+    int local_N3 = d_N3; // Use the device constant for N3
+    #else
+    int local_N3 = N3; // Use the host constant for N3
+    #endif
+
+    if (k == (local_N3 - 1)){
         kp1 = 0;
     }
 

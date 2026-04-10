@@ -117,11 +117,6 @@ __host__ void init_model(char *args[])
 	init_weight_table();
 	double end = omp_get_wtime();
 	fprintf(stderr, "Time spent building weight table: %.4f seconds\n", end - start);
-	//init_weight_table_blackbody();
-	/* make table for quick evaluation of ns_zone */
-	/*Currently not using it*/
-	//init_nint_table();
-
 }
 /* set up all grid functions */
 __host__ void init_geometry()
@@ -154,18 +149,16 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
         exit(0);
     }
 
-    /* --- NEW: Print dOmega values to file header --- */
     // We calculate dx2 here to use for the dOmega loop
     dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
     
-    fprintf(fp, "# dOmega:"); // Header tag
+    fprintf(fp, "# dOmega:");
     for (j = 0; j < N_THBINS; j++) {
         // Calculate dOmega for this theta bin
         dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
         fprintf(fp, " %.15e", dOmega);
     }
-    fprintf(fp, "\n"); // End header line
-    /* ----------------------------------------------- */
+    fprintf(fp, "\n"); 
 
     /* output */
     max_tau_scatt = 0.;

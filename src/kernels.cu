@@ -474,8 +474,13 @@ __host__ void mainFlowControl(time_t time, double * p){
 
         //Finally, we transfer the table for the scattering kernel to the GPU.
         double *local_d_table_ptr;
-        gpuErrchk(cudaMalloc((void**)&local_d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-        gpuErrchk(cudaMemcpy(local_d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
+		#ifdef VARIABLE_KAPPA
+		int kappa_size = KAPPA_NSAMP;
+		#else
+		int kappa_size = 1;
+		#endif
+        gpuErrchk(cudaMalloc((void**)&local_d_table_ptr, kappa_size * (NW + 1) * (NT + 1) * sizeof(double)));
+        gpuErrchk(cudaMemcpy(local_d_table_ptr, table, kappa_size * (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
 
         unsigned long long * local_generated_photons_arr;
         gpuErrchk(cudaMalloc(&local_generated_photons_arr, num_zones * sizeof(unsigned long long)));
@@ -606,13 +611,8 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 	double lnu_max = log(NUMAX);
 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
 
-	#ifdef __CUDA_ARCH__
-    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-	#else
-		Thetae = 0.;
-		Ne = 0.;
-		Bmag = 0.;
-	#endif
+    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	const double kappa = get_model_kappa_ijk(i, j, k, d_p);
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*n2gen = 0.;
@@ -635,7 +635,7 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (int m = 0; m <= N_ESAMP; m++) {
-			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2) / (exp(d_wgt[m]) + 1.e-100);
+			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2, kappa) / (exp(d_wgt[m]) + 1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
@@ -736,13 +736,10 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     
     // Get fluid properties
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
-	#ifdef __CUDA_ARCH__
-    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-	#else
-		Thetae = 0.;
-		Ne = 0.;
-		Bmag = 0.;
-	#endif
+    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+
+
+	const double kappa = get_model_kappa_ijk(i, j, k, d_p);
     // Sample frequency
     {
         const double lnu_min = log(NUMIN);
@@ -751,7 +748,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
+		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2, kappa) / (weight + 1.e-100)) / dnmax);
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
 
@@ -759,13 +756,13 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     double cth;
     {
 		const double K2 = K2_eval(Thetae);
-        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
+        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2, kappa);
 		double j_th;
 		double th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
             th = acos(cth);
-        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
+        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2, kappa);
         } while (curand_uniform_double(localState) > j_th / jmax);
 		ph.ratio_brems[ph_arr_index] = jnu_ratio_brems(nu, Ne, Thetae, Bmag, th, K2);
 
@@ -905,7 +902,8 @@ __global__ void track_scat(struct of_photonSOA ph,
 		#endif
 		double Gcov[NDIM][NDIM];
 		gcov_func(X, Gcov);
-		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, scattering_counter_local);
+		double kappa = get_model_kappa(X, d_p);
+		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, kappa, &localState, scattering_counter_local);
 		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;
 		}

@@ -32,10 +32,24 @@
    */
   gsl_integration_workspace *w;
 
-
-  double F[N_ESAMP + 1], /**< Global host data array of precomputed emissivity values binned by frequency. */
-        wgt[N_ESAMP + 1], F_nth[N_ESAMP + 1]; /**< Global host data array containing precomputed superphotons weights binned by frequency. */
-
+  /**
+   * @brief Global host data array for the precomputed thermal jnu integrand values binned by frequency.
+   */
+  double F[N_ESAMP + 1];
+  
+  /**
+   * @brief Global host data array for the precomputed weights of superphotons binned by frequency, used for biasing the sampling of superphotons in the simulation.
+   */
+  double wgt[N_ESAMP + 1];
+  
+  /**
+   * @brief Global host data array for the precomputed emissivity values for non-thermal synchrotron emission binned by frequency and kappa parameter (if variable kappa is enabled).
+   */
+  #if (VARIABLE_KAPPA)
+    double F_nth[KAPPA_NSAMP][N_ESAMP + 1];
+  #else
+    double F_nth[N_ESAMP + 1];
+  #endif
 
   /**
   * Global host data counter to keep track of the number of scattered superphotons per scattering layer.
@@ -173,7 +187,11 @@
    * Global host array for the precomputed hot cross section lookup table.
    * It stores values indexed by photon energy (\f$\rm{N}_{\omega}\f$) and electron temperature (\f$\rm{N}_\rm{T}\f$).
    */
-  double table[NW + 1][NT + 1];
+  #if(VARIABLE_KAPPA)
+  double table[KAPPA_NSAMP][NW + 1][NT + 1];
+  #else
+  double table[1][NW + 1][NT + 1];
+  #endif
 
   /** 
    * Global host variable for the logarithmic step size in photon frequency (\f$\Delta \ln \omega\f$). 
@@ -222,12 +240,6 @@
    */
   __device__ curandState my_curand_state[N_BLOCKS * N_THREADS]; // Array of curandState structures
 
-  /**
-   * Global device array for the precomputed hot cross section lookup table.
-   * It stores values indexed by photon energy (\f$\rm{N}_{\omega}\f$) and electron temperature (\f$\rm{N}_\rm{T}\f$).
-   * It's the same as the host array table but accessible on the GPU.
-   */
-  __device__ double d_table[NW + 1][NT + 1];
 
   /**
    * Global device variable counter to keep track of the total number of superphotons generated from the grid during the simulation.
@@ -283,8 +295,11 @@
    * Global device array of precomputed emissivity values for non-thermal synchrotron binned by frequency.
    * It's the same as the host array F_nth but accessible on the GPU.
    */
+  #if (VARIABLE_KAPPA)
+    __device__ double d_F_nth[KAPPA_NSAMP * (N_ESAMP + 1)];
+  #else
   __device__ double d_F_nth[N_ESAMP + 1];
-
+  #endif
   /**
    * Global device array for the precomputed modified Bessel function values binned by frequency.
    * It's the same as the host array K2 but accessible on the GPU.
@@ -475,8 +490,8 @@
    */
   __device__ double d_bhspin;
 
-  /** data structures **/
 
+  /** data structures **/
   /**
    * @brief Structure to hold the metric components and determinant for a given grid point.
    */

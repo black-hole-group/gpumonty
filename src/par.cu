@@ -95,6 +95,11 @@ __host__ void CheckConfigErrors(Params *params) {
         exit(EXIT_FAILURE);
     }
 
+    if(VARIABLE_KAPPA && !params->kappa_synch){
+        fprintf(stderr, RED "! ERROR: 'variable_kappa' is enabled but 'kappa_synch' is not! Please update your .par file to enable 'kappa_synch' if you want to use 'VARIABLE_KAPPA', or disable 'VARIABLE_KAPPA' in config.h.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+
 }
 __host__ void load_par (const char *fname, Params *params) {
     char line[256];
@@ -207,6 +212,15 @@ __host__ void load_par (const char *fname, Params *params) {
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_large");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "Thetae_max");
     #endif
+    
+    //if kappa distribution, print if VARIABLE_KAPPA is active rather than fixed kappa and say that explicitely in the report
+    if(params->kappa_synch){
+        #if VARIABLE_KAPPA
+            printf("\033[1;32m[VARIABLE] \033[0m: %s\n", "Variable kappa distribution enabled (VARIABLE_KAPPA=ON)");
+        #else
+            printf("\033[1;32m[FIXED]    \033[0m : %s with value %d\n", "Fixed kappa distribution enabled (VARIABLE_KAPPA=OFF)", KAPPA_SYNCH);
+        #endif
+    }
     printf("\033[1m================================\033[0m\n");
     params->loaded = 1;
 
