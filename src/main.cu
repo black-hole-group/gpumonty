@@ -107,6 +107,10 @@ __host__ void init_model(char *args[])
 
 	if(params.kappa_synch || params.powerlaw_synch){
 		init_emiss_tables_nth();
+		#if VARIABLE_KAPPA
+			//With variable kappa, when kappa > kappa_max, it goes to the thermal emission, therefore we need the thermal table.
+			init_emiss_tables();
+		#endif
 	}else{
 		//Case with thermal synchrotron + bremsstrahlung or just bremsstrahlung or just thermal synchrotron
 		init_emiss_tables();

@@ -119,13 +119,12 @@ __device__ double find_y(double u, double (*df)(double, double), double (*f)(dou
 }
 
 __device__ double dF3(double y, double kappa) {
-    double value, denom, num;
     double y2 = y * y;
-
-    num = 4. * y2 * pow((kappa + y2) / (kappa), -kappa - 1.) *
-          tgamma(kappa);
-    denom = sqrt(M_PI) * sqrt(kappa) * tgamma(kappa - 1. / 2.);
-    value = num / denom;
+    
+    double gamma_ratio = exp(lgamma(kappa) - lgamma(kappa - 0.5));
+    
+    double value = (4. * y2 * pow((kappa + y2) / kappa, -kappa - 1.)) 
+                 / (sqrt(M_PI) * sqrt(kappa)) * gamma_ratio;
 
     return value;
 }
@@ -138,14 +137,12 @@ __device__ double dF4(double y, double kappa) {
 }
 
 __device__ double dF5(double y, double kappa) {
-    double value, denom, num;
     double y2 = y * y;
+    
+    double gamma_ratio = exp(lgamma(kappa) - lgamma(kappa - 1.5));
 
-    num = 8 * y2 * y2 * pow((kappa + y2) / (kappa), -kappa - 1) *
-          tgamma(kappa);
-    denom =
-        3 * sqrt(M_PI) * pow(kappa, 3. / 2.) * tgamma(kappa - 3. / 2.);
-    value = num / denom;
+    double value = (8. * y2 * y2 * pow((kappa + y2) / kappa, -kappa - 1.))
+                 / (3. * sqrt(M_PI) * pow(kappa, 1.5)) * gamma_ratio;
 
     return value;
 }
@@ -164,19 +161,17 @@ __device__ double dF6(double y, double kappa) {
 __device__ double F3(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
-    double value, denom, num, hyp2F1;
-
+    
     double y2 = y * y;
     double z = -y2 / kappa;
+    double hyp2F1 = hypergeom_eval(-z, kappa);
 
-    hyp2F1 = hypergeom_eval(-z, kappa);
+    double gamma_ratio = exp(lgamma(kappa) - lgamma(1.5 + kappa));
 
-    num = -sqrt(kappa) * pow(((y2 + kappa) / kappa), -kappa) *
-          tgamma(kappa) *
-          (-kappa * hyp2F1 + y2 * (2 * kappa + 1) + kappa);
-    denom = y * sqrt(M_PI) * tgamma(3. / 2. + kappa);
-
-    value = num / denom - u;
+    double term = -sqrt(kappa) * pow(((y2 + kappa) / kappa), -kappa) * gamma_ratio;
+    double main_eq = (-kappa * hyp2F1 + y2 * (2. * kappa + 1.) + kappa);
+    
+    double value = (term * main_eq) / (y * sqrt(M_PI)) - u;
 
     return value;
 }
@@ -199,20 +194,18 @@ __device__ double F5(double y, double kappa, void *params) {
     struct f_params *p = (struct f_params *)params;
     double u = p->u;
 
-    double value, denom, num, hyp2F1;
-
     double y2 = y * y;
     double z = -y2 / kappa;
+    double hyp2F1 = hypergeom_eval(-z, kappa);
 
-    hyp2F1 = hypergeom_eval(-z, kappa);
+    double gamma_ratio = exp(lgamma(kappa) - lgamma(1.5 + kappa));
 
-    num = pow((y2 + kappa) / kappa, -kappa) * tgamma(kappa) *
-          (3 * kappa * kappa * (hyp2F1 - 1) +
-           (1. - 4. * kappa * kappa) * y2 * y2 -
-           3. * kappa * (2. * kappa + 1.) * y2);
-    denom = 3. * pow(kappa, 1. / 2.) * y * sqrt(M_PI) *
-            tgamma(3. / 2. + kappa);
-    value = num / denom - u;
+    double term = pow((y2 + kappa) / kappa, -kappa) * gamma_ratio;
+    double main_eq = (3. * kappa * kappa * (hyp2F1 - 1.) +
+                      (1. - 4. * kappa * kappa) * y2 * y2 -
+                      3. * kappa * (2. * kappa + 1.) * y2);
+                      
+    double value = (term * main_eq) / (3. * sqrt(kappa) * y * sqrt(M_PI)) - u;
 
     return value;
 }
@@ -238,11 +231,10 @@ __device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * 
     double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
     double num, den;
 
-    pi_3 = sqrt(kappa) * sqrt(M_PI) * tgamma(-1. / 2. + kappa) /
-           (4. * tgamma(kappa));
+    pi_3 = sqrt(kappa) * sqrt(M_PI) / 4.0 * exp(lgamma(kappa - 0.5) - lgamma(kappa));
     pi_4 = kappa / (2. * kappa - 2.) * sqrt(0.5 * w);
     pi_5 = 3. * pow(kappa, 3. / 2.) * sqrt(M_PI) *
-           tgamma(-3. / 2. + kappa) / (8. * tgamma(kappa)) * w;
+           exp(lgamma(-3. / 2. + kappa) - lgamma(kappa)) * w;
     pi_6 =
         kappa * kappa / (2. - 3. * kappa + kappa * kappa) * w * sqrt(0.5 * w);
 
@@ -252,10 +244,21 @@ __device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * 
     pi_4 /= S_3;
     pi_5 /= S_3;
     pi_6 /= S_3;
-
+    
+    // Calculate boundaries in terms of gamma
+    double gamma_cap = fmax(100.0, 1000.0 * Thetae);
+    double gamma_min = fmax(1.0, 0.01 * Thetae);
+    
+    // Correctly translate gamma to scaled kinetic energy 'y'
+    double y_cap = sqrt((gamma_cap - 1.0) / w);
+    double y_min = sqrt(fmax(0.0, (gamma_min - 1.0) / w));
+    
     do {
         x1 = curand_uniform_double(localState);
         double u = curand_uniform_double(localState);
+        
+        if (u >= 0.9999999999) u = 0.9999999999;
+
         if (x1 < pi_3) {
             y = find_y(u, dF3, F3, w, kappa);
         } else if (x1 < pi_3 + pi_4) {
@@ -267,11 +270,19 @@ __device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * 
         }
 
         x2 = curand_uniform_double(localState);
-        num = sqrt(1. + 0.5 * w * y * y);
-        den = (1. + y * sqrt(0.5 * w));
-        prob = (num / den) * exp(-(w * y * y) / GAMMA_MAX);
-        if (y != y)
-            prob = 0;
+        
+        //Reject if outside BOTH the upper and lower CPU bounds
+        if (y > y_cap || y < y_min) {
+            prob = 0.0;
+        } else {
+            num = sqrt(1. + 0.5 * w * y * y);
+            den = (1. + y * sqrt(0.5 * w));
+            prob = (num / den) * exp(-(w * y * y) / GAMMA_MAX);
+        }
+        
+        if (y != y || isnan(prob) || isinf(prob)) {
+            prob = 0.0;
+        }
 
     } while (x2 >= prob);
 

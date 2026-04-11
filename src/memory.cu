@@ -110,6 +110,8 @@ __host__ void transferParams(cudaStream_t stream) {
     if(params.kappa_synch || params.powerlaw_synch){
         #if VARIABLE_KAPPA
             symbolToDevice(&d_F_nth, &F_nth, (KAPPA_NSAMP) * (N_ESAMP + 1) * sizeof(double), stream);
+            // With variable kappa, when kappa > kappa_max, it goes to the thermal emission, therefore we need the thermal table.
+            symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
         #else
             symbolToDevice(&d_F_nth, &F_nth, (N_ESAMP + 1) * sizeof(double), stream);
         #endif

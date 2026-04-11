@@ -450,6 +450,7 @@ __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e
         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
         
     } else if (d_kappa_synch) {
+        
         double y = sample_y_distr_nth(Thetae, kappa, localState);
         double w = (kappa - 3.) / kappa * Thetae;
         *gamma_e = y * y * w + 1.;

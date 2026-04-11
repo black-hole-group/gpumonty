@@ -54,6 +54,7 @@ __host__ void init_weight_table()
 			double Ucon[NDIM], Bcon[NDIM];
 			get_fluid_zone(i, j, k, &Ne, &Thetae, &B, Ucon, Bcon, geom, p);
 			const double kappa = get_model_kappa_ijk(i, j, k, p);
+
 			if (Ne == 0. || Thetae < THETAE_MIN)
 				continue;
 			double fac = sfac * geom[SPATIAL_INDEX2D(i, j)].g;

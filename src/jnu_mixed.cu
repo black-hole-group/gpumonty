@@ -155,9 +155,10 @@ __host__ __device__ double int_jnu_thermal_synch(double Ne, double Thetae, doubl
 		return 0.;
 
 	j_fac = Ne * Bmag * Thetae * Thetae / K2;
-	
+
+
 	// 0.0 here refers to variable kappa model, not used in thermal
-	return JCST * j_fac * F_eval(Thetae, Bmag, nu, 0.0, 0);
+	return JCST * j_fac * F_eval(Thetae, Bmag, nu, 0.0, 1);
 }
 
 #undef JCST
@@ -263,7 +264,7 @@ __host__ __device__ double F_eval_th(const double Thetae, const double Bmag, con
 }
 #undef KFAC
 
-__host__ __device__ double F_eval(double Thetae, double Bmag, double nu, double kappa, int ACCZONE)
+__host__ __device__ double F_eval(double Thetae, double Bmag, double nu, double kappa, int thermal_kappa)
 {
 	#ifdef __CUDA_ARCH__
 		int is_thermal_synch = d_thermal_synch;
@@ -276,7 +277,7 @@ __host__ __device__ double F_eval(double Thetae, double Bmag, double nu, double 
 	#endif
 
 	double F_eval;
-	if (is_thermal_synch) {
+	if (is_thermal_synch || thermal_kappa) {
 		F_eval = F_eval_th(Thetae, Bmag, nu);
 	} else if (is_kappa_synch) {
 		F_eval = F_eval_kappa(Thetae, Bmag, nu, kappa);
@@ -583,7 +584,6 @@ __host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, do
 		int is_kappa_synch = params.kappa_synch;
 		int is_powerlaw_synch = params.powerlaw_synch;
 	#endif
-	int ACCZONE = 0;
     double F_eval(double Thetae, double B, double nu, double kappa, int ACCZONE);
     if (Thetae < THETAE_MIN) {
         return 0.;
@@ -594,14 +594,14 @@ __host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, do
 			// Instead, we transparently return the (much more accurate) thermal fitting results
 			if(kappa > KAPPA_MAX){
 				double K2 = K2_eval(Thetae);
-				return int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, 0.);
+				return int_jnu_thermal_synch(Ne, Thetae, Bmag, nu, K2);
 			}
-			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, kappa, ACCZONE);
+			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, kappa, 0);
 		#else
 			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, KAPPA_SYNCH, ACCZONE);
 		#endif
 	}else if(is_powerlaw_synch){
-    	return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, 0.0, ACCZONE);
+    	return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, 0.0, 0);
 	}
 	return 0.;
 }
