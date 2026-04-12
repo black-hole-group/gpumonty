@@ -94,7 +94,7 @@ __host__ void init_hotcross(void)
 
     fprintf(stderr, "making lookup tables for compton cross section for variable kappa on GPU...\n");
 
-    // 1. Calculate total size and allocate 1D arrays on Host and Device
+    // Calculate total size and allocate 1D arrays on Host and Device
     size_t num_elements = kappa_nsamp * (NW + 1) * (NT + 1);
     size_t bytes = num_elements * sizeof(double);
     
@@ -102,7 +102,7 @@ __host__ void init_hotcross(void)
     double *h_table_flat = (double *)malloc(bytes);
     cudaMalloc((void**)&d_table_flat, bytes);
 
-    // 2. Configure the 3D Grid of GPU Threads
+    // Configure the 3D Grid of GPU Threads
     // We use 16x16 blocks for the i and j dimensions, and map k to the z dimension
     dim3 threadsPerBlock(16, 16, 1);
     dim3 numBlocks((NW + 16) / 16, (NT + 16) / 16, kappa_nsamp);
@@ -112,7 +112,7 @@ __host__ void init_hotcross(void)
     cudaMemcpyToSymbol(d_kappa_synch, &params.kappa_synch, sizeof(int));
     cudaMemcpyToSymbol(d_thermal_synch, &params.thermal_synch, sizeof(int));
     cudaMemcpyToSymbol(d_powerlaw_synch, &params.powerlaw_synch, sizeof(int));
-    // 3. Launch the Kernel
+
     generate_hotcross_kernel<<<numBlocks, threadsPerBlock>>>(
         d_table_flat, NW, NT, kappa_nsamp,
         lminw, dlw, lmint, dlT,
@@ -127,10 +127,10 @@ __host__ void init_hotcross(void)
         exit(1);
     }
 
-    // 4. Copy the flattened array back to the CPU
+    // Copy the flattened array back to the CPU
     cudaMemcpy(h_table_flat, d_table_flat, bytes, cudaMemcpyDeviceToHost);
 
-    // 5. Unpack the 1D array into your standard 3D CPU array & check for NaNs
+    // Unpack the 1D array into your standard 3D CPU array & check for NaNs
     for (int k = 0; k < kappa_nsamp; ++k) {
         for (int i = 0; i <= NW; i++) {
             for (int j = 0; j <= NT; j++) {
@@ -149,62 +149,9 @@ __host__ void init_hotcross(void)
 
     fprintf(stderr, "Done!\n");
 
-    // 6. Cleanup
     free(h_table_flat);
     cudaFree(d_table_flat);
 }
-
-// __host__ void init_hotcross(void)
-// {
-
-//     double dlw = log10(MAXW / MINW) / NW;
-//     double dlT = log10(MAXT / MINT) / NT;
-//     double lminw = log10(MINW);
-//     double lmint = log10(MINT);
-// 	int kappa_nsamp = 1;
-
-// 	#if VARIABLE_KAPPA
-// 		if (params.kappa_synch) {
-// 			kappa_nsamp = KAPPA_NSAMP;
-// 		}
-// 	#endif
-// 	fprintf(stderr, "making lookup tables for compton cross section for variable kappa...\n");
-// 	fprintf(stderr, "generating... ");
-
-//     #pragma omp parallel for collapse(2) schedule(dynamic)
-//     for (int k = 0; k < kappa_nsamp; ++k) {
-//         for (int j = 0; j <= NT; j++) {
-            
-//             #if VARIABLE_KAPPA
-//             double kappa = KAPPA_MIN + k * DKAPPA;
-//             #else
-//             double kappa = KAPPA_SYNCH; 
-//             #endif
-            
-//             double lT = lmint + j * dlT;
-//             double temp_val = pow(10., lT); 
-//             double norm = getnorm_dNdgammae(temp_val, kappa);
-            
-//             for (int i = 0; i <= NW; i++) {
-//                 double lw = lminw + i * dlw;
-//                 double w_val = pow(10., lw); 
-                
-//                 double value = total_compton_cross_num(w_val, temp_val, norm, kappa);
-                
-//                 table[k][i][j] = log10(value);
-                
-//                 if (isnan(table[k][i][j])) {
-//                     // Note: exit() inside OpenMP can be dangerous, but left as-is for your debugging
-//                     fprintf(stderr, "NaN found at: i=%d j=%d lw=%g lT=%g\n", i, j, lw, lT);
-//                     exit(1); 
-//                 }
-//             }
-//         }
-//     }
-
-//     return;
-// }
-
 
 __device__ double total_compton_cross_lkup(double w, double thetae, double kappa, const double * __restrict__ d_table_ptr)
 {
@@ -270,7 +217,6 @@ __device__ double total_compton_cross_lkup(double w, double thetae, double kappa
             printf("c00: %g, c01: %g, c10: %g, c11: %g\n", 
                 d_table_ptr[idx], d_table_ptr[idx + 1], 
                 d_table_ptr[idx + stride_k], d_table_ptr[idx + stride_k + 1]);
-            printf("val_k0: %g, val_k1: %g\n", val_k0, val_k1);
         }
         return (pow(10., lcross));
     }
@@ -278,6 +224,8 @@ __device__ double total_compton_cross_lkup(double w, double thetae, double kappa
     printf("out of bounds: %g %g\n", w, thetae);
     return (total_compton_cross_num(w, thetae, getnorm_dNdgammae(thetae, kappa), kappa));
 }
+
+
 
 __host__ __device__ double total_compton_cross_num(double w, double thetae, double norm, double kappa)
 {
@@ -416,7 +364,7 @@ __host__ __device__ double dNdgammae_th(double thetae, double gammae)
 
 	if (thetae > 1.e-2) {
         #ifdef __CUDA_ARCH__
-            K2f = K2_eval(thetae)  * exp(1. / thetae);
+            K2f = bessk2(1. / thetae) * exp(1. / thetae);
         #else
             K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
         #endif
@@ -507,4 +455,117 @@ __host__ __device__ double hc_klein_nishina(double we)
 
 	return (sigma);
 
+}
+
+/*Bessel0 function defined as Numerical Recipes book*/
+__host__ __device__ double bessi0(double xbess)
+{
+    double ax, ans;
+    double y;
+    if ((ax = fabs(xbess)) < 3.75)
+    {
+        y = xbess / 3.75;
+        y *= y;
+        ans = 1.0 + y * (3.5156229 + y * (3.0899424 + y * (1.2067492 + y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
+    }
+    else
+    {
+        y = 3.75 / ax;
+        ans = (exp(ax) / sqrt(ax)) * (0.39894228 + y * (0.1328592e-1 + y * (0.225319e-2 + y * (-0.157565e-2 + y * (0.916281e-2 + y *
+                                                                                                                                     (-0.2057706e-1 +
+                                                                                                                                      y *
+                                                                                                                                          (0.2635537e-1 +
+                                                                                                                                           y *
+                                                                                                                                               (-0.1647633e-1 + y *
+                                                                                                                                                                    0.392377e-2))))))));
+    }
+    return ans;
+}
+/*Bessel1 function defined as Numerical Recipes book*/
+__host__ __device__ double bessi1(double xbess)
+{
+    double ax, ans;
+    double y;
+    if ((ax = fabs(xbess)) < 3.75)
+    {
+        y = xbess / 3.75;
+        y *= y;
+        ans = ax * (0.5 + y * (0.87890594 + y * (0.51498869 + y * (0.15084934 + y * (0.2658733e-1 +
+                                                                                     y * (0.301532e-2 + y * 0.32411e-3))))));
+    }
+    else
+    {
+        y = 3.75 / ax;
+        ans = 0.2282967e-1 + y * (-0.2895312e-1 + y * (0.1787654e-1 - y * 0.420059e-2));
+        ans = 0.39894228 + y * (-0.3988024e-1 + y * (-0.362018e-2 + y * (0.163801e-2 + y * (-0.1031555e-1 + y * ans))));
+        ans *= (exp(ax) / sqrt(ax));
+    }
+    return xbess < 0.0 ? -ans : ans;
+}
+/*Modified bessel0 function defined as Numerical Recipes book*/
+
+__host__ __device__ double bessk0(double xbess)
+{
+    double y, ans;
+    if (xbess <= 2.0)
+    {
+        y = xbess * xbess / 4.0;
+        ans = (-log(xbess / 2.0) * bessi0(xbess)) + (-0.57721566 + y * (0.42278420 + y * (0.23069756 +
+                                                                                          y * (0.3488590e-1 + y * (0.262698e-2 + y *
+                                                                                                                                     (0.10750e-3 +
+                                                                                                                                      y *
+                                                                                                                                          0.74e-5))))));
+    }
+    else
+    {
+        y = 2.0 / xbess;
+        ans = (exp(-xbess) / sqrt(xbess)) * (1.25331414 + y * (-0.7832358e-1 +
+                                                               y * (0.2189568e-1 + y * (-0.1062446e-1 + y * (0.587872e-2 + y *
+                                                                                                                               (-0.251540e-2 +
+                                                                                                                                y *
+                                                                                                                                    0.53208e-3))))));
+    }
+    return ans;
+}
+/*Modified bessel1 function defined as Numerical Recipes book*/
+__host__ __device__ double bessk1(double xbess)
+{
+    double y, ans;
+    if (xbess <= 2.0)
+    {
+        y = xbess * xbess / 4.0;
+        ans = (log(xbess / 2.0) * bessi1(xbess)) + (1.0 / xbess) * (1.0 + y * (0.15443144 + y * (-0.67278579 + y * (-0.18156897 +
+                                                                                                                    y *
+                                                                                                                        (-0.1919402e-1 + y *
+                                                                                                                                             (-0.110404e-2 +
+                                                                                                                                              y *
+                                                                                                                                                  (-0.4686e-4)))))));
+    }
+    else
+    {
+        y = 2.0 / xbess;
+        ans = (exp(-xbess) / sqrt(xbess)) * (1.25331414 + y * (0.23498619 + y *
+                                                                                (-0.3655620e-1 + y * (0.1504268e-1 + y * (-0.780353e-2 + y *
+                                                                                                                                             (0.325614e-2 +
+                                                                                                                                              y *
+                                                                                                                                                  (-0.68245e-3)))))));
+    }
+    return ans;
+}
+/*Modified bessel2 function defined as Numerical Recipes book*/
+__host__ __device__ double bessk2(double xbess)
+{
+    int n, j;
+    double bk, bkm, bkp, tox;
+    n = 2;
+    tox = 2.0 / xbess;
+    bkm = bessk0(xbess);
+    bk = bessk1(xbess);
+    for (j = 1; j < n; j++)
+    {
+        bkp = bkm + j * tox * bk;
+        bkm = bk;
+        bk = bkp;
+    }
+    return bk;
 }

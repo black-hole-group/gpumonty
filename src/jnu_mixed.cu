@@ -105,7 +105,7 @@ __host__ __device__  double jnu_bremss(const double nu, const double Ne, const d
 
 	
 	//rsqrt(x) is 1/sqrt(x)
-	jv = BREMS_FAC * rsqrt(Te) * Ne*Ne * efac*rel;
+	jv = BREMS_FAC * 1/sqrt(Te) * Ne*Ne * efac*rel;
 	return jv;
 }
 #undef BREMS_FAC
@@ -443,7 +443,7 @@ __host__ void init_emiss_tables_nth(void) {
         struct kappa_jnu_params p;
         func.params = &p;
 
-#ifdef VARIABLE_KAPPA
+#if VARIABLE_KAPPA
         for (int i = 0; i <= KAPPA_NSAMP; i++) {
             p.kappa = KAPPA_MIN + i * DKAPPA;
             
@@ -598,7 +598,7 @@ __host__ __device__ double int_jnu_nth(double Ne, double Thetae, double Bmag, do
 			}
 			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, kappa, 0);
 		#else
-			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, KAPPA_SYNCH, ACCZONE);
+			return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, KAPPA_SYNCH, 0);
 		#endif
 	}else if(is_powerlaw_synch){
     	return JCST * Ne * Bmag * F_eval(Thetae, Bmag, nu, 0.0, 0);
@@ -618,7 +618,7 @@ __host__ __device__ double linear_interp_F_nth(double K, double kappa) {
     i = (int)di;
     di = di - i;
 
-#ifdef VARIABLE_KAPPA
+#if VARIABLE_KAPPA
     double dj = (kappa - KAPPA_MIN) / DKAPPA;
     int j = (int) dj;
     dj = dj - j;

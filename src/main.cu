@@ -100,8 +100,6 @@ __host__ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	/* make look-up table for hot cross sections */
-	init_hotcross();
 
 	/* make table for solid angle integrated emissivity and K2 */
 
@@ -115,7 +113,8 @@ __host__ void init_model(char *args[])
 		//Case with thermal synchrotron + bremsstrahlung or just bremsstrahlung or just thermal synchrotron
 		init_emiss_tables();
 	}
-
+	/* make look-up table for hot cross sections */
+	init_hotcross();
 	/* make table for superphoton weights */
 	double start = omp_get_wtime();
 	init_weight_table();

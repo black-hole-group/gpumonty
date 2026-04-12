@@ -18,6 +18,7 @@
 #include <math.h>
 #include "decs.h"
 #include "par.h"
+#include "jnu_mixed.h"
 #include <string.h>
 #include <errno.h>
 __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
@@ -218,7 +219,7 @@ __host__ void load_par (const char *fname, Params *params) {
         #if VARIABLE_KAPPA
             printf("\033[1;32m[VARIABLE] \033[0m: %s\n", "Variable kappa distribution enabled (VARIABLE_KAPPA=ON)");
         #else
-            printf("\033[1;32m[FIXED]    \033[0m : %s with value %d\n", "Fixed kappa distribution enabled (VARIABLE_KAPPA=OFF)", KAPPA_SYNCH);
+            printf("\033[1;32m[FIXED]    \033[0m : %s with value %f\n", "Fixed kappa distribution enabled (VARIABLE_KAPPA=OFF)", KAPPA_SYNCH);
         #endif
     }
     printf("\033[1m================================\033[0m\n");

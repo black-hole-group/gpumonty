@@ -474,7 +474,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
         //Finally, we transfer the table for the scattering kernel to the GPU.
         double *local_d_table_ptr;
-		#ifdef VARIABLE_KAPPA
+		#if VARIABLE_KAPPA
 		int kappa_size = KAPPA_NSAMP;
 		#else
 		int kappa_size = 1;

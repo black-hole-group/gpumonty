@@ -385,8 +385,7 @@ __device__ void sample_electron_distr_p(
     // v0: direction of photon
     double v0x = k[1], v0y = k[2], v0z = k[3];
     {
-        const double invv0 =
-            rsqrt(v0x * v0x + v0y * v0y + v0z * v0z);
+        const double invv0 = 1.0 / sqrt(v0x * v0x + v0y * v0y + v0z * v0z);
         v0x *= invv0;
         v0y *= invv0;
         v0z *= invv0;
@@ -405,8 +404,7 @@ __device__ void sample_electron_distr_p(
         v1y = n0y - n0dotv0 * v0y;
         v1z = n0z - n0dotv0 * v0z;
 
-        const double invv1 =
-            rsqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+        const double invv1 = 1.0 / sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
         v1x *= invv1;
         v1y *= invv1;
         v1z *= invv1;
@@ -429,9 +427,6 @@ __device__ void sample_electron_distr_p(
     const double v2y = v0z * v1x - v0x * v1z;
     const double v2z = v0x * v1y - v0y * v1x;
 
-    /* ===============================
-       4. Output four-momentum
-       =============================== */
 
     p[0] = gamma_e;
     p[1] = gb * (mu * v0x + sth * (cphi * v1x + sphi * v2x));
@@ -441,29 +436,114 @@ __device__ void sample_electron_distr_p(
 
 
 
-__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * localState)
-{
-    if (d_thermal_synch) {
-        double y = sample_y_distr(Thetae, localState);
-        double w = Thetae;
-        *gamma_e = y * y * w + 1.;
-        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+// __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * localState)
+// {
+//     if (d_thermal_synch) {
+//         double y = sample_y_distr(Thetae, localState);
+//         double w = Thetae;
+//         *gamma_e = y * y * w + 1.;
+//         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
         
-    } else if (d_kappa_synch) {
+//     } else if (d_kappa_synch) {
+//         // The exact same kludge from igrmonty
+//         if (Thetae < 0.01) {
+//             *gamma_e = 1.000001;
+//             *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+//             return;
+//         }
+//         double y = sample_y_distr_nth(Thetae, kappa, localState);
+//         double w = (kappa - 3.) / kappa * Thetae;
+//         *gamma_e = y * y * w + 1.;
+//         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
         
-        double y = sample_y_distr_nth(Thetae, kappa, localState);
-        double w = (kappa - 3.) / kappa * Thetae;
-        *gamma_e = y * y * w + 1.;
-        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
-        
-    } else if (d_powerlaw_synch) {
-        double x = curand_uniform_double(localState);
-        // Inverse transform sampling for bounded power-law
-        *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
-        *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
-    }
+//     } else if (d_powerlaw_synch) {
+//         double x = curand_uniform_double(localState);
+//         // Inverse transform sampling for bounded power-law
+//         *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
+//         *beta_e = sqrt(1. - 1. / (*gamma_e * *gamma_e));
+//     }
+// }
+__device__ double dfdgam_gpu(double ge, double Thetae, double kappa, double w) {
+    // Factorized difference of squares for stability
+    double ge_sq_minus_1 = (ge - 1.) * (ge + 1.);
+    return 2. + ge * ( ge / ge_sq_minus_1 - 1. / GAMMA_MAX - (kappa + 1.) / (kappa * w) / (1. + (ge - 1.) / (kappa * w)) );
 }
 
+__device__ double fdist_gpu(double ge, double Thetae, double kappa, double w) {
+    double ge_sq_minus_1 = (ge - 1.) * (ge + 1.);
+    if (ge_sq_minus_1 <= 0.0) return 0.0; // Fail-safe to completely prevent NaNs
+    
+    return ge * ge * sqrt(ge_sq_minus_1) * pow(1. + (ge - 1.) / (kappa * w), -kappa - 1.) * exp(-ge / GAMMA_MAX);
+}
+
+__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * state)
+{
+    // Cache the PRNG state locally to prevent global memory trashing in the rejection loop
+    curandState localState = *state;
+
+    if (d_thermal_synch) {
+        double y = sample_y_distr(Thetae, &localState);
+        double w = Thetae;
+        *gamma_e = y * y * w + 1.;
+        *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+        
+    } else if (d_kappa_synch) {
+        if (Thetae < 0.01) {
+            *gamma_e = 1.000001;
+            *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+            *state = localState; // writeback
+            return;
+        }
+
+        double w = (kappa - 3.) / kappa * Thetae;
+
+        double ge_lo = fmax(1.000001, 0.01 * Thetae);
+        double ge_hi = fmax(100.0, 1000.0 * Thetae);
+        
+        for (int iter = 0; iter < 50; iter++) {
+            double mid = 0.5 * (ge_lo + ge_hi);
+            double f_mid = dfdgam_gpu(mid, Thetae, kappa, w);
+            
+            if (f_mid > 0.0) {
+                ge_lo = mid; 
+            } else {
+                ge_hi = mid; 
+            }
+        }
+        double ge_max = 0.5 * (ge_lo + ge_hi);
+        double f_max = fdist_gpu(ge_max, Thetae, kappa, w);
+
+        double lge_min = log(fmax(1.0, 0.01 * Thetae));
+        double lge_max = log(fmax(100.0, 1000.0 * Thetae));
+        double ge_samp;
+        double rand2;
+        double ratio;
+
+        do {
+            double rand1 = curand_uniform_double(&localState);
+            rand2 = curand_uniform_double(&localState);
+            
+            ge_samp = exp(lge_min + (lge_max - lge_min) * rand1);
+            
+            // CRITICAL CLAMP: Prevent exp() truncation from slipping below evaluated limits
+            ge_samp = fmax(1.000001, ge_samp);
+
+            ratio = fdist_gpu(ge_samp, Thetae, kappa, w) / f_max;
+            
+        } while (!(ratio >= rand2));
+
+        *gamma_e = ge_samp;
+        *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e; // Stable beta calculation
+        
+    } else if (d_powerlaw_synch) {
+        double x = curand_uniform_double(&localState);
+        *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
+        *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+    }
+    
+    // Write back the updated local state to global memory once
+    *state = localState;
+}
 
 
 #define SQRT_MPI_OVER4 (0.443113462726379) // sqrt(M_PI) / 4

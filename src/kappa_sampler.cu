@@ -226,65 +226,65 @@ __device__ double F6(double y, double kappa, void *params) {
     return value;
 }
 
-__device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * localState) {
-    double w = (kappa - 3.) / kappa * Thetae;
-    double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
-    double num, den;
+// __device__ double sample_y_distr_nth(double Thetae, double kappa, curandState * localState) {
+//     double w = (kappa - 3.) / kappa * Thetae;
+//     double S_3, pi_3, pi_4, pi_5, pi_6, y = -1, x1, x2, prob;
+//     double num, den;
 
-    pi_3 = sqrt(kappa) * sqrt(M_PI) / 4.0 * exp(lgamma(kappa - 0.5) - lgamma(kappa));
-    pi_4 = kappa / (2. * kappa - 2.) * sqrt(0.5 * w);
-    pi_5 = 3. * pow(kappa, 3. / 2.) * sqrt(M_PI) *
-           exp(lgamma(-3. / 2. + kappa) - lgamma(kappa)) * w;
-    pi_6 =
-        kappa * kappa / (2. - 3. * kappa + kappa * kappa) * w * sqrt(0.5 * w);
+//     pi_3 = sqrt(kappa) * sqrt(M_PI) / 4.0 * exp(lgamma(kappa - 0.5) - lgamma(kappa));
+//     pi_4 = kappa / (2. * kappa - 2.) * sqrt(0.5 * w);
+//     pi_5 = 3. * pow(kappa, 3. / 2.) * sqrt(M_PI) *
+//            exp(lgamma(-3. / 2. + kappa) - lgamma(kappa)) * w;
+//     pi_6 =
+//         kappa * kappa / (2. - 3. * kappa + kappa * kappa) * w * sqrt(0.5 * w);
 
-    S_3 = pi_3 + pi_4 + pi_5 + pi_6;
+//     S_3 = pi_3 + pi_4 + pi_5 + pi_6;
 
-    pi_3 /= S_3;
-    pi_4 /= S_3;
-    pi_5 /= S_3;
-    pi_6 /= S_3;
+//     pi_3 /= S_3;
+//     pi_4 /= S_3;
+//     pi_5 /= S_3;
+//     pi_6 /= S_3;
     
-    // Calculate boundaries in terms of gamma
-    double gamma_cap = fmax(100.0, 1000.0 * Thetae);
-    double gamma_min = fmax(1.0, 0.01 * Thetae);
+//     // Calculate boundaries in terms of gamma
+//     double gamma_cap = fmax(100.0, 1000.0 * Thetae);
+//     double gamma_min = fmax(1.0, 0.01 * Thetae);
     
-    // Correctly translate gamma to scaled kinetic energy 'y'
-    double y_cap = sqrt((gamma_cap - 1.0) / w);
-    double y_min = sqrt(fmax(0.0, (gamma_min - 1.0) / w));
+//     // Correctly translate gamma to scaled kinetic energy 'y'
+//     double y_cap = sqrt((gamma_cap - 1.0) / w);
+//     double y_min = sqrt(fmax(0.0, (gamma_min - 1.0) / w));
     
-    do {
-        x1 = curand_uniform_double(localState);
-        double u = curand_uniform_double(localState);
+//     do {
+//         x1 = curand_uniform_double(localState);
+//         double u = curand_uniform_double(localState);
         
-        if (u >= 0.9999999999) u = 0.9999999999;
+//         if (u >= 0.9999999999) u = 0.9999999999;
 
-        if (x1 < pi_3) {
-            y = find_y(u, dF3, F3, w, kappa);
-        } else if (x1 < pi_3 + pi_4) {
-            y = find_y(u, dF4, F4, w, kappa);
-        } else if (x1 < pi_3 + pi_4 + pi_5) {
-            y = find_y(u, dF5, F5, w, kappa);
-        } else {
-            y = find_y(u, dF6, F6, w, kappa);
-        }
+//         if (x1 < pi_3) {
+//             y = find_y(u, dF3, F3, w, kappa);
+//         } else if (x1 < pi_3 + pi_4) {
+//             y = find_y(u, dF4, F4, w, kappa);
+//         } else if (x1 < pi_3 + pi_4 + pi_5) {
+//             y = find_y(u, dF5, F5, w, kappa);
+//         } else {
+//             y = find_y(u, dF6, F6, w, kappa);
+//         }
 
-        x2 = curand_uniform_double(localState);
+//         x2 = curand_uniform_double(localState);
         
-        //Reject if outside BOTH the upper and lower CPU bounds
-        if (y > y_cap || y < y_min) {
-            prob = 0.0;
-        } else {
-            num = sqrt(1. + 0.5 * w * y * y);
-            den = (1. + y * sqrt(0.5 * w));
-            prob = (num / den) * exp(-(w * y * y) / GAMMA_MAX);
-        }
+//         //Reject if outside BOTH the upper and lower CPU bounds
+//         if (y > y_cap || y < y_min) {
+//             prob = 0.0;
+//         } else {
+//             num = sqrt(1. + 0.5 * w * y * y);
+//             den = (1. + y * sqrt(0.5 * w));
+//             prob = (num / den) * exp(-(w * y * y) / GAMMA_MAX);
+//         }
         
-        if (y != y || isnan(prob) || isinf(prob)) {
-            prob = 0.0;
-        }
+//         if (y != y || isnan(prob) || isinf(prob)) {
+//             prob = 0.0;
+//         }
 
-    } while (x2 >= prob);
+//     } while (x2 >= prob);
 
-    return (y);
-}
+//     return (y);
+// }
