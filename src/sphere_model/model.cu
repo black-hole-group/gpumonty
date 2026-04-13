@@ -44,6 +44,8 @@ __host__ void init_data()
 	double th_out = M_PI;
 	double two_temp_gam;
 
+
+    //remember to change 13./9, in the get_model_sigma_beta function expression if changed here. Currently it's 13/9.;
 	double gam = 13./9.;
 
 	/*Setting the resolution*/
@@ -376,6 +378,17 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     gcov_func(X, gcov);
     lower(Ucon, gcov, Ucov);
     lower(Bcon, gcov, Bcov);
+}
+
+
+__device__ void get_model_sigma_beta(const double X[NDIM], double * beta, double *sigma)
+{
+   double gam = 13./9.;
+   double model_ne0 = MODEL_TAU0/SIGMA_THOMSON/SPHERE_RADIUS/d_L_unit;
+   double model_B = CL * sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(model_ne0 * THETAE_VALUE)/sqrt(MP/ME * (gam - 1.)/(1. + d_tp_over_te));
+  *sigma = (model_B * model_B)/(model_ne0)/((4. * M_PI * CL * (MP + ME)));
+  *beta = BETA0;
+  
 }
 
 

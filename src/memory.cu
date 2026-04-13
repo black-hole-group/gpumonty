@@ -266,7 +266,7 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *bat
         }
 
         // Add a safety margin (e.g. 20%) for CUDA runtime overhead, texture memory, etc.
-        size_t required_with_margin = (size_t)(required_mem * 1.5);
+        size_t required_with_margin = (size_t)(required_mem * 1.2);
 
         if (*batch_divisions == 1 && required_with_margin > free_mem) {
             printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",

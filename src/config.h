@@ -342,7 +342,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (5)
+#define MAX_LAYER_SCA (4)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.

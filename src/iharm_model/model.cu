@@ -1029,14 +1029,14 @@ __device__ double bias_func(double Te, double w, int round_scatt)
   max = 0.5 * w / WEIGHT_MIN;
 
   if (Te > 1000.) Te = 1000.;
-  bias = 16. * Te * Te / (5. * 1e-4);
+  bias = 16. * Te * Te / (5. * d_max_tau_scatt);
 
   if (bias > max) bias = max;
 
-  return bias * 30. * 1./2. * d_bias_guess[round_scatt];
+  return bias * d_bias_guess[round_scatt];
 }
 
-__host__ __device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma)
+__device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma)
 {
   int i,j,k;
   double coeff[8];

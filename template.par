@@ -1,5 +1,5 @@
 #input super photons parameter
-Ns 1e5
+Ns 1e6
 
 #path to the GRMHD data file
 
@@ -19,7 +19,7 @@ spectrum sane_kappa_var.h5
 tp_over_te 3.
 
 #Black hole mass and mass unit to translate accretion rate to physical units
-MBH 4.14e6
+MBH 4.1e6
 M_unit 1.e16
 
 
@@ -30,10 +30,10 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 1
+scattering 0
 fit_bias 0
 ratio 2
-bias_guess 1.0
+bias_guess 20.0
 
 #emissions
 bremsstrahlung 0

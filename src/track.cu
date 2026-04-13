@@ -81,10 +81,11 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 		
 		#ifndef SPHERE_TEST
 			get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			const double kappa = get_model_kappa(XArray, d_p);
 		#else
 			get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			const double kappa = get_model_kappa(XArray);
 		#endif
-		const double kappa = get_model_kappa(XArray, d_p);
 		theta = get_bk_angle(XArray, KArray, Ucov, Bcov, B);
 		nu = get_fluid_nu(XArray, KArray, Ucov);
 		alpha_scatti = alpha_inv_scatt(nu, Thetae, Ne, kappa, d_table_ptr);
@@ -115,10 +116,11 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 			double Ucon[NDIM], Ucov[NDIM], Bcon[NDIM], Bcov[NDIM];
 			#ifndef SPHERE_TEST
 				get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+				const double kappa = get_model_kappa(XArray, d_p);
 			#else
 				get_fluid_params(XArray, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+				const double kappa = get_model_kappa(XArray);
 			#endif
-			const double kappa = get_model_kappa(XArray, d_p);
 
 			
 
@@ -207,10 +209,11 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 
 						#ifndef SPHERE_TEST
 							get_fluid_params(XArray, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat, d_p);
+							const double kappa = get_model_kappa(XArray, d_p);
 						#else
 							get_fluid_params(XArray, &Ne_scat, &Thetae_scat, &B_scat, Ucon_scat, Ucov_scat, Bcon_scat, Bcov_scat);
+							const double kappa = get_model_kappa(XArray);
 						#endif
-						const double kappa = get_model_kappa(XArray, d_p);
 						if (Ne_scat > 0.) {
 							if (ph.w[photon_index] < 1.e-100) {
 								return;

@@ -108,7 +108,8 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
 			allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
 		}else{
-			allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+			if(params.scattering)
+				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
 		}
 
 		fprintf(log_file, "\nSampling the photons!\n");
@@ -897,12 +898,14 @@ __global__ void track_scat(struct of_photonSOA ph,
 		double X[NDIM] = {ph.X0[scattering_counter_local], ph.X1[scattering_counter_local], ph.X2[scattering_counter_local], ph.X3[scattering_counter_local]};
 		#ifndef SPHERE_TEST
 			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			double kappa = get_model_kappa(X, d_p);
+
 		#else
 			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			double kappa = get_model_kappa(X);
 		#endif
 		double Gcov[NDIM][NDIM];
 		gcov_func(X, Gcov);
-		double kappa = get_model_kappa(X, d_p);
 		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, kappa, &localState, scattering_counter_local);
 		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;

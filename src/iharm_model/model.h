@@ -73,7 +73,7 @@
      * 
      * This is used to characterize the lower bound for superphoton generation.
      */
-    #define THETAE_MIN	0.3
+    #define THETAE_MIN	0.001
 
     /**
      * Maximum dimensionless electron temperature (\f$\Theta_{e, max}\f$) for physical validity.
@@ -382,7 +382,7 @@
      * 
      * @return void
      */
-    __host__ __device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma);
+    __device__ void get_model_sigma_beta(const double X[NDIM], const double * d_p, double * beta, double *sigma);
 
     #endif
 

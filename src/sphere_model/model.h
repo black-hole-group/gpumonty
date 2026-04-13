@@ -103,5 +103,6 @@
     __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
     __host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
     __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
+    __device__ void get_model_sigma_beta(const double X[NDIM], double * beta, double *sigma);
     #endif
 #endif

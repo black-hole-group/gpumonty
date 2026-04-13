@@ -470,15 +470,80 @@ __device__ double dfdgam_gpu(double ge, double Thetae, double kappa, double w) {
 }
 
 __device__ double fdist_gpu(double ge, double Thetae, double kappa, double w) {
-    double ge_sq_minus_1 = (ge - 1.) * (ge + 1.);
-    if (ge_sq_minus_1 <= 0.0) return 0.0; // Fail-safe to completely prevent NaNs
-    
+    double ge_sq_minus_1 = (ge * ge - 1.);
     return ge * ge * sqrt(ge_sq_minus_1) * pow(1. + (ge - 1.) / (kappa * w), -kappa - 1.) * exp(-ge / GAMMA_MAX);
 }
 
+// __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * state)
+// {
+//     // Cache the PRNG state locally to prevent global memory trashing in the rejection loop
+//     curandState localState = *state;
+
+//     if (d_thermal_synch) {
+//         double y = sample_y_distr(Thetae, &localState);
+//         double w = Thetae;
+//         *gamma_e = y * y * w + 1.;
+//         *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+        
+//     } else if (d_kappa_synch) {
+//         if (Thetae < 0.01) {
+//             *gamma_e = 1.000001;
+//             *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+//             *state = localState; // writeback
+//             return;
+//         }
+
+//         double w = (kappa - 3.) / kappa * Thetae;
+
+//         double ge_lo = fmax(1.000001, 0.01 * Thetae);
+//         double ge_hi = fmax(100.0, 1000.0 * Thetae);
+        
+//         for (int iter = 0; iter < 50; iter++) {
+//             double mid = 0.5 * (ge_lo + ge_hi);
+//             double f_mid = dfdgam_gpu(mid, Thetae, kappa, w);
+            
+//             if (f_mid > 0.0) {
+//                 ge_lo = mid; 
+//             } else {
+//                 ge_hi = mid; 
+//             }
+//         }
+//         double ge_max = 0.5 * (ge_lo + ge_hi);
+//         double f_max = fdist_gpu(ge_max, Thetae, kappa, w);
+
+//         double lge_min = log(fmax(1.0, 0.01 * Thetae));
+//         double lge_max = log(fmax(100.0, 1000.0 * Thetae));
+//         double ge_samp;
+//         double rand2;
+//         double ratio;
+
+//         do {
+//             double rand1 = curand_uniform_double(&localState);
+//             rand2 = curand_uniform_double(&localState);
+            
+//             ge_samp = exp(lge_min + (lge_max - lge_min) * rand1);
+
+//             ratio = fdist_gpu(ge_samp, Thetae, kappa, w) / f_max;
+            
+//         } while (!(ratio >= rand2));
+
+//         *gamma_e = ge_samp;
+//         *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e; 
+        
+        
+//     } else if (d_powerlaw_synch) {
+//         double x = curand_uniform_double(&localState);
+//         *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
+//         *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
+//     }
+
+    
+//     // Write back the updated local state to global memory once
+//     *state = localState;
+// }
+
 __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * state)
 {
-    // Cache the PRNG state locally to prevent global memory trashing in the rejection loop
     curandState localState = *state;
 
     if (d_thermal_synch) {
@@ -491,60 +556,91 @@ __device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e
         if (Thetae < 0.01) {
             *gamma_e = 1.000001;
             *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
-            *state = localState; // writeback
+            *state = localState; 
             return;
         }
 
         double w = (kappa - 3.) / kappa * Thetae;
 
-        double ge_lo = fmax(1.000001, 0.01 * Thetae);
-        double ge_hi = fmax(100.0, 1000.0 * Thetae);
-        
-        for (int iter = 0; iter < 50; iter++) {
-            double mid = 0.5 * (ge_lo + ge_hi);
-            double f_mid = dfdgam_gpu(mid, Thetae, kappa, w);
-            
-            if (f_mid > 0.0) {
-                ge_lo = mid; 
-            } else {
-                ge_hi = mid; 
-            }
+        // --- Brent's Method Initialization ---
+        double a = fmax(1.000001, 0.01 * Thetae);
+        double b = fmax(100.0, 1000.0 * Thetae);
+        double fa = dfdgam_gpu(a, Thetae, kappa, w);
+        double fb = dfdgam_gpu(b, Thetae, kappa, w);
+
+        if (fa * fb >= 0) {
+            // Fallback if bracket is invalid (shouldn't happen with these bounds)
+            b = 1.0 + Thetae; 
         }
-        double ge_max = 0.5 * (ge_lo + ge_hi);
+
+        double c = a, fc = fa, d, e;
+        double m, s, p, q, r;
+        double tol = 1e-7; // Numerical tolerance
+
+        for (int iter = 0; iter < 50; iter++) {
+            if ((fb > 0 && fc > 0) || (fb < 0 && fc < 0)) {
+                c = a; fc = fa; d = b - a; e = d;
+            }
+            if (fabs(fc) < fabs(fb)) {
+                a = b; b = c; c = a;
+                fa = fb; fb = fc; fc = fa;
+            }
+
+            m = 0.5 * (c - b);
+            if (fabs(m) <= tol || fb == 0.0) break;
+
+            if (fabs(e) >= tol && fabs(fa) > fabs(fb)) {
+                s = fb / fa;
+                if (a == c) { // Secant method
+                    p = 2.0 * m * s;
+                    q = 1.0 - s;
+                } else { // Inverse quadratic interpolation
+                    q = fa / fc;
+                    r = fb / fc;
+                    p = s * (2.0 * m * q * (q - r) - (b - a) * (r - 1.0));
+                    q = (q - 1.0) * (r - 1.0) * (s - 1.0);
+                }
+                if (p > 0) q = -q;
+                p = fabs(p);
+                if (2.0 * p < fmin(3.0 * m * q - fabs(tol * q), fabs(e * q))) {
+                    e = d; d = p / q;
+                } else {
+                    d = m; e = d;
+                }
+            } else {
+                d = m; e = d;
+            }
+            a = b; fa = fb;
+            if (fabs(d) > tol) b += d;
+            else b += (m > 0 ? tol : -tol);
+            fb = dfdgam_gpu(b, Thetae, kappa, w);
+        }
+        
+        double ge_max = b;
         double f_max = fdist_gpu(ge_max, Thetae, kappa, w);
+        // --- End Brent's Method ---
 
         double lge_min = log(fmax(1.0, 0.01 * Thetae));
         double lge_max = log(fmax(100.0, 1000.0 * Thetae));
-        double ge_samp;
-        double rand2;
-        double ratio;
+        double ge_samp, rand2, ratio;
 
         do {
             double rand1 = curand_uniform_double(&localState);
             rand2 = curand_uniform_double(&localState);
-            
             ge_samp = exp(lge_min + (lge_max - lge_min) * rand1);
-            
-            // CRITICAL CLAMP: Prevent exp() truncation from slipping below evaluated limits
-            ge_samp = fmax(1.000001, ge_samp);
-
             ratio = fdist_gpu(ge_samp, Thetae, kappa, w) / f_max;
-            
-        } while (!(ratio >= rand2));
+        } while (ratio < rand2);
 
         *gamma_e = ge_samp;
-        *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e; // Stable beta calculation
+        *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e; 
         
     } else if (d_powerlaw_synch) {
         double x = curand_uniform_double(&localState);
         *gamma_e = pow( (1. - x) * pow(POWERLAW_GAMMA_MIN, 1. - POWERLAW_SLOPE) + x * pow(POWERLAW_GAMMA_MAX, 1. - POWERLAW_SLOPE), 1. / (1. - POWERLAW_SLOPE) );
         *beta_e = sqrt((*gamma_e - 1.) * (*gamma_e + 1.)) / *gamma_e;
     }
-    
-    // Write back the updated local state to global memory once
     *state = localState;
 }
-
 
 #define SQRT_MPI_OVER4 (0.443113462726379) // sqrt(M_PI) / 4
 #define INV_SQRT_2 (0.7071067811865475) // 1 / sqrt(2) or sqrt(0.5)

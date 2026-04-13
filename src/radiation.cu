@@ -40,11 +40,20 @@ __device__ double Bnu_inv(const double nu, const double Thetae)
 	}
 }
 
-__host__ __device__ double get_model_kappa(double X[NDIM], double * d_p)
+__device__ double get_model_kappa(double X[NDIM]
+	#ifndef SPHERE_TEST
+	, double * d_p
+	#endif
+)
 {
 	#if VARIABLE_KAPPA
-	double sigma, beta;
-	get_model_sigma_beta(X, d_p, &sigma, &beta);
+		#ifdef SPHERE_TEST
+		double sigma, beta;
+		get_model_sigma_beta(X, &beta, &sigma);
+		#else
+		double sigma, beta;
+		get_model_sigma_beta(X, d_p, &sigma, &beta);
+		#endif
 	double kappa = 2.8 + 0.7*pow(sigma,-0.5) + 3.7*pow(sigma,-0.19)*tanh(23.4*pow(sigma,0.26)*beta);
 	return fmax(KAPPA_MIN, kappa);  // Beware this clips kappa of NaN -> kappa_min as well
 	#else
@@ -54,10 +63,26 @@ __host__ __device__ double get_model_kappa(double X[NDIM], double * d_p)
 __host__ __device__ double get_model_kappa_ijk(const int i, const int j, const int k, const double * d_p)
 {
 	#if VARIABLE_KAPPA
-	double sigma = d_p[NPRIM_INDEX3D(SIGMA, i,j,k)];
-	double beta = d_p[NPRIM_INDEX3D(BETA, i,j,k)];
-	double kappa = 2.8 + 0.7*pow(sigma,-0.5) + 3.7*pow(sigma,-0.19)*tanh(23.4*pow(sigma,0.26)*beta);
-	return fmax(KAPPA_MIN, kappa);  // Beware this clips kappa of NaN -> kappa_min as well
+		#ifdef SPHERE_TEST
+			#ifdef __CUDA_ARCH__
+				double local_L_unit = d_L_unit;
+				double local_tp_over_te = d_tp_over_te;
+			#else
+				double local_L_unit = L_unit;
+				double local_tp_over_te = params.tp_over_te;
+			#endif
+			double gam = 13./9.;
+			double model_ne0 = MODEL_TAU0/SIGMA_THOMSON/SPHERE_RADIUS/local_L_unit;
+			double custom_thetae_unit = (MP/ME * (gam - 1.)/(1. + local_tp_over_te));
+			double model_B = CL * sqrt(8 * M_PI * (gam - 1.) * (MP + ME)/ BETA0) * sqrt(model_ne0 * THETAE_VALUE)/sqrt(custom_thetae_unit);
+			double sigma = (model_B * model_B)/(model_ne0)/((4. * M_PI * CL * (MP + ME)));
+			double beta = BETA0;
+		#else
+			double sigma = d_p[NPRIM_INDEX3D(SIGMA, i,j,k)];
+			double beta = d_p[NPRIM_INDEX3D(BETA, i,j,k)];
+		#endif
+		double kappa = 2.8 + 0.7*pow(sigma,-0.5) + 3.7*pow(sigma,-0.19)*tanh(23.4*pow(sigma,0.26)*beta);
+		return fmax(KAPPA_MIN, kappa);  // Beware this clips kappa of NaN -> kappa_min as well
 	#else
 	return KAPPA_SYNCH;
 	#endif

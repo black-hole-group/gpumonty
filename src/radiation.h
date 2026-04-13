@@ -50,7 +50,11 @@ __device__ double jnu_inv(const double nu, const double Thetae, const double Ne,
  * 
  * @return The kappa parameter value at the given position. If VARIABLE_KAPPA is not defined, it returns a constant KAPPA_SYNCH.
  */
-__host__ __device__ double get_model_kappa(double X[NDIM], double * d_p);
+ __device__ double get_model_kappa(double X[NDIM] 
+    #ifndef SPHERE_TEST
+	, double * d_p
+	#endif
+);
 
 
 /**

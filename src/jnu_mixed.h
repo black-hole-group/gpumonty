@@ -46,7 +46,7 @@ Declaration of the functions in the jnu_mixed.cu file
  * highly energetic particles, ensuring the sampled electron Lorentz factors 
  * (or momenta) do not exceed physically realistic within the system.
  */
-#define GAMMA_MAX 1.e3
+#define GAMMA_MAX 1000.
 
 
 /**

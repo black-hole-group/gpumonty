@@ -53,20 +53,6 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   }
 }
 
-// __host__ void try_set_radiation_parameter(const char *line)
-// {
-//   read_param(line, "variable_kappa_min", &variable_kappa_min, TYPE_DBL);
-//   read_param(line, "variable_kappa_max", &variable_kappa_max, TYPE_DBL);
-
-//   read_param(line, "powerlaw_gamma_cut", &powerlaw_gamma_cut, TYPE_DBL);
-//   read_param(line, "powerlaw_gamma_min", &powerlaw_gamma_min, TYPE_DBL);
-//   read_param(line, "powerlaw_gamma_max", &powerlaw_gamma_max, TYPE_DBL);
-//   read_param(line, "powerlaw_p", &powerlaw_p, TYPE_DBL);
-// }
-// sets default values for elements of params (if desired) and loads
-// from par file 'fname'
-
-
 // Color Definitions
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
