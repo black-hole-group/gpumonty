@@ -197,7 +197,9 @@ __host__ __device__ double dNdgammae(double thetae, double gammae)
 	if (thetae > 1.e-2) {
 		K2f = bessk2(1. / thetae) * exp(1. / thetae);
 	} else {
-		K2f = sqrt(M_PI * thetae / 2.);
+		/* asymptotic K2(1/thetae) exp(1/thetae), with its first correction terms */
+		K2f = sqrt(M_PI * thetae / 2.) *
+		      (1. + thetae * (15. / 8. + thetae * (105. / 128. - thetae * 315. / 1024.)));
 	}
 
 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
