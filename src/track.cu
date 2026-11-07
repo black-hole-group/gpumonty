@@ -358,7 +358,7 @@ __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* 
     if (iE < 0 || iE >= N_EBINS) return;
 
     // Calculate the compton bin index
-    itype = *ph.nscatt;
+    itype = ph.nscatt[photon_index];
     if (itype>=N_COMPTBINS) itype = N_COMPTBINS;
 
     // Calculate the 1D indices for the flattened array
