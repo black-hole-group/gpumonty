@@ -558,7 +558,7 @@ __host__ void mainFlowControl(time_t time, double * p){
 
 __global__ void InitializeRNGStates(const time_t time, int GPUindex) {
 	int global_index = blockIdx.x * blockDim.x + threadIdx.x;
-	int seed = GPUindex * (139 * global_index + time + GPUindex);
+	int seed = (GPUindex + 1) * (139 * global_index + time + GPUindex);
 	init_monty_rand(seed);
 }
 
