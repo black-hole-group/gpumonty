@@ -356,7 +356,7 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
 
     Bcon[0] = 0.;
     Bcon[1] = (*B) * cos(th) / local_B_unit; 
-    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8) / local_B_unit;
+    Bcon[2] = -(*B) * sin(th) / r / local_B_unit;
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)
