@@ -229,7 +229,7 @@ __noinline__ __device__ void track_super_photon(struct of_photonSOA ph,
 								scat_ofphoton.dKdlam1[my_local_index] = dKdlamArray[1];
 								scat_ofphoton.dKdlam2[my_local_index] = dKdlamArray[2];
 								scat_ofphoton.dKdlam3[my_local_index] = dKdlamArray[3];
-								scat_ofphoton.w[my_local_index] = weight_scat;
+								scat_ofphoton.w[my_local_index] = ph.w[photon_index] / bias;
 								scat_ofphoton.E0[my_local_index] = E0;
 								scat_ofphoton.X1i[my_local_index] = ph.X1i[photon_index];
 								scat_ofphoton.X2i[my_local_index] = ph.X2i[photon_index];
@@ -358,7 +358,7 @@ __device__ void record_super_photon(struct of_photonSOA ph, struct of_spectrum* 
     if (iE < 0 || iE >= N_EBINS) return;
 
     // Calculate the compton bin index
-    itype = *ph.nscatt;
+    itype = ph.nscatt[photon_index];
     if (itype>=N_COMPTBINS) itype = N_COMPTBINS;
 
     // Calculate the 1D indices for the flattened array
