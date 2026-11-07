@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	if(params.seed == -1){
 		time_seeding =  time(NULL);
 	}else{
-		time_seeding = 0;
+		time_seeding = (time_t) params.seed;
 	}
     mainFlowControl(time_seeding, p);
     printf("Time spent running the full code: %.4f seconds\n", ((double)(time(NULL) - starttime)));
