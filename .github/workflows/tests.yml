@@ -76,7 +76,8 @@ jobs:
           python-version: "3.11"
 
       - name: Install Kaggle CLI
-        run: pip install "kaggle>=1.8.3"
+        # kaggle imports `six` but does not declare it as a dependency
+        run: pip install "kaggle>=1.8.3" six
 
       - name: Generate Kaggle Runner Script
         run: |
