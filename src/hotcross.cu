@@ -18,6 +18,7 @@
 
 #include "decs.h"
 #include "hotcross.h"
+#include "jnu_mixed.h"
 /* 
 
    given energy of photon in fluid rest frame w, in units of electron rest mass
@@ -36,166 +37,337 @@
 
 
 
+#include <gsl/gsl_sf_bessel.h>
+__global__ void generate_hotcross_kernel(double *d_table_flat, 
+                                         int NW_max, int NT_max, int kappa_nsamp,
+                                         double lminw, double dlw, double lmint, double dlT,
+                                         double kappa_min, double dkappa, double kappa_synch) 
+{
+    // Map thread coordinates to your i, j, k loop indices
+    int i = blockIdx.x * blockDim.x + threadIdx.x; // Corresponds to w (0 to NW)
+    int j = blockIdx.y * blockDim.y + threadIdx.y; // Corresponds to T (0 to NT)
+    int k = blockIdx.z * blockDim.z + threadIdx.z; // Corresponds to kappa (0 to kappa_nsamp-1)
+
+    // Ensure threads outside the exact bounds do nothing
+    if (i <= NW_max && j <= NT_max && k < kappa_nsamp) {
+        
+        #if VARIABLE_KAPPA
+        double kappa = kappa_min + k * dkappa;
+        #else
+        double kappa = kappa_synch;
+        #endif
+
+        // Temperature math
+        double lT = lmint + j * dlT;
+        double temp_val = pow(10.0, lT);
+        double norm = getnorm_dNdgammae(temp_val, kappa);
+
+        // Frequency/energy math
+        double lw = lminw + i * dlw;
+        double w_val = pow(10.0, lw);
+
+        // Compute the cross section
+        double value = total_compton_cross_num(w_val, temp_val, norm, kappa);
+
+        // Flatten the [k][i][j] index into a 1D offset
+        // Dimensions are: [kappa_nsamp] x [NW_max + 1] x [NT_max + 1]
+        int flat_idx = k * ((NW_max + 1) * (NT_max + 1)) + i * (NT_max + 1) + j;
+        
+        d_table_flat[flat_idx] = log10(value);
+    }
+}
+
 
 __host__ void init_hotcross(void)
 {
-	int i, j, nread;
-	double lw, lT;
-	FILE *fp;
+    double dlw = log10(MAXW / MINW) / NW;
+    double dlT = log10(MAXT / MINT) / NT;
+    double lminw = log10(MINW);
+    double lmint = log10(MINT);
+    int kappa_nsamp = 1;
 
-	double dlw = log10(MAXW / MINW) / NW;
-	double dlT = log10(MAXT / MINT) / NT;
-	double lminw = log10(MINW);
-	double lmint = log10(MINT);
-	fp = fopen(HOTCROSS, "r");
-	if (fp == NULL) {
-		fprintf(stderr, "file %s not found.\n", HOTCROSS);
-		fprintf(stderr,
-			"making lookup table for compton cross section...\n");
-#pragma omp parallel for private(i,j,lw,lT)
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
-				table[i][j] =
-				    log10(total_compton_cross_num
-					  (pow(10., lw), pow(10., lT)));
-				if (isnan(table[i][j])) {
-					fprintf(stderr, "%d %d %g %g\n", i,
-						j, lw, lT);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-		fprintf(stderr, "writing to file...\n");
-		fp = fopen(HOTCROSS, "w");
-		if (fp == NULL) {
-			fprintf(stderr, "couldn't write to file\n");
-			exit(0);
-		}
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				lw = lminw + i * dlw;
-				lT = lmint + j * dlT;
-				fprintf(fp, "%d %d %g %g %.15e\n", i, j,
-					lw, lT, table[i][j]);
-			}
-		fprintf(stderr, "done.\n\n");
-	} else {
-		fprintf(stderr,
-			"reading hot cross section data from %s...\n",
-			HOTCROSS);
-		for (i = 0; i <= NW; i++)
-			for (j = 0; j <= NT; j++) {
-				// Since we are suppressing, remove the length modifier on the suppressed items
-				nread = fscanf(fp, "%*d %*d %*f %*f %lf\n", &table[i][j]);
-				if (isnan(table[i][j]) || nread != 1) {
-					fprintf(stderr, "error on table read: %d %d\n", i, j);
-					exit(0);
-				}
-			}
-		fprintf(stderr, "done.\n\n");
-	}
+    #if VARIABLE_KAPPA
+        if (params.kappa_synch) {
+            kappa_nsamp = KAPPA_NSAMP;
+        }
+    #endif
 
-	fclose(fp);
+    fprintf(stderr, "making lookup tables for compton cross section for variable kappa on GPU...\n");
 
-	return;
+    // Calculate total size and allocate 1D arrays on Host and Device
+    size_t num_elements = kappa_nsamp * (NW + 1) * (NT + 1);
+    size_t bytes = num_elements * sizeof(double);
+    
+    double *d_table_flat = NULL;
+    double *h_table_flat = (double *)malloc(bytes);
+    cudaMalloc((void**)&d_table_flat, bytes);
+
+    // Configure the 3D Grid of GPU Threads
+    // We use 16x16 blocks for the i and j dimensions, and map k to the z dimension
+    dim3 threadsPerBlock(16, 16, 1);
+    dim3 numBlocks((NW + 16) / 16, (NT + 16) / 16, kappa_nsamp);
+
+    fprintf(stderr, "launching GPU kernel... ");
+    //sent d_kappa_synch, d_thermal_synch, d_powerlaw_synch to device constant memory
+    cudaMemcpyToSymbol(d_kappa_synch, &params.kappa_synch, sizeof(int));
+    cudaMemcpyToSymbol(d_thermal_synch, &params.thermal_synch, sizeof(int));
+    cudaMemcpyToSymbol(d_powerlaw_synch, &params.powerlaw_synch, sizeof(int));
+
+    generate_hotcross_kernel<<<numBlocks, threadsPerBlock>>>(
+        d_table_flat, NW, NT, kappa_nsamp,
+        lminw, dlw, lmint, dlT,
+        KAPPA_MIN, DKAPPA, KAPPA_SYNCH // Pass constants directly to avoid device symbol lookups
+    );
+
+    // Ensure kernel finishes and check for launch errors
+    cudaDeviceSynchronize();
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        fprintf(stderr, "CUDA Kernel Error: %s\n", cudaGetErrorString(err));
+        exit(1);
+    }
+
+    // Copy the flattened array back to the CPU
+    cudaMemcpy(h_table_flat, d_table_flat, bytes, cudaMemcpyDeviceToHost);
+
+    // Unpack the 1D array into your standard 3D CPU array & check for NaNs
+    for (int k = 0; k < kappa_nsamp; ++k) {
+        for (int i = 0; i <= NW; i++) {
+            for (int j = 0; j <= NT; j++) {
+                int flat_idx = k * ((NW + 1) * (NT + 1)) + i * (NT + 1) + j;
+                table[k][i][j] = h_table_flat[flat_idx];
+
+                if (isnan(table[k][i][j])) {
+                    double lw = lminw + i * dlw;
+                    double lT = lmint + j * dlT;
+                    fprintf(stderr, "NaN detected! i=%d j=%d lw=%g lT=%g\n", i, j, lw, lT);
+                    exit(1);
+                }
+            }
+        }
+    }
+
+    fprintf(stderr, "Done!\n");
+
+    free(h_table_flat);
+    cudaFree(d_table_flat);
 }
 
-
-__device__ double total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr)
+__device__ double total_compton_cross_lkup(double w, double thetae, double kappa, const double * __restrict__ d_table_ptr)
 {
-	/* cold/low-energy: just use thomson cross section */
-	if (w * thetae < 1.e-6){
-		return (SIGMA_THOMSON);
-	}
+    if (w * thetae < 1.e-6){
+        return (SIGMA_THOMSON);
+    }
+    if (thetae < MINT){
+        return (hc_klein_nishina(w) * SIGMA_THOMSON);
+    }
 
-	/* cold, but possible high energy photo n: use klein-nishina */
-	if (thetae < MINT){
-		return (hc_klein_nishina(w) * SIGMA_THOMSON);
-	}
+    if ((w >= MINW && w <= MAXW) && (thetae >= MINT && thetae <= MAXT)) {
+        
+        double lw = log10(w);
+        double lT = log10(thetae);
 
+        double exact_i = (lw - d_lminw) / d_dlw;
+        int i = (int) fmax(0.0, fmin(exact_i, NW - 1.0));
+        double di = fmax(0.0, fmin(exact_i - i, 1.0));
 
-	/* in-bounds for table */
-	if ((w > MINW && w < MAXW) && (thetae > MINT && thetae < MAXT)) {
-		
-		double lw = log10(w);
-		double lT = log10(thetae);
-		int i = (int) ((lw - d_lminw) / d_dlw);
-		int j = (int) ((lT - d_lmint) / d_dlT2);
-		double di = (lw - d_lminw) / d_dlw - i;
-		double dj = (lT - d_lmint) / d_dlT2 - j;
-		double lcross =
-		    (1. - di) * (1. - dj) * d_table_ptr[j + (NT+1) * i] + di * (1. -
-								dj) *
-		    d_table_ptr[j + (NT+1) * (i+1)] + (1. - di) * dj * d_table_ptr[(j+1) + (NT+1) * i] +
-		    di * dj * d_table_ptr[(j+1) + (NT+1) * (i+1)];
+        double exact_j = (lT - d_lmint) / d_dlT2;
+        int j = (int) fmax(0.0, fmin(exact_j, NT - 1.0));
+        double dj = fmax(0.0, fmin(exact_j - j, 1.0));
 
-		//lcross = tex2D<float>(tableTexObj, i, j);
-		if (isnan(lcross)) {
-			printf("Problem in total_compton_cross_lkup, lcross is nan!\n");	
-			// printf("lw = %g. lT =  %g, i =  %d, j =  %d, di =  %g, dj =  %g\n", lw, lT, i,
-			// 	j, di, dj);
-			// printf("table[i][j] = %le, table[i][j + 1] = %le, table[i +1][j] = %le, table[i+1][j+1] = %le\n", d_table_ptr[j + (NT+1) * i], d_table_ptr[(j+1) + (NT+1) * i], d_table_ptr[j + (NT+1) * (i+1)], d_table_ptr[(j+1) + (NT+1) * (i+1)]);
-		}
-		return (pow(10., lcross));
-	}
-	printf("out of bounds: %g %g\n", w, thetae);
-	
-	return (total_compton_cross_num(w, thetae));
+        const int stride_i = NT + 1;
+        const int stride_k = (NW + 1) * stride_i;
+        
+        int idx = j + stride_i * i; 
 
+        #if VARIABLE_KAPPA
+            double exact_k = (kappa - KAPPA_MIN) / DKAPPA;
+            int k = (int) fmax(0.0, fmin(exact_k, KAPPA_NSAMP - 2.)); 
+            double dk = fmax(0.0, fmin(exact_k - k, 1.0));
+
+            // Shift index to the correct kappa slice
+            idx += stride_k * k; 
+
+            // Interpolate along J (theta), then I (w) for slice K
+            double c00 = d_table_ptr[idx] + dj * (d_table_ptr[idx + 1] - d_table_ptr[idx]);
+            double c01 = d_table_ptr[idx + stride_i] + dj * (d_table_ptr[idx + stride_i + 1] - d_table_ptr[idx + stride_i]);
+            double val_k0 = c00 + di * (c01 - c00);
+
+            // Shift index to the next kappa slice (K+1)
+            idx += stride_k;
+
+            // Interpolate along J, then I for slice K+1
+            double c10 = d_table_ptr[idx] + dj * (d_table_ptr[idx + 1] - d_table_ptr[idx]);
+            double c11 = d_table_ptr[idx + stride_i] + dj * (d_table_ptr[idx + stride_i + 1] - d_table_ptr[idx + stride_i]);
+            double val_k1 = c10 + di * (c11 - c10);
+
+            // Final interpolation along K (kappa)
+            double lcross = val_k0 + dk * (val_k1 - val_k0);
+
+        #else
+            // If kappa is static, we only do a 2D Bilinear interpolation.
+            double c00 = d_table_ptr[idx] + dj * (d_table_ptr[idx + 1] - d_table_ptr[idx]);
+            double c01 = d_table_ptr[idx + stride_i] + dj * (d_table_ptr[idx + stride_i + 1] - d_table_ptr[idx + stride_i]);
+            double lcross = c00 + di * (c01 - c00);
+        #endif
+
+        if (isnan(lcross)) {
+            printf("Problem in total_compton_cross_lkup, lcross is nan!\n");
+            printf("w: %g, thetae: %g, kappa: %g\n", w, thetae, kappa);
+            printf("c00: %g, c01: %g, c10: %g, c11: %g\n", 
+                d_table_ptr[idx], d_table_ptr[idx + 1], 
+                d_table_ptr[idx + stride_k], d_table_ptr[idx + stride_k + 1]);
+        }
+        return (pow(10., lcross));
+    }
+    
+    printf("out of bounds: %g %g\n", w, thetae);
+    return (total_compton_cross_num(w, thetae, getnorm_dNdgammae(thetae, kappa), kappa));
 }
 
 
-__host__ __device__ double total_compton_cross_num(double w, double thetae)
+
+__host__ __device__ double total_compton_cross_num(double w, double thetae, double norm, double kappa)
 {
+    if (isnan(w)) {
+        printf("compton cross isnan: %g %g\n", w, thetae);
+        return 0.0;
+    }
 
-	if (isnan(w)) {
-		printf("compton cross isnan: %g %g\n", w, thetae);
-		return (0.);
+    if (thetae < MINT && w < MINW)
+        return SIGMA_THOMSON;
+    if (thetae < MINT)
+        return hc_klein_nishina(w) * SIGMA_THOMSON;
+
+    double dgammae = thetae * DGAMMAE;
+    double max_gammae = 1. + MAXGAMMA * thetae;
+
+    double cross = 0.0;
+
+    for (double gammae = 1. + 0.5 * dgammae; gammae < max_gammae; gammae += dgammae) {
+        
+        double f = 0.5 * norm * dNdgammae(thetae, gammae, kappa);
+        
+        double mue_integral = 0.0;
+        
+        for (double mue = -1. + 0.5 * DMUE; mue < 1.0; mue += DMUE) {
+            mue_integral += boostcross(w, mue, gammae);
+        }
+        
+        cross += mue_integral * f * DMUE * dgammae;
+    }
+
+    if (isnan(cross)) {
+        printf("Problem in hc_klein_nishina, cross is nan\n");
+    }
+
+    return cross * SIGMA_THOMSON;
+}
+
+__host__ __device__ double getnorm_dNdgammae(double thetae, double kappa){
+	#ifdef __CUDA_ARCH__
+		const int is_kappa_synch = d_kappa_synch;
+		const int is_thermal_synch = d_thermal_synch;
+		const int is_powerlaw_synch = d_powerlaw_synch;
+	#else
+		const int is_kappa_synch = params.kappa_synch;
+		const int is_thermal_synch = params.thermal_synch;
+		const int is_powerlaw_synch = params.powerlaw_synch;
+	#endif
+
+	if(is_kappa_synch){
+		return dNdgammae_kappa_norm(thetae, kappa);
 	}
+	if(is_powerlaw_synch){
+		return 1.0; // powerlaw is already normalized by construction
+	}
+	if(is_thermal_synch){
+		return 1.0; // thermal is already normalized by construction
+	}
+	return 0.0;
+}
 
-	/* check for easy-to-do limits */
-	if (thetae < MINT && w < MINW)
-		return (SIGMA_THOMSON);
-	if (thetae < MINT)
-		return (hc_klein_nishina(w) * SIGMA_THOMSON);
+__host__ __device__ double dNdgammae(double thetae, double gammae, double kappa) {
+    #ifdef __CUDA_ARCH__
+		const int is_kappa_synch = d_kappa_synch;
+		const int is_thermal_synch = d_thermal_synch;
+		const int is_powerlaw_synch = d_powerlaw_synch;
+	#else
+		const int is_kappa_synch = params.kappa_synch;
+		const int is_thermal_synch = params.thermal_synch;
+		const int is_powerlaw_synch = params.powerlaw_synch;
+	#endif
 
-	double dgammae = thetae * DGAMMAE;
-
-	/* integrate over mu_e, gamma_e, where mu_e is the cosine of the
-	   angle between k and u_e, and the angle k is assumed to lie,
-	   wlog, along the z axis */
-	double cross = 0.;
-	for (double mue = -1. + 0.5 * DMUE; mue < 1.; mue += DMUE)
-		for (double gammae = 1. + 0.5 * dgammae;
-		    gammae < 1. + MAXGAMMA * thetae; gammae += dgammae) {
-
-			double f = 0.5 * dNdgammae(thetae, gammae);
-
-			cross +=
-			    DMUE * dgammae * boostcross(w, mue,
-							gammae) * f;
-			if (isnan(cross)) {
-				printf("Problem in hc_klein_nishina, cross is nan\n");
-				// printf("%g %g %g %g %g %g\n", w,
-				// 	thetae, mue, gammae,
-				// 	dNdgammae(thetae, gammae),
-				// 	boostcross(w, mue, gammae));
-			}
-		}
-
-
-	return (cross * SIGMA_THOMSON);
+	if(is_kappa_synch){
+		return dNdgammae_kappa(thetae, gammae, kappa);
+	}
+	if(is_powerlaw_synch){
+		return dNdgammae_powerlaw(thetae, gammae);
+	}
+	if(is_thermal_synch){
+		return dNdgammae_th(thetae, gammae);
+	}
+	return 0.0;
 }
 
 
-__host__ __device__ double dNdgammae(double thetae, double gammae)
+// Transformed Integrand over 'u' where u = sqrt(gamma - 1)
+__host__ __device__ double kappa_integrand_u(double u, double thetae, double kappa) {
+    double u2 = u * u;
+    double gamma = 1.0 + u2;
+    double w = (kappa - 3.) / kappa * thetae;
+
+    return 2.0 * u2 * gamma * sqrt(2.0 + u2) *
+           pow(1.0 + u2 / (kappa * w), -(kappa + 1.0)) *
+           exp(-gamma / GAMMA_MAX);
+}
+
+
+__host__ __device__ double simpsons_rule_u(double a, double b, int N, double thetae, double kappa) {
+    double h = (b - a) / N;
+    double sum1 = 0.0;
+    double sum2 = 0.0;
+
+    for (int i = 1; i < N; i += 2) {
+        sum1 += kappa_integrand_u(a + i * h, thetae, kappa);
+    }
+    for (int i = 2; i < N - 1; i += 2) {
+        sum2 += kappa_integrand_u(a + i * h, thetae, kappa);
+    }
+
+    double result = kappa_integrand_u(a, thetae, kappa) + 
+                    kappa_integrand_u(b, thetae, kappa) + 
+                    4.0 * sum1 + 
+                    2.0 * sum2;
+    
+    return result * h / 3.0;
+}
+
+__host__ __device__ double dNdgammae_kappa_norm(double thetae, double kappa) {
+    const int N = 500; 
+    
+    double a = 0.0;
+    
+    // Original upper bound for beta was log(1. + 1000.*thetae)
+    // gamma max was roughly 1 + 1000 * thetae
+    // So the new upper bound for u = sqrt(gamma - 1) is:
+    double b = sqrt(1000.0 * thetae); 
+    
+    double integral = simpsons_rule_u(a, b, N, thetae, kappa);
+
+    return 1.0 / integral;
+}
+
+__host__ __device__ double dNdgammae_th(double thetae, double gammae)
 {
 	double K2f;
 
 	if (thetae > 1.e-2) {
-		K2f = bessk2(1. / thetae) * exp(1. / thetae);
+        #ifdef __CUDA_ARCH__
+            K2f = bessk2(1. / thetae) * exp(1. / thetae);
+        #else
+            K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
+        #endif
 	} else {
 		/* asymptotic K2(1/thetae) exp(1/thetae), with its first correction terms */
 		K2f = sqrt(M_PI * thetae / 2.) *
@@ -206,6 +378,41 @@ __host__ __device__ double dNdgammae(double thetae, double gammae)
 		exp(-(gammae - 1.) / thetae));
 }
 
+// __host__ __device__ double dNdgammae_th(double thetae, double gammae)
+// {
+// 	double K2f;
+
+// 	if (thetae > 1.e-2) {
+// 		K2f = bessk2(1. / thetae) * exp(1. / thetae);
+// 	} else {
+// 		K2f = sqrt(M_PI * thetae / 2.);
+// 	}
+
+// 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *
+// 		exp(-(gammae - 1.) / thetae));
+// }
+
+__host__ __device__ double dNdgammae_kappa(double thetae, double gammae, double kappa) {
+    double w = (kappa - 3.) / kappa * thetae;
+    // This is not yet normalized!
+    double dNdgam = gammae * sqrt(gammae * gammae - 1.) *
+                    pow((1 + (gammae - 1) / (kappa * w)), -(kappa + 1)) *
+                    exp(-gammae / GAMMA_MAX);
+    return dNdgam;
+}
+
+__host__ __device__ double dNdgammae_powerlaw(double thetae, double gammae)
+{
+//    double exp_cutoff = exp(-gammae / GAMMA_MAX);
+//    (void)exp_cutoff;
+
+   if (gammae < POWERLAW_GAMMA_MIN || POWERLAW_GAMMA_MAX < gammae) return 0.;
+
+  // note no exponential cutoff. this means we're not using powerlaw_gamma_cut
+  // or gamma_max. this choice makes normalization easier and seems consistent
+  // with the symphony emissivity formula
+  return (POWERLAW_SLOPE -1.) * pow(gammae, -POWERLAW_SLOPE) / ( pow(POWERLAW_GAMMA_MIN, 1-POWERLAW_SLOPE) - pow(POWERLAW_GAMMA_MAX, 1-POWERLAW_SLOPE) );
+}
 
 __host__ __device__ double boostcross(double w, double mue, double gammae)
 {
@@ -251,7 +458,6 @@ __host__ __device__ double hc_klein_nishina(double we)
 	return (sigma);
 
 }
-
 
 /*Bessel0 function defined as Numerical Recipes book*/
 __host__ __device__ double bessi0(double xbess)

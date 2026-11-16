@@ -137,11 +137,12 @@ __device__ double klein_nishina(const double a, const double ap);
  * @param k Incoming photon 4-momentum in the local tetrad frame.
  * @param p [out] Sampled electron 4-momentum in the local tetrad frame.
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param kappa The shape parameter of the kappa distribution, dictating the slope of the high-energy tail (only used if d_kappa_synch is defined).
  * @param localState Pointer to the curand RNG state.
  * 
  * @return void
  */
-__device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae, curandState * localState);
+__device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae, double kappa, curandState * localState);
 
 /**
  * @brief Samples the electron Lorentz factor and velocity from a thermal distribution.
@@ -157,11 +158,12 @@ __device__ void sample_electron_distr_p(double k[4], double p[4], double Thetae,
  * @param Thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
  * @param gamma_e [out] Pointer to store the sampled Lorentz factor \f$ \gamma \f$.
  * @param beta_e [out] Pointer to store the sampled dimensionless velocity \f$ \beta = v/c \f$.
+ * @param kappa The shape parameter of the kappa distribution, dictating the slope of the high-energy tail (only used if d_kappa_synch is defined).
  * @param localState Pointer to the curand RNG state for the current thread.
  * 
  * @return void
  */
-__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, curandState * localState);
+__device__ void sample_beta_distr(double Thetae, double *gamma_e, double *beta_e, double kappa, curandState * localState);
 
 /**
  * @brief Samples the auxiliary energy variable \f$ y \f$ for the Maxwell-Jüttner distribution.
@@ -233,10 +235,11 @@ __device__ double sample_mu_distr(const double beta_e, double random);
  * @param Ucon Fluid 4-velocity \f$ u^\mu \f$.
  * @param Bcon Magnetic field 4-vector \f$ b^\mu \f$.
  * @param Gcov Covariant metric tensor \f$ g_{\mu\nu} \f$.
+ * @param kappa The shape parameter of the kappa distribution, dictating the slope of the high-energy tail (only used if d_kappa_synch is defined).
  * @param localState Pointer to the curand RNG state for this thread.
  * @param photon_index The index of the photon within the SOA.
  * 
  * @return void
  */
-__device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], curandState * localState, unsigned long long photon_index);
+__device__ void scatter_super_photon(struct of_photonSOA ph, struct of_photonSOA php,double Ne, double Thetae, double B, double Ucon[NDIM], double Bcon[NDIM], double Gcov[NDIM][NDIM], double kappa, curandState * localState, unsigned long long photon_index);
 #endif

@@ -18,6 +18,7 @@
 #include <math.h>
 #include "decs.h"
 #include "par.h"
+#include "jnu_mixed.h"
 #include <string.h>
 #include <errno.h>
 __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
@@ -36,8 +37,10 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   params->Thetae_max = 1.e100;
 
   params->bremsstrahlung = 0;
-  params->synchrotron = 1;
+  params->thermal_synch = 1;
   params->scattering   = 1;
+  params->kappa_synch = 0;
+  params->powerlaw_synch = 0;
 
   strcpy(params->spectrum, "spectrum.spec");
   params->MBH_par = 4.1e6;   // MBH for Sgr A* is updated by Gravity Collaboration 2018,615,L15
@@ -50,33 +53,51 @@ __host__ void load_par_from_argv(int argc, char *argv[], Params *params) {
   }
 }
 
-// __host__ void try_set_radiation_parameter(const char *line)
-// {
-//   read_param(line, "variable_kappa_min", &variable_kappa_min, TYPE_DBL);
-//   read_param(line, "variable_kappa_max", &variable_kappa_max, TYPE_DBL);
-
-//   read_param(line, "powerlaw_gamma_cut", &powerlaw_gamma_cut, TYPE_DBL);
-//   read_param(line, "powerlaw_gamma_min", &powerlaw_gamma_min, TYPE_DBL);
-//   read_param(line, "powerlaw_gamma_max", &powerlaw_gamma_max, TYPE_DBL);
-//   read_param(line, "powerlaw_p", &powerlaw_p, TYPE_DBL);
-// }
-// sets default values for elements of params (if desired) and loads
-// from par file 'fname'
-
-
 // Color Definitions
 #define RESET   "\033[0m"
 #define RED     "\033[1;31m"
 #define GREEN   "\033[1;32m"
 #define GRAY    "\033[90m"
+
+__host__ void CheckConfigErrors(Params *params) {
+    // Don't use fitbias if you're not doing scattering
+    if (params->fitBias && !params->scattering) {
+        fprintf(stderr, RED "! ERROR: 'fit_bias' cannot be enabled without 'scattering'! Please update your .par file.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+
+    //It's either thermal synchortron or kappa or powerlaw, but not more than one.
+    if(params->thermal_synch + params->kappa_synch + params->powerlaw_synch > 1){
+        fprintf(stderr, RED "! ERROR: More than one synchrotron emission mechanism enabled! Please update your .par file to enable only one of 'synchrotron', 'kappa_synch', or 'powerlaw_synch'.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+    // You gotta have at least one emission active
+    if(params->thermal_synch + params->kappa_synch + params->powerlaw_synch + params->bremsstrahlung == 0){
+        fprintf(stderr, RED "! ERROR: No emission mechanism enabled! Please update your .par file to enable at least one of 'synchrotron', 'kappa_synch', 'powerlaw_synch', or 'bremsstrahlung'.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+    // If bremsstrahlung active with kappa or powerlaw, launch error, bremsstrahlung should only be active with thermal synchrotron
+    if(params->bremsstrahlung && (params->kappa_synch || params->powerlaw_synch)){
+        fprintf(stderr, RED "! ERROR: 'bremsstrahlung' cannot be enabled with 'kappa_synch' or 'powerlaw_synch' yet! Please update your .par file to enable 'bremsstrahlung' only with 'thermal_synch'.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+
+    if(VARIABLE_KAPPA && !params->kappa_synch){
+        fprintf(stderr, RED "! ERROR: 'variable_kappa' is enabled but 'kappa_synch' is not! Please update your .par file to enable 'kappa_synch' if you want to use 'VARIABLE_KAPPA', or disable 'VARIABLE_KAPPA' in config.h.\n" RESET);
+        exit(EXIT_FAILURE);
+    }
+
+}
 __host__ void load_par (const char *fname, Params *params) {
     char line[256];
     FILE *fp = fopen(fname, "r");
 
     // Tracker for all variables - prefixed with 'found_' to avoid macro issues
     struct {
-        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias_guess, fit_bias, fit_bias_ns, ratio, scattering, bremsstrahlung, synchrotron;
+        int seed, Ns, MBH_par, M_unit, dump, spectrum, bias_guess, fit_bias, fit_bias_ns, ratio, scattering, bremsstrahlung, thermal_synch;
         int tp_te, beta, trat_s, trat_l, theta_m;
+        //Nonthermal emissions
+        int kappa_synch, powerlaw_synch;
     } f = {0}; 
 
     if (fp == NULL) {
@@ -98,7 +119,7 @@ __host__ void load_par (const char *fname, Params *params) {
 
         if (strstr(line, "scattering")) { read_param(line, "scattering", &(params->scattering), 1); f.scattering = 1; }
         if (strstr(line, "bremsstrahlung")) { read_param(line, "bremsstrahlung", &(params->bremsstrahlung), 1); f.bremsstrahlung = 1; }
-        if (strstr(line, "synchrotron")) { read_param(line, "synchrotron", &(params->synchrotron), 1); f.synchrotron = 1; }
+        if (strstr(line, "thermal_synch")) { read_param(line, "thermal_synch", &(params->thermal_synch), 1); f.thermal_synch = 1; }
 
         if (strstr(line, "bias_guess"))        { read_param(line, "bias_guess", &(params->bias_guess), 2); f.bias_guess = 1; }
         if (strstr(line, "fit_bias"))    { read_param(line, "fit_bias", &(params->fitBias), 1); f.fit_bias = 1; }
@@ -110,16 +131,12 @@ __host__ void load_par (const char *fname, Params *params) {
         if (strstr(line, "trat_small")) { read_param(line, "trat_small", &(params->trat_small), 2); f.trat_s = 1; }
         if (strstr(line, "trat_large")) { read_param(line, "trat_large", &(params->trat_large), 2); f.trat_l = 1; }
         if (strstr(line, "Thetae_max")) { read_param(line, "Thetae_max", &(params->Thetae_max), 2); f.theta_m = 1; }
+        if (strstr(line, "kappa_synch")) { read_param(line, "kappa_synch", &(params->kappa_synch), 1); f.kappa_synch = 1; }
+        if (strstr(line, "powerlaw_synch")) { read_param(line, "powerlaw_synch", &(params->powerlaw_synch), 1); f.powerlaw_synch = 1; }
     }
     fclose(fp);
+    CheckConfigErrors(params);
 
-    // Emit error for using fitbias but not having scattering on
-    if(params->fitBias){
-      if(!params->scattering){
-          printf("\033[1;31m Cannot run fitBias without scattering! Change .par file! Exiting... \033[0m\n");
-          exit(-1);
-      }
-    }
 
     // --- FINAL REPORT ---
     printf("\n\033[1m=== PARAMETER LOADING REPORT ===\033[0m\n");
@@ -160,8 +177,10 @@ __host__ void load_par (const char *fname, Params *params) {
     print_status_s("spectrum", f.spectrum, params->spectrum);
 
     print_status_i("scattering", f.scattering, params->scattering);
-    print_status_i("synchrotron", f.synchrotron, params->synchrotron);
+    print_status_i("thermal_synch", f.thermal_synch, params->thermal_synch);
     print_status_i("bremsstrahlung", f.bremsstrahlung, params->bremsstrahlung);
+    print_status_i("kappa_synch", f.kappa_synch, params->kappa_synch);
+    print_status_i("powerlaw_synch", f.powerlaw_synch, params->powerlaw_synch);
 
     print_status("bias_guess", f.bias_guess, params->bias_guess);
     print_status_i("fit_bias", f.fit_bias, params->fitBias);
@@ -180,8 +199,18 @@ __host__ void load_par (const char *fname, Params *params) {
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "trat_large");
       printf("\033[1;33m[IGNORED] \033[0m %-15s : N/A (not IHARM model)\n", "Thetae_max");
     #endif
+    
+    //if kappa distribution, print if VARIABLE_KAPPA is active rather than fixed kappa and say that explicitely in the report
+    if(params->kappa_synch){
+        #if VARIABLE_KAPPA
+            printf("\033[1;32m[VARIABLE] \033[0m: %s\n", "Variable kappa distribution enabled (VARIABLE_KAPPA=ON)");
+        #else
+            printf("\033[1;32m[FIXED]    \033[0m : %s with value %f\n", "Fixed kappa distribution enabled (VARIABLE_KAPPA=OFF)", KAPPA_SYNCH);
+        #endif
+    }
     printf("\033[1m================================\033[0m\n");
     params->loaded = 1;
+
 }
 #undef RESET
 #undef RED

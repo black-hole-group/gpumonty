@@ -191,6 +191,16 @@
  */
 #define KTOT    9
 
+/**
+ * Mmnemonics for the plasma beta (\f$ \beta \f$) array index.
+ */
+#define BETA 10
+
+/**
+ * Mmnemonics for the plasma magnetization (\f$ \sigma \f$) array index.
+ */
+#define SIGMA 11
+
 
 /**
  * Small number to avoid division by zero or logarithm of zero.
@@ -309,7 +319,7 @@
  * the medium is optically thin, a value of 1 is sufficient. However, for optically thick scenarios, consider increasing this value.
  * A high number of scatterings per photon may lead to increased memory usage and increase in the number of serialized batches.
  */
-#define SCATTERINGS_PER_PHOTON (10)
+#define SCATTERINGS_PER_PHOTON (5)
 
 /*Making of Nint table*/
 
@@ -332,7 +342,7 @@
 /**
  * Maximum number of scattering layers allowed.
  */
-#define MAX_LAYER_SCA (5)
+#define MAX_LAYER_SCA (4)
 
 /**
  * Epsilon parameter used in the photon geodesic integration to scale the stepsize.
@@ -365,6 +375,35 @@
  * Maximum number of iterations until bias tuning give up on finding the optimal scalling to get the target ratio
  */
 #define MAXITER_BIASTUNING 5
+
+/**
+ * Whether to use VARIABLE_KAPPA or FIXED_KAPPA EDFs.
+ * This will only be used if params.kappa_synch is active.
+ */
+#define VARIABLE_KAPPA (1)
+
+/**
+ * Minimum value of the kappa parameter for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_MIN (3.1)
+/**
+ * Maximum value of the kappa parameter for the kappa distribution when using variable kappa EDFs when making the tables and weights.
+ */
+#define KAPPA_MAX_DISTR (80.1)
+
+/**
+ * Maximum value of the kappa parameter for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_MAX (7.0)
+/**
+ * Number of samples for the kappa distribution when using variable kappa EDFs.
+ */
+#define KAPPA_NSAMP (770)
+
+/**
+ * Step size for the kappa distribution sampling when using variable kappa EDFs.
+ */
+#define DKAPPA (((double)KAPPA_MAX_DISTR - (double)KAPPA_MIN) / KAPPA_NSAMP)
 
 /**
  * Two-level macro stringification: expands `s` first, then converts the result

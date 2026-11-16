@@ -1,4 +1,7 @@
 
+
+/**
+ * Size of the energy bin in logarithmic scale for the spectral output binning.
 /*
  * GPUmonty - /iharm_model/model.h
  * Copyright (C) 2026 Pedro Naethe Motta
@@ -16,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
  */
+ 
 
 #ifndef MODEL_H
 #define MODEL_H
@@ -36,26 +40,29 @@
     #define TP_OVER_TE (3.)
 
     /*Define the minimum weight of the superphoton to be considered*/
-    #define WEIGHT_MIN (0.)
+    #define WEIGHT_MIN (1.e28)
 
     /*for stop criterium*/
-    #define RMAX (10000.)
+    #define RMAX (120.)
     #define ROULETTE 1.e4
-    #define R_RECORD (3000.)
+    #define R_RECORD (10000.)
     //RMIN for sphere model only
     #define RMIN (0.01)
 
     #define BHSPIN 0
 
-    #define NE_VALUE (1.e13)
     #define B_VALUE (1.)
-    #define THETAE_VALUE (100.)
-    #define SPHERE_RADIUS (1.)
+    #define THETAE_VALUE (10.)
+    #define SPHERE_RADIUS (100.)
+
+    //This is only used for nonthermal emission models
+    #define BETA0 (20.)
+    #define MODEL_TAU0 (1e-1)
 
     /**
      * Size of the energy bin in logarithmic scale for the spectral output binning.
      */
-    #define	dlE (0.015) //Size of the energy bin
+    #define	dlE (0.25) //Size of the energy bin
 
     /**
      * Minimum energy of the energy bin in logarithmic scale.
@@ -65,12 +72,12 @@
     /**
      * Number of energy samples for the emissivity and weight tables.
      */
-    #define N_ESAMP 2500
+    #define N_ESAMP 200
 
     /**
      * Number of energy bins for the spectral output.
      */
-    #define N_EBINS 2500
+    #define N_EBINS 200
 
     /*Mass of the black hole and the unit of M in order to transform to natural code units*/
 
@@ -96,5 +103,6 @@
     __device__ double stepsize(const double X[NDIM], const double K[NDIM]);
     __host__ __device__ void gcov_func_row0(const double *X, double gcov[NDIM]);
     __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_spectrum ***spect, const char * filename);
+    __device__ void get_model_sigma_beta(const double X[NDIM], double * beta, double *sigma);
     #endif
 #endif

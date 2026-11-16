@@ -66,7 +66,7 @@ __host__ void set_units(Params params);
  * 2. **Data & Geometry**: Loads the GRMHD fluid snapshots and precomputes metric coefficients 
  * across the grid by means of the functions `init_model()` and `init_geometry()`.
  * 3. **Table Generation**: Precomputes LUTs in the following order: Cross section table, emissivity table, weight table and 
- * solid angle integrated emissivity table. This is computed by means of the functions `init_hotcross()`, `init_emiss_tables()`, `init_weight_table()` and `init_nint_table()`.
+ * solid angle integrated emissivity table. This is computed by means of the functions `init_hotcross()`, `init_emiss_tables()` and `init_weight_table()`.
  *
  * @param args Command line arguments.
  */

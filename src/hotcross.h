@@ -25,19 +25,14 @@ Declaration of the functions in the hotcross.cu file
 #define HOTCROSS_H
 
 /**
- * @brief Initializes the Compton cross-section lookup table.
+ * @brief Initializes and validates the Compton cross-section lookup table.
  * 
  * This function prepares a 2D lookup table for the total Compton cross-section 
- * as a function of dimensionless photon frequency \f$ w \f$ and electron 
- * temperature \f$ \Theta_e \f$. 
+ * as a function of dimensionless photon frequency (w) and electron 
+ * temperature (Theta_e), now accounting for the kappa distribution normalization.
  * 
- * **Routine**:
- * 1. Attempts to open the file specified by `HOTCROSS`.
- * 2. If the file is found, it loads the precomputed values into memory.
- * 3. If the file is missing, it triggers a numerical calculation of the table 
- * using `total_compton_cross_num()`.
  * 
- * @note The table is stored in \f$ \log_{10}-\log_{10} \f$ space.
+ * @note The table is stored in log10-log10 space.
  * 
  * @return void
  */
@@ -57,11 +52,12 @@ __host__ void init_hotcross(void);
  * 
  * @param w Dimensionless photon frequency.
  * @param thetae Dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * @param d_table_ptr Restrict-qualified pointer to the device lookup table.
  * 
  * @return The calculated Compton cross-section.
  */
-__device__ double total_compton_cross_lkup(double w, double thetae, const double * __restrict__ d_table_ptr);
+__device__ double total_compton_cross_lkup(double w, double thetae, double kappa, const double * __restrict__ d_table_ptr);
 
 /**
  * @brief Performs numerical integration of the total Compton cross-section.
@@ -73,13 +69,103 @@ __device__ double total_compton_cross_lkup(double w, double thetae, const double
  * 
  * @param w Dimensionless photon frequency.
  * @param thetae Dimensionless electron temperature.
- * 
+ * @param norm Normalization constant for the electron distribution function when using non-thermal distributions like the kappa EDF.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
  * @return The numerically integrated cross-section normalized by \f$ \sigma_T \f$.
  */
-__host__ __device__ double total_compton_cross_num(double w, double thetae);
+__host__ __device__ double total_compton_cross_num(double w, double thetae, double norm, double kappa);
 
 /**
- * @brief Calculates the normalized Maxwell-Jüttner electron distribution function.
+ * @brief Transformed integrand for the kappa distribution normalization over u.
+ *
+ * Applies a u-substitution where u = \f$ \sqrt(\gamma - 1)\f$. This mathematical 
+ * transformation completely eliminates the infinite derivative singularity 
+ * at the lower limit of the integration domain, yielding a perfectly smooth 
+ * function that is highly optimized for fixed-grid numerical integration.
+ *
+ * @param u The transformed integration variable, u = \f$ \sqrt(\gamma - 1) \f$.
+ * @param thetae The dimensionless electron temperature.
+ * @return The value of the transformed integrand at u.
+ */
+__host__ __device__ double kappa_integrand_u(double u, double thetae);
+
+/**
+ * @brief Evaluates the integral of the u-transformed kappa function using Composite Simpson's Rule.
+ *
+ * Performs numerical integration using a fixed, uniform grid. Because the 
+ * integrand is perfectly smooth after the u-substitution, this method achieves 
+ * great accuracy without the need for adaptive step sizing.
+ *
+ * @param a The lower bound of integration.
+ * @param b The upper bound of integration.
+ * @param N The number of subintervals (determines grid resolution).
+ * @param thetae The dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
+ * 
+ * @return The definite integral of d_kappa_function_int_u from a to b.
+ */
+__host__ __device__ double simpsons_rule_u(double a, double b, int N, double thetae, double kappa);
+
+/**
+ * @brief Calculates the normalization constant for the kappa distribution on the GPU.
+ *
+ * Computes the integral of the kappa distribution over the physical domain and 
+ * returns its inverse (1.0 / integral). The integration bounds are scaled dynamically 
+ * based on the provided electron temperature.
+ *
+ * @note CPU libraries like GSL rely heavily on adaptive quadrature algorithms (like QAG), such as the algorithm used in kmonty and igrmonty was set. 
+ * These algorithms use recursive interval subdivision to hit error targets. On a GPU, 
+ * recursion and dynamic branching cause bad warp divergence, and explicit stack 
+ * management blows up register pressure.
+ * To solve this, we applied a mathematical u-substitution to eliminate the integrand's 
+ * singularity, allowing us to drop the adaptive algorithm entirely. We replaced it with 
+ * a fixed-grid Composite Simpson's Rule. We validated this approach against the original 
+ * CPU implementation, achieving relative errors far below the ones used in igrmonty. Since 
+ * the singularity is resolved, the grid resolution parameter N is hardcoded inside the function 
+ * but can be easily dialed up or down to control the exact performance-to-precision tradeoff.
+ *
+ * @param thetae The dimensionless electron temperature.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
+ * @return The calculated normalization constant.
+ */
+__host__ __device__ double dNdgammae_kappa_norm(double thetae, double kappa);
+
+
+/**
+ * @brief Wrapper to select the appropriate normalization constant for the electron distribution function based on the simulation parameters.
+ * 
+ * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
+ * 
+ * @return The normalization constant for the selected distribution function. For power-law and thermal distributions, this returns 1.0 since they are already normalized by construction.
+ */
+__host__ __device__ double getnorm_dNdgammae(double thetae, double kappa);
+
+/**
+ * @brief Wrapper to select the appropriate electron distribution function based on the simulation parameters to calculate the electron distribution function for thermal or nonthermal electrons.
+ * 
+ * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param gammae Electron Lorentz factor \f$ \gamma_e \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component. This parameter is only used if the kappa distribution is selected; otherwise, it can be ignored or set to a default value.
+ * 
+ * @return The value of \f$ dN/d\gamma_e \f$ for the selected distribution function.
+ */
+__host__ __device__ double dNdgammae(double thetae, double gammae, double kappa);
+/**
+ * @brief Calculates the kappa electron distribution function.
+ *
+ * Returns the number of electrons per unit Lorentz factor \f$ \gamma_e \f$.
+ *
+ * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param gammae Electron Lorentz factor \f$ \gamma_e \f$.
+ * @param kappa The kappa parameter that characterizes the non-thermal tail of the distribution. This parameter controls the slope of the high-energy tail, with lower values indicating a more pronounced non-thermal component.
+ * 
+ * @return The value of \f$ dN/d\gamma_e \f$ for a non-thermal distribution.
+ */
+__host__ __device__ double dNdgammae_kappa(double thetae, double gammae, double kappa);
+
+/**
+ * @brief Calculates the Maxwell-Jüttner electron distribution function.
  * 
  * Returns the number of electrons per unit Lorentz factor \f$ \gamma_e \f$, normalized 
  * per unit proper electron number density. The implementation uses the modified Bessel function \f$ K_2(1/\Theta_e) \sim \Theta_{\rm e}^2\f$
@@ -90,7 +176,20 @@ __host__ __device__ double total_compton_cross_num(double w, double thetae);
  * 
  * @return The value of \f$ dN/d\gamma_e \f$.
  */
-__host__ __device__ double dNdgammae(double thetae, double gammae);
+__host__ __device__ double dNdgammae_th(double thetae, double gammae);
+
+
+/**
+ * @brief Calculates the powerlaw electron distribution function.
+ * 
+ * Returns the number of electrons per unit Lorentz factor \f$ \gamma_e \f$ for a power-law distribution
+ * 
+ * @param thetae Dimensionless electron temperature \f$ \Theta_e = k_B T_e / m_e c^2 \f$.
+ * @param gammae Electron Lorentz factor \f$ \gamma_e \f$.
+ * 
+ * @return The value of \f$ dN/d\gamma_e \f$ for a power-law distribution.
+ */
+__host__ __device__ double dNdgammae_powerlaw(double thetae, double gammae);
 
 /**
  * @brief Computes the Doppler-boosted Compton cross-section in the lab frame.
@@ -120,6 +219,7 @@ __host__ __device__ double boostcross(double w, double mue, double gammae);
  * @return The total cross-section normalized by the Thomson cross-section.
  */
 __host__ __device__ double hc_klein_nishina(double we);
+
 
 /**
  * @brief Modified Bessel function of the first kind, order zero: \f$ I_0(x) \f$.

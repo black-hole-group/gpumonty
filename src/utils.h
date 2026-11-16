@@ -47,6 +47,50 @@ Declaration of the functions in the utils.cu file
  */
 __device__ double interp_scalar(cudaTextureObject_t var, const int mmenemonics, const int i, const int j, const int k, const double del[4]);
 
+
+
+/**
+ * @brief Evaluates the Gauss Hypergeometric function 2F1(a, b; c; z) using a power series.
+ * 
+ * This device function computes the hypergeometric series directly. It is intended 
+ * for use as a building block for the full hypergeometric evaluation, typically 
+ * when |z| < 1 or as part of a transformation formula.
+ * 
+ * @param a Parameter 'a' of the 2F1 function.
+ * @param b Parameter 'b' of the 2F1 function.
+ * @param c Parameter 'c' of the 2F1 function.
+ * @param z The argument of the function.
+ * 
+ * @return The computed value of the hypergeometric function as a double.
+ * 
+ * @note This implementation has been cross-validated against GSL (gsl_sf_hyperg_2F1) 
+ * and SciPy (scipy.special.hyp2f1). Internal testing indicates that while 
+ * this version maintains high agreement with SciPy across the tested domain, 
+ * GSL (v2.7+) exhibits significant precision loss and stability issues 
+ * when X < -0.5 (corresponding to z > 0.5), leading to large discrepancies 
+ * compared to both this CUDA implementation and SciPy.
+ */
+__device__ double cuda_hyperg_2F1(double a, double b, double c, double z);
+
+// /**
+//  * @brief Computes the Gamma function, \f$\Gamma(z)\f$, for GPU device code.
+//  *
+//  * @details This function serves as a CUDA `__device__` substitute for `gsl_sf_gamma`. 
+//  * It calculates the double-precision Gamma function using the [https://en.wikipedia.org/wiki/Lanczos_approximation](Lanczos approximation) 
+//  * (with \f$g = 7\f$). It implements Euler's reflection formula to accurately handle 
+//  * inputs where \f$z < 0.5\f$ (including negative numbers) and uses logarithmic 
+//  * exponentiation to prevent intermediate floating-point overflow for large inputs.
+//  *
+//  * @param z The real-valued input for which to compute the Gamma function.
+//  * @return The computed value of \f$\Gamma(z)\f$.
+//  *
+//  * @note Because the Gamma function grows factorially, inputs strictly greater 
+//  * than 171.624 will overflow the IEEE 64-bit double limit and return `inf`.
+//  * 
+//  * @note This function has been tested against `gsl_sf_gamma` for a range of inputs, including negative values, and shows near truncation value agreements.
+//  */
+// __device__ double cuda_sf_gamma(double z);
+
 /**
  * @brief Maps a global photon ID to a specific grid cell or source index using binary search.
  *
@@ -81,7 +125,7 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
  * @note The function assumes periodicity in the third dimension (\f$k\f$). If the 
  * index \f$k\f$ is at the grid boundary (\f$d\_N3 - 1\f$), it wraps around to index 0.
  */
-__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
+__host__ __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]);
 
 /**
  * @brief Maps a 4D index (Variable + 3D Space) to a 1D linear memory offset.

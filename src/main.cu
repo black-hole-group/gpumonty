@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 	
 	// load parameters from command line
   	load_par_from_argv(argc, argv, &params);
-
 	/* initialize model data, auxiliary variables */
 	init_model(argv);
 
@@ -101,22 +100,26 @@ __host__ void init_model(char *args[])
 	fprintf(stderr, "done.\n\n");
 	fflush(stderr);
 
-	/* make look-up table for hot cross sections */
-	init_hotcross();
 
 	/* make table for solid angle integrated emissivity and K2 */
-	init_emiss_tables();
 
+	if(params.kappa_synch || params.powerlaw_synch){
+		init_emiss_tables_nth();
+		#if VARIABLE_KAPPA
+			//With variable kappa, when kappa > kappa_max, it goes to the thermal emission, therefore we need the thermal table.
+			init_emiss_tables();
+		#endif
+	}else{
+		//Case with thermal synchrotron + bremsstrahlung or just bremsstrahlung or just thermal synchrotron
+		init_emiss_tables();
+	}
+	/* make look-up table for hot cross sections */
+	init_hotcross();
 	/* make table for superphoton weights */
 	double start = omp_get_wtime();
 	init_weight_table();
 	double end = omp_get_wtime();
 	fprintf(stderr, "Time spent building weight table: %.4f seconds\n", end - start);
-	//init_weight_table_blackbody();
-	/* make table for quick evaluation of ns_zone */
-	/*Currently not using it*/
-	//init_nint_table();
-
 }
 /* set up all grid functions */
 __host__ void init_geometry()
@@ -130,8 +133,6 @@ __host__ void init_geometry()
 			gcov_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov);
 			geom[SPATIAL_INDEX2D(i,j)].g = gdet_func(geom[SPATIAL_INDEX2D(i,j)].gcov);
 			gcon_func(X, geom[SPATIAL_INDEX2D(i,j)].gcov, geom[SPATIAL_INDEX2D(i,j)].gcon);
-
-		
 		}
 	}
 }
@@ -151,18 +152,16 @@ __host__ void report_spectrum(unsigned long long N_superph_made, struct of_spect
         exit(0);
     }
 
-    /* --- NEW: Print dOmega values to file header --- */
     // We calculate dx2 here to use for the dOmega loop
     dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
     
-    fprintf(fp, "# dOmega:"); // Header tag
+    fprintf(fp, "# dOmega:");
     for (j = 0; j < N_THBINS; j++) {
         // Calculate dOmega for this theta bin
         dOmega = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
         fprintf(fp, " %.15e", dOmega);
     }
-    fprintf(fp, "\n"); // End header line
-    /* ----------------------------------------------- */
+    fprintf(fp, "\n"); 
 
     /* output */
     max_tau_scatt = 0.;

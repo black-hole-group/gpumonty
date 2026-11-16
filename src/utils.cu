@@ -18,12 +18,19 @@
 #include "decs.h"
 #include "utils.h"
 
-__device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
+__host__ __device__ double interp_scalar_pointer(const double * __restrict__ var, const int mmenemonics, const int i, const int j, const int k, const double coeff[8]){
 	double interp;
     int kp1 = k + 1;
     int ip1 = i + 1;
     int jp1 = j + 1;
-    if (k == (d_N3 - 1)){
+
+    #ifdef __CUDA_ARCH__
+    int local_N3 = d_N3; // Use the device constant for N3
+    #else
+    int local_N3 = N3; // Use the host constant for N3
+    #endif
+
+    if (k == (local_N3 - 1)){
         kp1 = 0;
     }
 
@@ -57,3 +64,24 @@ __device__ int findPhotonIndex(const unsigned long long *cumulativeArray, int ar
     
     return left; // `left` is the smallest index where cumulativeArray[left] > photon_index
 }
+
+
+__device__ double cuda_hyperg_2F1(double a, double b, double c, double z) {
+    if (z == 0.0) return 1.0;
+    double term = 1.0;
+    double sum = 1.0;
+    double n = 0.0;
+    double tol = 1e-10;     
+    int max_iter = 1000;    
+
+    for (int i = 1; i <= max_iter; i++) {
+        term *= ((a + n) * (b + n)) / ((c + n) * (n + 1.0)) * z;
+        sum += term;
+        n += 1.0;
+        if (fabs(term) < tol * fabs(sum)) {
+            break;
+        }
+    }
+    return sum;
+}
+

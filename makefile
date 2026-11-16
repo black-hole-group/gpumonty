@@ -18,12 +18,13 @@
 
 
 # Model name ( harm_model, sphere_model, iharm_model)
-MODEL = iharm
+MODEL = sphere
 MODEL_DIR = $(SRC_DIR)/$(MODEL)_model
 
 
 # NEW: Toggle for automatic GPU block tuning (1 = Enable, 0 = Disable)
 BLOCK_TUNING ?= 1
+
 
 # CUDA auto-detection: derive CUDA root from nvcc location on PATH
 CUDA_PATH ?= $(shell \
@@ -34,26 +35,25 @@ CUDA_PATH ?= $(shell \
 	else \
 		echo ""; \
 	fi)
-
+CUDA_PATH ?=/usr/local/cuda-12.3/
 # GSL auto-detection: derive GSL root from gsl-config or fallback paths
-# GSL_HOME ?= $(strip $(shell \
-# 	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
-# 		echo $$GSL_HOME; \
-# 	elif command -v gsl-config >/dev/null 2>&1; then \
-# 		gsl-config --prefix; \
-# 	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
-# 		echo $$HOME/gsl; \
-# 	elif [ -d /usr/local/include/gsl ]; then \
-# 		echo /usr/local; \
-# 	elif [ -d /usr/include/gsl ]; then \
-# 		echo /usr; \
-# 	else \
-# 		echo ""; \
-# 	fi))
-GSL_HOME = /home/pedro/gsl
-GSL_PATH ?= $(GSL_HOME)
+GSL_HOME ?= $(strip $(shell \
+	if [ -n "$$GSL_HOME" ] && [ -d "$$GSL_HOME/include/gsl" ]; then \
+		echo $$GSL_HOME; \
+	elif command -v gsl-config >/dev/null 2>&1; then \
+		gsl-config --prefix; \
+	elif [ -d "$$HOME/gsl/include/gsl" ]; then \
+		echo $$HOME/gsl; \
+	elif [ -d /usr/local/include/gsl ]; then \
+		echo /usr/local; \
+	elif [ -d /usr/include/gsl ]; then \
+		echo /usr; \
+	else \
+		echo ""; \
+	fi))
 
 #GSL setup
+GSL_HOME = /home/pedro/gsl
 GSL_PATH ?= $(GSL_HOME)
 
 # HDF5 auto-detection: try pkg-config, then h5cc, then common paths
@@ -136,7 +136,7 @@ CUDA_LIB_DIR := $(shell \
 CUDA_LIB = -L$(CUDA_LIB_DIR)
 
 # Debug and release flags
-DEBUG_FLAGS = -g -code=$(CODE)
+DEBUG_FLAGS = -g -G -code=$(CODE)
 RELEASE_FLAGS = -code=$(CODE_LTO) -dlto -O3
 
 NVCCFLAGS_COMMON = -arch=$(ARCH) -rdc=true --use_fast_math -lineinfo --ptxas-options="-v -dlcm=cg" --maxrregcount=255\
@@ -191,10 +191,7 @@ $(EXECUTABLE): $(OBJS) $(INCS) | $(BUILD_DIR)
 	@echo "Build type: $(BUILD_TYPE)."
 	@echo "------------------------------------------------"
 
-### ADDED: Dependency on configuration ###
-# Before compiling any .o file, run the configure_gpu_blocks target
-$(OBJS): configure_gpu_blocks
-##########################################
+
 
 
 # Compile rule for CUDA files in both folders
@@ -216,4 +213,4 @@ clean:
 	rm -rf $(BUILD_DIR) $(EXECUTABLE)
 
 # Phony targets
-.PHONY: clean configure_gpu_blocks
+.PHONY: clean

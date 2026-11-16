@@ -108,7 +108,8 @@ __host__ void GPUWorker(unsigned long long photons_per_batch, unsigned long long
 			double ScatteringDynamicalSize = max(2.0 *  params.targetRatio, (double) SCATTERINGS_PER_PHOTON);
 			allocatePhotonData(&scat_ofphoton, ScatteringDynamicalSize * instant_photon_number);
 		}else{
-			allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
+			if(params.scattering)
+				allocatePhotonData(&scat_ofphoton, SCATTERINGS_PER_PHOTON *instant_photon_number);
 		}
 
 		fprintf(log_file, "\nSampling the photons!\n");
@@ -340,6 +341,7 @@ __host__ void mainFlowControl(time_t time, double * p){
     //Figure out how many gpus we have available for us.
     int num_gpus;
     gpuErrchk(cudaGetDeviceCount(&num_gpus));
+	num_gpus = 1;
     // Total number of cells
     int num_zones = N1 * N2 * N3;
 
@@ -473,8 +475,13 @@ __host__ void mainFlowControl(time_t time, double * p){
 
         //Finally, we transfer the table for the scattering kernel to the GPU.
         double *local_d_table_ptr;
-        gpuErrchk(cudaMalloc((void**)&local_d_table_ptr, (NW + 1) * (NT + 1) * sizeof(double)));
-        gpuErrchk(cudaMemcpy(local_d_table_ptr, table, (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
+		#if VARIABLE_KAPPA
+		int kappa_size = KAPPA_NSAMP;
+		#else
+		int kappa_size = 1;
+		#endif
+        gpuErrchk(cudaMalloc((void**)&local_d_table_ptr, kappa_size * (NW + 1) * (NT + 1) * sizeof(double)));
+        gpuErrchk(cudaMemcpy(local_d_table_ptr, table, kappa_size * (NW + 1) * (NT + 1) * sizeof(double), cudaMemcpyHostToDevice));
 
         unsigned long long * local_generated_photons_arr;
         gpuErrchk(cudaMalloc(&local_generated_photons_arr, num_zones * sizeof(unsigned long long)));
@@ -605,13 +612,8 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 	double lnu_max = log(NUMAX);
 	double dlnu = (lnu_max - lnu_min) / (N_ESAMP);
 
-	#ifdef __CUDA_ARCH__
-    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-	#else
-		Thetae = 0.;
-		Ne = 0.;
-		Bmag = 0.;
-	#endif
+    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+	const double kappa = get_model_kappa_ijk(i, j, k, d_p);
 
 	if (Ne == 0. || Thetae < THETAE_MIN) {
 		*n2gen = 0.;
@@ -634,18 +636,11 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		ninterp = 0.;
 		*dnmax = 0.;
 		for (int m = 0; m <= N_ESAMP; m++) {
-			// dn = F_eval(Thetae, Bmag,
-			// 		exp(m * dlnu +
-			// 		lnu_min)) / (exp(d_wgt[m]) +
-			// 				1.e-100);
-			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2) / (exp(d_wgt[m]) + 1.e-100);
+			dn = int_jnu_total(Ne, Thetae, Bmag, exp(m * dlnu + lnu_min), K2, kappa) / (exp(d_wgt[m]) + 1.e-100);
 			if (dn > *dnmax)
 				*dnmax = dn;
 			ninterp += dlnu * dn;
 		}
-		// ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit
-		// 	* M_SQRT2 * EE * EE * EE / (27. * ME * CL * CL)
-		// 	* 1. / HPL;
 		ninterp *= d_dx[1] * d_dx[2] * d_dx[3] * d_L_unit * d_L_unit * d_L_unit * 1./HPL;
 
 	} else {
@@ -671,7 +666,6 @@ __device__ void init_zone(const int i, const int j, const int k, unsigned long l
 		return;
 	}
 	
-	//double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * Ne * Bmag * Thetae * Thetae * ninterp / K2;
 	double nz = d_geom[SPATIAL_INDEX2D(i,j)].g * ninterp;
 	if (nz > d_Ns_par * log(NUMAX / NUMIN)) {
 		printf(
@@ -730,7 +724,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
 {
     double nu, weight;
     
-    // Scope 1: Initial setup and coordinate transformation
+    // Initial setup and coordinate transformation
     {
         double Xarray[NDIM];
         coord(i, j, k, Xarray);
@@ -741,16 +735,13 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         ph.X3[ph_arr_index] = Xarray[3];
     } // Xarray goes out of scope here
     
-    // Scope 2: Get fluid properties
+    // Get fluid properties
     double Ne, Thetae, Bmag, Ucon[NDIM], Bcon[NDIM];
-	#ifdef __CUDA_ARCH__
-    	get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
-	#else
-		Thetae = 0.;
-		Ne = 0.;
-		Bmag = 0.;
-	#endif
-    // Scope 3: Sample frequency
+    get_fluid_zone(i, j, k, &Ne, &Thetae, &Bmag, Ucon, Bcon, d_geom, d_p);
+
+
+	const double kappa = get_model_kappa_ijk(i, j, k, d_p);
+    // Sample frequency
     {
         const double lnu_min = log(NUMIN);
         const double Nln = log(NUMAX) - lnu_min;
@@ -758,21 +749,21 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         do {
             nu = exp(curand_uniform_double(localState) * Nln + lnu_min);
             weight = linear_interp_weight(nu);
-		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2) / (weight + 1.e-100)) / dnmax);
+		}while (curand_uniform_double(localState) > (int_jnu_total(Ne, Thetae, Bmag, nu, K2, kappa) / (weight + 1.e-100)) / dnmax);
 		ph.w[ph_arr_index] = weight;
     } // lnu_min, Nln go out of scope
 
-    // Scope 4: Sample angles  
+    // Sample angles  
     double cth;
     {
 		const double K2 = K2_eval(Thetae);
-        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2);
+        const double jmax = jnu_total(nu, Ne, Thetae, Bmag, M_PI / 2., K2, kappa);
 		double j_th;
 		double th;
         do {
             cth = 2. * curand_uniform_double(localState) - 1.;
             th = acos(cth);
-        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2);
+        	j_th = jnu_total(nu, Ne, Thetae, Bmag, th, K2, kappa);
         } while (curand_uniform_double(localState) > j_th / jmax);
 		ph.ratio_brems[ph_arr_index] = jnu_ratio_brems(nu, Ne, Thetae, Bmag, th, K2);
 
@@ -781,7 +772,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
     // Reuse arrays - use one array for both K_tetrad and final storage
     double K_data[NDIM]; // This will serve as both K_tetrad and tmpK
     
-    // Scope 5: Build momentum vector
+    // Build momentum vector
     {
         const double sth = sqrt(1. - cth * cth);
         const double phi = 2. * M_PI * curand_uniform_double(localState);
@@ -793,7 +784,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         K_data[3] = E * sin(phi) * sth;
     } // sth, phi, E go out of scope, cphi/sphi never created
     
-    // Scope 6: Handle tetrad if needed
+    // Handle tetrad if needed
     if (zone_flag) {
         double bhat[NDIM];
         if (Bmag > 0.) {
@@ -808,7 +799,7 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         make_tetrad(Ucon, bhat, d_geom[SPATIAL_INDEX2D(i,j)].gcov, Econ, Ecov);
     }
     
-    // Scope 7: Final transformations - reuse K_data array
+    // reuse K_data array
     {
         double Karray[4]; // Temporary for coordinate transformation
         tetrad_to_coordinate(Econ, K_data, Karray);
@@ -826,7 +817,6 @@ __device__ void sample_zone_photon(const int i, const int j, const int k, const 
         ph.K3[ph_arr_index] = Karray[3];
     }
     
-    // Store final values
     ph.tau_scatt[ph_arr_index] = 0.;
     ph.tau_abs[ph_arr_index] = 0.;
     ph.X1i[ph_arr_index] = ph.X1[ph_arr_index];
@@ -856,21 +846,9 @@ __global__ void track(struct of_photonSOA ph,
         
 		// Track the photon
         track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, 0, 0, photon_index, &localState);
-
-        // // Progress indicator
-        // if (global_index == 0) {
-        //     float percentage = 100 - ((max_partition_ph-  photon_index) * 100) / max_partition_ph;
-        //     if (percentage >= n * 5.0f) {
-		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-		// 		n++;
-        //     }
-        // }
 	}
 
-	// /*Set to 100%*/
-	// if(global_index == 0){
-	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	// }
+
 	if(global_index > N_BLOCKS * N_THREADS){
 		printf("Warning! Too many threads! Some threads are not being used!\n");
 	}
@@ -920,29 +898,20 @@ __global__ void track_scat(struct of_photonSOA ph,
 		double X[NDIM] = {ph.X0[scattering_counter_local], ph.X1[scattering_counter_local], ph.X2[scattering_counter_local], ph.X3[scattering_counter_local]};
 		#ifndef SPHERE_TEST
 			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov, d_p);
+			double kappa = get_model_kappa(X, d_p);
+
 		#else
 			get_fluid_params(X, &Ne, &Thetae, &B, Ucon, Ucov, Bcon, Bcov);
+			double kappa = get_model_kappa(X);
 		#endif
 		double Gcov[NDIM][NDIM];
 		gcov_func(X, Gcov);
-		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, &localState, scattering_counter_local);
+		scatter_super_photon(ph, ph, Ne, Thetae, B, Ucon, Bcon, Gcov, kappa, &localState, scattering_counter_local);
 		if (ph.w[scattering_counter_local] < 1.e-100) {	/* must have been a problem popping k back onto light cone */
 			continue;
 		}
 		track_super_photon(ph, d_p, d_table_ptr, scat_ofphoton, round_num_scat_end, n, scattering_counter_local, &localState);
-        // Progress indicator
-		// if (global_index == 0) {		
-		// 	float percentage = (float)(scattering_counter_local - round_num_scat_init) * 100.0f / (float)(round_num_scat_end - round_num_scat_init);
-		// 	if (percentage >= n_progress * 5.0f) {
-		// 		printf("\rProgress: \033[1;32m%llu%%\033[0m   ", (unsigned long long)percentage);
-		// 		n_progress++;
-        //     }
-		// }
 	}
-	/*Set to 100%*/
-	// if(global_index == 0){
-	// 	printf("\rProgress: \033[1;32m100%%\033[0m   \n");
-	// }
 	my_curand_state[global_index] = localState;
 }
 
@@ -953,7 +922,7 @@ __global__ void record_scattering(struct of_photonSOA ph, struct of_spectrum * _
 	/*track each photon we created along its geodesic*/
 
 	for(unsigned long long a = global_index; a < d_num_scat_phs[n-1]; (a += nblocks * N_THREADS)){
-
+		
 		if(record_criterion(ph.X1[a]))
 		record_super_photon(ph, d_spect, a);
 	}

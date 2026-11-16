@@ -8,13 +8,18 @@ dump ../../sample_dump_SANE_a+0.94_MKS_0900.h5
 
 
 #Name of the spectrum file generated
-spectrum spec_8e5_ratio2.h5
-
+#spectrum 1e5sphere_powerlaw_sc.h5
+#spectrum 1e5sphere_kappa_sc.h5
+#spectrum sane_thermal_sc.h5
+#spectrum sane_powerlaw_sc.h5
+#spectrum sane_kappa.h5
+#spectrum sane_kappa_sc.h5
+spectrum sane_kappa_var.h5
 # T_p/T_e
 tp_over_te 3.
 
 #Black hole mass and mass unit to translate accretion rate to physical units
-MBH 4.14e6
+MBH 4.1e6
 M_unit 1.e16
 
 
@@ -25,11 +30,18 @@ beta_crit 1.
 Thetae_max 1.e100
 
 # Whether or not to have scattering activated
-scattering 1
-fit_bias 1
+scattering 0
+fit_bias 0
 ratio 2
-bias_guess 0.1
+bias_guess 20.0
 
 #emissions
-bremsstrahlung 1
-synchrotron 1
+bremsstrahlung 0
+thermal_synch 0
+
+#nonthermal distribution
+#for the kappa distribution, change NU_CUTOFF or KAPPA value in jnu_mixed.h
+kappa_synch 1
+
+#for the powerlaw distribution change the parameters POWERLAW_SLOPE, POWERLAW_GAMMA_MIN, POWERLAW_GAMMA_MAX in jnu_mixed.h
+powerlaw_synch 0

@@ -107,7 +107,17 @@ __host__ void transferParams(cudaStream_t stream) {
     symbolToDevice(&d_stopx, &stopx, NDIM * sizeof(double), stream);
     symbolToDevice(&d_thetae_unit, &Thetae_unit, sizeof(double), stream);
     symbolToDevice(&d_wgt, &wgt, (N_ESAMP + 1) * sizeof(double), stream);
-    symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
+    if(params.kappa_synch || params.powerlaw_synch){
+        #if VARIABLE_KAPPA
+            symbolToDevice(&d_F_nth, &F_nth, (KAPPA_NSAMP) * (N_ESAMP + 1) * sizeof(double), stream);
+            // With variable kappa, when kappa > kappa_max, it goes to the thermal emission, therefore we need the thermal table.
+            symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
+        #else
+            symbolToDevice(&d_F_nth, &F_nth, (N_ESAMP + 1) * sizeof(double), stream);
+        #endif
+    }else{
+        symbolToDevice(&d_F, &F, (N_ESAMP + 1) * sizeof(double), stream);
+    }
     symbolToDevice(&d_nint, &nint, (NINT + 1) * sizeof(double), stream);
     symbolToDevice(&d_dndlnu_max, &dndlnu_max, (NINT + 1) * sizeof(double), stream);
     symbolToDevice(&d_K2, &K2, (N_ESAMP + 1) * sizeof(double), stream);
@@ -118,9 +128,13 @@ __host__ void transferParams(cudaStream_t stream) {
     symbolToDevice(&d_N2, &N2, sizeof(int), stream);
     symbolToDevice(&d_N3, &N3, sizeof(int), stream);
 
+	cudaMemcpyToSymbol(d_scattering, &(params.scattering), sizeof(int));
+	cudaMemcpyToSymbol(d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int));
+	cudaMemcpyToSymbol(d_thermal_synch, &(params.thermal_synch), sizeof(int));
+	cudaMemcpyToSymbol(d_kappa_synch, &(params.kappa_synch), sizeof(int));
+	cudaMemcpyToSymbol(d_powerlaw_synch, &(params.powerlaw_synch), sizeof(int));
     symbolToDevice(&d_scattering, &(params.scattering), sizeof(int), stream);
     symbolToDevice(&d_bremsstrahlung, &(params.bremsstrahlung), sizeof(int), stream);
-    symbolToDevice(&d_synchrotron, &(params.synchrotron), sizeof(int), stream);
 
     double h_bias_guess[MAX_LAYER_SCA];
     for (int i = 0; i < MAX_LAYER_SCA; i++) {
@@ -234,23 +248,25 @@ __host__ unsigned long long photonsPerBatch(unsigned long long tot_nph, int *bat
 
         size_t required_mem = 0;
 
-        // --- GPUWorker allocations ---
+        //GPUWorker allocations
         required_mem += photonSOASize(superph_per_batch);          // initial_photon_states
-        required_mem += photonSOASize(scat_buf_size);              // scat_ofphoton
-        if (params.fitBias)
-            required_mem += photonSOASize(superph_per_batch);      // PhotonStateCheckPoint
 
-        // --- scattering_flow_control peak allocation ---
         // CurrentLayerScattering and NextLayerScattering are alive simultaneously
         // before the old current is freed. Worst case is at layer n=1 where
         // both are sized off the initial scatter count.
-        required_mem += photonSOASize(scat_buf_size);              // CurrentLayerScattering
-        required_mem += photonSOASize(scat_buf_size);              // NextLayerScattering
-        if (params.fitBias)
+        if(params.scattering){
+            required_mem += photonSOASize(scat_buf_size);          // CurrentLayerScattering
+            required_mem += photonSOASize(scat_buf_size);              // NextLayerScattering
+            required_mem += photonSOASize(scat_buf_size);              // scat_ofphoton
+        }
+        if (params.fitBias){
+            required_mem += photonSOASize(superph_per_batch);      // PhotonStateCheckPoint
             required_mem += photonSOASize(scat_buf_size);          // ScatteredPhotonStateCheckPoint
 
-        // Add a safety margin (e.g. 50%) for CUDA runtime overhead, texture memory, etc.
-        size_t required_with_margin = (size_t)(required_mem * 1.5);
+        }
+
+        // Add a safety margin (e.g. 20%) for CUDA runtime overhead, texture memory, etc.
+        size_t required_with_margin = (size_t)(required_mem * 1.2);
 
         if (*batch_divisions == 1 && required_with_margin > free_mem) {
             printf("Not enough memory for %.2f GB. Available: %.2f GB. Partitioning...\n",
