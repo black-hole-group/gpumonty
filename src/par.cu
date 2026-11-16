@@ -88,7 +88,7 @@ __host__ void load_par (const char *fname, Params *params) {
         if (line[0] == '#' || line[0] == '\n') continue; 
 
         // We check if the keyword is in the line, then call the void read_param
-        if (strstr(line, "seed")) { read_param(line, "seed", &(params->seed), 2); f.seed = 1; }
+        if (strstr(line, "seed")) { read_param(line, "seed", &(params->seed), 1); f.seed = 1; }
         if (strstr(line, "Ns"))   { read_param(line, "Ns", &(params->Ns), 2); f.Ns = 1; }
         if (strstr(line, "MBH"))  { read_param(line, "MBH", &(params->MBH_par), 2); f.MBH_par = 1; }
         if (strstr(line, "M_unit")){ read_param(line, "M_unit", &(params->M_unit), 2); f.M_unit = 1; }

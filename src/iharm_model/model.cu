@@ -1094,7 +1094,9 @@ __host__ void report_spectrum_h5(unsigned long long N_superph_made, struct of_sp
 
   double dx2 = (stopx[2] - startx[2]) / (2. * N_THBINS);
   for (int j=0; j<N_THBINS; ++j) {
-    dOmega_buf[j] = 2. * dOmega_func(j * dx2, (j + 1) * dx2);
+    /* record_super_photon bins the Boyer-Lindquist theta in N_THBINS equal bins over [0, pi/2],
+       folded: the solid angle of bin j is that of theta in [j, j+1] pi/(2 N_THBINS) */
+    dOmega_buf[j] = 2. * 2. * M_PI * (cos(j * M_PI / (2. * N_THBINS)) - cos((j + 1) * M_PI / (2. * N_THBINS)));
   }
 
   for (int k=0; k<N_TYPEBINS; ++k) {
