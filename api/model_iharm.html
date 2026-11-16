@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>model.cu &mdash; GPUmonty 1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
 
@@ -17,7 +17,6 @@
       <script src="../_static/documentation_options.js?v=f2a433a1"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -64,7 +63,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="config.html">config.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="config.html#macros">Macros</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.HDF5_OUTPUT"><code class="docutils literal notranslate"><span class="pre">HDF5_OUTPUT</span></code></a></li>
@@ -280,6 +278,15 @@
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv49hdf5_openPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_open()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv410hdf5_closev"><code class="docutils literal notranslate"><span class="pre">hdf5_close()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_make_directoryPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_make_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv421hdf5_write_single_valPKvPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_single_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv416hdf5_write_arrayPKvPKc6size_tP7hsize_tP7hsize_tP7hsize_tP7hsize_tP7hsize_t7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv411hdf5_existsPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv420hdf5_read_single_valPvPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_read_single_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_read_arrayPvPKc6size_tP7hsize_tP7hsize_tP7hsize_tP7hsize_tP7hsize_t7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_read_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv418hdf5_make_str_type6size_t"><code class="docutils literal notranslate"><span class="pre">hdf5_make_str_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_write_str_listPKvPKc6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_str_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv413hdf5_add_attrPKvPKcPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_add_attr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv414hdf5_add_unitsPKcPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_add_units()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -385,54 +392,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">model.cu</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#macros">Macros</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.THETAE_MAX"><code class="docutils literal notranslate"><span class="pre">THETAE_MAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.WEIGHT_MIN"><code class="docutils literal notranslate"><span class="pre">WEIGHT_MIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.RMAX"><code class="docutils literal notranslate"><span class="pre">RMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_eKS"><code class="docutils literal notranslate"><span class="pre">METRIC_eKS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_MKS"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_MKS3"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS3</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#c.METRIC_FMKS"><code class="docutils literal notranslate"><span class="pre">METRIC_FMKS</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv412init_storagev"><code class="docutils literal notranslate"><span class="pre">init_storage()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv49init_datav"><code class="docutils literal notranslate"><span class="pre">init_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv416record_criteriond"><code class="docutils literal notranslate"><span class="pre">record_criterion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv414stop_criteriondPdP11curandState"><code class="docutils literal notranslate"><span class="pre">stop_criterion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">Xtoijk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv45coordKiKiKiPd"><code class="docutils literal notranslate"><span class="pre">coord()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv49gcov_funcPKdA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv411dOmega_funcdd"><code class="docutils literal notranslate"><span class="pre">dOmega_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv48bl_coordPKdPdPd"><code class="docutils literal notranslate"><span class="pre">bl_coord()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"><code class="docutils literal notranslate"><span class="pre">get_fluid_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#macros">Macros</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
@@ -610,514 +571,16 @@
 <p>This section contains model dependent functions defined in the model.cu file related to the iharm model.</p>
 <section id="macros">
 <h2>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h2>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.NUMIN">
-<span class="target" id="iharm__model_2model_8h_1a41613ad5755b669e1225184e5bf63683"></span><span class="sig-name descname"><span class="n"><span class="pre">NUMIN</span></span></span> <span class="pre">1.e8</span><a class="headerlink" href="#c.NUMIN" title="Link to this definition"></a><br /></dt>
-<dd><p>Lowest sampled frequency for superphotons in the simulation in Hz. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.NUMAX">
-<span class="target" id="iharm__model_2model_8h_1adb0fd449699fedc3e3a49cf0a354263a"></span><span class="sig-name descname"><span class="n"><span class="pre">NUMAX</span></span></span> <span class="pre">1.e24</span><a class="headerlink" href="#c.NUMAX" title="Link to this definition"></a><br /></dt>
-<dd><p>Highest sampled frequency for superphotons in the simulation in Hz.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Superphotons with frequencies above NUMAX can be generated through scattering events. </p>
-</div>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.LNUMIN">
-<span class="target" id="iharm__model_2model_8h_1af09918bfc83875492da2fd0ca59fcdc5"></span><span class="sig-name descname"><span class="n"><span class="pre">LNUMIN</span></span></span> <span class="pre">log(</span><span class="pre">NUMIN</span><span class="pre">)</span><a class="headerlink" href="#c.LNUMIN" title="Link to this definition"></a><br /></dt>
-<dd><p>Natural logarithm of the lower sampling bound. </p>
-<p>Derived from <code class="docutils literal notranslate"><span class="pre">NUMIN</span></code> as <code class="docutils literal notranslate"><span class="pre">log(NUMIN)</span></code>, this value represents the log-space minimum used for energy/frequency grid construction. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.LNUMAX">
-<span class="target" id="iharm__model_2model_8h_1a0686cfabdb9d51afacee38ec4be272a5"></span><span class="sig-name descname"><span class="n"><span class="pre">LNUMAX</span></span></span> <span class="pre">log(</span><span class="pre">NUMAX</span><span class="pre">)</span><a class="headerlink" href="#c.LNUMAX" title="Link to this definition"></a><br /></dt>
-<dd><p>Natural logarithm of the upper sampling bound. </p>
-<p>Derived from <code class="docutils literal notranslate"><span class="pre">NUMAX</span></code> as <code class="docutils literal notranslate"><span class="pre">log(NUMAX)</span></code>, this value represents the log-space maximum used for energy/frequency grid construction. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.DLNU">
-<span class="target" id="iharm__model_2model_8h_1ab23a612e3f47e8906922560a1d3a5867"></span><span class="sig-name descname"><span class="n"><span class="pre">DLNU</span></span></span> <span class="pre">((</span><a class="reference internal" href="#iharm__model_2model_8h_1a0686cfabdb9d51afacee38ec4be272a5"><span class="std std-ref"><span class="pre">LNUMAX</span></span></a><span class="pre">-</span><a class="reference internal" href="#iharm__model_2model_8h_1af09918bfc83875492da2fd0ca59fcdc5"><span class="std std-ref"><span class="pre">LNUMIN</span></span></a><span class="pre">)/</span><span class="pre">N_ESAMP</span><span class="pre">)</span><a class="headerlink" href="#c.DLNU" title="Link to this definition"></a><br /></dt>
-<dd><p>Log-space step size between samples. </p>
-<p>Computed from the log-range <code class="docutils literal notranslate"><span class="pre">[LNUMIN,</span> <span class="pre">LNUMAX]</span></code> divided by <code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code>, giving the increment used to traverse the sampling domain uniformly in natural-log space. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.IHARM">
-<span class="target" id="iharm__model_2model_8h_1a08211c34bbe7b4a7a66dc06e419eb33c"></span><span class="sig-name descname"><span class="n"><span class="pre">IHARM</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.IHARM" title="Link to this definition"></a><br /></dt>
-<dd><p>Macro to identify the iharm GRMHD model. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.DO_NOT_USE_TEXTURE_MEMORY">
-<span class="target" id="iharm__model_2model_8h_1a452e4cc6c8fe9bcd3c83cb74cffa7011"></span><span class="sig-name descname"><span class="n"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></span></span> <span class="pre">1</span><a class="headerlink" href="#c.DO_NOT_USE_TEXTURE_MEMORY" title="Link to this definition"></a><br /></dt>
-<dd><p>Macro not to use texture memory for fluid variables table in device code. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.THETAE_MIN">
-<span class="target" id="iharm__model_2model_8h_1afd1f0c8a9c5da942a57b0361dcd7fbfb"></span><span class="sig-name descname"><span class="n"><span class="pre">THETAE_MIN</span></span></span> <span class="pre">0.3</span><a class="headerlink" href="#c.THETAE_MIN" title="Link to this definition"></a><br /></dt>
-<dd><p>Minimum dimensionless electron temperature ( <span class="math notranslate nohighlight">\(\Theta_{e, min}\)</span>) for physical validity.</p>
-<p>This is used to characterize the lower bound for superphoton generation. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.THETAE_MAX">
-<span class="target" id="iharm__model_2model_8h_1ad8127cf7d8ea341249c28e88cff5bf5d"></span><span class="sig-name descname"><span class="n"><span class="pre">THETAE_MAX</span></span></span> <span class="pre">1000.</span><a class="headerlink" href="#c.THETAE_MAX" title="Link to this definition"></a><br /></dt>
-<dd><p>Maximum dimensionless electron temperature ( <span class="math notranslate nohighlight">\(\Theta_{e, max}\)</span>) for physical validity. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.dlE">
-<span class="target" id="iharm__model_2model_8h_1abfdf8549767cfdd4e24b384195d59249"></span><span class="sig-name descname"><span class="n"><span class="pre">dlE</span></span></span> <span class="pre">(0.25)</span><a class="headerlink" href="#c.dlE" title="Link to this definition"></a><br /></dt>
-<dd><p>Size of the energy bin in logarithmic scale for the spectral output binning. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.lE0">
-<span class="target" id="iharm__model_2model_8h_1a4020105dca646421d3e1afe990f9fc7b"></span><span class="sig-name descname"><span class="n"><span class="pre">lE0</span></span></span> <span class="pre">(log(1.e-12))</span><a class="headerlink" href="#c.lE0" title="Link to this definition"></a><br /></dt>
-<dd><p>Minimum energy of the energy bin in logarithmic scale. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.N_ESAMP">
-<span class="target" id="iharm__model_2model_8h_1ac5c119234d20f96cd42a8d05feb0f9f3"></span><span class="sig-name descname"><span class="n"><span class="pre">N_ESAMP</span></span></span> <span class="pre">800</span><a class="headerlink" href="#c.N_ESAMP" title="Link to this definition"></a><br /></dt>
-<dd><p>Number of energy samples for the emissivity and weight tables. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.N_EBINS">
-<span class="target" id="iharm__model_2model_8h_1af9cf051839fae1fdc190fe02abd595c6"></span><span class="sig-name descname"><span class="n"><span class="pre">N_EBINS</span></span></span> <span class="pre">800</span><a class="headerlink" href="#c.N_EBINS" title="Link to this definition"></a><br /></dt>
-<dd><p>Number of energy bins for the spectral output. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.WEIGHT_MIN">
-<span class="target" id="iharm__model_2model_8h_1a93e7c8a1443894a56eaeaff166d88f1e"></span><span class="sig-name descname"><span class="n"><span class="pre">WEIGHT_MIN</span></span></span> <span class="pre">(1.e28)</span><a class="headerlink" href="#c.WEIGHT_MIN" title="Link to this definition"></a><br /></dt>
-<dd><p>Minimum superphoton weight to be considered to the spectrum. Superphotons that fall below this weight will be terminated. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.RMAX">
-<span class="target" id="iharm__model_2model_8h_1a66d21d4cc0d35bfe93b68f7a5089eb8b"></span><span class="sig-name descname"><span class="n"><span class="pre">RMAX</span></span></span> <span class="pre">1000.</span><a class="headerlink" href="#c.RMAX" title="Link to this definition"></a><br /></dt>
-<dd><p>Maximum radius to track photons in code units. If photons exceed this radius, their tracking will stop and they will be recorded. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.ROULETTE">
-<span class="target" id="iharm__model_2model_8h_1ad1e6e36259860da81f77f3ff1813bbe1"></span><span class="sig-name descname"><span class="n"><span class="pre">ROULETTE</span></span></span> <span class="pre">1.e4</span><a class="headerlink" href="#c.ROULETTE" title="Link to this definition"></a><br /></dt>
-<dd><p>Roulette factor for photon termination based on weight. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.NPRIM">
-<span class="target" id="iharm__model_2model_8h_1ab0c487c738a3b32f9756951e8262aa15"></span><span class="sig-name descname"><span class="n"><span class="pre">NPRIM</span></span></span> <span class="pre">10</span><a class="headerlink" href="#c.NPRIM" title="Link to this definition"></a><br /></dt>
-<dd><p>Number of primitive variables in the iharm model. This should match the value read from the HDF5 file. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.MODEL_FUNCTIONS">
-<span class="target" id="iharm__model_2model_8h_1a7c5224678eb5111e0f7e4eaea6919106"></span><span class="sig-name descname"><span class="n"><span class="pre">MODEL_FUNCTIONS</span></span></span><a class="headerlink" href="#c.MODEL_FUNCTIONS" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.USE_FIXED_TPTE">
-<span class="target" id="iharm__model_2model_8h_1a9e0c769b8f92b3ea325f1c2a9c28eb12"></span><span class="sig-name descname"><span class="n"><span class="pre">USE_FIXED_TPTE</span></span></span> <span class="pre">(0)</span><a class="headerlink" href="#c.USE_FIXED_TPTE" title="Link to this definition"></a><br /></dt>
-<dd><p>Activates the constant temperature ratio model. When enabled (1), the code assumes a globally uniform ratio between proton and electron temperatures ( <span class="math notranslate nohighlight">\( T_p/T_e \)</span>), defined by the <code class="docutils literal notranslate"><span class="pre">params.tp_over_te</span></code> variable. </p>
-<p><ul class="simple">
-<li><p>Sets <code class="docutils literal notranslate"><span class="pre">with_electrons</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p></li>
-<li><p>Calculates <code class="docutils literal notranslate"><span class="pre">Thetae_unit</span></code> based on a fixed partitioning of the internal energy, often assuming a non-relativistic monoatomic gas ( <span class="math notranslate nohighlight">\( \gamma = 5/3 \)</span>). </p></li>
-</ul>
-</p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.USE_MIXED_TPTE">
-<span class="target" id="iharm__model_2model_8h_1a11eaca095c3dfe48409e69ffa393eacc"></span><span class="sig-name descname"><span class="n"><span class="pre">USE_MIXED_TPTE</span></span></span> <span class="pre">(1)</span><a class="headerlink" href="#c.USE_MIXED_TPTE" title="Link to this definition"></a><br /></dt>
-<dd><p>Activates the <span class="math notranslate nohighlight">\( R-\beta \)</span> (Mixed) temperature ratio model. When enabled (1), the code uses the plasma <span class="math notranslate nohighlight">\( \beta \)</span> to interpolate between two temperature ratios: <code class="docutils literal notranslate"><span class="pre">trat_small</span></code> (for highly magnetized regions like the jet) and <code class="docutils literal notranslate"><span class="pre">trat_large</span></code> (for the accretion disk). </p>
-<p><ul class="simple">
-<li><p>Sets <code class="docutils literal notranslate"><span class="pre">with_electrons</span> <span class="pre">=</span> <span class="pre">2</span></code>. </p></li>
-</ul>
-</p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.WITH_ELECTRONS">
-<span class="target" id="iharm__model_2model_8h_1a821b07064ab8fe4f72ec8a5053d92069"></span><span class="sig-name descname"><span class="n"><span class="pre">WITH_ELECTRONS</span></span></span> <span class="pre">(2)</span><a class="headerlink" href="#c.WITH_ELECTRONS" title="Link to this definition"></a><br /></dt>
-<dd><p>Selects the sub-grid physics model for electron thermodynamics. </p>
-<p><ul class="simple">
-<li><p>Available Models:</p></li>
-<li><p><strong>0: Fixed Ratio</strong> * Assumes a constant ratio between proton and electron temperatures throughout the entire simulation domain. <span class="math notranslate nohighlight">\( \Theta_e \propto \frac{u}{\rho} \)</span>.</p></li>
-<li><p><strong>1: Howes/Kawazura Model</strong> * A kinetic-based prescription that tracks electron heating based on local plasma turbulence and entropy ( <span class="math notranslate nohighlight">\( \kappa_{el} \)</span>).</p></li>
-<li><p><strong>2: R-high / R-low Model (Default)</strong> * The standard <span class="math notranslate nohighlight">\(\beta\)</span>-dependent model for Black Hole imaging. It varies the temperature ratio <span class="math notranslate nohighlight">\( R = T_p/T_e \)</span> based on the local plasma <span class="math notranslate nohighlight">\( \beta \)</span> (the ratio of gas to magnetic pressure):</p></li>
-<li><p>In the <strong>Disk</strong> (high <span class="math notranslate nohighlight">\(\beta\)</span>): Protons are much hotter than electrons ( <span class="math notranslate nohighlight">\( R \to R_{high} \)</span>).</p></li>
-<li><p>In the <strong>Jet</strong> (low <span class="math notranslate nohighlight">\(\beta\)</span>): Electrons and protons are closer in temperature ( <span class="math notranslate nohighlight">\( R \to R_{low} \)</span>). </p></li>
-</ul>
-</p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.ZLOOP">
-<span class="target" id="iharm__model_2model_8h_1ac8b973bce4dcedb06b10ea23d7fe6d4a"></span><span class="sig-name descname"><span class="n"><span class="pre">ZLOOP</span></span></span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">N1</span><span class="pre">;</span> <span class="pre">i++)</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">j</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">j</span> <span class="pre">&lt;</span> <span class="pre">N2</span><span class="pre">;</span> <span class="pre">j++)</span> <span class="pre">for</span> <span class="pre">(int</span> <span class="pre">k</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">k</span> <span class="pre">&lt;</span> <span class="pre">N3</span><span class="pre">;</span> <span class="pre">k++)</span><a class="headerlink" href="#c.ZLOOP" title="Link to this definition"></a><br /></dt>
-<dd><p>Macro for looping over all grid zones in 3D. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.METRIC_eKS">
-<span class="target" id="iharm__model_2model_8h_1ac1ee4760de54166e428821bce5b3e8ae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_eKS</span></span></span> <span class="pre">0</span><a class="headerlink" href="#c.METRIC_eKS" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.METRIC_MKS">
-<span class="target" id="iharm__model_2model_8h_1ad242047875de2d47eb4e32a962dbabae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_MKS</span></span></span> <span class="pre">1</span><a class="headerlink" href="#c.METRIC_MKS" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.METRIC_MKS3">
-<span class="target" id="iharm__model_2model_8h_1acd81fffe8af1f09fda98852e977116dd"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_MKS3</span></span></span> <span class="pre">2</span><a class="headerlink" href="#c.METRIC_MKS3" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.METRIC_FMKS">
-<span class="target" id="iharm__model_2model_8h_1a09ac9ce3a037d2971ce5e95d2f3ea0ae"></span><span class="sig-name descname"><span class="n"><span class="pre">METRIC_FMKS</span></span></span> <span class="pre">3</span><a class="headerlink" href="#c.METRIC_FMKS" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfile: Cannot find file “iharm_model/model.h </p>
 </div>
 </section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv412init_storagev">
-<span id="_CPPv312init_storagev"></span><span id="_CPPv212init_storagev"></span><span id="init_storage__void"></span><span class="target" id="iharm__model_2model_8h_1af64603f74605b60fb551403fb47ecc3e"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_storage</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412init_storagev" title="Link to this definition"></a><br /></dt>
-<dd><p>Allocates memory on the host for fluid primitives and grid geometry. </p>
-<p><p>This function reserves space in the system RAM for the 4D primitive variables array</p>
-<p>and the 2D spacetime metric (geometry) array. This must be called before reading any simulation snapshots or calculating the metric.</p>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv49init_datav">
-<span id="_CPPv39init_datav"></span><span id="_CPPv29init_datav"></span><span id="init_data"></span><span class="target" id="iharm__model_2model_8h_1a022d43f4b25dd78dbc13d4d09b0c8cd4"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49init_datav" title="Link to this definition"></a><br /></dt>
-<dd><p>Main initialization routine for physical data and simulation grid. </p>
-<p>This function performs the following critical tasks:<ol class="loweralpha simple">
-<li><p>Opens and parses the HDF5 dump file.</p></li>
-<li><p>Sets up the computational grid dimensions (N1, N2, N3).</p></li>
-<li><p>Configures the electron temperature model (Fixed, R-beta, or Custom).</p></li>
-<li><p>Loads the spacetime geometry (MKS/KS) and calculates the event horizon.</p></li>
-<li><p>Allocates memory and populates the primitive variable arrays.</p></li>
-<li><p>Calculates initial diagnostics (accretion rate, bias normalization).</p></li>
-</ol>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv416record_criteriond">
-<span id="_CPPv316record_criteriond"></span><span id="_CPPv216record_criteriond"></span><span id="record_criterion__double"></span><span class="target" id="iharm__model_2model_8h_1a8cb605ae2bdc9dd4466fa24d8fdb4aac"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">record_criterion</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416record_criteriond" title="Link to this definition"></a><br /></dt>
-<dd><p>Determines if a photon has exited the simulation domain and should be recorded. </p>
-<p>This function checks if the photon has crossed a specific outer boundary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X1</strong> – The current internal radial coordinate ( <span class="math notranslate nohighlight">\(X^1\)</span>) of the photon. </p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns 1 if the photon is outside the recording radius, 0 otherwise. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv414stop_criteriondPdP11curandState">
-<span id="_CPPv314stop_criteriondPdP11curandState"></span><span id="_CPPv214stop_criteriondPdP11curandState"></span><span id="stop_criterion__double.doubleP.curandStateP"></span><span class="target" id="iharm__model_2model_8h_1a3a43a489605a914bf12212027738659b"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop_criterion</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X1</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">w</span></span>, <span class="n"><span class="pre">curandState</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localState</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414stop_criteriondPdP11curandState" title="Link to this definition"></a><br /></dt>
-<dd><p>Evaluates whether to terminate the integration of a photon’s path. This function checks for two types of termination: </p>
-<p><ol class="loweralpha simple">
-<li><p>Physical: Falling into the Black Hole or leaving the domain.</p></li>
-<li><p>Statistical: Using a “Roulette” to terminate photons with negligible weights.</p></li>
-</ol>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X1</strong> – Current radial coordinate in code units. </p></li>
-<li><p><strong>w</strong> – Pointer to the photon’s weight (energy/intensity). </p></li>
-<li><p><strong>localState</strong> – Pointer to the GPU’s random number generator state.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns 1 if the photon should be stopped/deleted, 0 if tracking should continue. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d">
-<span id="_CPPv36XtoijkA4NDIM_KdPiPiPiA4NDIM_d"></span><span id="_CPPv26XtoijkANDIM_KdPiPiPiANDIM_d"></span><span id="Xtoijk__doubleCA.iP.iP.iP.doubleA"></span><span class="target" id="iharm__model_2model_8h_1a6d987c2457f3b3f572d8a8a69c7d8de3"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Xtoijk</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">i</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">j</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">del</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d" title="Link to this definition"></a><br /></dt>
-<dd><p>Maps continuous coordinates to discrete grid indices and interpolation weights. </p>
-<p>Bridge between the geodesic integrator and the fluid grid. It identifies the nearest cell and calculates the fractional offset (del) required for trilinear interpolation of fluid properties.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – Input continuous internal coordinates <span class="math notranslate nohighlight">\( X^\mu \)</span>. </p></li>
-<li><p><strong>i, j, k</strong> – Output integer indices for the grid cell. </p></li>
-<li><p><strong>del</strong> – Output array [1..3] containing the fractional distance within the cell [0, 1].</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv45coordKiKiKiPd">
-<span id="_CPPv35coordKiKiKiPd"></span><span id="_CPPv25coordKiKiKiPd"></span><span id="coord__iC.iC.iC.doubleP"></span><span class="target" id="iharm__model_2model_8h_1a48784817e0017c2b62ec28b8ed1bdf10"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coord</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">X</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45coordKiKiKiPd" title="Link to this definition"></a><br /></dt>
-<dd><p>Maps discrete grid indices to continuous internal coordinates. </p>
-<p>Calculates the coordinate of a cell center.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>i, j, k</strong> – Integer grid indices. </p></li>
-<li><p><strong>X</strong> – Output array to store the resulting coordinates <span class="math notranslate nohighlight">\( X^\mu \)</span>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv49gcov_funcPKdA_A4NDIM_d">
-<span id="_CPPv39gcov_funcPKdA_A4NDIM_d"></span><span id="_CPPv29gcov_funcPKdA_ANDIM_d"></span><span id="gcov_func__doubleCP.doubleAA"></span><span class="target" id="iharm__model_2model_8h_1a503308608ea2082113197ae4989567ca"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gcov_func</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gcov</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49gcov_funcPKdA_A4NDIM_d" title="Link to this definition"></a><br /></dt>
-<dd><p>Computes the covariant metric tensor <span class="math notranslate nohighlight">\( g_μν \)</span> in Modified Kerr-Schild (MKS) coordinates. </p>
-<p>It transforms the standard Kerr-Schild metric into the simulation’s specific Modified Kerr-Schild (MKS) coordinate system using Jacobian factors (tfac, rfac, etc.).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – Input internal coordinates <span class="math notranslate nohighlight">\( X^\mu \)</span>. </p></li>
-<li><p><strong>gcov</strong> – Output 4x4 array where the metric components will be stored. </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv411dOmega_funcdd">
-<span id="_CPPv311dOmega_funcdd"></span><span id="_CPPv211dOmega_funcdd"></span><span id="dOmega_func__double.double"></span><span class="target" id="iharm__model_2model_8h_1a5e81e113356d844b69efb2b5a9cb8ef9"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dOmega_func</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x2i</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x2f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411dOmega_funcdd" title="Link to this definition"></a><br /></dt>
-<dd><p>Calculates the integrated solid angle between two polar grid boundaries. This function computes the solid angle by evaluating the integral: </p>
-<p><div class="math notranslate nohighlight">
-\[
-\Delta\Omega = \int_{0}^{2\pi} d\phi \int_{\theta_i}^{\theta_f} \sin\theta \, d\theta = 2\pi (\cos\theta_i - \cos\theta_f)
-\]</div>
- where <span class="math notranslate nohighlight">\( \theta \)</span> is the physical polar angle derived from the internal coordinate <span class="math notranslate nohighlight">\( X^2 \)</span>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x2i</strong> – Starting internal polar coordinate (X2). </p></li>
-<li><p><strong>x2f</strong> – Ending internal polar coordinate (X2).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The solid angle in steradians. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv48bl_coordPKdPdPd">
-<span id="_CPPv38bl_coordPKdPdPd"></span><span id="_CPPv28bl_coordPKdPdPd"></span><span id="bl_coord__doubleCP.doubleP.doubleP"></span><span class="target" id="iharm__model_2model_8h_1aaa7a86125e8c1dcf77c3f1ea5677c409"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bl_coord</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">r</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">th</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48bl_coordPKdPdPd" title="Link to this definition"></a><br /></dt>
-<dd><p>Transforms internal simulation coordinates to physical Boyer-Lindquist coordinates. This function maps the logarithmic radial coordinate and the stretched polar coordinate to their physical counterparts: </p>
-<p><ul class="simple">
-<li><p><div class="math notranslate nohighlight">
-\[
-r = e^{X^1}
-\]</div>
-<div class="math notranslate nohighlight">
-\[
-\theta = \pi X^2 + \frac{1 - h}{2} \sin(2\pi X^2)
-\]</div>
- where <span class="math notranslate nohighlight">\( h \)</span> is the hslope parameter controlling equatorial refinement.</p></li>
-</ul>
-</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><span class="math notranslate nohighlight">\( X^3 \)</span> (azimuthal angle) remains unchanged in this transformation.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – Input array of internal coordinates <span class="math notranslate nohighlight">\( X^\mu \)</span>. </p></li>
-<li><p><strong>r</strong> – Output pointer for the Boyer-Lindquist radius. </p></li>
-<li><p><strong>th</strong> – Output pointer for the Boyer-Lindquist polar angle (theta). </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd">
-<span id="_CPPv314get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"></span><span id="_CPPv214get_fluid_zoneKiKiKiPdPdPdANDIM_dANDIM_dPK7of_geomPKd"></span><span id="get_fluid_zone__iC.iC.iC.doubleP.doubleP.doubleP.doubleA.doubleA.of_geomCP.doubleCP"></span><span class="target" id="iharm__model_2model_8h_1aa3caefca0ea92cf382cd7164c8b3e5af"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_fluid_zone</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ucon</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bcon</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv47of_geom" title="of_geom"><span class="n"><span class="pre">of_geom</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_geom</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd" title="Link to this definition"></a><br /></dt>
-<dd><p>Recovers physical fluid and magnetic field properties from primitive variables. </p>
-<p>This function performs the transformation from the GRMHD code’s primitive variables (relative to a normal observer) to the physical quantities in the fluid’s local frame.</p>
-<p>It calculates the 4-velocity <span class="math notranslate nohighlight">\( u^\mu \)</span> ensuring the normalization condition: <div class="math notranslate nohighlight">
-\[ u_\mu u^\mu = -1 \]</div>
-</p>
-<p>And the magnetic 4-vector <span class="math notranslate nohighlight">\( b^\mu \)</span> satisfying the ideal MHD condition: <div class="math notranslate nohighlight">
-\[ b^\mu u_\mu = 0 \]</div>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>i, j, k</strong> – Grid indices. </p></li>
-<li><p><strong>Ne</strong> – [out] Physical electron number density <span class="math notranslate nohighlight">\( n_e \)</span>. </p></li>
-<li><p><strong>Thetae</strong> – [out] Dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. </p></li>
-<li><p><strong>B</strong> – [out] Fluid-frame magnetic field strength. </p></li>
-<li><p><strong>Ucon</strong> – [out] Contravariant 4-velocity <span class="math notranslate nohighlight">\( u^\mu \)</span>. </p></li>
-<li><p><strong>Bcon</strong> – [out] Contravariant magnetic 4-vector <span class="math notranslate nohighlight">\( b^\mu \)</span>. </p></li>
-<li><p><strong>d_geom</strong> – Pointer to the geometry metric structure. </p></li>
-<li><p><strong>d_p</strong> – Pointer to the primitive variable array.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd">
-<span id="_CPPv316get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"></span><span id="_CPPv216get_fluid_paramsANDIM_dPdPdPdANDIM_dANDIM_dANDIM_dANDIM_dPd"></span><span id="get_fluid_params__doubleA.doubleP.doubleP.doubleP.doubleA.doubleA.doubleA.doubleA.doubleP"></span><span class="target" id="iharm__model_2model_8h_1a9b6367fd8a37a9b831dfda398c95b778"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_fluid_params</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Ne</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Thetae</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ucon</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ucov</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bcon</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bcov</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd" title="Link to this definition"></a><br /></dt>
-<dd><p>Samples fluid and magnetic properties at an arbitrary spatial point using trilinear interpolation. </p>
-<p><ul class="simple">
-<li><p>This function is called during geodesic integration to determine local plasma conditions. It performs the following sequence:</p></li>
-</ul>
-<ol class="loweralpha simple">
-<li><p>Validates the photon’s position against the grid boundaries.</p></li>
-<li><p>Computes weights for trilinear interpolation between the 8 neighboring cells.</p></li>
-<li><p>Interpolates primitive variables (density, energy, velocity, magnetic field).</p></li>
-<li><p>Reconstructs the 4-velocity and magnetic 4-vector using the local metric.</p></li>
-<li><p>Applies safety cuts.</p></li>
-</ol>
-</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – Continuous internal coordinates. </p></li>
-<li><p><strong>Ne</strong> – [out] Interpolated electron number density. </p></li>
-<li><p><strong>Thetae</strong> – [out] Interpolated dimensionless electron temperature. </p></li>
-<li><p><strong>B</strong> – [out] Physical magnetic field magnitude. </p></li>
-<li><p><strong>Ucon, Ucov</strong> – [out] Reconstructed 4-velocity vectors. </p></li>
-<li><p><strong>Bcon, Bcov</strong> – [out] Reconstructed magnetic 4-vectors. </p></li>
-<li><p><strong>d_p</strong> – Pointer to the global primitive variable array in GPU memory.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv414gcov_func_row0PKdA4NDIM_d">
-<span id="_CPPv314gcov_func_row0PKdA4NDIM_d"></span><span id="_CPPv214gcov_func_row0PKdANDIM_d"></span><span id="gcov_func_row0__doubleCP.doubleA"></span><span class="target" id="iharm__model_2model_8h_1a426c1824362dc04d706eedeacd2e1d46"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gcov_func_row0</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gcov_row0</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414gcov_func_row0PKdA4NDIM_d" title="Link to this definition"></a><br /></dt>
-<dd><p>Computes the first row of the covariant metric tensor <span class="math notranslate nohighlight">\( g_{μν} \)</span>. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – Input internal coordinates <span class="math notranslate nohighlight">\( X^\mu \)</span>. </p></li>
-<li><p><strong>gcov_row0</strong> – Output array to store the first row of the covariant metric tensor <span class="math notranslate nohighlight">\( g_{0ν} \)</span>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>void </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv49bias_funcddi">
-<span id="_CPPv39bias_funcddi"></span><span id="_CPPv29bias_funcddi"></span><span id="bias_func__double.double.i"></span><span class="target" id="iharm__model_2model_8h_1ac500d3353ae72db304a12f9d2b2cf9f0"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bias_func</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Te</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">round_scatt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49bias_funcddi" title="Link to this definition"></a><br /></dt>
-<dd><p>Calculates the scattering bias parameter based on local temperature. This function determines the “bias factor” used to adjust scattering probabilities. It prioritizes high-temperature regions (where <span class="math notranslate nohighlight">\( \Theta_e \)</span> is large) to improve the signal-to-noise ratio of the final spectrum. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Te</strong> – Dimensionless electron temperature ( <span class="math notranslate nohighlight">\( \Theta_e \)</span>). </p></li>
-<li><p><strong>w</strong> – Current statistical weight of the photon. </p></li>
-<li><p><strong>round_scatt</strong> – The current scattering iteration count.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The calculated bias factor used to rescale Monte Carlo probabilities. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd">
-<span id="_CPPv38stepsizeA4NDIM_KdA4NDIM_Kd"></span><span id="_CPPv28stepsizeANDIM_KdANDIM_Kd"></span><span id="stepsize__doubleCA.doubleCA"></span><span class="target" id="iharm__model_2model_8h_1aaaf74075ccee8d975ff468382ee295d8"></span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stepsize</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">X</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">K</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">NDIM</span></span><span class="p"><span class="pre">]</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd" title="Link to this definition"></a><br /></dt>
-<dd><p>Performs the calculation of the stepsize <span class="math notranslate nohighlight">\( d\lambda \)</span> for the geodesic integration. The stepsize follows this formula: </p>
-<p><span class="math notranslate nohighlight">\( d\lambda = \left[ \frac{|K^1| + \epsilon_{s}}{\epsilon_{e}} + \frac{|K^2| + \epsilon_{s}}{\epsilon_{e} \cdot \min(X^2, 1-X^2)} + \frac{|K^3| + \epsilon_{s}}{\epsilon_{e}} \right]^{-1} \)</span></p>
-<p>Where:<ul class="simple">
-<li><p><span class="math notranslate nohighlight">\( \epsilon_{e} \)</span> is the tolerance parameter (EPS).</p></li>
-<li><p><span class="math notranslate nohighlight">\( \epsilon_{s} \)</span> is the safety floor (SMALL) to prevent division by zero.</p></li>
-<li><p><span class="math notranslate nohighlight">\( \min(X^2, 1-X^2) \)</span> is the proximity factor that reduces the step size as the photon approaches the polar coordinate singularities at 0 or 1. </p></li>
-</ul>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv411thetae_funcdddd">
-<span id="_CPPv311thetae_funcdddd"></span><span id="_CPPv211thetae_funcdddd"></span><span id="thetae_func__double.double.double.double"></span><span class="target" id="iharm__model_2model_8h_1ac23f18dee54029d6ac39b6cbe1068d6a"></span><span class="pre">__host__</span><span class="w"> </span><span class="pre">__device__</span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thetae_func</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">uu</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rho</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">kel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411thetae_funcdddd" title="Link to this definition"></a><br /></dt>
-<dd><p>Calculates the dimensionless electron temperature <span class="math notranslate nohighlight">\( \Theta_e \)</span>. This function provides several models for the electron-to-proton temperature ratio. It is primarily used to map the single-fluid internal energy from GRMHD onto the electron populations that actually produce the radiation. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uu</strong> – Local internal energy density. </p></li>
-<li><p><strong>rho</strong> – Local mass density. </p></li>
-<li><p><strong>B</strong> – Local magnetic field strength. </p></li>
-<li><p><strong>kel</strong> – Local entropy/electron constant (used for mode 1).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The effective dimensionless electron temperature, soft-clamped by Thetae_max. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv418report_spectrum_h5yPPP11of_spectrumPKc">
-<span id="_CPPv318report_spectrum_h5yPPP11of_spectrumPKc"></span><span id="_CPPv218report_spectrum_h5yPPP11of_spectrumPKc"></span><span id="report_spectrum_h5__unsigned-l-l.of_spectrumPPP.cCP"></span><span class="target" id="iharm__model_2model_8h_1a3af0fe67c4905b8607b326283e05a995"></span><span class="pre">__host__</span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">report_spectrum_h5</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_superph_made</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="defs.html#_CPPv411of_spectrum" title="of_spectrum"><span class="n"><span class="pre">of_spectrum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">spect</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc" title="Link to this definition"></a><br /></dt>
-<dd><p>Processes energy and angled binned simulation data to generate and save the final spectrum in hdf5 format. </p>
-<p>This function converts the raw energy and photon counts accumulated in the spectral grid into physical units. It calculates the SED across different inclination angles, determines the average optical depths, and computes global simulation diagnostics such as total luminosity and accretion efficiency. Contains the fluid_header, params and output groups.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N_superph_made</strong> – Total number of superphotons generated during the run. </p></li>
-<li><p><strong>spect</strong> – 3D array containing the accumulated spectral data (Photon physical origin,Energy,Theta bins). </p></li>
-<li><p><strong>filename</strong> – Name of the output file (saved in the <code class="docutils literal notranslate"><span class="pre">./output/</span></code> directory). </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfile: Cannot find file “iharm_model/model.h </p>
 </div>
 </section>
 </section>

@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>weights.cu &mdash; GPUmonty 1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=0ef53e4c" />
 
@@ -64,7 +64,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="config.html">config.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="config.html#macros">Macros</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="config.html#c.KFAC"><code class="docutils literal notranslate"><span class="pre">KFAC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_BLOCKS"><code class="docutils literal notranslate"><span class="pre">N_BLOCKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.N_THREADS"><code class="docutils literal notranslate"><span class="pre">N_THREADS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="config.html#c.HDF5_OUTPUT"><code class="docutils literal notranslate"><span class="pre">HDF5_OUTPUT</span></code></a></li>
@@ -280,6 +279,15 @@
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv49hdf5_openPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_open()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv410hdf5_closev"><code class="docutils literal notranslate"><span class="pre">hdf5_close()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_make_directoryPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_make_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv421hdf5_write_single_valPKvPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_single_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv416hdf5_write_arrayPKvPKc6size_tP7hsize_tP7hsize_tP7hsize_tP7hsize_tP7hsize_t7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv411hdf5_existsPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv420hdf5_read_single_valPvPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_read_single_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv415hdf5_read_arrayPvPKc6size_tP7hsize_tP7hsize_tP7hsize_tP7hsize_tP7hsize_t7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_read_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv418hdf5_make_str_type6size_t"><code class="docutils literal notranslate"><span class="pre">hdf5_make_str_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv419hdf5_write_str_listPKvPKc6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">hdf5_write_str_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv413hdf5_add_attrPKvPKcPKc7hsize_t"><code class="docutils literal notranslate"><span class="pre">hdf5_add_attr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="hdf5_utils.html#_CPPv414hdf5_add_unitsPKcPKc"><code class="docutils literal notranslate"><span class="pre">hdf5_add_units()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -385,54 +393,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="model_iharm.html">model.cu</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMIN"><code class="docutils literal notranslate"><span class="pre">NUMIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NUMAX"><code class="docutils literal notranslate"><span class="pre">NUMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMIN"><code class="docutils literal notranslate"><span class="pre">LNUMIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.LNUMAX"><code class="docutils literal notranslate"><span class="pre">LNUMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DLNU"><code class="docutils literal notranslate"><span class="pre">DLNU</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.IHARM"><code class="docutils literal notranslate"><span class="pre">IHARM</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.DO_NOT_USE_TEXTURE_MEMORY"><code class="docutils literal notranslate"><span class="pre">DO_NOT_USE_TEXTURE_MEMORY</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MIN"><code class="docutils literal notranslate"><span class="pre">THETAE_MIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.THETAE_MAX"><code class="docutils literal notranslate"><span class="pre">THETAE_MAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.dlE"><code class="docutils literal notranslate"><span class="pre">dlE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.lE0"><code class="docutils literal notranslate"><span class="pre">lE0</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_ESAMP"><code class="docutils literal notranslate"><span class="pre">N_ESAMP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.N_EBINS"><code class="docutils literal notranslate"><span class="pre">N_EBINS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WEIGHT_MIN"><code class="docutils literal notranslate"><span class="pre">WEIGHT_MIN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.RMAX"><code class="docutils literal notranslate"><span class="pre">RMAX</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ROULETTE"><code class="docutils literal notranslate"><span class="pre">ROULETTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.NPRIM"><code class="docutils literal notranslate"><span class="pre">NPRIM</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.MODEL_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">MODEL_FUNCTIONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_FIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_FIXED_TPTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.USE_MIXED_TPTE"><code class="docutils literal notranslate"><span class="pre">USE_MIXED_TPTE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.WITH_ELECTRONS"><code class="docutils literal notranslate"><span class="pre">WITH_ELECTRONS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.ZLOOP"><code class="docutils literal notranslate"><span class="pre">ZLOOP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_eKS"><code class="docutils literal notranslate"><span class="pre">METRIC_eKS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_MKS"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_MKS3"><code class="docutils literal notranslate"><span class="pre">METRIC_MKS3</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#c.METRIC_FMKS"><code class="docutils literal notranslate"><span class="pre">METRIC_FMKS</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv412init_storagev"><code class="docutils literal notranslate"><span class="pre">init_storage()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49init_datav"><code class="docutils literal notranslate"><span class="pre">init_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416record_criteriond"><code class="docutils literal notranslate"><span class="pre">record_criterion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414stop_criteriondPdP11curandState"><code class="docutils literal notranslate"><span class="pre">stop_criterion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv46XtoijkA4NDIM_KdPiPiPiA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">Xtoijk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv45coordKiKiKiPd"><code class="docutils literal notranslate"><span class="pre">coord()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49gcov_funcPKdA_A4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411dOmega_funcdd"><code class="docutils literal notranslate"><span class="pre">dOmega_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48bl_coordPKdPdPd"><code class="docutils literal notranslate"><span class="pre">bl_coord()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414get_fluid_zoneKiKiKiPdPdPdA4NDIM_dA4NDIM_dPK7of_geomPKd"><code class="docutils literal notranslate"><span class="pre">get_fluid_zone()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv416get_fluid_paramsA4NDIM_dPdPdPdA4NDIM_dA4NDIM_dA4NDIM_dA4NDIM_dPd"><code class="docutils literal notranslate"><span class="pre">get_fluid_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv414gcov_func_row0PKdA4NDIM_d"><code class="docutils literal notranslate"><span class="pre">gcov_func_row0()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv49bias_funcddi"><code class="docutils literal notranslate"><span class="pre">bias_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv48stepsizeA4NDIM_KdA4NDIM_Kd"><code class="docutils literal notranslate"><span class="pre">stepsize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv411thetae_funcdddd"><code class="docutils literal notranslate"><span class="pre">thetae_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="model_iharm.html#_CPPv418report_spectrum_h5yPPP11of_spectrumPKc"><code class="docutils literal notranslate"><span class="pre">report_spectrum_h5()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#macros">Macros</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_iharm.html#functions">Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="par.html">par.cu</a><ul>
@@ -634,8 +596,8 @@
 <li><p>Implements the integrated photon density:</p>
 <p><span class="math notranslate nohighlight">\( N_{int}(B) = \Delta^3 x \Delta t \sqrt{-g} \int \int \frac{j_\nu}{h \omega_\nu} d\ln\nu d\Omega \)</span></p>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nint[i]</span></code>: Stores globally the log of the total number of superphotons to be generated per unit volume.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dndlnu_max[i]</span></code>: Stores globally the log of the maximum value of <span class="math notranslate nohighlight">\(dn/d\ln\nu\)</span>, used as the proposal distribution envelope for frequency sampling. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nint</span><span class="pre">[i]</span></code>: Stores globally the log of the total number of superphotons to be generated per unit volume.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dndlnu_max</span><span class="pre">[i]</span></code>: Stores globally the log of the maximum value of <span class="math notranslate nohighlight">\(dn/d\ln\nu\)</span>, used as the proposal distribution envelope for frequency sampling. </p></li>
 </ul>
 </p>
 </dd></dl>
