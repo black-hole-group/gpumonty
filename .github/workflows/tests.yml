@@ -1,19 +1,72 @@
 name: gpumonty tests
 
+# Runs automatically on pushes to main / feature/test-ci.
+# Pull requests do NOT run tests automatically. To test a PR, a maintainer goes to
+# Actions -> gpumonty tests -> Run workflow, and enters the PR number.
 on:
   push:
     branches:
       - main
       - feature/test-ci
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Pull request number to test (leave empty to test the branch selected above)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write   # to show the result as a check on the PR
+
+# The Kaggle kernel name is fixed, so runs must not overlap: queue them instead.
+concurrency:
+  group: kaggle-gpumonty-ci-run
+  cancel-in-progress: false
 
 jobs:
   sphere-tests:
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
       !contains(github.event.head_commit.message, '[skip-ci]')
 
     steps:
+      - name: Resolve commit to test
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+        run: |
+          if [[ -z "$PR" ]]; then
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+            echo "fetch_ref=" >> "$GITHUB_OUTPUT"
+            echo "Testing $GITHUB_REF at $GITHUB_SHA"
+            exit 0
+          fi
+          if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
+            echo "::error::PR must be a number, got '$PR'"
+            exit 1
+          fi
+          SHA=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" --jq .head.sha)
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "fetch_ref=refs/pull/$PR/head" >> "$GITHUB_OUTPUT"
+          echo "Testing PR #$PR at $SHA"
+          echo "### Testing PR #$PR at \`$SHA\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Mark PR commit as pending
+        if: inputs.pr != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+            -f state=pending \
+            -f context="gpumonty tests (Kaggle GPU)" \
+            -f description="Running on Kaggle..." \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
       - uses: actions/checkout@v4
 
       - name: Set up Python
@@ -28,7 +81,7 @@ jobs:
         run: |
           mkdir kaggle_run
           cd kaggle_run
-          
+
           cat << 'EOF' > ci_script.py
           import os
           import subprocess
@@ -42,18 +95,21 @@ jobs:
           print("Cloning repository...")
           run("git clone https://github.com/${{ github.repository }}.git repo")
           os.chdir("repo")
-          run("git checkout ${{ github.sha }}")
+          fetch_ref = "${{ steps.target.outputs.fetch_ref }}"
+          if fetch_ref:
+              run(f"git fetch origin {fetch_ref}")
+          run("git checkout ${{ steps.target.outputs.sha }}")
 
           print("Installing dependencies...")
           run("pip install numpy scipy astropy matplotlib")
-          
+
           print("Installing C++ dependencies (GSL)...")
           run("apt-get update && apt-get install -y libgsl-dev")
 
           print("Running Tests via Python Script...")
           run("python3 tests-ci/run_ci_tests.py")
           EOF
-          
+
           cat << EOF > kernel-metadata.json
           {
             "id": "${{ secrets.KAGGLE_USERNAME }}/gpumonty-ci-run",
@@ -76,11 +132,11 @@ jobs:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: |
           cd kaggle_run
-          
+
           kaggle kernels push -p .
-          
+
           echo "Code sent to Kaggle. Waiting for GPU provisioning and tests..."
-          
+
           while true; do
             STATUS=$(kaggle kernels status $KAGGLE_USERNAME/gpumonty-ci-run 2>&1)
             STATUS_LOWER=$(echo "$STATUS" | tr '[:upper:]' '[:lower:]')
@@ -99,3 +155,21 @@ jobs:
             fi
             sleep 30
           done
+
+      - name: Report result on the PR
+        if: always() && inputs.pr != '' && steps.target.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          case "$JOB_STATUS" in
+            success)   STATE=success; DESC="Tests passed on Kaggle GPU" ;;
+            cancelled) STATE=error;   DESC="Run cancelled" ;;
+            *)         STATE=failure; DESC="Tests failed on Kaggle GPU" ;;
+          esac
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+            -f state="$STATE" \
+            -f context="gpumonty tests (Kaggle GPU)" \
+            -f description="$DESC" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
