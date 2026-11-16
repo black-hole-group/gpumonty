@@ -1,13 +1,14 @@
 name: gpumonty tests
 
-# Runs automatically on pushes to main / feature/test-ci.
-# Pull requests do NOT run tests automatically. To test a PR, a maintainer goes to
-# Actions -> gpumonty tests -> Run workflow, and enters the PR number.
+# Runs automatically on every push to any branch of THIS repo. Only collaborators
+# with write access can push here, so outsiders cannot trigger it.
+# Pull requests from forks do NOT run tests automatically. To test one, a maintainer
+# goes to Actions -> gpumonty tests -> Run workflow, and enters the PR number.
 on:
   push:
     branches:
-      - main
-      - feature/test-ci
+      - "**"
+
   workflow_dispatch:
     inputs:
       pr:
