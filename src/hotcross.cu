@@ -369,7 +369,9 @@ __host__ __device__ double dNdgammae_th(double thetae, double gammae)
             K2f = gsl_sf_bessel_Kn(2, 1. / thetae) * exp(1. / thetae);
         #endif
 	} else {
-		K2f = sqrt(M_PI * thetae / 2.);
+		/* asymptotic K2(1/thetae) exp(1/thetae), with its first correction terms */
+		K2f = sqrt(M_PI * thetae / 2.) *
+		      (1. + thetae * (15. / 8. + thetae * (105. / 128. - thetae * 315. / 1024.)));
 	}
 
 	return ((gammae * sqrt(gammae * gammae - 1.) / (thetae * K2f)) *

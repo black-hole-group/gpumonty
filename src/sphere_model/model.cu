@@ -366,8 +366,8 @@ __host__ __device__ void get_fluid_params(double X[NDIM], double *Ne,
     Ucon[3] = 0.;
 
     Bcon[0] = 0.;
-    Bcon[1] = (*B) * cos(th)/local_B_unit; 
-    Bcon[2] = -(*B) * sin(th) / (r + 1.e-8)/local_B_unit;
+    Bcon[1] = (*B) * cos(th) / local_B_unit; 
+    Bcon[2] = -(*B) * sin(th) / r / local_B_unit;
     Bcon[3] = 0.;
 
     #if(EXP_COORDS)
@@ -408,8 +408,11 @@ __device__ double bias_func(double Te, double w, int round_scatt)
 
         return bias;
     #elif (1)
-        bias = (MODEL_TAU0 > 1.0) ? (MODEL_TAU0) : 1.0;
-        return bias * d_bias_guess[round_scatt];
+        /* Thomson depth of the sphere (SPHERE_RADIUS in cm) times (n_sc + 1)^2 (paper Sec. 4.2) */
+        double model_tau_0 = NE_VALUE * SIGMA_THOMSON * SPHERE_RADIUS;
+        bias = (model_tau_0 > 1.0) ? (model_tau_0) : 1.0;
+        bias *= (round_scatt + 1.) * (round_scatt + 1.);
+        return bias;
     #else
 		double avg_num_scatt, max;
         //return 1;
